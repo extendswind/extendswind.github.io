@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Manjaro on ExtendsWind</title>
+    <link>http://extendswind.github.io/categories/manjaro/</link>
+    <description>Recent content in Manjaro on ExtendsWind</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <lastBuildDate>Fri, 11 May 2018 21:07:53 +0800</lastBuildDate>
+    
+	<atom:link href="http://extendswind.github.io/categories/manjaro/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Testslkfdjsd</title>
+      <link>http://extendswind.github.io/posts/manjaro-wine-qq-install/</link>
+      <pubDate>Fri, 11 May 2018 21:07:53 +0800</pubDate>
+      
+      <guid>http://extendswind.github.io/posts/manjaro-wine-qq-install/</guid>
+      <description>基于AUR的安装是没什么难度了，主要安装后会出各种问题，还有选不同的包的影响。
+官方的wiki上推荐安装deepin-wine-tim，基于wine和最新版的tim。安装后存在qq密码每次都要输入的问题（201804测试没有此问题，但使用的最新版tim还是不太稳定）。
+有的博客上使用的deepin.com.qq.office，虽然基于tim2.0和deepin-wine，比较稳定，存在不能从tim中复制文字的问题。
+想折腾的可以结合两个，基于wine运行tim2.0，放最后头。
+安装步骤 yaourt -Sy deepin.com.qq.office
+qq提取消息、截图等快捷键设置
+在/opt/deepinwine/tools/sendkeys.sh脚本能够传递快捷键，如直接运行./sendkeys.sh a 则会向qq或tim进程发送 ctrl+alt+a。
+做法：
+ setting -&amp;gt; keyboard -&amp;gt; shortcut 添加快捷键，选择上面的脚本，在脚本后面加上a 指定运行脚本的快捷键  此时按快捷键后相当于qq中按 ctrl+alt+a (截图)
+同理可以设置
+问题及解决 deepin-tim 安装完后无法输入中文 /opt/deepinwine/apps/Deepin-TIM/run.sh
+不知道是不是其它哪环境变量设置位置不对，在此文件中重新定义环境变量后有效。（如有有更好的位置，求告知）
+ export XMODIFIERS=&amp;ldquo;@im=fcitx&amp;rdquo; export GTK_IM_MODULE=&amp;ldquo;fcitx&amp;rdquo; export QT_IM_MODULE=&amp;ldquo;fcitx&amp;rdquo;
+ 文字过小问题 后面列出的官方wiki上有设置字体的方法，我只是在winecfg命令后加大了dpi，还可以具体改字体。（已经能忍，不想折腾）
+表情无法使用 出现在xfce4上
+all settings -&amp;gt; window Manager -&amp;gt; Focus -&amp;gt; 取消勾选 &amp;ldquo;automatically give focus to newly created windows&amp;rdquo;
+other 一些没有出现的问题，在wiki上有说明，可在后面的链接上找。此处只列问题：
+ 文件被占用 字体设置  无法复制文字 感觉是deepin-wine的问题，不知道和电脑有没有关系。安装了deepine-wine-tim(基于wine而不是deepin-wine)，然后从aur中找到deepine.com.qq.office下的deb下载链接，找到里头的tim文件夹替换调~/.deepinwine/Deepin-TIM/drive_c/Program\ Files/Tencent/TIM/文件夹。</description>
+    </item>
+    
+  </channel>
+</rss>
