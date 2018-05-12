@@ -1,4 +1,13 @@
 ---
+title: "arch(manjaro-xfce 17.1.4 64-bit) 安装搜狗输入法 "
+
+date: 2018-05-11T21:07:53+08:00
+
+categories:
+  - "arch_manjaro"
+tags:
+  - "arch_manjaro"
+---
 
 
 ---
