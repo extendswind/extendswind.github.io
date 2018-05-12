@@ -1,0 +1,31 @@
+# This file contains configuration of widget for Minimo theme
+
+
+# About Widget config
+[about]
+title = "ExtendsWind"                            # default: .Site.Title
+description = "Simple or simpler"                      # default: .Site.Params.info.description
+logo = "/images/logo.png"             # default: "/images/logo.png"
+
+# Recent Posts Widget config
+[recent_posts]
+title = "Recent Posts"                            # default: "Recent Posts"
+length = 7                            # default: 5
+excludeTypes = ["page"]               # default: ["page"]
+
+# Sidebar Menu Widget config
+[sidebar_menu]
+title = "sidebar title"                            # default: ""
+mirror = "main"                           # default: ""
+
+# Social Menu Widget config
+[social_menu]
+title = "Contact"                            # default: ""
+platforms = ["github","facebook","twitter","instagram","email","codepen","gitlab","linkedin","telegram","google_scholar"]
+
+# Taxonomy Cloud Widget config
+# this widget used for display of tags
+[taxonomy_cloud]
+title = "Tags"                            # default: Plural Name for `taxonomyCloud.taxonomy`
+taxonomy = "tags"                     # default: "tags"
+shuffle = false # default: true
