@@ -11,19 +11,19 @@
 将map函数改为foreach则有输出&hellip;'>
 <meta name='theme-color' content='#ffcd00'>
 
-<meta property='og:title' content=' • ExtendsWind'>
+<meta property='og:title' content=' •  '>
 <meta property='og:description' content='问题  // 每个点为hardData中的一个Array val hardData = spark.read.textFile(args(0)).rdd .map(_.split(&quot; &quot;).map(_.toDouble).toArray) .cache() hardData.map(a =&gt; println(a(0).toString &#43; &quot; &quot; &#43; a(1).toString &#43; &quot; &quot; &#43; a(3).toString))  结果中没有输出，而将map函数改为foreach则有输出
 解决 参考 https://stackoverflow.com/questions/33225994/spark-losing-println-on-stdout
 由于spark面向大数据量和分布式，在使用map函数输出时存在各种问题：可能输出到各个主机、数据量过大等问题。
 因此，spark在设计时使map函数中不能使用println输出信息流**
 将map函数改为foreach则有输出&hellip;'>
 <meta property='og:url' content='http://extendswind.github.io/posts/spark-map%E5%87%BD%E6%95%B0%E4%B8%AD%E4%BD%BF%E7%94%A8println%E6%97%A0%E6%B3%95%E8%BE%93%E5%87%BAfor-blog/'>
-<meta property='og:site_name' content='ExtendsWind'>
+<meta property='og:site_name' content=' '>
 <meta property='og:type' content='article'><meta property='article:section' content='Posts'><meta name='twitter:card' content='summary'>
 
-<meta name="generator" content="Hugo 0.40.2" />
+<meta name="generator" content="Hugo 0.40.3" />
 
-  <title> • ExtendsWind</title>
+  <title> •  </title>
   <link rel='canonical' href='http://extendswind.github.io/posts/spark-map%E5%87%BD%E6%95%B0%E4%B8%AD%E4%BD%BF%E7%94%A8println%E6%97%A0%E6%B3%95%E8%BE%93%E5%87%BAfor-blog/'>
   
   
@@ -59,7 +59,7 @@ ga('send', 'pageview');
     </div>
     
     <h2 class='title site-title '>
-    ExtendsWind
+    extendswind
     </h2>
     <div class='desc'>
     Simple or simpler
@@ -67,29 +67,13 @@ ga('send', 'pageview');
   </header>
 
 </section>
-<section class='widget widget-sidebar_menu sep-after'><header>
-    <h4 class='title widget-title'>sidebar title</h4>
-  </header><nav id='sidebar-menu' class='menu sidebar-menu' aria-label=''>
-    <div class='container'>
-      <ul><li class='item'>
-          <a href='/'>Home</a>
-        </li><li class='item'>
-          <a href='/posts'>Posts</a>
-        </li><li class='item'>
-          <a href='/categories'>Categories</a>
-        </li><li class='item'>
-          <a href='https://github.com/extendswind'>Repo</a>
-        </li></ul>
-    </div>
-  </nav>
-</section>
 <section class='widget widget-taxonomy_cloud sep-after'>
   <header>
     <h4 class='title widget-title'>Tags</h4>
   </header>
 
   <div class='container list-container'>
-  <ul class='list taxonomy-cloud no-shuffle'><li>
+  <ul class='list taxonomy-cloud'><li>
         <a href='/tags/another-test' style='font-size:1em'>Another test</a>
       </li><li>
         <a href='/tags/test' style='font-size:1em'>Test</a>
@@ -141,6 +125,8 @@ ga('send', 'pageview');
         <a href='/categories'>Categories</a>
       </li><li class='item'>
         <a href='https://github.com/extendswind'>Repo</a>
+      </li><li class='item'>
+        <a href='http://www.cnblogs.com/fly2wind/'>CnBlog</a>
       </li></ul>
   </div>
 </nav>
@@ -158,7 +144,7 @@ ga('send', 'pageview');
 
       <header id='header' class='header site-header'>
         <div class='container sep-after'>
-          <div class='header-info'><p class='site-title title'>ExtendsWind</p><p class='desc site-desc'>A programmer or a researcher?</p>
+          <div class='header-info'><p class='site-title title'> </p><p class='desc site-desc'>A programmer or a researcher?</p>
           </div>
         </div>
       </header>
@@ -302,7 +288,7 @@ ga('send', 'pageview');
   </nav>
 </section>
           <div class='copyright'>
-  <p> &copy; 2018 ExtendsWind </p>
+  <p> &copy; 2018 extendswind </p>
 </div>
 
         </div>

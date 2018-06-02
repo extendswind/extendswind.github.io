@@ -1,0 +1,24 @@
+
+.sidebar .widget.widget-about.sep-after {
+  text-align: center;
+  float : left;
+
+}
+
+.sidebar .sep-after:after {
+    margin-left: initial;
+}
+
+.sidebar .widget-about .logo {
+    margin: auto;
+/*    margin-left: initial; */
+}
+
+.sidebar h4.title.widget-title {
+    /* float: left; */
+    text-align: right;
+}
+
+.sidebar .widget-about.sep-after:after{
+    margin-right:auto;
+}
