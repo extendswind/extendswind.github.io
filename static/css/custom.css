@@ -71,6 +71,8 @@ p {
 }
 
 /* 去除标题和正文之间的黄线 */
+/* 影响主页
 .header .sep-after:after{
     content:none;
 }
+*/
