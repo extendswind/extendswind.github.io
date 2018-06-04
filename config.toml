@@ -22,7 +22,7 @@ pygmentsCodefences = true
 enableEmoji = true
 
 # Missing translations will default to this content language
-defaultContentLanguage = "cn"
+defaultContentLanguage = "zh"
 
 [params.info]
 description = "A programmer or a researcher?"
@@ -123,18 +123,18 @@ url = "/posts"
 
 [[menu.main]]
 name = "Categories"
-weight = 10
+weight = 3
 identifier = "categories"
 url = "/categories"
 
 [[menu.main]]
-name = "Repo"
+name = "GitHub"
 weight = 10
 identifier = "repository"
 url = "https://github.com/extendswind"
 
 [[menu.main]]
-name = "CnBlog"
+name = "Cnblog"
 weight = 11
 identifier = "cnblog"
 url = "http://www.cnblogs.com/fly2wind/"
@@ -151,8 +151,8 @@ hrefTargetBlank = true
 [languages.en]
 lang = "en"
 languageName = "English"
-weight = 1
-[languages.cn]
-lang = "cn"
+weight = 3
+[languages.zh]
+lang = "zh"
 languageName = "Chinese"
-weight = 2
+weight = 10

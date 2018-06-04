@@ -5,11 +5,11 @@
 [about]
 title = "extendswind"                            # default: .Site.Title
 description = "Simple or simpler"                      # default: .Site.Params.info.description
-logo = "/images/logo.png"             # default: "/images/logo.png"
+logo = "/images/wind.jpeg"             # default: "/images/logo.png"
 
 # Recent Posts Widget config
 [recent_posts]
-title = "Recent Posts"                            # default: "Recent Posts"
+title = "Recent"                            # default: "Recent Posts"
 length = 7                            # default: 5
 excludeTypes = ["page"]               # default: ["page"]
 

@@ -60,14 +60,18 @@ h5{
     margin-top: 2em;
 }
 
-/* 正文 */
+/*----------- 正文 */
 body {
     font-size: 1em;
-    line-height: 1.5;
+    line-height: 1.7;
 }
 
 p {
-    margin: 0 0 0.7em;
+    margin: 0 0 2em;
+}
+
+.h3 a{
+    margin-top:0.5em;
 }
 
 /* 去除标题和正文之间的黄线 */
@@ -76,3 +80,35 @@ p {
     content:none;
 }
 */
+
+/*------ menu中的大写和字体大小---- */
+/* 右上方的 Home Posts等*/
+.menu li{
+    text-transform:none;
+    font-size:1.3em;
+}
+
+
+/* posts 列表中 时间和标题的对齐 */
+li.item {
+    align-items: baseline;
+}
+
+
+/*---- 几根分割线 */
+body{
+    --color-accent: #dddddd;
+}
+
+.header .sep-after:after {
+/*    border-bottom-color: #dddddd; */
+    width:auto;
+}
+.footer .sep-before:before{
+/*    border-bottom-color: #dddddd; */
+    width:auto;
+}
+.sidebar .widget-about.sep-after:after{
+ /*   border-bottom-color: #dddddd;*/
+}
+
