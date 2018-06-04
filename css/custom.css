@@ -76,3 +76,25 @@ p {
     content:none;
 }
 */
+
+/*------ menu中的大写和字体大小---- */
+/* Home Posts等*/
+.menu li{
+    text-transform:none;
+    font-size:1.5em;
+}
+
+/* 几根分割线的颜色 */
+.header .sep-after:after {
+    border-bottom-color: #dddddd;
+    width:auto;
+}
+
+.footer .sep-before:before{
+    border-bottom-color: #dddddd;
+    width:auto;
+}
+
+.sidebar .widget-about.sep-after:after{
+    border-bottom-color: #dddddd;
+}
