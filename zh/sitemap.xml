@@ -3,7 +3,7 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>http://extendswind.github.io/posts/blog_first/</loc>
+    <loc>http://extendswind.github.io/posts/life/blog_first/</loc>
     <lastmod>2018-06-04T22:40:48+08:00</lastmod>
   </url>
   
@@ -54,13 +54,13 @@
   </url>
   
   <url>
-    <loc>http://extendswind.github.io/categories/personal/</loc>
+    <loc>http://extendswind.github.io/categories/life/</loc>
     <lastmod>2018-06-04T22:40:48+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://extendswind.github.io/tags/personal/</loc>
+    <loc>http://extendswind.github.io/tags/life/</loc>
     <lastmod>2018-06-04T22:40:48+08:00</lastmod>
     <priority>0</priority>
   </url>
