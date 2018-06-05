@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Personal on  </title>
+    <link>http://extendswind.github.io/tags/personal/</link>
+    <description>Recent content in Personal on  </description>
+    <generator>Hugo -- gohugo.io</generator>
+    <lastBuildDate>Mon, 04 Jun 2018 22:40:48 +0800</lastBuildDate>
+    
+	<atom:link href="http://extendswind.github.io/tags/personal/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>第一篇博客</title>
+      <link>http://extendswind.github.io/posts/blog_first/</link>
+      <pubDate>Mon, 04 Jun 2018 22:40:48 +0800</pubDate>
+      
+      <guid>http://extendswind.github.io/posts/blog_first/</guid>
+      <description>终于搞定了这个博客，首先吐槽：Hugo虽然自称最快，但要想找个合适的主题还能适应中文真不是一般的折腾，或许后台开发和前端的审美确实有差距…只是作为一个不折腾会死的程序员，搞个博客还要装上一波nodejs或者ruby也不能忍。
+域名申请还是等后面有点内容的时候再说吧。
+搞个博客能干啥，最近发现自己一直违背了高效工作必备的“要事优先”原则，对现在的我来讲博客园、简书、豆瓣等不折腾平台还是够用了。不过理由，只要是找肯定会有的：不想多个平台换；感觉博客这东西应该用git一类的工具管理以满足不断的修改；吐槽学术界大部分方向的封闭；一键上传；留个稿写写人生说不定出本书；看到很多人用；反正就是折腾了…
+作为一个还在学术界又不确定以后会不会在学术界的半个researcher，准备先走走技术流，有个博客记录总是好的，就这么开头吧。
+聊聊技术，谈谈学术，写写人生。</description>
+    </item>
+    
+  </channel>
+</rss>
