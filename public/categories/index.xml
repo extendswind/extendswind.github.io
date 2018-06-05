@@ -5,44 +5,16 @@
     <link>http://extendswind.github.io/categories/</link>
     <description>Recent content in Categories on  </description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Fri, 11 May 2018 21:07:53 +0800</lastBuildDate>
     
 	<atom:link href="http://extendswind.github.io/categories/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
-      <title>Arch_manjaro</title>
-      <link>http://extendswind.github.io/categories/arch_manjaro/</link>
-      <pubDate>Fri, 11 May 2018 21:07:53 +0800</pubDate>
+      <title>Personal</title>
+      <link>http://extendswind.github.io/categories/personal/</link>
+      <pubDate>Mon, 04 Jun 2018 22:40:48 +0800</pubDate>
       
-      <guid>http://extendswind.github.io/categories/arch_manjaro/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Category 1</title>
-      <link>http://extendswind.github.io/categories/category-1/</link>
-      <pubDate>Fri, 11 May 2018 21:07:53 +0800</pubDate>
-      
-      <guid>http://extendswind.github.io/categories/category-1/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Category 2</title>
-      <link>http://extendswind.github.io/categories/category-2/</link>
-      <pubDate>Fri, 11 May 2018 21:07:53 +0800</pubDate>
-      
-      <guid>http://extendswind.github.io/categories/category-2/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Manjaro</title>
-      <link>http://extendswind.github.io/categories/manjaro/</link>
-      <pubDate>Fri, 11 May 2018 21:07:53 +0800</pubDate>
-      
-      <guid>http://extendswind.github.io/categories/manjaro/</guid>
+      <guid>http://extendswind.github.io/categories/personal/</guid>
       <description></description>
     </item>
     

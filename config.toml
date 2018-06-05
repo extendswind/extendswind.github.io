@@ -5,6 +5,7 @@ title = " "
 # for smart copyright line, leave this blank and check [params.copyright]
 copyright = ""
 
+#theme = "minimo"
 theme = "minimo"
 # 某些设置在data/config 目录下
 
