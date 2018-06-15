@@ -9,7 +9,7 @@ copyright = ""
 theme = "minimo"
 # 某些设置在data/config 目录下
 
-disqusShortname = "extendswind"
+disqusShortname = "ExtendsWind"
 googleAnalytics = "adkfljadlfj"
 
 Paginate = 5
@@ -26,18 +26,19 @@ enableEmoji = true
 defaultContentLanguage = "zh"
 
 [params.info]
-description = "A programmer or a researcher?"
-title404 = "Nothing's here!"
+description = "A programmer or a researcher"
+title404 = "Nothing's here!  404 "
 
 [params.assets]
-favicon = "favicon.ico"
+favicon = "/images/wind.jpeg"
 customCSS = ["css/custom.css"]
 customJS = ["js/custom.js"]
 gopher = "" # used in 404 template ( Generator: https://gopherize.me )
 
+
 [params.copyright]
 prefix = ""
-holder = "extendswind"
+holder = "ExtendsWind"
 startYear = "2018"
 suffix = ""
 

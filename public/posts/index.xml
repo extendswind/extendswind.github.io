@@ -5,10 +5,25 @@
     <link>http://extendswind.github.io/posts/</link>
     <description>Recent content in Posts on  </description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Mon, 04 Jun 2018 22:40:48 +0800</lastBuildDate>
+    <lastBuildDate>Fri, 15 Jun 2018 17:25:25 +0800</lastBuildDate>
     
 	<atom:link href="http://extendswind.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>设计模式 之 工厂模式</title>
+      <link>http://extendswind.github.io/posts/technical/design_pattern_factory/</link>
+      <pubDate>Fri, 15 Jun 2018 17:25:25 +0800</pubDate>
+      
+      <guid>http://extendswind.github.io/posts/technical/design_pattern_factory/</guid>
+      <description>几种工厂模式(Factory Pattern)简介 工厂模式主要分为：
+ 简单工厂模式（Simple Factory Pattern） 工厂方法模式（Factory Method Pattern 经常简称为工厂模式） 抽象工厂模式（Abstract Factory Pattern）  主要思想：将类的初始化过程转移到工厂类中，使用类的位置通过工厂类直接得到产品类，使产品类的初始化逻辑清晰，并容易添加新的产品。
+需求示例 简单工厂模式 和 工厂方法模式  实现多个日志记录器logger(文件logger，数据库logger等) 通过配置文件确定使用的具体logger类 添加新的logger类不修改源码（添加新的java包并修改配置文件）  抽象工厂模式 抽象工厂模式应用场景略有不同。
+存在多种不同的主题，每个主题都有不同的Button和Text的实现逻辑，因此每个主题都有Button和Text控件的派生类，导致类的初始化较多。
+容易添加新的主题
+不应用工厂模式的一般实现 （FactoryProblem.java）  logger 基类实现通用的日志记录功能，子类实现各自的特有功能 使用时根据配置文件中的类型，new相应的子类  类的实现：
+abstract class Logger { public void writeLog(){ System.out.println(&amp;#34;writeLog by Logger&amp;#34;); } // 可添加公共实现 } class FileLogger extends Logger { @Override public void writeLog(){ System.out.println(&amp;#34;writeLog by the FileLogger&amp;#34;); } } class DataBaseLogger extends Logger { @Override public void writeLog(){ System.</description>
+    </item>
     
     <item>
       <title>第一篇博客</title>
