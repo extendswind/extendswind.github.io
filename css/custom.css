@@ -14,7 +14,7 @@
 /* tag 标签*/
 .sidebar h4.title.widget-title {
     /* float: left; */
-    text-align: right;
+    text-align:right;
 }
 
 /* 上下两个widget中间的分隔黄线 */
@@ -28,6 +28,12 @@
 
 /******** blog content in the right **********/
 
+/* TOC */
+nav#TableOfContents {
+    padding-bottom: 1em;
+    border-bottom: 1px solid #dddddd;
+}
+
 .title, h1, h2, h3, h4, h5, h6 {
     font-family: Helvetica Neue,Helvetica,PingFang SC,Hiragino Sans GB,Microsoft YaHei,Noto Sans CJK SC,WenQuanYi Micro Hei,Arial,sans-serif,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen-Sans,Ubuntu,Cantarell,Open Sans,Helvetica Neue,sans-serif;
     font-weight: 700;
@@ -36,9 +42,20 @@
     margin: 0 0 .625em;
 }
 
-.site-title, h1 {
-    font-size: 1.3em;
+h1.title{
+    font-size: 1.5em;
 }
+
+
+/*.site-title, h1 {*/
+/* 在标题一下添加分割线 */
+div.container.entry-content h1{
+    font-size: 1.4em;
+    padding-top:1.5em;
+    padding-bottom: 0.5em;
+    border-bottom:1px solid #dddddd;
+}
+
 
 h2{
     font-size: 1.2em;
@@ -57,7 +74,7 @@ h5{
 }
 
 .comment-content h2, .comment-content h3, .comment-content h4, .comment-content h5, .comment-content h6, .entry-content h2, .entry-content h3, .entry-content h4, .entry-content h5, .entry-content h6 {
-    margin-top: 2em;
+    margin-top: 1em;
 }
 
 /*----------- 正文 */
@@ -67,7 +84,7 @@ body {
 }
 
 p {
-    margin: 0 0 2em;
+    margin: 0 0 1em;
 }
 
 .h3 a{
