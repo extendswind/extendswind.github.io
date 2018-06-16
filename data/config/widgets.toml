@@ -4,7 +4,7 @@
 # About Widget config
 [about]
 title = "extendswind"                            # default: .Site.Title
-description = "Simple or simpler"                      # default: .Site.Params.info.description
+description = "随风而动，随刃而行"                      # default: .Site.Params.info.description
 logo = "/images/wind.jpeg"             # default: "/images/logo.png"
 
 # Recent Posts Widget config

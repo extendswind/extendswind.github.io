@@ -10,7 +10,6 @@ tags:
 ---
 
 
-
 # 几种工厂模式(Factory Pattern)简介
 
 工厂模式主要分为： 
