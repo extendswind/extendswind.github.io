@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang='zh'>
+
+<head>
+  <meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<meta name='description' content='这两种模式的相似度极高，作用也类似，都是对已有的类进行包装，以添加新的控制（代理模式）和功能（装饰者模式），其实这两点也没有严格区分。
+两种设计模式的重点在于，已有的类（被代理、被装饰）与新类（代理类、装饰类）都实现同一接口，通过接口调用新类会和调用已有的类相同。
+设计模式中常说使用“组合”优先于“继承”。对于想要改变一个写好的类中的某些功能，一般情况下使用继承的灵活性不如组合。继承的某些缺点：单继承（多继承也面临一些问题）、破坏封装（子类可能改变某些细节），父类的改变对子类可能有影响。“组合”的方式将需要被修改或加强的类作为新类的类成员，可以通过添加多个类成员以得到组合多种功能的效果。
+静态代理模式 （static proxy） 静态代理的思想：将被代理类作为代理类的成员，通过代理类调用被代理类的函数，并添加新的控制。包装类与被包装类实现同一接口，使得使用时的代码一致。
+应用：已经有一个日志记录器LoggerSubject，需要对writeLog()函数的前后进行某些操作（如初始化、异常处理等），使用Proxy类间接调用LoggerSubject.writeLog()实现新控制操作的添加。
+实现如下
+interface Logger { void writeLog(); } // 被代理类 class LoggerSubject implements Logger{ @Override public void writeLog(){ System.out.println(&#34;writeLog by LoggerSubject&#34;); } } // 代理类 class Proxy implements Logger{ Logger logger; // 与装饰者模式的主要区别位置  // 代理模式一般要求和原来的类行为一致，因此构造函数不传入对象  Proxy(){ this.logger = new LoggerSubject(); } @Override public void writeLog(){ System.out.println(&#34;logger write before&#34;); logger.writeLog(); System.out.println(&#34;logger write after&#34;); } } public class StaticProxy { private static void write(Logger logger){ logger.'>
+<meta name='theme-color' content='#ffcd00'>
+
+<meta property='og:title' content='设计模式 之 静态代理模式和装饰者模式 •  '>
+<meta property='og:description' content='这两种模式的相似度极高，作用也类似，都是对已有的类进行包装，以添加新的控制（代理模式）和功能（装饰者模式），其实这两点也没有严格区分。
+两种设计模式的重点在于，已有的类（被代理、被装饰）与新类（代理类、装饰类）都实现同一接口，通过接口调用新类会和调用已有的类相同。
+设计模式中常说使用“组合”优先于“继承”。对于想要改变一个写好的类中的某些功能，一般情况下使用继承的灵活性不如组合。继承的某些缺点：单继承（多继承也面临一些问题）、破坏封装（子类可能改变某些细节），父类的改变对子类可能有影响。“组合”的方式将需要被修改或加强的类作为新类的类成员，可以通过添加多个类成员以得到组合多种功能的效果。
+静态代理模式 （static proxy） 静态代理的思想：将被代理类作为代理类的成员，通过代理类调用被代理类的函数，并添加新的控制。包装类与被包装类实现同一接口，使得使用时的代码一致。
+应用：已经有一个日志记录器LoggerSubject，需要对writeLog()函数的前后进行某些操作（如初始化、异常处理等），使用Proxy类间接调用LoggerSubject.writeLog()实现新控制操作的添加。
+实现如下
+interface Logger { void writeLog(); } // 被代理类 class LoggerSubject implements Logger{ @Override public void writeLog(){ System.out.println(&#34;writeLog by LoggerSubject&#34;); } } // 代理类 class Proxy implements Logger{ Logger logger; // 与装饰者模式的主要区别位置  // 代理模式一般要求和原来的类行为一致，因此构造函数不传入对象  Proxy(){ this.logger = new LoggerSubject(); } @Override public void writeLog(){ System.out.println(&#34;logger write before&#34;); logger.writeLog(); System.out.println(&#34;logger write after&#34;); } } public class StaticProxy { private static void write(Logger logger){ logger.'>
+<meta property='og:url' content='http://extendswind.github.io/posts/technical/design_patterns_static_proxy_and_decoration/'>
+<meta property='og:site_name' content=' '>
+<meta property='og:type' content='article'><meta property='article:section' content='Posts'><meta property='article:tag' content='design patterns'><meta property='article:published_time' content='2018-06-20T17:25:25&#43;08:00'/><meta property='article:modified_time' content='2018-06-20T17:25:25&#43;08:00'/><meta name='twitter:card' content='summary'>
+
+<meta name="generator" content="Hugo 0.40.3" />
+
+  <title>设计模式 之 静态代理模式和装饰者模式 •  </title>
+  <link rel='canonical' href='http://extendswind.github.io/posts/technical/design_patterns_static_proxy_and_decoration/'>
+  
+  
+  <link rel='icon' href='/images/wind.jpeg'>
+<link rel='stylesheet' href='/assets/css/main.67e9c12b.css'><link rel='stylesheet' href='/css/custom.css'><style>
+:root{--color-accent:#ffcd00;}
+</style>
+
+<script>
+window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+ga('create', 'adkfljadlfj', 'auto');
+ga('send', 'pageview');
+</script>
+<script async src='//www.google-analytics.com/analytics.js'></script>
+
+</head>
+
+
+<body class='page type-posts has-sidebar'>
+
+  <div class='site'>
+
+    <div id='sidebar' class='sidebar'>
+  <a class='screen-reader-text' href='#main-menu'></a>
+
+  <div class='container'><section class='widget widget-about sep-after'>
+  <header>
+    
+    <div class='logo'>
+      <a href='/'>
+        <img src='/images/wind.jpeg'>
+      </a>
+    </div>
+    
+    <h2 class='title site-title '>
+    extendswind
+    </h2>
+    <div class='desc'>
+    随风而动，随刃而行
+    </div>
+  </header>
+
+</section>
+<section class='widget widget-taxonomy_cloud sep-after'>
+  <header>
+    <h4 class='title widget-title'>Tags</h4>
+  </header>
+
+  <div class='container list-container'>
+  <ul class='list taxonomy-cloud'><li>
+        <a href='/tags/design-patterns' style='font-size:2em'>Design patterns</a>
+      </li><li>
+        <a href='/tags/life' style='font-size:1em'>Life</a>
+      </li></ul>
+</div>
+
+
+</section>
+<section class='widget widget-recent_posts sep-after'>
+  <header>
+    <h4 class='title widget-title'>Recent</h4>
+  </header>
+
+  <ul class='list'>
+  
+    <li class='item'>
+  <div class='meta'>
+    <span>
+  <span class='screen-reader-text'>Posted on </span>
+  <time datetime='2018-06-20T17:25:25&#43;08:00'>2018, Jun 20</time>
+</span>
+
+  </div>
+  <header class='item-header'>
+    <h3 class='item-title'>
+      <a href='/posts/technical/design_patterns_static_proxy_and_decoration/'>设计模式 之 静态代理模式和装饰者模式</a>
+    </h3>
+  </header>
+</li>
+
+  
+    <li class='item'>
+  <div class='meta'>
+    <span>
+  <span class='screen-reader-text'>Posted on </span>
+  <time datetime='2018-06-15T17:25:25&#43;08:00'>2018, Jun 15</time>
+</span>
+
+  </div>
+  <header class='item-header'>
+    <h3 class='item-title'>
+      <a href='/posts/technical/design_patterns_factory/'>设计模式 之 工厂模式</a>
+    </h3>
+  </header>
+</li>
+
+  
+    <li class='item'>
+  <div class='meta'>
+    <span>
+  <span class='screen-reader-text'>Posted on </span>
+  <time datetime='2018-06-04T22:40:48&#43;08:00'>2018, Jun 04</time>
+</span>
+
+  </div>
+  <header class='item-header'>
+    <h3 class='item-title'>
+      <a href='/posts/life/blog_first/'>第一篇博客</a>
+    </h3>
+  </header>
+</li>
+
+  
+  </ul>
+</section>
+</div>
+
+  <div class='sidebar-overlay'></div>
+</div>
+
+    <div class='main'>
+
+      <nav id='main-menu' class='menu main-menu' aria-label='主菜单'>
+  <div class='container'>
+    <a class='screen-reader-text' href='#content'>跳转</a>
+
+<button id='sidebar-toggler' class='sidebar-toggler' aria-controls='sidebar'>
+  <span class='screen-reader-text'></span>
+  <span class='open'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="3" y1="12" x2="21" y2="12" />
+  <line x1="3" y1="6" x2="21" y2="6" />
+  <line x1="3" y1="18" x2="21" y2="18" />
+  
+</svg>
+</span>
+  <span class='close'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="18" y1="6" x2="6" y2="18" />
+  <line x1="6" y1="6" x2="18" y2="18" />
+  
+</svg>
+</span>
+</button>
+    <ul><li class='item'>
+        <a href='/'>Home</a>
+      </li><li class='item'>
+        <a href='/posts'>Posts</a>
+      </li><li class='item'>
+        <a href='/categories'>Categories</a>
+      </li><li class='item'>
+        <a href='https://github.com/extendswind'>GitHub</a>
+      </li><li class='item'>
+        <a href='http://www.cnblogs.com/fly2wind/'>Cnblog</a>
+      </li></ul>
+  </div>
+</nav>
+
+      <script>
+        var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?5f34bacaded7cff332db05141fd2dc81";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+      </script>
+
+
+      <header id='header' class='header site-header'>
+        <div class='container sep-after'>
+          <div class='header-info'><p class='site-title title'> </p><p class='desc site-desc'>A programmer or a researcher</p>
+          </div>
+        </div>
+      </header>
+
+      <main id='content'>
+
+
+<article lang='zh' class='entry'>
+  <header class='header entry-header'>
+  <div class='container sep-after'>
+    <div class='header-info'>
+      <h1 class='title'>设计模式 之 静态代理模式和装饰者模式</h1>
+      
+
+    </div>
+    
+<div class='entry-meta'>
+  <span class='posted-on'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+  <line x1="16" y1="2" x2="16" y2="6"/>
+  <line x1="8" y1="2" x2="8" y2="6"/>
+  <line x1="3" y1="10" x2="21" y2="10"/>
+  
+</svg>
+<span class='screen-reader-text'>Posted on </span>
+  <time class='entry-date' datetime='2018-06-20T17:25:25&#43;08:00'>2018, Jun 20</time>
+</span>
+
+  
+  
+<span class='reading-time'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <circle cx="12" cy="12" r="10"/>
+  <polyline points="12 6 12 12 15 15"/>
+  
+</svg>
+阅读时间 2 分钟
+</span>
+
+
+</div>
+
+
+  </div>
+</header>
+
+  
+  
+<details class='container entry-toc'>
+  <summary class='title'>
+    <span>目录</span>
+  </summary>
+  <nav id="TableOfContents">
+<ul>
+<li><a href="#静态代理模式-static-proxy">静态代理模式 （static proxy）</a></li>
+<li><a href="#装饰者模式">装饰者模式</a></li>
+<li><a href="#静态代理与装饰者模式的主要区别">静态代理与装饰者模式的主要区别</a>
+<ul>
+<li><a href="#个人吐槽">个人吐槽</a></li>
+</ul></li>
+</ul>
+</nav>
+</details>
+
+
+  <div class='container entry-content'>
+  
+
+<p>这两种模式的相似度极高，作用也类似，都是对已有的类进行包装，以添加新的控制（代理模式）和功能（装饰者模式），其实这两点也没有严格区分。</p>
+
+<p>两种设计模式的重点在于，已有的类（被代理、被装饰）与新类（代理类、装饰类）都实现同一接口，通过接口调用新类会和调用已有的类相同。</p>
+
+<p>设计模式中常说使用“组合”优先于“继承”。对于想要改变一个写好的类中的某些功能，一般情况下使用继承的灵活性不如组合。继承的某些缺点：单继承（多继承也面临一些问题）、破坏封装（子类可能改变某些细节），父类的改变对子类可能有影响。“组合”的方式将需要被修改或加强的类作为新类的类成员，可以通过添加多个类成员以得到组合多种功能的效果。</p>
+
+<h1 id="静态代理模式-static-proxy">静态代理模式 （static proxy）</h1>
+
+<p>静态代理的思想：将被代理类作为代理类的成员，通过代理类调用被代理类的函数，并添加新的控制。包装类与被包装类实现同一接口，使得使用时的代码一致。</p>
+
+<p>应用：已经有一个日志记录器LoggerSubject，需要对writeLog()函数的前后进行某些操作（如初始化、异常处理等），使用Proxy类间接调用LoggerSubject.writeLog()实现新控制操作的添加。</p>
+
+<p>实现如下</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">interface</span> <span style="color:#a6e22e">Logger</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">writeLog</span><span style="color:#f92672">();</span>
+<span style="color:#f92672">}</span>
+
+<span style="color:#75715e">// 被代理类
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">LoggerSubject</span> <span style="color:#66d9ef">implements</span> Logger<span style="color:#f92672">{</span>
+    <span style="color:#a6e22e">@Override</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">writeLog</span><span style="color:#f92672">(){</span>
+        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;writeLog by LoggerSubject&#34;</span><span style="color:#f92672">);</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+
+<span style="color:#75715e">// 代理类
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Proxy</span> <span style="color:#66d9ef">implements</span> Logger<span style="color:#f92672">{</span>
+    Logger logger<span style="color:#f92672">;</span>
+    <span style="color:#75715e">// 与装饰者模式的主要区别位置
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">// 代理模式一般要求和原来的类行为一致，因此构造函数不传入对象
+</span><span style="color:#75715e"></span>    Proxy<span style="color:#f92672">(){</span>
+        <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">logger</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> LoggerSubject<span style="color:#f92672">();</span>
+    <span style="color:#f92672">}</span>
+    <span style="color:#a6e22e">@Override</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">writeLog</span><span style="color:#f92672">(){</span>
+        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;logger write before&#34;</span><span style="color:#f92672">);</span>
+        logger<span style="color:#f92672">.</span><span style="color:#a6e22e">writeLog</span><span style="color:#f92672">();</span>
+        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;logger write after&#34;</span><span style="color:#f92672">);</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">StaticProxy</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">write</span><span style="color:#f92672">(</span>Logger logger<span style="color:#f92672">){</span>
+        logger<span style="color:#f92672">.</span><span style="color:#a6e22e">writeLog</span><span style="color:#f92672">();</span>
+    <span style="color:#f92672">}</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span><span style="color:#f92672">(</span>String <span style="color:#f92672">[]</span>argvs<span style="color:#f92672">){</span>
+        Logger logger <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Proxy<span style="color:#f92672">();</span>
+        <span style="color:#75715e">// 还可能出现下面的嵌套
+</span><span style="color:#75715e"></span>        <span style="color:#75715e">//Logger logger = new Logger3(new Proxy(new LoggerSubject()));
+</span><span style="color:#75715e"></span>        write<span style="color:#f92672">(</span>logger<span style="color:#f92672">);</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span></code></pre></div>
+<h1 id="装饰者模式">装饰者模式</h1>
+
+<p>主要用于给一个类添加新功能</p>
+
+<p>主要思想：被装饰类作为类成员被调用，为了使装饰类能和被装饰类一样的使用，两者实现相同的接口。</p>
+
+<p>通过构造函数传入被包装类，能够自由组合装饰，如下面的最后的使用。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">interface</span> <span style="color:#a6e22e">Logger</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">writeLog</span><span style="color:#f92672">();</span>
+<span style="color:#f92672">}</span>
+
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">BaseLogger</span> <span style="color:#66d9ef">implements</span> Logger <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">writeLog</span><span style="color:#f92672">(){</span>
+        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;writeLog&#34;</span><span style="color:#f92672">);</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">DecorationLogger</span> <span style="color:#66d9ef">implements</span> Logger<span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">private</span> Logger logger<span style="color:#f92672">;</span>
+    DecorationLogger<span style="color:#f92672">(</span>Logger logger<span style="color:#f92672">){</span>
+        <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">logger</span> <span style="color:#f92672">=</span> logger<span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+    <span style="color:#a6e22e">@Override</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">writeLog</span><span style="color:#f92672">(){</span>
+        logger<span style="color:#f92672">.</span><span style="color:#a6e22e">writeLog</span><span style="color:#f92672">();</span>
+        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;Decoration&#34;</span><span style="color:#f92672">);</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">DecorationLogger2</span> <span style="color:#66d9ef">implements</span> Logger<span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">private</span> Logger logger<span style="color:#f92672">;</span>
+    DecorationLogger2<span style="color:#f92672">(</span>Logger logger<span style="color:#f92672">){</span>
+        <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">logger</span> <span style="color:#f92672">=</span> logger<span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+    <span style="color:#a6e22e">@Override</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">writeLog</span><span style="color:#f92672">(){</span>
+        logger<span style="color:#f92672">.</span><span style="color:#a6e22e">writeLog</span><span style="color:#f92672">();</span>
+        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;Decoration2&#34;</span><span style="color:#f92672">);</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+
+
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Decoration</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span><span style="color:#f92672">(</span>String <span style="color:#f92672">[]</span>argvs<span style="color:#f92672">){</span>
+        Logger logger <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> DecorationLogger2<span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> DecorationLogger<span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> BaseLogger<span style="color:#f92672">()));</span>
+        logger<span style="color:#f92672">.</span><span style="color:#a6e22e">writeLog</span><span style="color:#f92672">();</span>
+
+        Logger logger1 <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> DecorationLogger<span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> DecorationLogger2<span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> BaseLogger<span style="color:#f92672">()));</span>
+        logger1<span style="color:#f92672">.</span><span style="color:#a6e22e">writeLog</span><span style="color:#f92672">();</span>
+
+        Logger logger2 <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> DecorationLogger<span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> BaseLogger<span style="color:#f92672">());</span>
+        logger2<span style="color:#f92672">.</span><span style="color:#a6e22e">writeLog</span><span style="color:#f92672">();</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span></code></pre></div>
+<p>缺点和注意：包装的自由组合的灵活性可能导致测试的困难，注意组合可能带来的bug。</p>
+
+<h1 id="静态代理与装饰者模式的主要区别">静态代理与装饰者模式的主要区别</h1>
+
+<ol>
+<li>原则上的区别，代理为了控制对某个函数前后的操作，而装饰着模式是为了添加某一操作（其实目标没差太远）</li>
+<li>实现上的区别，代理模式的类一般和被代理类的操作一致，因此构造函数一般不传入类对象，使用时的不同如下：
+Logger logger = new Proxy(); // 代理模式 （为了让Proxy的行为像Logger）
+Logger logger = new DecorateLogger(new Logger()); // 装饰者模式，还可以有更多层</li>
+</ol>
+
+<h2 id="个人吐槽">个人吐槽</h2>
+
+<p>很多博客里再提高一点深度的说法：静态代理在编译时已经确定代理的具体对象，装饰模式是在运行动态的构造。（听起来有道理，其实就是要不要在构造函数中传入对象的问题）</p>
+
+<p>如果需要对一个类的众多派生类做代理，按照标准的说法岂不是对每一个派生类都需要写一个静态代理类？？ 感觉上如果不要求代理类和被代理类在构建对象时一致（或者也给被代理类一个构造函数传入），从构造函数传入被代理类能让代理类更加灵活的处理实现接口的各种类。因此，此处还是建议根据具体情况活用；当然，更建议直接用动态代理。</p>
+
+</div>
+
+  
+<footer class='entry-footer'>
+  <div class='container sep-before'>
+  <div class='categories'>
+  <span class='taxonomy-icon'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M22,19a2,2,0,0,1-2,2H4a2,2,0,0,1-2-2V5A2,2,0,0,1,4,3H9l2,3h9a2,2,0,0,1,2,2Z"/>
+  
+</svg>
+</span>
+  <span class='screen-reader-text'>分类: </span><a class='category' href='/categories/programming'>Programming</a></div>
+<div class='tags'>
+  <span class='taxonomy-icon'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M20.59,13.41l-7.17,7.17a2,2,0,0,1-2.83,0L2,12V2H12l8.59,8.59A2,2,0,0,1,20.59,13.41Z"/>
+  <line x1="7" y1="7" x2="7" y2="7"/>
+  
+</svg>
+</span>
+  <span class='screen-reader-text'>标签: </span><a class='tag' href='/tags/design-patterns'>design patterns</a></div>
+
+  </div>
+</footer>
+
+
+</article>
+
+<nav class='entry-nav'>
+  <div class='container'><div class='prev-entry sep-before'>
+      <a href='/posts/technical/design_patterns_factory/'>
+        <span aria-hidden='true'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="20" y1="12" x2="4" y2="12"/>
+  <polyline points="10 18 4 12 10 6"/>
+  
+</svg>
+ 上一个</span>
+        <span class='screen-reader-text'>上一篇文章: </span>设计模式 之 工厂模式</a>
+    </div></div>
+</nav>
+
+
+
+
+      </main>
+
+      <footer id='footer' class='footer'>
+        <div class='container sep-before'>
+          <section class='widget widget-social_menu sep-after'><header>
+    <h4 class='title widget-title'>Contact</h4>
+  </header><nav aria-label='社交菜单'>
+    <ul><li>
+        <a href='https://github.com/extendswind' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>在新标签打开 Github </span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+  
+</svg>
+</a>
+      </li><li>
+        <a href='mailto:extendswind@foxmail.com' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>通过邮件联系</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+  <polyline points="22,6 12,13 2,6"/>
+  
+</svg>
+</a>
+      </li></ul>
+  </nav>
+</section>
+          <div class='copyright'>
+  <p> &copy; 2018 ExtendsWind </p>
+</div>
+
+        </div>
+      </footer>
+
+    </div>
+  </div><script>window.__public_path__='\/assets\/js\/'</script>
+
+<script src='/assets/js/main.0d92f56c.js'></script><script src='/js/custom.js'></script>
+</body>
+
+</html>
+

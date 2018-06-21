@@ -1,4 +1,10 @@
 
+/* --- 宽度调整 ---*/
+.main{
+    width:80%;
+}
+
+
 /**************** sidebar in the left *************/
 /* 上方的姓名和介绍 */
 .sidebar .widget.widget-about.sep-after {
@@ -27,12 +33,6 @@
 
 
 /******** blog content in the right **********/
-
-/* TOC */
-nav#TableOfContents {
-    padding-bottom: 1em;
-    border-bottom: 1px solid #dddddd;
-}
 
 .title, h1, h2, h3, h4, h5, h6 {
     font-family: Helvetica Neue,Helvetica,PingFang SC,Hiragino Sans GB,Microsoft YaHei,Noto Sans CJK SC,WenQuanYi Micro Hei,Arial,sans-serif,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen-Sans,Ubuntu,Cantarell,Open Sans,Helvetica Neue,sans-serif;
@@ -129,3 +129,27 @@ body{
  /*   border-bottom-color: #dddddd;*/
 }
 
+
+/* ---- TOC 目录右方悬浮 ---*/
+.entry-toc{
+    position: fixed;
+    left: 80%;
+    font-size:small;
+    margin-right:auto;
+    width:20%;
+/*    
+ *  padding-bottom: 1em;
+    border-bottom: 1px solid #dddddd;
+    */
+}
+
+
+/*--- sidebar Recent ---*/
+section.widget.widget-recent_posts.sep-after {
+    /* 设置省略过长的字符等 */
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+
+    text-align: left;
+}
