@@ -1,0 +1,1 @@
+../../../myNote/./technical/design_patterns/design_patterns_static_proxy_and_decoration.md
