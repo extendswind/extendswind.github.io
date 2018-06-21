@@ -148,8 +148,12 @@ body{
 section.widget.widget-recent_posts.sep-after {
     /* 设置省略过长的字符等 */
     text-overflow: ellipsis;
-    white-space: nowrap;
+   /* white-space: nowrap;*/
     overflow: hidden;
 
     text-align: left;
+}
+
+section.widget.widget-recent_posts.sep-after ul{
+    font-size:0.9em;
 }
