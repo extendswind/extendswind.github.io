@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Linux desktop on  </title>
+    <link>http://extendswind.github.io/categories/linux-desktop/</link>
+    <description>Recent content in Linux desktop on  </description>
+    <generator>Hugo -- gohugo.io</generator>
+    <lastBuildDate>Fri, 29 Jun 2018 20:59:49 +0800</lastBuildDate>
+    
+	<atom:link href="http://extendswind.github.io/categories/linux-desktop/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>linux桌面发行版简介</title>
+      <link>http://extendswind.github.io/posts/technical/linux_desktop_distribution/</link>
+      <pubDate>Fri, 29 Jun 2018 20:59:49 +0800</pubDate>
+      
+      <guid>http://extendswind.github.io/posts/technical/linux_desktop_distribution/</guid>
+      <description>linux系统 桌面操作系统：windows，MacOS和各linux发行版。
+2017年数据，windows份额超过90%，MacOS约6%，Linux份额最高的记录在2016年7月创下，是2.33%。
+貌似用linux和MacOS的大多是程序员了。MacOS和linux系统正常使用（看书、上网、看电影等）已经比较成熟，没有太大的体验差异。
+linux系统的主要缺点：
+ 某些常用软件在linux上没有或运行有问题（qq、迅雷、office等，只有deepin通过虚拟windows系统解决得稍好） 完美折腾需要掌握大量相关知识，不折腾难以体现其优点 某些设置复杂（较好的发行版已有极大的改善，某些操作需要使用命令）  linux作为桌面系统主要优点（作为服务器系统广泛使用不谈）：
+ 软件管理容易 可定制性超强 免费（看版权意识）  对于开发人员，大部分的软件一键安装还解决依赖问题，想要的操作大部分可以通过修改配置和安装软件实现。在运行某些开发软件会明显感觉更快，绝大部分配置通过文本文件容易修改。
+linux发行版 一般的linux发行版包括：Linux内核，一些GNU程序库和工具，命令行shell，图形界面的X Window系统和相应的桌面环境，以及一系列其他的软件包（浏览器、阅读器、文本编辑器等）。由各种组织和个人维护。
+主要用过的几个桌面发行版：  也许桌面用户最多的Ubuntu 不折腾的Arch系Manjaro （当前主力） 和Manjaro在distrowatch上争第一的Ubuntu进化版Mint 号称最美linux的Elementary 超稳定适合服务器的版本Centos （只在服务器上用） 最强国产化linux的Deepin和一般国产化的优麒麟  下面叙述中不包含在内的主要道听途说
+主流的发行版 debian系：Debian -&amp;gt; Ubuntu -&amp;gt; Mint | Elementary | Deepin | 优麒麟 fedora : Fedora -&amp;gt; RHEL -&amp;gt; Centos | Oracle linux SUSE : SUSE -&amp;gt; SLES -&amp;gt; openSUSE (没有用过，大多对其评价较为中立，暂不讨论) arch : Arch -&amp;gt; Manjaro gantoo
+其中箭头后的系统基于前面的系统发展，但并不影响前面系统的优势。如Ubuntu基于Debian系统成为较好的桌面系统，但Debian由于其轻量级和可定制仍有广泛使用。</description>
+    </item>
+    
+  </channel>
+</rss>

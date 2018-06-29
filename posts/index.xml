@@ -5,10 +5,28 @@
     <link>http://extendswind.github.io/posts/</link>
     <description>Recent content in Posts on  </description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Wed, 20 Jun 2018 17:25:25 +0800</lastBuildDate>
+    <lastBuildDate>Fri, 29 Jun 2018 20:59:49 +0800</lastBuildDate>
     
 	<atom:link href="http://extendswind.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>linux桌面发行版简介</title>
+      <link>http://extendswind.github.io/posts/technical/linux_desktop_distribution/</link>
+      <pubDate>Fri, 29 Jun 2018 20:59:49 +0800</pubDate>
+      
+      <guid>http://extendswind.github.io/posts/technical/linux_desktop_distribution/</guid>
+      <description>linux系统 桌面操作系统：windows，MacOS和各linux发行版。
+2017年数据，windows份额超过90%，MacOS约6%，Linux份额最高的记录在2016年7月创下，是2.33%。
+貌似用linux和MacOS的大多是程序员了。MacOS和linux系统正常使用（看书、上网、看电影等）已经比较成熟，没有太大的体验差异。
+linux系统的主要缺点：
+ 某些常用软件在linux上没有或运行有问题（qq、迅雷、office等，只有deepin通过虚拟windows系统解决得稍好） 完美折腾需要掌握大量相关知识，不折腾难以体现其优点 某些设置复杂（较好的发行版已有极大的改善，某些操作需要使用命令）  linux作为桌面系统主要优点（作为服务器系统广泛使用不谈）：
+ 软件管理容易 可定制性超强 免费（看版权意识）  对于开发人员，大部分的软件一键安装还解决依赖问题，想要的操作大部分可以通过修改配置和安装软件实现。在运行某些开发软件会明显感觉更快，绝大部分配置通过文本文件容易修改。
+linux发行版 一般的linux发行版包括：Linux内核，一些GNU程序库和工具，命令行shell，图形界面的X Window系统和相应的桌面环境，以及一系列其他的软件包（浏览器、阅读器、文本编辑器等）。由各种组织和个人维护。
+主要用过的几个桌面发行版：  也许桌面用户最多的Ubuntu 不折腾的Arch系Manjaro （当前主力） 和Manjaro在distrowatch上争第一的Ubuntu进化版Mint 号称最美linux的Elementary 超稳定适合服务器的版本Centos （只在服务器上用） 最强国产化linux的Deepin和一般国产化的优麒麟  下面叙述中不包含在内的主要道听途说
+主流的发行版 debian系：Debian -&amp;gt; Ubuntu -&amp;gt; Mint | Elementary | Deepin | 优麒麟 fedora : Fedora -&amp;gt; RHEL -&amp;gt; Centos | Oracle linux SUSE : SUSE -&amp;gt; SLES -&amp;gt; openSUSE (没有用过，大多对其评价较为中立，暂不讨论) arch : Arch -&amp;gt; Manjaro gantoo
+其中箭头后的系统基于前面的系统发展，但并不影响前面系统的优势。如Ubuntu基于Debian系统成为较好的桌面系统，但Debian由于其轻量级和可定制仍有广泛使用。</description>
+    </item>
     
     <item>
       <title>设计模式 之 静态代理模式和装饰者模式</title>
@@ -46,7 +64,7 @@ abstract class Logger { public void writeLog(){ System.out.println(&amp;#34;writ
       <pubDate>Mon, 04 Jun 2018 22:40:48 +0800</pubDate>
       
       <guid>http://extendswind.github.io/posts/life/blog_first/</guid>
-      <description>终于初步搞定了这个博客，首先吐槽：Hugo虽然自称最快，但要想找个合适的主题还能适应中文真不是一般的折腾，各种css调了半天还没达到想要的效果。只是作为一个折腾的helloworld程序员，即便有aur一键安装，也难忍搞个博客还要来一波nodejs或ruby。
+      <description>终于初步搞定了这个博客，首先吐槽：Hugo虽然自称最快，但要想找个合适的主题外加适应中文真不是一般的折腾，各种css调了半天还没达到想要的效果。只是作为一个折腾的helloworld程序员，即便有aur一键安装，也难忍搞个博客还要来一波nodejs或ruby。
 改成中文各种看起来不舒服，还没搞清楚具体怎么翻译。域名申请还是等后面有点内容的时候再说吧。
 搞个博客能干啥，最近发现自己一直违背了高效工作必备的“要事优先”原则，博客园、简书、豆瓣等不折腾平台还是够用了。不过理由，只要是找肯定会有的：不想多个平台换；感觉博客这东西应该用git一类的工具管理；吐槽学术界大部分方向的封闭；一键上传；说不定写写小说好用；看到很多人用；反正就是折腾了。
 作为一个还在学术界又不确定以后会不会在学术界的半个researcher，准备先走走技术流，有个博客记录总是好的，就这么开头吧。
