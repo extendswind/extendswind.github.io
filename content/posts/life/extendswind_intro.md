@@ -1,1 +1,1 @@
-../../../myNote/./life/extendswind_intro.md
+../../../myNote/./life/self/extendswind_intro.md

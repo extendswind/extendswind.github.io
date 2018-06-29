@@ -7,6 +7,7 @@ copyright = ""
 
 #theme = "minimo"
 theme = "minimo"
+#theme = "hugo-icarus-theme"
 # 某些设置在data/config 目录下
 
 disqusShortname = "ExtendsWind"

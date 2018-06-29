@@ -1,1 +1,1 @@
-../../../myNote/./life/will.md
+../../../myNote/./life/self/will.md

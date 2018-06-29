@@ -1,0 +1,1 @@
+../../../myNote/./technical/linux_desktop/linux_desktop_distribution.md

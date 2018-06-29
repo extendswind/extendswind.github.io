@@ -130,19 +130,16 @@ body{
 }
 
 
-/* ---- TOC 目录右方悬浮 ---*/
+/* ---- TOC 目录右方悬浮（在不同屏幕大小上有bug） ---*/
+/*
 .entry-toc{
     position: fixed;
     left: 80%;
     font-size:small;
     margin-right:auto;
     width:20%;
-/*    
- *  padding-bottom: 1em;
-    border-bottom: 1px solid #dddddd;
-    */
 }
-
+*/
 
 /*--- sidebar Recent ---*/
 section.widget.widget-recent_posts.sep-after {
