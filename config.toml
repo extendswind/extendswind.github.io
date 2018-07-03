@@ -1,17 +1,16 @@
 baseURL = "http://extendswind.github.io"
-# title = "extendswind" 显示在右前方
-title = " "
+# title = "extendswind" 显示在右上方
+title = "extendswind"
 
 # for smart copyright line, leave this blank and check [params.copyright]
 copyright = ""
 
-#theme = "minimo"
 theme = "minimo"
 #theme = "hugo-icarus-theme"
 # 某些设置在data/config 目录下
 
-disqusShortname = "ExtendsWind"
-googleAnalytics = "adkfljadlfj"
+disqusShortname = "extendswind"
+# googleAnalytics = "adkfljadlfj"
 
 Paginate = 5
 preserveTaxonomyNames = true
@@ -27,19 +26,19 @@ enableEmoji = true
 defaultContentLanguage = "zh"
 
 [params.info]
-description = "A programmer or a researcher"
+description = "a simple blog site"
 title404 = "Nothing's here!  404 "
-
+# A programmer or a researcher
 [params.assets]
 favicon = "/images/wind.jpeg"
 customCSS = ["css/custom.css"]
-customJS = ["js/custom.js"]
+# customJS = ["js/custom.js"]
 gopher = "" # used in 404 template ( Generator: https://gopherize.me )
 
 
 [params.copyright]
 prefix = ""
-holder = "ExtendsWind"
+holder = "extendswind"
 startYear = "2018"
 suffix = ""
 
@@ -49,27 +48,29 @@ dateFormat = "2006, Jan 02"
 listDateFormat = "2006, Jan 02"
 archiveDateFormat = "Jan 02"
 hideEntryNavigation = ["page"] # boolean / array of sections
-showReadingTime = true
-taxonomyCloudShuffle = true
-accentColor = "#ffcd00"
-hideMainMenu = false
+showReadingTime = false
+taxonomyCloudShuffle = false
+accentColor = "#cccccc"
+hideMainMenu = true
 
 [params.sidebar]
 enable = true
 
 [params.widgets]
 homepage = ["recent_posts"]
-sidebar = ["about","taxonomy_cloud", "recent_posts"]
+sidebar = ["about", "sidebar_menu", "taxonomy_cloud"]
 # sidebar = ["about","sidebar_menu","taxonomy_cloud"]
 footer = ["social_menu"]
 
-[params.opengraph.facebook]
-admins = [] # array of Facebook IDs
-appID = ""
-pageID = ""
+# [params.opengraph.facebook]
+# admins = [] # array of Facebook IDs
+# appID = ""
+# pageID = ""
+# 
+# [params.opengraph.twitter]
+# page = "" # Twitter page username
+# 
 
-[params.opengraph.twitter]
-page = "" # Twitter page username
 
 [params.seo]
 # Title Separator: - – — · • * ⋆ | ~ « » < >
@@ -87,18 +88,18 @@ github = "extendswind"
 #telegram = "MunifTanjim"
 #google_scholar = "qc6CJjYAAAAJ"
 
-[params.comments]
-enable = false
-
-[params.comments.staticman]
-enable = true
-apiEndpoint = "https://api.staticman.net/v2/entry"
-maxDepth = 2
-
-[params.comments.staticman.github]
-username = "MunifTanjim"
-repository = "minimo"
-branch = "master"
+# [params.comments]
+# enable = false
+# 
+# [params.comments.staticman]
+# enable = true
+# apiEndpoint = "https://api.staticman.net/v2/entry"
+# maxDepth = 2
+# 
+# [params.comments.staticman.github]
+# username = "MunifTanjim"
+# repository = "minimo"
+# branch = "master"
 
 [taxonomies] # 分类
 author = "authors"

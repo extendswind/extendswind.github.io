@@ -1,5 +1,7 @@
 #!/bin/bash
 
+echo link note to /content
+
 # 进入脚本所在的路径而非运行的路径
 cd "$(dirname "$0")"
 

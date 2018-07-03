@@ -3,21 +3,6 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>http://extendswind.github.io/en/</loc>
-    <priority>0</priority>
-    <xhtml:link
-                rel="alternate"
-                hreflang="zh"
-                href="http://extendswind.github.io/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="en"
-                href="http://extendswind.github.io/en/"
-                />
-  </url>
-  
-  <url>
     <loc>http://extendswind.github.io/en/authors/</loc>
     <priority>0</priority>
     <xhtml:link
@@ -74,6 +59,21 @@
                 rel="alternate"
                 hreflang="en"
                 href="http://extendswind.github.io/en/tags/"
+                />
+  </url>
+  
+  <url>
+    <loc>http://extendswind.github.io/en/</loc>
+    <priority>0</priority>
+    <xhtml:link
+                rel="alternate"
+                hreflang="zh"
+                href="http://extendswind.github.io/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="http://extendswind.github.io/en/"
                 />
   </url>
   

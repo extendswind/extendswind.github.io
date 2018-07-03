@@ -4,19 +4,21 @@
 # About Widget config
 [about]
 title = "extendswind"                            # default: .Site.Title
-description = "随风而动，随刃而行"                      # default: .Site.Params.info.description
+description = " "      # default: .Site.Params.info.description
+# Follow my blade
 logo = "/images/wind.jpeg"             # default: "/images/logo.png"
 
 # Recent Posts Widget config
 [recent_posts]
 title = "Recent"                            # default: "Recent Posts"
-length = 7                            # default: 5
+length = 9                            # default: 5
 excludeTypes = ["page"]               # default: ["page"]
 
 # Sidebar Menu Widget config
 [sidebar_menu]
-title = "sidebar title"                            # default: ""
-mirror = "main"                           # default: ""
+mirror = "main"
+title = "Site"                            # default: ""
+#mirror = "main"                           # default: ""
 
 # Social Menu Widget config
 [social_menu]
@@ -28,4 +30,4 @@ platforms = ["github","facebook","twitter","instagram","email","codepen","gitlab
 [taxonomy_cloud]
 title = "Tags"                            # default: Plural Name for `taxonomyCloud.taxonomy`
 taxonomy = "tags"                     # default: "tags"
-shuffle = false # default: true
+#shuffle = false # default: true
