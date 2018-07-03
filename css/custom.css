@@ -4,6 +4,20 @@
     width:80%;
 }
 
+/* -- 左方 sidebar about 里的名字 */
+h2.title.site-title{
+    margin-top:0.5em;
+    font-weight:normal;
+    font-style:italic;
+    font-family:monospace;
+}
+
+/* -- 右方 上面的标题 */
+h1.site-title.title{
+    font-family:monospace;
+    font-size:2em;
+    font-style:italic;
+}
 
 /**************** sidebar in the left *************/
 /* 上方的姓名和介绍 */
@@ -78,6 +92,14 @@ h5{
 }
 
 /*----------- 正文 */
+
+/* table of content */
+.entry-toc ul {
+    list-style-type: square;
+    margin-left:2em;
+    /* margin: 0; */
+}
+
 body {
     font-size: 1em;
     line-height: 1.7;

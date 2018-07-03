@@ -3,6 +3,21 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>http://extendswind.github.io/</loc>
+    <lastmod>2018-07-02T11:25:25+08:00</lastmod>
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="http://extendswind.github.io/en/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="zh"
+                href="http://extendswind.github.io/"
+                />
+  </url>
+  
+  <url>
     <loc>http://extendswind.github.io/posts/technical/design_patterns_singleton/</loc>
     <lastmod>2018-07-02T11:25:25+08:00</lastmod>
   </url>
@@ -25,22 +40,6 @@
   <url>
     <loc>http://extendswind.github.io/posts/life/blog_first/</loc>
     <lastmod>2018-06-04T22:40:48+08:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>http://extendswind.github.io/</loc>
-    <lastmod>2018-07-02T11:25:25+08:00</lastmod>
-    <priority>0</priority>
-    <xhtml:link
-                rel="alternate"
-                hreflang="en"
-                href="http://extendswind.github.io/en/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="zh"
-                href="http://extendswind.github.io/"
-                />
   </url>
   
   <url>
@@ -80,13 +79,13 @@
   </url>
   
   <url>
-    <loc>http://extendswind.github.io/tags/life/</loc>
+    <loc>http://extendswind.github.io/categories/life/</loc>
     <lastmod>2018-06-04T22:40:48+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://extendswind.github.io/categories/life/</loc>
+    <loc>http://extendswind.github.io/tags/life/</loc>
     <lastmod>2018-06-04T22:40:48+08:00</lastmod>
     <priority>0</priority>
   </url>
