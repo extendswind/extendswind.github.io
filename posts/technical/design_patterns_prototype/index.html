@@ -4,8 +4,8 @@
 <head>
   <meta charset='utf-8'>
 <meta name='viewport' content='width=device-width, initial-scale=1'>
-<meta name='description' content='吐槽 感觉这是至今最值得吐槽的设计模式之一，由于原型模式在本质上与工厂模式极为类似，并且简单，但相关的书和博客很少提到要点。某些书上和博客还直接在类里加个clone方法就告诉我这是原型模式，让我一直纠结为什么要划分原型类和具体类&hellip;.
-还有某些书上把原型模式划分为通用实现和java、c#一类的特定语言实现，不就是稍微改改clone函数的具体实现么，一点简单的语法而已，重点根本不在这&hellip;.
+<meta name='description' content='吐槽 感觉这是至今最值得吐槽的设计模式之一，由于原型模式在本质上与工厂模式极为类似，并且简单，但相关的书和博客很少提到要点。某些书上和博客还直接在类里加个clone方法就告诉我这是原型模式，不说清楚为什么要划分原型类和具体类&hellip;.
+还有某些书上把原型模式划分为通用实现和java、c#一类的特定语言实现，不就是稍微改改clone函数的具体实现么，一点简单的语法而已&hellip;.
 有些地方提到原型模式与工厂模式类似，而极少有位置提到后面的客户端的实现问题&hellip;.
 感觉原型模式没什么意思，实质上就是把工厂模式中new的过程改为clone，具体的类对应于完成初始化的多个对象。
 原型模式（Prototype Pattern） 首先画重点，原型模式是一种 创建对象 的模式。通过复制已经初始化好的对象以避免对对象进行某些复杂和耗时的初始化过程。可能存在多个被复制的对象，创建自不同的类或同一个类的不同初始化过程，用户需要动态决定复制哪一个对象。
@@ -17,9 +17,9 @@ java的所有类都继承于Object，Object类中定义了native实现的clone�
 class Prototype implements Cloneable{ int attr; public Prototype clone(){ Prototype prototype = null; try { prototype = (Prototype)super.clone(); } catch (CloneNotSupportedException e) { e.printStackTrace(); } return prototype; } } 一个不使用java特性的简单实现 class Prototype{ int attr; public Prototype clone(){ Prototype clone = new Prototype(); clone.attr = this.attr; return clone; } } 同上，注意深拷贝和浅拷贝问题。'>
 <meta name='theme-color' content='#cccccc'>
 
-<meta property='og:title' content='设计模式 之 工厂模式 • extendswind'>
-<meta property='og:description' content='吐槽 感觉这是至今最值得吐槽的设计模式之一，由于原型模式在本质上与工厂模式极为类似，并且简单，但相关的书和博客很少提到要点。某些书上和博客还直接在类里加个clone方法就告诉我这是原型模式，让我一直纠结为什么要划分原型类和具体类&hellip;.
-还有某些书上把原型模式划分为通用实现和java、c#一类的特定语言实现，不就是稍微改改clone函数的具体实现么，一点简单的语法而已，重点根本不在这&hellip;.
+<meta property='og:title' content='设计模式 之 原型模式 • extendswind'>
+<meta property='og:description' content='吐槽 感觉这是至今最值得吐槽的设计模式之一，由于原型模式在本质上与工厂模式极为类似，并且简单，但相关的书和博客很少提到要点。某些书上和博客还直接在类里加个clone方法就告诉我这是原型模式，不说清楚为什么要划分原型类和具体类&hellip;.
+还有某些书上把原型模式划分为通用实现和java、c#一类的特定语言实现，不就是稍微改改clone函数的具体实现么，一点简单的语法而已&hellip;.
 有些地方提到原型模式与工厂模式类似，而极少有位置提到后面的客户端的实现问题&hellip;.
 感觉原型模式没什么意思，实质上就是把工厂模式中new的过程改为clone，具体的类对应于完成初始化的多个对象。
 原型模式（Prototype Pattern） 首先画重点，原型模式是一种 创建对象 的模式。通过复制已经初始化好的对象以避免对对象进行某些复杂和耗时的初始化过程。可能存在多个被复制的对象，创建自不同的类或同一个类的不同初始化过程，用户需要动态决定复制哪一个对象。
@@ -35,7 +35,7 @@ class Prototype implements Cloneable{ int attr; public Prototype clone(){ Protot
 
 <meta name="generator" content="Hugo 0.40.3" />
 
-  <title>设计模式 之 工厂模式 • extendswind</title>
+  <title>设计模式 之 原型模式 • extendswind</title>
   <link rel='canonical' href='http://extendswind.github.io/posts/technical/design_patterns_prototype/'>
   
   
@@ -147,7 +147,7 @@ class Prototype implements Cloneable{ int attr; public Prototype clone(){ Protot
   <header class='header entry-header'>
   <div class='container sep-after'>
     <div class='header-info'>
-      <h1 class='title'>设计模式 之 工厂模式</h1>
+      <h1 class='title'>设计模式 之 原型模式</h1>
       
 
     </div>
@@ -204,9 +204,9 @@ class Prototype implements Cloneable{ int attr; public Prototype clone(){ Protot
 
 <h1 id="吐槽">吐槽</h1>
 
-<p>感觉这是至今最值得吐槽的设计模式之一，由于原型模式在本质上与工厂模式极为类似，并且简单，但相关的书和博客很少提到要点。某些书上和博客还直接在类里加个clone方法就告诉我这是原型模式，让我一直纠结为什么要划分原型类和具体类&hellip;.</p>
+<p>感觉这是至今最值得吐槽的设计模式之一，由于原型模式在本质上与工厂模式极为类似，并且简单，但相关的书和博客很少提到要点。某些书上和博客还直接在类里加个clone方法就告诉我这是原型模式，<strong>不说清楚为什么要划分原型类和具体类</strong>&hellip;.</p>
 
-<p>还有某些书上把原型模式划分为通用实现和java、c#一类的特定语言实现，不就是稍微改改clone函数的具体实现么，一点简单的语法而已，重点根本不在这&hellip;.</p>
+<p>还有某些书上把原型模式划分为通用实现和java、c#一类的特定语言实现，不就是稍微改改clone函数的具体实现么，一点简单的语法而已&hellip;.</p>
 
 <p>有些地方提到原型模式与工厂模式类似，而极少有位置提到后面的客户端的实现问题&hellip;.</p>
 
@@ -309,7 +309,7 @@ class Prototype implements Cloneable{ int attr; public Prototype clone(){ Protot
 
 <p>通过克隆已经初始化对象的方式创建新的对象是一种比较好的思想。在掌握几种工厂模式的基础上，其实实现没什么难度，不用在意各种书和博客上的细节。</p>
 
-<p>原型模式的典型缺点：当类成员较为复杂时，clone函数中的复制会较为复杂。（如有一堆需要clone的对象作为成员）</p>
+<p>原型模式的典型缺点：当类成员较为复杂时，clone函数中的复制会较为复杂。（如有一堆同样需要clone的对象作为成员）</p>
 
 </div>
 

@@ -11,13 +11,13 @@
     
     
     <item>
-      <title>设计模式 之 工厂模式</title>
+      <title>设计模式 之 原型模式</title>
       <link>http://extendswind.github.io/posts/technical/design_patterns_prototype/</link>
       <pubDate>Tue, 03 Jul 2018 21:25:25 +0800</pubDate>
       
       <guid>http://extendswind.github.io/posts/technical/design_patterns_prototype/</guid>
-      <description>吐槽 感觉这是至今最值得吐槽的设计模式之一，由于原型模式在本质上与工厂模式极为类似，并且简单，但相关的书和博客很少提到要点。某些书上和博客还直接在类里加个clone方法就告诉我这是原型模式，让我一直纠结为什么要划分原型类和具体类&amp;hellip;.
-还有某些书上把原型模式划分为通用实现和java、c#一类的特定语言实现，不就是稍微改改clone函数的具体实现么，一点简单的语法而已，重点根本不在这&amp;hellip;.
+      <description>吐槽 感觉这是至今最值得吐槽的设计模式之一，由于原型模式在本质上与工厂模式极为类似，并且简单，但相关的书和博客很少提到要点。某些书上和博客还直接在类里加个clone方法就告诉我这是原型模式，不说清楚为什么要划分原型类和具体类&amp;hellip;.
+还有某些书上把原型模式划分为通用实现和java、c#一类的特定语言实现，不就是稍微改改clone函数的具体实现么，一点简单的语法而已&amp;hellip;.
 有些地方提到原型模式与工厂模式类似，而极少有位置提到后面的客户端的实现问题&amp;hellip;.
 感觉原型模式没什么意思，实质上就是把工厂模式中new的过程改为clone，具体的类对应于完成初始化的多个对象。
 原型模式（Prototype Pattern） 首先画重点，原型模式是一种 创建对象 的模式。通过复制已经初始化好的对象以避免对对象进行某些复杂和耗时的初始化过程。可能存在多个被复制的对象，创建自不同的类或同一个类的不同初始化过程，用户需要动态决定复制哪一个对象。
