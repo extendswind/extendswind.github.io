@@ -1,9 +1,11 @@
 ---
-title: "Hadoop HDFS 远程调试（Docker环境下Hadoop集群）"
-date: 2018-07-26T21:40:48+08:00
+title: "Hadoop HDFS 远程调试（Docker环境下的Hadoop集群）"
+date: 2018-07-26T21:30:00+08:00
+
+toc: true
 
 categories:
-- "hadoop"
+- "cloud computing"
 
 tags:
 - "hadoop"
@@ -23,22 +25,24 @@ Hadoop 典型的调试方式是通过log4j输出日志，基于日志的形式�
 
 ## 具体操作
 
-1. 启动被调试程序时添加参数：
+### 1、启动被调试程序时添加参数：
 
-jdk9: `-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:8000`
-
-jdk5-8: `-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8000`
-
-jdk4: `-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8000`
-
-jdk3 及以前: `-Xnoagent -Djava.compiler=NONE -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8000`
-
+> 
+jdk9: `-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:8000`  
+jdk5-8: `-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8000`  
+jdk4: `-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8000`  
+jdk3 及以前: `-Xnoagent -Djava.compiler=NONE -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8000`  
 
 **此处有坑，网上大部分没有提到jdk版本不同导致的区别，很多博客使用jdk4的写法，可能导致问题（idea配置远程调试时有上面的选项）。**
 
-其中主要修改的参数。suspend=y时，程序启动会先挂起，IDE连接后才会运行；suspend=n时，程序启动会直接运行。address后面为端口号，不与其它端口重合即可。
+**另外一个小坑**, 下面第一个命令正常执行，第二个命令会忽略调试选项：
 
-2. 启动Idea连接调试
+- `java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8000 test`
+- `java test -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8000`
+
+主要参数。suspend=y时，程序启动会先挂起，IDE连接后才会运行；suspend=n时，程序启动会直接运行。address后面为端口号，不与其它端口重合即可。
+
+### 2、启动Idea连接调试
 
 使用idea打开调试项目的源码工程
 
@@ -52,7 +56,7 @@ Run -> Edit Configurations , 点“加号” -> remote，然后填上被调试�
 
 ## 具体操作
 
-1. 修改Hadoop启动参数为debug模式
+### 1、修改Hadoop启动参数为debug模式
 
 如果需要调试namenode服务，在`etc/hadoop/hadoop-env.sh`文件后添加：
 
@@ -60,11 +64,11 @@ Run -> Edit Configurations , 点“加号” -> remote，然后填上被调试�
 
 HDFS启动的jvm主要为namenode和datanode，jvm启动的参数设置在`etc/hadoop/hadoop-env.sh`中。其中namenode启动参数环境变量为 `HDFS_NAMENODE_OPTS`，datanode为 `HDFS_DATANODE_OPTS`。（对于Hadoop3.1.0，早期版本设置为`Hadoop_NAMENODE_OPTS` `HADOOP_NAMENODE_OPTS`）。YARN等服务对应的环境变量需要另查。
 
-2. 启动服务
+### 2、启动服务
 
 `sbin/start-dfs.sh`  或者 `bin/hdfs --daemon start namenode`仅启动namenode
 
-3. 启动idea连接服务
+### 3、启动idea连接服务
 
 下载源码并导入到工程（可以只导入需要调试的部分）
 
@@ -72,11 +76,11 @@ Run -> Edit Configurations , 点“加号” -> remote，然后填上被调试�
 
 ## 踩坑
 
-不建议像某些博客中写的直接修改`HADOOP_OPTS`变量，容易发生端口冲突等问题（在Hadoop 3.1.0上运行出错）
+- 不建议像某些博客中写的直接修改`HADOOP_OPTS`变量，容易发生端口冲突等问题（在Hadoop 3.1.0上运行出错）
 
-注意指定的端口避免冲突，如一台主机上同时运行namenode和datanode服务时端口要分开。
+- 注意指定的端口避免冲突，如一台主机上同时运行namenode和datanode服务时端口要分开。
 
-注意jdk版本的不同需要设置不同的调试参数。
+- 注意jdk版本的不同需要设置不同的调试参数。
 
 ## 未解之坑
 
