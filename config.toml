@@ -12,7 +12,7 @@ theme = "minimo"
 disqusShortname = "extendswind"
 # googleAnalytics = "adkfljadlfj"
 
-Paginate = 5
+Paginate = 10
 preserveTaxonomyNames = true
 
 enableRobotsTXT = true # generate robots.txt
