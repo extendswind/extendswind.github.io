@@ -22,13 +22,13 @@ h1.site-title.title{
 /**************** sidebar in the left *************/
 /* 上方的姓名和介绍 */
 .sidebar .widget.widget-about.sep-after {
-  text-align: center;
+  text-align: right;
 }
 
 /* 最上方logo */
 .sidebar .widget-about .logo {
-    margin: auto;
-/*    margin-left: initial; */
+/*    margin: auto;*/
+    margin-right: initial; 
 }
 
 /* tag 标签*/
@@ -136,7 +136,7 @@ li.item {
 
 /*---- 几根分割线 */
 body{
-    --color-accent: #dddddd;
+    --color-accent: #cccccc;
 }
 
 .header .sep-after:after {

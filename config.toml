@@ -26,7 +26,7 @@ enableEmoji = true
 defaultContentLanguage = "zh"
 
 [params.info]
-description = "a simple blog site"
+description = "a simple blog site" # 显示在右上方的标题下
 title404 = "Nothing's here!  404 "
 # A programmer or a researcher
 [params.assets]

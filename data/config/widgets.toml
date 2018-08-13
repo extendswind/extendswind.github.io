@@ -4,7 +4,7 @@
 # About Widget config
 [about]
 title = "extendswind"                            # default: .Site.Title
-description = " "      # default: .Site.Params.info.description
+description = "class Unknown extends Wind"      # default: .Site.Params.info.description
 # Follow my blade
 logo = "/images/wind.jpeg"             # default: "/images/logo.png"
 
@@ -17,7 +17,7 @@ excludeTypes = ["page"]               # default: ["page"]
 # Sidebar Menu Widget config
 [sidebar_menu]
 mirror = "main"
-title = "Site"                            # default: ""
+title = ""                            # default: ""
 #mirror = "main"                           # default: ""
 
 # Social Menu Widget config

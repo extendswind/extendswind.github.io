@@ -6,4 +6,13 @@ menu:
 weight: -270
 ---
 
-Follow the heart, move like the wind ~~~~~
+
+```java
+class Unknown extends Wind{
+    // to be a programmer, or a researcher
+    // just move like the wind
+    // for the unknown is so big, yet so beautiful
+}
+```
+
+
