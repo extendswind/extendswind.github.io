@@ -7,12 +7,6 @@ weight: -270
 ---
 
 
-```java
 class Unknown extends Wind{
-    // to be a programmer, or a researcher
-    // just move like the wind
-    // for the unknown is so big, yet so beautiful
+    // everything is unknown, or possible.
 }
-```
-
-

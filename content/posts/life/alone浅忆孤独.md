@@ -1,0 +1,1 @@
+../../../myNote/./life/self/alone浅忆孤独.md

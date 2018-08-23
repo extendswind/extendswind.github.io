@@ -1,0 +1,1 @@
+../../../myNote/./life/self/who_i_am.md

@@ -1,1 +1,0 @@
-../../../myNote/./life/self/alone.md
