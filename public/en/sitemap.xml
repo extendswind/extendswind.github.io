@@ -3,77 +3,77 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>http://extendswind.github.io/en/authors/</loc>
+    <loc>http://extendswind.top/en/authors/</loc>
     <priority>0</priority>
     <xhtml:link
                 rel="alternate"
                 hreflang="zh"
-                href="http://extendswind.github.io/authors/"
+                href="http://extendswind.top/authors/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://extendswind.github.io/en/authors/"
+                href="http://extendswind.top/en/authors/"
                 />
   </url>
   
   <url>
-    <loc>http://extendswind.github.io/en/categories/</loc>
+    <loc>http://extendswind.top/en/categories/</loc>
     <priority>0</priority>
     <xhtml:link
                 rel="alternate"
                 hreflang="zh"
-                href="http://extendswind.github.io/categories/"
+                href="http://extendswind.top/categories/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://extendswind.github.io/en/categories/"
+                href="http://extendswind.top/en/categories/"
                 />
   </url>
   
   <url>
-    <loc>http://extendswind.github.io/en/series/</loc>
+    <loc>http://extendswind.top/en/series/</loc>
     <priority>0</priority>
     <xhtml:link
                 rel="alternate"
                 hreflang="zh"
-                href="http://extendswind.github.io/series/"
+                href="http://extendswind.top/series/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://extendswind.github.io/en/series/"
+                href="http://extendswind.top/en/series/"
                 />
   </url>
   
   <url>
-    <loc>http://extendswind.github.io/en/tags/</loc>
+    <loc>http://extendswind.top/en/tags/</loc>
     <priority>0</priority>
     <xhtml:link
                 rel="alternate"
                 hreflang="zh"
-                href="http://extendswind.github.io/tags/"
+                href="http://extendswind.top/tags/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://extendswind.github.io/en/tags/"
+                href="http://extendswind.top/en/tags/"
                 />
   </url>
   
   <url>
-    <loc>http://extendswind.github.io/en/</loc>
+    <loc>http://extendswind.top/en/</loc>
     <priority>0</priority>
     <xhtml:link
                 rel="alternate"
                 hreflang="zh"
-                href="http://extendswind.github.io/"
+                href="http://extendswind.top/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://extendswind.github.io/en/"
+                href="http://extendswind.top/en/"
                 />
   </url>
   

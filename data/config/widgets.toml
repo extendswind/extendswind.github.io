@@ -4,7 +4,7 @@
 # About Widget config
 [about]
 title = "extendswind"                            # default: .Site.Title
-description = "class Unknown extends Wind"      # default: .Site.Params.info.description
+description = "class * extends Wind "#"class ? extends Wind"      # default: .Site.Params.info.description
 # Follow my blade
 logo = "/images/wind.jpeg"             # default: "/images/logo.png"
 

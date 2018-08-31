@@ -71,12 +71,21 @@ div.container.entry-content h1{
 }
 
 
-h2{
+/* 添加限制，只改变正文中的标题二 */
+div.container.entry-content h2{ 
+/*    border-left-width: 2px;
+    border-left-style: solid;
+    border-left-color: #aaaaaa; 
+    text-indent: 0.3em;*/
     font-size: 1.3em;
+    border-bottom:1px solid #dddddd;
+    border-bottom-width:thin;
+    border-bottom-style:dashed;
+    padding-bottom: 0.3em;
 }
 
 h3{
-    font-size: 1.1em;
+    font-size: 1.0em;
 }
 
 h4{
@@ -86,6 +95,13 @@ h4{
 h5{
     font-size: 0.9em;
 }
+
+/* 主页的post目录 */
+.h3 a{
+    margin-top:0.5em;
+    font-size:0.9em;
+}
+
 
 .comment-content h2, .comment-content h3, .comment-content h4, .comment-content h5, .comment-content h6, .entry-content h2, .entry-content h3, .entry-content h4, .entry-content h5, .entry-content h6 {
     margin-top: 1em;
@@ -107,10 +123,17 @@ body {
 
 p {
     margin: 0 0 1em;
+    font-family:'Source Code Pro',"PingFang SC","Microsoft YaHei",sans-serif;
+
+/*    text-indent: 2em; */
 }
 
-.h3 a{
-    margin-top:0.5em;
+strong {
+    font-size:0.95em;
+}
+
+blockquote {
+    font-size: 0.9em;
 }
 
 /* 去除标题和正文之间的黄线 */
@@ -181,4 +204,6 @@ section.widget.widget-recent_posts.sep-after ul{
 /*  引用长单词和长句切分换行 */
 code {
     word-break: break-all;
+    line-height:1;
+    font-size:0.8em;
 }

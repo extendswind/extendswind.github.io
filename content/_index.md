@@ -7,6 +7,3 @@ weight: -270
 ---
 
 
-class Unknown extends Wind{
-    // everything is unknown, or possible.
-}
