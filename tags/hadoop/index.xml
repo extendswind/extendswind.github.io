@@ -2,20 +2,20 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Hadoop on extendswind</title>
-    <link>http://extendswind.github.io/tags/hadoop/</link>
+    <link>http://extendswind.top/tags/hadoop/</link>
     <description>Recent content in Hadoop on extendswind</description>
     <generator>Hugo -- gohugo.io</generator>
     <lastBuildDate>Thu, 26 Jul 2018 21:30:00 +0800</lastBuildDate>
     
-	<atom:link href="http://extendswind.github.io/tags/hadoop/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="http://extendswind.top/tags/hadoop/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Hadoop HDFS 远程调试（Docker环境下的Hadoop集群）</title>
-      <link>http://extendswind.github.io/posts/technical/remote_debug_of_hadoop_in_docker/</link>
+      <link>http://extendswind.top/posts/technical/remote_debug_of_hadoop_in_docker/</link>
       <pubDate>Thu, 26 Jul 2018 21:30:00 +0800</pubDate>
       
-      <guid>http://extendswind.github.io/posts/technical/remote_debug_of_hadoop_in_docker/</guid>
+      <guid>http://extendswind.top/posts/technical/remote_debug_of_hadoop_in_docker/</guid>
       <description>Hadoop 典型的调试方式是通过log4j输出日志，基于日志的形式查看运行信息。在源码阅读中，经常有不容易猜的变量，通过大量日志输出调试没有远程调试方便。
 Java 远程调试 不想了解的可以直接跳到下面Hadoop
 通过JPDA（Java Platform Debugger Architecture），调试时启动服务，通过socket端口与调试服务端通信。

@@ -3,172 +3,172 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>http://extendswind.github.io/</loc>
+    <loc>http://extendswind.top/</loc>
     <lastmod>2018-07-26T21:30:00+08:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://extendswind.github.io/en/"
+                href="http://extendswind.top/en/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="zh"
-                href="http://extendswind.github.io/"
+                href="http://extendswind.top/"
                 />
   </url>
   
   <url>
-    <loc>http://extendswind.github.io/posts/technical/remote_debug_of_hadoop_in_docker/</loc>
+    <loc>http://extendswind.top/posts/technical/remote_debug_of_hadoop_in_docker/</loc>
     <lastmod>2018-07-26T21:30:00+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://extendswind.github.io/posts/technical/manjaro_install_problem_grub/</loc>
+    <loc>http://extendswind.top/posts/technical/manjaro_install_problem_grub/</loc>
     <lastmod>2018-07-17T20:59:49+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://extendswind.github.io/posts/technical/design_patterns_prototype/</loc>
+    <loc>http://extendswind.top/posts/technical/design_patterns_prototype/</loc>
     <lastmod>2018-07-03T21:25:25+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://extendswind.github.io/posts/technical/design_patterns_singleton/</loc>
+    <loc>http://extendswind.top/posts/technical/design_patterns_singleton/</loc>
     <lastmod>2018-07-02T11:25:25+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://extendswind.github.io/posts/technical/linux_desktop_distribution/</loc>
+    <loc>http://extendswind.top/posts/technical/linux_desktop_distribution/</loc>
     <lastmod>2018-06-29T20:59:49+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://extendswind.github.io/posts/technical/design_patterns_static_proxy_and_decoration/</loc>
+    <loc>http://extendswind.top/posts/technical/design_patterns_static_proxy_and_decoration/</loc>
     <lastmod>2018-06-20T17:25:25+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://extendswind.github.io/posts/technical/design_patterns_factory/</loc>
+    <loc>http://extendswind.top/posts/technical/design_patterns_factory/</loc>
     <lastmod>2018-06-15T17:25:25+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://extendswind.github.io/posts/life/blog_first/</loc>
+    <loc>http://extendswind.top/posts/life/blog_first/</loc>
     <lastmod>2018-06-04T22:40:48+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://extendswind.github.io/authors/</loc>
+    <loc>http://extendswind.top/authors/</loc>
     <priority>0</priority>
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://extendswind.github.io/en/authors/"
+                href="http://extendswind.top/en/authors/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="zh"
-                href="http://extendswind.github.io/authors/"
+                href="http://extendswind.top/authors/"
                 />
   </url>
   
   <url>
-    <loc>http://extendswind.github.io/categories/</loc>
+    <loc>http://extendswind.top/categories/</loc>
     <priority>0</priority>
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://extendswind.github.io/en/categories/"
+                href="http://extendswind.top/en/categories/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="zh"
-                href="http://extendswind.github.io/categories/"
+                href="http://extendswind.top/categories/"
                 />
   </url>
   
   <url>
-    <loc>http://extendswind.github.io/categories/cloud-computing/</loc>
+    <loc>http://extendswind.top/categories/cloud-computing/</loc>
     <lastmod>2018-07-26T21:30:00+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://extendswind.github.io/tags/design-patterns/</loc>
+    <loc>http://extendswind.top/tags/design-patterns/</loc>
     <lastmod>2018-07-03T21:25:25+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://extendswind.github.io/tags/hadoop/</loc>
+    <loc>http://extendswind.top/tags/hadoop/</loc>
     <lastmod>2018-07-26T21:30:00+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://extendswind.github.io/categories/life/</loc>
+    <loc>http://extendswind.top/categories/life/</loc>
     <lastmod>2018-06-04T22:40:48+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://extendswind.github.io/tags/life/</loc>
+    <loc>http://extendswind.top/tags/life/</loc>
     <lastmod>2018-06-04T22:40:48+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://extendswind.github.io/tags/linux/</loc>
+    <loc>http://extendswind.top/tags/linux/</loc>
     <lastmod>2018-07-17T20:59:49+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://extendswind.github.io/categories/linux-desktop/</loc>
+    <loc>http://extendswind.top/categories/linux-desktop/</loc>
     <lastmod>2018-07-17T20:59:49+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://extendswind.github.io/posts/</loc>
+    <loc>http://extendswind.top/posts/</loc>
     <lastmod>2018-07-26T21:30:00+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://extendswind.github.io/categories/programming/</loc>
+    <loc>http://extendswind.top/categories/programming/</loc>
     <lastmod>2018-07-03T21:25:25+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://extendswind.github.io/series/</loc>
+    <loc>http://extendswind.top/series/</loc>
     <priority>0</priority>
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://extendswind.github.io/en/series/"
+                href="http://extendswind.top/en/series/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="zh"
-                href="http://extendswind.github.io/series/"
+                href="http://extendswind.top/series/"
                 />
   </url>
   
   <url>
-    <loc>http://extendswind.github.io/tags/</loc>
+    <loc>http://extendswind.top/tags/</loc>
     <lastmod>2018-07-03T21:25:25+08:00</lastmod>
     <priority>0</priority>
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://extendswind.github.io/en/tags/"
+                href="http://extendswind.top/en/tags/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="zh"
-                href="http://extendswind.github.io/tags/"
+                href="http://extendswind.top/tags/"
                 />
   </url>
   

@@ -21,14 +21,14 @@ interface Logger { void writeLog(); } // 被代理类 class LoggerSubject implem
 应用：已经有一个日志记录器LoggerSubject，需要对writeLog()函数的前后进行某些操作（如初始化、异常处理等），使用Proxy类间接调用LoggerSubject.writeLog()实现新控制操作的添加。
 实现如下
 interface Logger { void writeLog(); } // 被代理类 class LoggerSubject implements Logger{ @Override public void writeLog(){ System.out.println(&#34;writeLog by LoggerSubject&#34;); } } // 代理类 class Proxy implements Logger{ Logger logger; // 与装饰者模式的主要区别位置  // 代理模式一般要求和原来的类行为一致，因此构造函数不传入对象  Proxy(){ this.logger = new LoggerSubject(); } @Override public void writeLog(){ System.out.println(&#34;logger write before&#34;); logger.writeLog(); System.out.println(&#34;logger write after&#34;); } } public class StaticProxy { private static void write(Logger logger){ logger.'>
-<meta property='og:url' content='http://extendswind.github.io/posts/technical/design_patterns_static_proxy_and_decoration/'>
+<meta property='og:url' content='http://extendswind.top/posts/technical/design_patterns_static_proxy_and_decoration/'>
 <meta property='og:site_name' content='extendswind'>
 <meta property='og:type' content='article'><meta property='article:section' content='Posts'><meta property='article:tag' content='design patterns'><meta property='article:published_time' content='2018-06-20T17:25:25&#43;08:00'/><meta property='article:modified_time' content='2018-06-20T17:25:25&#43;08:00'/><meta name='twitter:card' content='summary'>
 
 <meta name="generator" content="Hugo 0.44" />
 
   <title>设计模式 之 静态代理模式和装饰者模式 • extendswind</title>
-  <link rel='canonical' href='http://extendswind.github.io/posts/technical/design_patterns_static_proxy_and_decoration/'>
+  <link rel='canonical' href='http://extendswind.top/posts/technical/design_patterns_static_proxy_and_decoration/'>
   
   
   <link rel='icon' href='/images/wind.jpeg'>
@@ -59,7 +59,7 @@ interface Logger { void writeLog(); } // 被代理类 class LoggerSubject implem
     extendswind
     </h2>
     <div class='desc'>
-    class Unknown extends Wind
+    
     </div>
   </header>
 
