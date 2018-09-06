@@ -10,12 +10,12 @@ theme = "minimo"
 # 某些设置在data/config 目录下
 
 disqusShortname = "extendswind"
-# googleAnalytics = "adkfljadlfj"
+googleAnalytics = "UA-125329544-1"
 
 Paginate = 10
 preserveTaxonomyNames = true
 
-enableRobotsTXT = true # generate robots.txt
+enableRobotsTXT = false # generate robots.txt 用于限制搜索引擎的爬虫
 
 # Syntax Highlighting ( https://gohugo.io/content-management/syntax-highlighting/ )
 pygmentsCodefences = true
