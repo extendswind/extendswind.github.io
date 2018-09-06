@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang='zh'>
+
+<head>
+  <meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<meta name='description' content='搜了一些博客，发现写得最清楚的还是《Hadoop权威指南》，以下内容主要来自《Hadoop The Definitive Guide》 4th Edition 2015.3。
+Hadoop YARN Scheduler 三个调度器 YARN提供了CapacityScheduler, FairScheduler, FifoScheduler三个调度器，继承于AbstractYarnScheduler，Resource Manager通过调度器决定对提交application分配的资源大小。
+CapacityScheduler首先将所有资源分配到hierarchical queue中，每个任务执行时指定对应的queue，使大任务不会占用整个集群的资源，通过对queue的资源管理提高整个集群的资源共享能力。通常会使小任务执行更快，大任务更慢。
+Fair Scheduler 会在第一个任务运行时分配当前同级队列的所有资源，当有其它任务运行时，回收前面任务运行时的部分资源（一般为运行完成的Container）用于其它任务。
+至于FIFO，源码里都没有描述，可能就是一般的先进先出了。
+YARN默认使用CapacityScheduler，通过下面的属性配置：
+&lt;property&gt; &lt;name&gt;yarn.resourcemanager.scheduler.class&lt;/name&gt; &lt;value&gt;org.apache.hadoop.yarn.server.resourcemanager.scheduler.fair.FairScheduler&lt;/value&gt; &lt;/property&gt; YARN 动态资源分配 YARN 能够动态申请资源，如MapReduce中reduce的container会在map过程结束后申请。但Spark On YARN的机制为申请固定的executor，而不动态改变已申请的资源。
+YARN上新运行的任务能够使用已运行任务回收的资源(如运行完Map task的container)，甚至还能够通过强行结束先前任务的container抢占资源。
+Capacity Scheduler CapacityScheduler重点解决多个组织共享集群资源，并保证每个组织自己的资源使用量。当自己的资源不足时能够使用其它组织的空闲资源。
+资源通过层级队列（hierarchical queues）的形式进行组织，配置在etc/hadoop/capacity-scheduler.xml.
+&lt;!-- 队列结构设置 --&gt; &lt;property&gt; &lt;name&gt;yarn.scheduler.capacity.root.queues&lt;/name&gt; &lt;value&gt;a,b&lt;/value&gt; &lt;description&gt;The queues at the this level (root is the root queue). &lt;/description&gt; &lt;/property&gt; &lt;property&gt; &lt;name&gt;yarn.scheduler.capacity.root.a.queues&lt;/name&gt; &lt;value&gt;a1,a2&lt;/value&gt; &lt;description&gt;The queues at the this level (root is the root queue).'>
+<meta name='theme-color' content='#cccccc'>
+
+<meta property='og:title' content='Hadoop YARN 调度器（scheduler） —— 资源调度策略 • extendswind'>
+<meta property='og:description' content='搜了一些博客，发现写得最清楚的还是《Hadoop权威指南》，以下内容主要来自《Hadoop The Definitive Guide》 4th Edition 2015.3。
+Hadoop YARN Scheduler 三个调度器 YARN提供了CapacityScheduler, FairScheduler, FifoScheduler三个调度器，继承于AbstractYarnScheduler，Resource Manager通过调度器决定对提交application分配的资源大小。
+CapacityScheduler首先将所有资源分配到hierarchical queue中，每个任务执行时指定对应的queue，使大任务不会占用整个集群的资源，通过对queue的资源管理提高整个集群的资源共享能力。通常会使小任务执行更快，大任务更慢。
+Fair Scheduler 会在第一个任务运行时分配当前同级队列的所有资源，当有其它任务运行时，回收前面任务运行时的部分资源（一般为运行完成的Container）用于其它任务。
+至于FIFO，源码里都没有描述，可能就是一般的先进先出了。
+YARN默认使用CapacityScheduler，通过下面的属性配置：
+&lt;property&gt; &lt;name&gt;yarn.resourcemanager.scheduler.class&lt;/name&gt; &lt;value&gt;org.apache.hadoop.yarn.server.resourcemanager.scheduler.fair.FairScheduler&lt;/value&gt; &lt;/property&gt; YARN 动态资源分配 YARN 能够动态申请资源，如MapReduce中reduce的container会在map过程结束后申请。但Spark On YARN的机制为申请固定的executor，而不动态改变已申请的资源。
+YARN上新运行的任务能够使用已运行任务回收的资源(如运行完Map task的container)，甚至还能够通过强行结束先前任务的container抢占资源。
+Capacity Scheduler CapacityScheduler重点解决多个组织共享集群资源，并保证每个组织自己的资源使用量。当自己的资源不足时能够使用其它组织的空闲资源。
+资源通过层级队列（hierarchical queues）的形式进行组织，配置在etc/hadoop/capacity-scheduler.xml.
+&lt;!-- 队列结构设置 --&gt; &lt;property&gt; &lt;name&gt;yarn.scheduler.capacity.root.queues&lt;/name&gt; &lt;value&gt;a,b&lt;/value&gt; &lt;description&gt;The queues at the this level (root is the root queue). &lt;/description&gt; &lt;/property&gt; &lt;property&gt; &lt;name&gt;yarn.scheduler.capacity.root.a.queues&lt;/name&gt; &lt;value&gt;a1,a2&lt;/value&gt; &lt;description&gt;The queues at the this level (root is the root queue).'>
+<meta property='og:url' content='http://extendswind.top/posts/technical/hadoop_yarn_resource_scheduler/'>
+<meta property='og:site_name' content='extendswind'>
+<meta property='og:type' content='article'><meta property='article:section' content='posts'><meta property='article:tag' content='hadoop'><meta property='article:tag' content='GIS'><meta property='article:published_time' content='2018-09-04T10:30:00&#43;08:00'/><meta property='article:modified_time' content='2018-09-04T10:30:00&#43;08:00'/><meta name='twitter:card' content='summary'>
+
+<meta name="generator" content="Hugo 0.46" />
+
+  <title>Hadoop YARN 调度器（scheduler） —— 资源调度策略 • extendswind</title>
+  <link rel='canonical' href='http://extendswind.top/posts/technical/hadoop_yarn_resource_scheduler/'>
+  
+  
+  <link rel='icon' href='/images/wind.jpeg'>
+<link rel='stylesheet' href='/assets/css/main.4267b3fa.css'><link rel='stylesheet' href='/css/custom.css'><style>
+:root{--color-accent:#cccccc;}
+</style>
+
+  
+
+</head>
+
+
+<body class='page type-posts has-sidebar'>
+
+  <div class='site'>
+
+    <div id='sidebar' class='sidebar'>
+  <a class='screen-reader-text' href='#main-menu'>跳到主页</a>
+
+  <div class='container'><section class='widget widget-about sep-after'>
+  <header>
+    
+    <div class='logo'>
+      <a href='/'>
+        <img src='/images/wind.jpeg'>
+      </a>
+    </div>
+    
+    <h2 class='title site-title '>
+    extendswind
+    </h2>
+    <div class='desc'>
+    class * extends Wind
+    </div>
+  </header>
+
+</section>
+<section class='widget widget-sidebar_menu sep-after'><nav id='sidebar-menu' class='menu sidebar-menu' aria-label='侧边菜单'>
+    <div class='container'>
+      <ul><li class='item'>
+  <a href='/'>Home</a></li><li class='item'>
+  <a href='/posts'>Posts</a></li><li class='item'>
+  <a href='/categories'>Categories</a></li><li class='item'>
+  <a href='https://github.com/extendswind'>GitHub</a></li><li class='item'>
+  <a href='http://www.cnblogs.com/fly2wind/'>Cnblog</a></li></ul>
+    </div>
+  </nav>
+
+</section><section class='widget widget-taxonomy_cloud sep-after'>
+  <header>
+    <h4 class='title widget-title'>Tags</h4>
+  </header>
+
+  <div class='container list-container'>
+  <ul class='list taxonomy-cloud'><li>
+        <a href='/tags/gis/' style='font-size:1em'>GIS</a>
+      </li><li>
+        <a href='/tags/design-patterns/' style='font-size:1em'>Design patterns</a>
+      </li><li>
+        <a href='/tags/hadoop/' style='font-size:1em'>Hadoop</a>
+      </li><li>
+        <a href='/tags/life/' style='font-size:1em'>Life</a>
+      </li><li>
+        <a href='/tags/linux/' style='font-size:1em'>Linux</a>
+      </li></ul>
+</div>
+
+
+</section>
+</div>
+
+  <div class='sidebar-overlay'></div>
+</div>
+
+    <div class='main'>
+
+      <a class='screen-reader-text' href='#content'>跳到文章</a>
+
+<button id='sidebar-toggler' class='sidebar-toggler' aria-controls='sidebar'>
+  <span class='screen-reader-text'>切换侧边栏</span>
+  <span class='open'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="3" y1="12" x2="21" y2="12" />
+  <line x1="3" y1="6" x2="21" y2="6" />
+  <line x1="3" y1="18" x2="21" y2="18" />
+  
+</svg>
+</span>
+  <span class='close'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="18" y1="6" x2="6" y2="18" />
+  <line x1="6" y1="6" x2="18" y2="18" />
+  
+</svg>
+</span>
+</button>
+
+      <header id='header' class='header site-header'>
+        <div class='container sep-after'>
+          <div class='header-info'><p class='site-title title'>extendswind</p><p class='desc site-desc'>a simple blog site</p>
+          </div>
+        </div>
+      </header>
+
+      <main id='content'>
+
+
+<article lang='zh' class='entry'>
+  <header class='header entry-header'>
+  <div class='container sep-after'>
+    <div class='header-info'>
+      <h1 class='title'>Hadoop YARN 调度器（scheduler） —— 资源调度策略</h1>
+      
+
+    </div>
+    
+<div class='entry-meta'>
+  <span class='posted-on'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+  <line x1="16" y1="2" x2="16" y2="6"/>
+  <line x1="8" y1="2" x2="8" y2="6"/>
+  <line x1="3" y1="10" x2="21" y2="10"/>
+  
+</svg>
+<span class='screen-reader-text'>发布 </span>
+  <time class='entry-date' datetime='2018-09-04T10:30:00&#43;08:00'>2018, Sep 04</time>
+</span>
+
+  
+  
+
+</div>
+
+
+  </div>
+</header>
+
+  
+  
+<details class='container entry-toc' open>
+  <summary class='title'>
+    <span>内容目录</span>
+  </summary>
+  <nav id="TableOfContents">
+<ul>
+<li><a href="#hadoop-yarn-scheduler">Hadoop YARN Scheduler</a>
+<ul>
+<li><a href="#三个调度器">三个调度器</a></li>
+<li><a href="#yarn-动态资源分配">YARN 动态资源分配</a></li>
+</ul></li>
+<li><a href="#capacity-scheduler">Capacity Scheduler</a>
+<ul>
+<li><a href="#一些设置和特点">一些设置和特点</a></li>
+</ul></li>
+<li><a href="#fair-scheduler-公平调度器">Fair Scheduler （公平调度器）</a>
+<ul>
+<li><a href="#队列内部调度策略">队列内部调度策略</a></li>
+</ul></li>
+</ul>
+</nav>
+</details>
+
+
+  <div class='container entry-content'>
+  
+
+<p>搜了一些博客，发现写得最清楚的还是《Hadoop权威指南》，以下内容主要来自《Hadoop The Definitive Guide》 4th Edition 2015.3。</p>
+
+<h1 id="hadoop-yarn-scheduler">Hadoop YARN Scheduler</h1>
+
+<h2 id="三个调度器">三个调度器</h2>
+
+<p>YARN提供了CapacityScheduler, FairScheduler, FifoScheduler三个调度器，继承于AbstractYarnScheduler，Resource Manager通过调度器决定对提交application分配的资源大小。</p>
+
+<p>CapacityScheduler首先将所有资源分配到hierarchical queue中，每个任务执行时指定对应的queue，使大任务不会占用整个集群的资源，通过对queue的资源管理提高整个集群的资源共享能力。通常会使小任务执行更快，大任务更慢。</p>
+
+<p>Fair Scheduler 会在第一个任务运行时分配当前同级队列的所有资源，当有其它任务运行时，回收前面任务运行时的部分资源（一般为运行完成的Container）用于其它任务。</p>
+
+<p>至于FIFO，源码里都没有描述，可能就是一般的先进先出了。</p>
+
+<p>YARN默认使用CapacityScheduler，通过下面的属性配置：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#f92672">&lt;property&gt;</span>
+  <span style="color:#f92672">&lt;name&gt;</span>yarn.resourcemanager.scheduler.class<span style="color:#f92672">&lt;/name&gt;</span>
+  <span style="color:#f92672">&lt;value&gt;</span>org.apache.hadoop.yarn.server.resourcemanager.scheduler.fair.FairScheduler<span style="color:#f92672">&lt;/value&gt;</span>
+<span style="color:#f92672">&lt;/property&gt;</span></code></pre></div>
+<h2 id="yarn-动态资源分配">YARN 动态资源分配</h2>
+
+<p>YARN 能够动态申请资源，如MapReduce中reduce的container会在map过程结束后申请。但Spark On YARN的机制为申请固定的executor，而不动态改变已申请的资源。</p>
+
+<p>YARN上新运行的任务能够使用已运行任务回收的资源(如运行完Map task的container)，甚至还能够通过强行结束先前任务的container抢占资源。</p>
+
+<h1 id="capacity-scheduler">Capacity Scheduler</h1>
+
+<p>CapacityScheduler重点解决多个组织共享集群资源，并保证每个组织自己的资源使用量。当自己的资源不足时能够使用其它组织的空闲资源。</p>
+
+<p>资源通过层级队列（hierarchical queues）的形式进行组织，配置在etc/hadoop/capacity-scheduler.xml.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#75715e">&lt;!-- 队列结构设置 --&gt;</span>
+<span style="color:#f92672">&lt;property&gt;</span>
+  <span style="color:#f92672">&lt;name&gt;</span>yarn.scheduler.capacity.root.queues<span style="color:#f92672">&lt;/name&gt;</span>
+  <span style="color:#f92672">&lt;value&gt;</span>a,b<span style="color:#f92672">&lt;/value&gt;</span>
+  <span style="color:#f92672">&lt;description&gt;</span>The queues at the this level (root is the root queue).
+  <span style="color:#f92672">&lt;/description&gt;</span>
+<span style="color:#f92672">&lt;/property&gt;</span>
+
+<span style="color:#f92672">&lt;property&gt;</span>
+  <span style="color:#f92672">&lt;name&gt;</span>yarn.scheduler.capacity.root.a.queues<span style="color:#f92672">&lt;/name&gt;</span>
+  <span style="color:#f92672">&lt;value&gt;</span>a1,a2<span style="color:#f92672">&lt;/value&gt;</span>
+  <span style="color:#f92672">&lt;description&gt;</span>The queues at the this level (root is the root queue).
+  <span style="color:#f92672">&lt;/description&gt;</span>
+<span style="color:#f92672">&lt;/property&gt;</span>
+
+<span style="color:#75715e">&lt;!-- 队列能力设置 --&gt;</span>
+<span style="color:#f92672">&lt;property&gt;</span>
+  <span style="color:#f92672">&lt;name&gt;</span>yarn.scheduler.capacity.root.a.capacity<span style="color:#f92672">&lt;/name&gt;</span>
+  <span style="color:#f92672">&lt;value&gt;</span>40<span style="color:#f92672">&lt;/value&gt;</span>
+<span style="color:#f92672">&lt;/property&gt;</span>
+
+<span style="color:#f92672">&lt;property&gt;</span>
+  <span style="color:#f92672">&lt;name&gt;</span>yarn.scheduler.capacity.root.b.capacity<span style="color:#f92672">&lt;/name&gt;</span>
+  <span style="color:#f92672">&lt;value&gt;</span>60<span style="color:#f92672">&lt;/value&gt;</span>
+<span style="color:#f92672">&lt;/property&gt;</span>
+
+<span style="color:#f92672">&lt;property&gt;</span>
+  <span style="color:#f92672">&lt;name&gt;</span>yarn.scheduler.capacity.root.a.a1.capacity<span style="color:#f92672">&lt;/name&gt;</span>
+  <span style="color:#f92672">&lt;value&gt;</span>50<span style="color:#f92672">&lt;/value&gt;</span>
+<span style="color:#f92672">&lt;/property&gt;</span>
+
+<span style="color:#f92672">&lt;property&gt;</span>
+  <span style="color:#f92672">&lt;name&gt;</span>yarn.scheduler.capacity.root.a.a2.capacity<span style="color:#f92672">&lt;/name&gt;</span>
+  <span style="color:#f92672">&lt;value&gt;</span>50<span style="color:#f92672">&lt;/value&gt;</span>
+<span style="color:#f92672">&lt;/property&gt;</span>
+
+<span style="color:#75715e">&lt;!-- 最大能力占用 --&gt;</span>
+<span style="color:#f92672">&lt;property&gt;</span>
+  <span style="color:#f92672">&lt;name&gt;</span>yarn.scheduler.capacity.root.a.maximum-capacity<span style="color:#f92672">&lt;/name&gt;</span>
+  <span style="color:#f92672">&lt;value&gt;</span>75<span style="color:#f92672">&lt;/value&gt;</span>
+<span style="color:#f92672">&lt;/property&gt;</span></code></pre></div>
+<p>root
+├── a 40%
+|   ├── a1 50%
+|   └── a2 50%
+└── b 60%</p>
+
+<p>上面的设置形成了如图的hierarchical queues，并指定a队列使用40%的资源，b队列60%，a1 a2各占a队列的50%，a队列在b队列资源空闲时，最高可占用集群75%的资源。</p>
+
+<h2 id="一些设置和特点">一些设置和特点</h2>
+
+<ul>
+<li>通过设置queue的maximum capacity能够避免使用相邻子队列的所有资源。</li>
+<li>改变文件后需要运行 <code>$HADOOP_YARN_HOME/bin/yarn rmadmin -refreshQueues</code></li>
+<li>子队列能使用的最大资源为父队列的资源</li>
+<li>队列上除了对资源的管理，还提供了运行的用户、应用数量等的限制功能。</li>
+<li>默认只支持内存，通过配置可以支持CPU</li>
+</ul>
+
+<h1 id="fair-scheduler-公平调度器">Fair Scheduler （公平调度器）</h1>
+
+<p>对比CapacityScheduler的主要区别： 任务提交时占用同一层队列所有的资源 (Capacity Scheduler中只使用maximum-capacity限制下的其它队列闲置的资源），另一个任务提交时，会回收先前任务的部分资源。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#f92672">&lt;allocations&gt;</span>
+  <span style="color:#f92672">&lt;defaultQueueSchedulingPolicy&gt;</span>fair<span style="color:#f92672">&lt;/defaultQueueSchedulingPolicy&gt;</span>
+  <span style="color:#f92672">&lt;queue</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;a&#34;</span><span style="color:#f92672">&gt;</span>
+    <span style="color:#f92672">&lt;weight&gt;</span>4<span style="color:#f92672">&lt;/weight&gt;</span>
+    <span style="color:#f92672">&lt;schedulingPolicy&gt;</span>fifo<span style="color:#f92672">&lt;/schedulingPolicy&gt;</span>
+    <span style="color:#f92672">&lt;queue</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;a1&#34;</span> <span style="color:#f92672">/&gt;</span>
+    <span style="color:#f92672">&lt;queue</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;a2&#34;</span> <span style="color:#f92672">/&gt;</span>
+  <span style="color:#f92672">&lt;/queue&gt;</span>
+  <span style="color:#f92672">&lt;queue</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;b&#34;</span><span style="color:#f92672">&gt;</span>
+    <span style="color:#f92672">&lt;weight&gt;</span>6<span style="color:#f92672">&lt;/weight&gt;</span>
+  <span style="color:#f92672">&lt;/queue&gt;</span>
+  <span style="color:#f92672">&lt;queuePlacementPolicy&gt;</span>
+    <span style="color:#f92672">&lt;rule</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;specified&#34;</span> <span style="color:#a6e22e">create=</span><span style="color:#e6db74">&#34;false&#34;</span> <span style="color:#f92672">/&gt;</span>
+    <span style="color:#f92672">&lt;rule</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;primaryGroup&#34;</span> <span style="color:#a6e22e">create=</span><span style="color:#e6db74">&#34;false&#34;</span> <span style="color:#f92672">/&gt;</span>
+    <span style="color:#f92672">&lt;rule</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;default&#34;</span> <span style="color:#a6e22e">queue=</span><span style="color:#e6db74">&#34;a.a1&#34;</span> <span style="color:#f92672">/&gt;</span>
+  <span style="color:#f92672">&lt;/queuePlacementPolicy&gt;</span>
+<span style="color:#f92672">&lt;/allocations&gt;</span></code></pre></div>
+<p>上面的配置文件给出了一个如下图的层级队列。</p>
+
+<p>root
+├── a (权重4 因此占用总体40%的资源）
+|   ├── a1  没有指定权重，因此与a2队列平分a队列40%的资源；队列内部的多个应用使用fifo策略。
+|   └── a2
+└── b （权重6 因此占用总体60%的资源）</p>
+
+<p>向a1队列中提交任务1时，首先会占用整个集群；向b队列提交任务2时，会从任务1中回收60%的资源用于任务2；向a1队列中继续提交任务3时，会按fifo的策略使用a队列的40%资源；向a2队列提交任务4时，会从a1队列的任务1、任务3中回收资源，使a1队列资源和a2队列相同。</p>
+
+<p>在Hadoop Fair Scheduler的具体实现中，并没有对每个application实现绝对公平的资源分配，而是针对同一级队列内部的资源，队列内部可以选择其它的调度策略。并且使用weight参数，使相同层级的队列资源根据weight分配而非直接平均，设置不同weight后并不“fair”。（实质上和CapacityScheduler类似，都是对层级队列的管理，每一层的队列之间资源存在共享，有博客提到FairScheduler在不断的发展中已经能够实现大部分CapacityScheduler的功能，两者的功能越来越接近）</p>
+
+<p>注意，Fair Scheduler会默认对每个用户创建一个queue用于没指定queue的任务，weight为1，因此要想忽略默认创建的用户queue，需要将权重设置偏大。</p>
+
+<h2 id="队列内部调度策略">队列内部调度策略</h2>
+
+<p>每个队列内使用一定的调度策略，常见的FIFO、FAIR和DRF。</p>
+
+<p>FIFO(first in first out), 先提交的任务先分配资源。</p>
+
+<p>FAIR (max-min fairness)， 先把资源平均分配，某些任务如果有多出资源则将多出的资源分配给其它任务，对资源要求低的任务优先。</p>
+
+<p>DRF（dominant resource fairness），解决有多种资源（CPU、内存等）同时考虑的分配问题，如一个CPU要求高内存要求低与一个CPU要求低内存要求高的应用。</p>
+
+</div>
+
+  
+<footer class='entry-footer'>
+  <div class='container sep-before'><div class='categories'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M22,19a2,2,0,0,1-2,2H4a2,2,0,0,1-2-2V5A2,2,0,0,1,4,3H9l2,3h9a2,2,0,0,1,2,2Z"/>
+  
+</svg>
+<span class='screen-reader-text'>分类: </span><a class='category' href='/categories/cloud-computing/'>Cloud computing</a></div>
+<div class='tags'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M20.59,13.41l-7.17,7.17a2,2,0,0,1-2.83,0L2,12V2H12l8.59,8.59A2,2,0,0,1,20.59,13.41Z"/>
+  <line x1="7" y1="7" x2="7" y2="7"/>
+  
+</svg>
+<span class='screen-reader-text'>标签: </span><a class='tag' href='/tags/hadoop/'>Hadoop</a>, <a class='tag' href='/tags/gis/'>GIS</a></div>
+
+  </div>
+</footer>
+
+
+</article>
+
+<nav class='entry-nav'>
+  <div class='container'><div class='prev-entry sep-before'>
+      <a href='/posts/technical/remote_debug_of_hadoop_in_docker/'>
+        <span aria-hidden='true'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="20" y1="12" x2="4" y2="12"/>
+  <polyline points="10 18 4 12 10 6"/>
+  
+</svg>
+ 上一个</span>
+        <span class='screen-reader-text'>上一篇文章: </span>Hadoop HDFS 远程调试（Docker环境下的Hadoop集群）</a>
+    </div><div class='next-entry sep-before'>
+      <a href='/posts/technical/spatialhadoop_compile_and_run/'>
+        <span class='screen-reader-text'>下一篇文章: </span>SpatialHadoop的编译与运行<span aria-hidden='true'>下一个 <svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="4" y1="12" x2="20" y2="12"/>
+  <polyline points="14 6 20 12 14 18"/>
+  
+</svg>
+</span>
+      </a>
+    </div></div>
+</nav>
+
+
+
+
+      </main>
+
+      <footer id='footer' class='footer'>
+        <div class='container sep-before'><section class='widget widget-social_menu sep-after'><header>
+    <h4 class='title widget-title'>Contact</h4>
+  </header><nav aria-label='社交菜单'>
+    <ul><li>
+        <a href='https://github.com/extendswind' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>在新标签打开Github的账户</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+  
+</svg>
+</a>
+      </li><li>
+        <a href='mailto:extendswind@foxmail.com' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>通过邮件联系</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+  <polyline points="22,6 12,13 2,6"/>
+  
+</svg>
+</a>
+      </li></ul>
+  </nav>
+</section><div class='copyright'>
+  <p> &copy; 2018 extendswind </p>
+</div>
+
+        </div>
+      </footer>
+
+    </div>
+  </div><script>window.__public_path__='\/assets\/js\/'</script>
+
+<script src='/assets/js/main.59f76c44.js'></script>
+
+</body>
+
+</html>
+

@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Cloud computing on extendswind</title>
-    <link>http://extendswind.top/categories/cloud-computing/</link>
-    <description>Recent content in Cloud computing on extendswind</description>
+    <title>GIS on extendswind</title>
+    <link>http://extendswind.top/tags/gis/</link>
+    <description>Recent content in GIS on extendswind</description>
     <generator>Hugo -- gohugo.io</generator>
     <lastBuildDate>Wed, 05 Sep 2018 10:30:00 +0800</lastBuildDate>
     
-	<atom:link href="http://extendswind.top/categories/cloud-computing/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="http://extendswind.top/tags/gis/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
@@ -49,33 +49,6 @@ YARN上新运行的任务能够使用已运行任务回收的资源(如运行完
 Capacity Scheduler CapacityScheduler重点解决多个组织共享集群资源，并保证每个组织自己的资源使用量。当自己的资源不足时能够使用其它组织的空闲资源。
 资源通过层级队列（hierarchical queues）的形式进行组织，配置在etc/hadoop/capacity-scheduler.xml.
 &amp;lt;!-- 队列结构设置 --&amp;gt; &amp;lt;property&amp;gt; &amp;lt;name&amp;gt;yarn.scheduler.capacity.root.queues&amp;lt;/name&amp;gt; &amp;lt;value&amp;gt;a,b&amp;lt;/value&amp;gt; &amp;lt;description&amp;gt;The queues at the this level (root is the root queue). &amp;lt;/description&amp;gt; &amp;lt;/property&amp;gt; &amp;lt;property&amp;gt; &amp;lt;name&amp;gt;yarn.scheduler.capacity.root.a.queues&amp;lt;/name&amp;gt; &amp;lt;value&amp;gt;a1,a2&amp;lt;/value&amp;gt; &amp;lt;description&amp;gt;The queues at the this level (root is the root queue).</description>
-    </item>
-    
-    <item>
-      <title>Hadoop HDFS 远程调试（Docker环境下的Hadoop集群）</title>
-      <link>http://extendswind.top/posts/technical/remote_debug_of_hadoop_in_docker/</link>
-      <pubDate>Thu, 26 Jul 2018 21:30:00 +0800</pubDate>
-      
-      <guid>http://extendswind.top/posts/technical/remote_debug_of_hadoop_in_docker/</guid>
-      <description>Hadoop 典型的调试方式是通过log4j输出日志，基于日志的形式查看运行信息。在源码阅读中，经常有不容易猜的变量，通过大量日志输出调试没有远程调试方便。
-Java 远程调试 不想了解的可以直接跳到下面Hadoop
-通过JPDA（Java Platform Debugger Architecture），调试时启动服务，通过socket端口与调试服务端通信。
-下面只用最常用的服务端启动调试服务监听端口，本地IDE（idea）连接服务端。
-具体操作 1、启动被调试程序时添加参数：  jdk9: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:8000
-jdk5-8: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8000
-jdk4: -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8000
-jdk3 及以前: -Xnoagent -Djava.compiler=NONE -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8000
- 此处有坑，网上大部分没有提到jdk版本不同导致的区别，很多博客使用jdk4的写法，可能导致问题（idea配置远程调试时有上面的选项）。
-另外一个小坑, 下面第一个命令正常执行，第二个命令会忽略调试选项：
- java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8000 test java test -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8000  主要参数。suspend=y时，程序启动会先挂起，IDE连接后才会运行；suspend=n时，程序启动会直接运行。address后面为端口号，不与其它端口重合即可。
-2、启动Idea连接调试 使用idea打开调试项目的源码工程
-Run -&amp;gt; Edit Configurations , 点“加号” -&amp;gt; remote，然后填上被调试程序所在主机的ip以及上面的address对应端口号，并选择源码所在的module。
-添加后debug运行，剩下的和本地调试相同。
-Hadoop 远程调试 思路和上面的操作一致。下面以调试HDFS中的namenode为例。
-具体操作 1、修改Hadoop启动参数为debug模式 如果需要调试namenode服务，在etc/hadoop/hadoop-env.sh文件后添加：
-export HDFS_NAMENODE_OPTS=&amp;quot;-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8000&amp;quot;
-HDFS启动的jvm主要为namenode和datanode，jvm启动的参数设置在etc/hadoop/hadoop-env.sh中。其中namenode启动参数环境变量为 HDFS_NAMENODE_OPTS，datanode为 HDFS_DATANODE_OPTS。（对于Hadoop3.1.0，早期版本设置为Hadoop_NAMENODE_OPTS HADOOP_NAMENODE_OPTS）。YARN等服务对应的环境变量需要另查。
-2、启动服务 sbin/start-dfs.sh 或者 bin/hdfs --daemon start namenode仅启动namenode</description>
     </item>
     
   </channel>

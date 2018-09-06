@@ -4,7 +4,7 @@
   
   <url>
     <loc>http://extendswind.top/</loc>
-    <lastmod>2018-07-26T21:30:00+08:00</lastmod>
+    <lastmod>2018-09-05T10:30:00+08:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
@@ -15,6 +15,16 @@
                 hreflang="zh"
                 href="http://extendswind.top/"
                 />
+  </url>
+  
+  <url>
+    <loc>http://extendswind.top/posts/technical/spatialhadoop_compile_and_run/</loc>
+    <lastmod>2018-09-05T10:30:00+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://extendswind.top/posts/technical/hadoop_yarn_resource_scheduler/</loc>
+    <lastmod>2018-09-04T10:30:00+08:00</lastmod>
   </url>
   
   <url>
@@ -89,7 +99,7 @@
   
   <url>
     <loc>http://extendswind.top/categories/cloud-computing/</loc>
-    <lastmod>2018-07-26T21:30:00+08:00</lastmod>
+    <lastmod>2018-09-05T10:30:00+08:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -100,8 +110,14 @@
   </url>
   
   <url>
+    <loc>http://extendswind.top/tags/gis/</loc>
+    <lastmod>2018-09-05T10:30:00+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>http://extendswind.top/tags/hadoop/</loc>
-    <lastmod>2018-07-26T21:30:00+08:00</lastmod>
+    <lastmod>2018-09-05T10:30:00+08:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -131,7 +147,7 @@
   
   <url>
     <loc>http://extendswind.top/posts/</loc>
-    <lastmod>2018-07-26T21:30:00+08:00</lastmod>
+    <lastmod>2018-09-05T10:30:00+08:00</lastmod>
     <priority>0</priority>
   </url>
   

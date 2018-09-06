@@ -24,8 +24,7 @@
 主要实现思想：
  对象的复制只需要在每个类中实现一个clone函数即可 使用工厂模式相关思想获取具体的clone对象  java实现的clone操作 下面的实现基于java，如c++一类的语言对于每个对象的复制需要自行处理。
 java的所有类都继承于Object，Object类中定义了native实现的clone函数，但需要实现Cloneable接口才能调用。通过clone函数能够直接复制内存中的对象而不用调用构造函数。
-注意，java Object的clone函数为 浅拷贝，只会复制对象地址而不创建新的对象。需要根据实际情况判读是否做相应的深拷贝修改。
-吐槽：很多博客和书上的示例实质上就下面这一段，然后加个实例里n个成员变量和函数凑出十几到几十行，实现个Cloneable接口加个clone函数就算完了&amp;hellip;.
+注意，java Object的clone函数为 浅拷贝，只会复制类成员对象地址而不创建新的对象。需要根据实际情况判读是否做相应的深拷贝修改。 吐槽：很多博客和书上的示例实质上就下面这一段，然后加个实例里n个成员变量和函数凑出十几到几十行，实现个Cloneable接口加个clone函数就算完了&amp;hellip;.
 class Prototype implements Cloneable{ int attr; public Prototype clone(){ Prototype prototype = null; try { prototype = (Prototype)super.clone(); } catch (CloneNotSupportedException e) { e.printStackTrace(); } return prototype; } } 一个不使用java特性的简单实现 class Prototype{ int attr; public Prototype clone(){ Prototype clone = new Prototype(); clone.attr = this.attr; return clone; } } 同上，注意深拷贝和浅拷贝问题。</description>
     </item>
     

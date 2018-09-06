@@ -23,18 +23,20 @@ interface Logger { void writeLog(); } // 被代理类 class LoggerSubject implem
 interface Logger { void writeLog(); } // 被代理类 class LoggerSubject implements Logger{ @Override public void writeLog(){ System.out.println(&#34;writeLog by LoggerSubject&#34;); } } // 代理类 class Proxy implements Logger{ Logger logger; // 与装饰者模式的主要区别位置  // 代理模式一般要求和原来的类行为一致，因此构造函数不传入对象  Proxy(){ this.logger = new LoggerSubject(); } @Override public void writeLog(){ System.out.println(&#34;logger write before&#34;); logger.writeLog(); System.out.println(&#34;logger write after&#34;); } } public class StaticProxy { private static void write(Logger logger){ logger.'>
 <meta property='og:url' content='http://extendswind.top/posts/technical/design_patterns_static_proxy_and_decoration/'>
 <meta property='og:site_name' content='extendswind'>
-<meta property='og:type' content='article'><meta property='article:section' content='Posts'><meta property='article:tag' content='design patterns'><meta property='article:published_time' content='2018-06-20T17:25:25&#43;08:00'/><meta property='article:modified_time' content='2018-06-20T17:25:25&#43;08:00'/><meta name='twitter:card' content='summary'>
+<meta property='og:type' content='article'><meta property='article:section' content='posts'><meta property='article:tag' content='design patterns'><meta property='article:published_time' content='2018-06-20T17:25:25&#43;08:00'/><meta property='article:modified_time' content='2018-06-20T17:25:25&#43;08:00'/><meta name='twitter:card' content='summary'>
 
-<meta name="generator" content="Hugo 0.44" />
+<meta name="generator" content="Hugo 0.46" />
 
   <title>设计模式 之 静态代理模式和装饰者模式 • extendswind</title>
   <link rel='canonical' href='http://extendswind.top/posts/technical/design_patterns_static_proxy_and_decoration/'>
   
   
   <link rel='icon' href='/images/wind.jpeg'>
-<link rel='stylesheet' href='/assets/css/main.cb99c271.css'><link rel='stylesheet' href='/css/custom.css'><style>
+<link rel='stylesheet' href='/assets/css/main.4267b3fa.css'><link rel='stylesheet' href='/css/custom.css'><style>
 :root{--color-accent:#cccccc;}
 </style>
+
+  
 
 </head>
 
@@ -59,7 +61,7 @@ interface Logger { void writeLog(); } // 被代理类 class LoggerSubject implem
     extendswind
     </h2>
     <div class='desc'>
-    
+    class * extends Wind
     </div>
   </header>
 
@@ -82,17 +84,15 @@ interface Logger { void writeLog(); } // 被代理类 class LoggerSubject implem
 
   <div class='container list-container'>
   <ul class='list taxonomy-cloud'><li>
-        
-        <a href='/tags/design-patterns' style='font-size:1em'>Design patterns</a>
+        <a href='/tags/gis/' style='font-size:1em'>GIS</a>
       </li><li>
-        
-        <a href='/tags/hadoop' style='font-size:1em'>Hadoop</a>
+        <a href='/tags/design-patterns/' style='font-size:1em'>Design patterns</a>
       </li><li>
-        
-        <a href='/tags/life' style='font-size:1em'>Life</a>
+        <a href='/tags/hadoop/' style='font-size:1em'>Hadoop</a>
       </li><li>
-        
-        <a href='/tags/linux' style='font-size:1em'>Linux</a>
+        <a href='/tags/life/' style='font-size:1em'>Life</a>
+      </li><li>
+        <a href='/tags/linux/' style='font-size:1em'>Linux</a>
       </li></ul>
 </div>
 
@@ -316,24 +316,19 @@ Logger logger = new DecorateLogger(new Logger()); // 装饰者模式，还可以
 
   
 <footer class='entry-footer'>
-  <div class='container sep-before'>
-  <div class='categories'>
-  <span class='taxonomy-icon'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  <div class='container sep-before'><div class='categories'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
   
   <path d="M22,19a2,2,0,0,1-2,2H4a2,2,0,0,1-2-2V5A2,2,0,0,1,4,3H9l2,3h9a2,2,0,0,1,2,2Z"/>
   
 </svg>
-</span>
-  <span class='screen-reader-text'>分类: </span><a class='category' href='/categories/programming'>Programming</a></div>
-<div class='tags'>
-  <span class='taxonomy-icon'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+<span class='screen-reader-text'>分类: </span><a class='category' href='/categories/programming/'>Programming</a></div>
+<div class='tags'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
   
   <path d="M20.59,13.41l-7.17,7.17a2,2,0,0,1-2.83,0L2,12V2H12l8.59,8.59A2,2,0,0,1,20.59,13.41Z"/>
   <line x1="7" y1="7" x2="7" y2="7"/>
   
 </svg>
-</span>
-  <span class='screen-reader-text'>标签: </span><a class='tag' href='/tags/design-patterns'>design patterns</a></div>
+<span class='screen-reader-text'>标签: </span><a class='tag' href='/tags/design-patterns/'>Design patterns</a></div>
 
   </div>
 </footer>
@@ -403,7 +398,8 @@ Logger logger = new DecorateLogger(new Logger()); // 装饰者模式，还可以
     </div>
   </div><script>window.__public_path__='\/assets\/js\/'</script>
 
-<script src='/assets/js/main.9daad1e6.js'></script>
+<script src='/assets/js/main.59f76c44.js'></script>
+
 </body>
 
 </html>

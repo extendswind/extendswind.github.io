@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang='zh'>
+
+<head>
+  <meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<meta name='description' content='SpatialHadoop相对HadoopGIS等库，在MapReduce时代的空间数据处理开源库算处理较好。SpatialHadoop在效率上相对一些新的基于Spark空间数据处理开源库明显偏低，加上本身的功能实现得差不多，最近提交的更新越来越少，感觉发展趋势不太好，主要用于学习相关的索引技术。
+编译与运行 主页上有已经编译好的包，可以直接解压到Hadoop目录下运行，但官方的版本解压有错误，因此下载github上源码编译。
+需要的环境：
+ jdk8 Hadoop 2.7.7 maven  源码编译 源码地址 https://github.com/aseldawy/spatialhadoop2，直接下载或者git clone到本地。
+需要安装maven用于代码编译。
+编译前将pom.xml文件中hadoop相关的版本改为需要的版本。
+mvn compile 编译源码 mvn assembly:assembly 代码打包，会在target目录下生成jar和一个包含jar与相关依赖的tar.gz包
+在2f1aefd32860d0279f2fc479a8bafb68d07e3761版本（Mar 13,2018）编译时会由于缺少一个测试文件测试失败，可以选择跳过测试，或者注释掉测试的代码（src/test/java/edu/umn/cs/spatialHadoop/indexing/RStarTreeTest.java中的某个函数）。
+运行 首先需要有一个Hadoop集群，能够提交yarn任务。
+将target目录下生成的tar.gz包（spatialhadoop-2.4.3-SNAPSHOT-bin.tar.gz）拷贝到Hadoop目录下并解压即可。
+cp target/spatialhadoop-2.4.3-SNAPSHOT-bin.tar.gz $HADOOP_HOME/ cd $HADOOP_HOME tar -zxvf spatialhadoop-2.4.3-SNAPSHOT-bin.tar.gz Hadoop目录下运行下面的测试代码，会向HDFS中写入一个随机生成的矩形文件。
+sbin/shadoop generate test.rects size:1.gb shape:rect mbr:0,0,1000000,1000000 -overwrite
+SpatialHadoop运行机制 shadoop 脚本 SpatialHadoop 通过脚本shadoop运行命令，脚本就只有几行代码
+bin=`dirname &#34;$0&#34;` bin=`cd &#34;$bin&#34; &gt; /dev/null; pwd` # Call Hadoop with the operations.Main as the main class . &#34;$bin&#34;/hadoop edu.umn.cs.spatialHadoop.operations.Main $@ 其实只是将spatialhadoop的jar包与相关依赖jar包放入Hadoop的包目录中，然后通过shadoop脚本调用Hadoop脚本调用包中的一个类，向YARN提交MapReduce任务。'>
+<meta name='theme-color' content='#cccccc'>
+
+<meta property='og:title' content='SpatialHadoop的编译与运行 • extendswind'>
+<meta property='og:description' content='SpatialHadoop相对HadoopGIS等库，在MapReduce时代的空间数据处理开源库算处理较好。SpatialHadoop在效率上相对一些新的基于Spark空间数据处理开源库明显偏低，加上本身的功能实现得差不多，最近提交的更新越来越少，感觉发展趋势不太好，主要用于学习相关的索引技术。
+编译与运行 主页上有已经编译好的包，可以直接解压到Hadoop目录下运行，但官方的版本解压有错误，因此下载github上源码编译。
+需要的环境：
+ jdk8 Hadoop 2.7.7 maven  源码编译 源码地址 https://github.com/aseldawy/spatialhadoop2，直接下载或者git clone到本地。
+需要安装maven用于代码编译。
+编译前将pom.xml文件中hadoop相关的版本改为需要的版本。
+mvn compile 编译源码 mvn assembly:assembly 代码打包，会在target目录下生成jar和一个包含jar与相关依赖的tar.gz包
+在2f1aefd32860d0279f2fc479a8bafb68d07e3761版本（Mar 13,2018）编译时会由于缺少一个测试文件测试失败，可以选择跳过测试，或者注释掉测试的代码（src/test/java/edu/umn/cs/spatialHadoop/indexing/RStarTreeTest.java中的某个函数）。
+运行 首先需要有一个Hadoop集群，能够提交yarn任务。
+将target目录下生成的tar.gz包（spatialhadoop-2.4.3-SNAPSHOT-bin.tar.gz）拷贝到Hadoop目录下并解压即可。
+cp target/spatialhadoop-2.4.3-SNAPSHOT-bin.tar.gz $HADOOP_HOME/ cd $HADOOP_HOME tar -zxvf spatialhadoop-2.4.3-SNAPSHOT-bin.tar.gz Hadoop目录下运行下面的测试代码，会向HDFS中写入一个随机生成的矩形文件。
+sbin/shadoop generate test.rects size:1.gb shape:rect mbr:0,0,1000000,1000000 -overwrite
+SpatialHadoop运行机制 shadoop 脚本 SpatialHadoop 通过脚本shadoop运行命令，脚本就只有几行代码
+bin=`dirname &#34;$0&#34;` bin=`cd &#34;$bin&#34; &gt; /dev/null; pwd` # Call Hadoop with the operations.Main as the main class . &#34;$bin&#34;/hadoop edu.umn.cs.spatialHadoop.operations.Main $@ 其实只是将spatialhadoop的jar包与相关依赖jar包放入Hadoop的包目录中，然后通过shadoop脚本调用Hadoop脚本调用包中的一个类，向YARN提交MapReduce任务。'>
+<meta property='og:url' content='http://extendswind.top/posts/technical/spatialhadoop_compile_and_run/'>
+<meta property='og:site_name' content='extendswind'>
+<meta property='og:type' content='article'><meta property='article:section' content='posts'><meta property='article:tag' content='hadoop'><meta property='article:tag' content='GIS'><meta property='article:published_time' content='2018-09-05T10:30:00&#43;08:00'/><meta property='article:modified_time' content='2018-09-05T10:30:00&#43;08:00'/><meta name='twitter:card' content='summary'>
+
+<meta name="generator" content="Hugo 0.46" />
+
+  <title>SpatialHadoop的编译与运行 • extendswind</title>
+  <link rel='canonical' href='http://extendswind.top/posts/technical/spatialhadoop_compile_and_run/'>
+  
+  
+  <link rel='icon' href='/images/wind.jpeg'>
+<link rel='stylesheet' href='/assets/css/main.4267b3fa.css'><link rel='stylesheet' href='/css/custom.css'><style>
+:root{--color-accent:#cccccc;}
+</style>
+
+  
+
+</head>
+
+
+<body class='page type-posts has-sidebar'>
+
+  <div class='site'>
+
+    <div id='sidebar' class='sidebar'>
+  <a class='screen-reader-text' href='#main-menu'>跳到主页</a>
+
+  <div class='container'><section class='widget widget-about sep-after'>
+  <header>
+    
+    <div class='logo'>
+      <a href='/'>
+        <img src='/images/wind.jpeg'>
+      </a>
+    </div>
+    
+    <h2 class='title site-title '>
+    extendswind
+    </h2>
+    <div class='desc'>
+    class * extends Wind
+    </div>
+  </header>
+
+</section>
+<section class='widget widget-sidebar_menu sep-after'><nav id='sidebar-menu' class='menu sidebar-menu' aria-label='侧边菜单'>
+    <div class='container'>
+      <ul><li class='item'>
+  <a href='/'>Home</a></li><li class='item'>
+  <a href='/posts'>Posts</a></li><li class='item'>
+  <a href='/categories'>Categories</a></li><li class='item'>
+  <a href='https://github.com/extendswind'>GitHub</a></li><li class='item'>
+  <a href='http://www.cnblogs.com/fly2wind/'>Cnblog</a></li></ul>
+    </div>
+  </nav>
+
+</section><section class='widget widget-taxonomy_cloud sep-after'>
+  <header>
+    <h4 class='title widget-title'>Tags</h4>
+  </header>
+
+  <div class='container list-container'>
+  <ul class='list taxonomy-cloud'><li>
+        <a href='/tags/gis/' style='font-size:1em'>GIS</a>
+      </li><li>
+        <a href='/tags/design-patterns/' style='font-size:1em'>Design patterns</a>
+      </li><li>
+        <a href='/tags/hadoop/' style='font-size:1em'>Hadoop</a>
+      </li><li>
+        <a href='/tags/life/' style='font-size:1em'>Life</a>
+      </li><li>
+        <a href='/tags/linux/' style='font-size:1em'>Linux</a>
+      </li></ul>
+</div>
+
+
+</section>
+</div>
+
+  <div class='sidebar-overlay'></div>
+</div>
+
+    <div class='main'>
+
+      <a class='screen-reader-text' href='#content'>跳到文章</a>
+
+<button id='sidebar-toggler' class='sidebar-toggler' aria-controls='sidebar'>
+  <span class='screen-reader-text'>切换侧边栏</span>
+  <span class='open'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="3" y1="12" x2="21" y2="12" />
+  <line x1="3" y1="6" x2="21" y2="6" />
+  <line x1="3" y1="18" x2="21" y2="18" />
+  
+</svg>
+</span>
+  <span class='close'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="18" y1="6" x2="6" y2="18" />
+  <line x1="6" y1="6" x2="18" y2="18" />
+  
+</svg>
+</span>
+</button>
+
+      <header id='header' class='header site-header'>
+        <div class='container sep-after'>
+          <div class='header-info'><p class='site-title title'>extendswind</p><p class='desc site-desc'>a simple blog site</p>
+          </div>
+        </div>
+      </header>
+
+      <main id='content'>
+
+
+<article lang='zh' class='entry'>
+  <header class='header entry-header'>
+  <div class='container sep-after'>
+    <div class='header-info'>
+      <h1 class='title'>SpatialHadoop的编译与运行</h1>
+      
+
+    </div>
+    
+<div class='entry-meta'>
+  <span class='posted-on'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+  <line x1="16" y1="2" x2="16" y2="6"/>
+  <line x1="8" y1="2" x2="8" y2="6"/>
+  <line x1="3" y1="10" x2="21" y2="10"/>
+  
+</svg>
+<span class='screen-reader-text'>发布 </span>
+  <time class='entry-date' datetime='2018-09-05T10:30:00&#43;08:00'>2018, Sep 05</time>
+</span>
+
+  
+  
+
+</div>
+
+
+  </div>
+</header>
+
+  
+  
+<details class='container entry-toc' open>
+  <summary class='title'>
+    <span>内容目录</span>
+  </summary>
+  <nav id="TableOfContents">
+<ul>
+<li><a href="#编译与运行">编译与运行</a>
+<ul>
+<li><a href="#源码编译">源码编译</a></li>
+<li><a href="#运行">运行</a></li>
+</ul></li>
+<li><a href="#spatialhadoop运行机制">SpatialHadoop运行机制</a>
+<ul>
+<li><a href="#shadoop-脚本">shadoop 脚本</a></li>
+<li><a href="#spatialhadoop的相关文件">spatialhadoop的相关文件</a></li>
+</ul></li>
+<li><a href="#spatialhadoop-基本使用">SpatialHadoop 基本使用</a></li>
+</ul>
+</nav>
+</details>
+
+
+  <div class='container entry-content'>
+  
+
+<p>SpatialHadoop相对HadoopGIS等库，在MapReduce时代的空间数据处理开源库算处理较好。SpatialHadoop在效率上相对一些新的基于Spark空间数据处理开源库明显偏低，加上本身的功能实现得差不多，最近提交的更新越来越少，感觉发展趋势不太好，主要用于学习相关的索引技术。</p>
+
+<h1 id="编译与运行">编译与运行</h1>
+
+<p>主页上有已经编译好的包，可以直接解压到Hadoop目录下运行，但官方的版本解压有错误，因此下载github上源码编译。</p>
+
+<p>需要的环境：</p>
+
+<ul>
+<li>jdk8</li>
+<li>Hadoop 2.7.7</li>
+<li>maven</li>
+</ul>
+
+<h2 id="源码编译">源码编译</h2>
+
+<p>源码地址 <a href="https://github.com/aseldawy/spatialhadoop2，直接下载或者git" target="_blank">https://github.com/aseldawy/spatialhadoop2，直接下载或者git</a> clone到本地。</p>
+
+<p>需要安装maven用于代码编译。</p>
+
+<p>编译前将pom.xml文件中hadoop相关的版本改为需要的版本。</p>
+
+<p><code>mvn compile</code> 编译源码
+<code>mvn assembly:assembly</code> 代码打包，会在target目录下生成jar和一个包含jar与相关依赖的tar.gz包</p>
+
+<p>在2f1aefd32860d0279f2fc479a8bafb68d07e3761版本（Mar 13,2018）编译时会由于缺少一个测试文件测试失败，可以选择跳过测试，或者注释掉测试的代码（src/test/java/edu/umn/cs/spatialHadoop/indexing/RStarTreeTest.java中的某个函数）。</p>
+
+<h2 id="运行">运行</h2>
+
+<p>首先需要有一个Hadoop集群，能够提交yarn任务。</p>
+
+<p>将target目录下生成的tar.gz包（spatialhadoop-2.4.3-SNAPSHOT-bin.tar.gz）拷贝到Hadoop目录下并解压即可。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">cp target/spatialhadoop-2.4.3-SNAPSHOT-bin.tar.gz $HADOOP_HOME/
+cd $HADOOP_HOME
+tar -zxvf spatialhadoop-2.4.3-SNAPSHOT-bin.tar.gz</code></pre></div>
+<p>Hadoop目录下运行下面的测试代码，会向HDFS中写入一个随机生成的矩形文件。</p>
+
+<p><code>sbin/shadoop generate test.rects size:1.gb shape:rect mbr:0,0,1000000,1000000 -overwrite</code></p>
+
+<h1 id="spatialhadoop运行机制">SpatialHadoop运行机制</h1>
+
+<h2 id="shadoop-脚本">shadoop 脚本</h2>
+
+<p>SpatialHadoop 通过脚本shadoop运行命令，脚本就只有几行代码</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">bin<span style="color:#f92672">=</span><span style="color:#e6db74">`</span>dirname <span style="color:#e6db74">&#34;</span>$0<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">`</span>
+bin<span style="color:#f92672">=</span><span style="color:#e6db74">`</span>cd <span style="color:#e6db74">&#34;</span>$bin<span style="color:#e6db74">&#34;</span> &gt; /dev/null; pwd<span style="color:#e6db74">`</span>
+
+<span style="color:#75715e"># Call Hadoop with the operations.Main as the main class
+</span><span style="color:#75715e"></span>. <span style="color:#e6db74">&#34;</span>$bin<span style="color:#e6db74">&#34;</span>/hadoop edu.umn.cs.spatialHadoop.operations.Main $@</code></pre></div>
+<p>其实只是将spatialhadoop的jar包与相关依赖jar包放入Hadoop的包目录中，然后通过shadoop脚本调用Hadoop脚本调用包中的一个类，向YARN提交MapReduce任务。</p>
+
+<h2 id="spatialhadoop的相关文件">spatialhadoop的相关文件</h2>
+
+<p>spatialhadoop-2.4.3-SNAPSHOT-bin.tar.gz 中有以下的文件。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">.
+├── bin
+│   └── shadoop
+├── etc
+│   └── hadoop
+│       ├── spatial-site.xml
+│       └── spatial-site.xml.template
+├── LICENSE.txt
+├── README.md
+└── share
+    └── hadoop
+        └── common
+            └── lib
+                ├── esri-geometry-api-1.2.1.jar
+                ├── javax.mail-1.5.5.jar
+                ├── javax.mail-api-1.5.5.jar
+                ├── jts-1.13.jar
+                └── spatialhadoop-2.4.3-SNAPSHOT.jar</code></pre></div>
+<p>配置文件貌似基本功能上用得不多，shadoop脚本也比较简单，除去使用的相关环境依赖jar包，spatialhadoop实质上只是执行spatialhadoop-2.4.3-SNAPSHOT.jar包中的函数而已。</p>
+
+<h1 id="spatialhadoop-基本使用">SpatialHadoop 基本使用</h1>
+
+<p>构建索引文件与空间范围查询</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">shadoop index test.rects sindex:grid test.grid shape:rect 
+shadoop rangequery test.grid rect:10,10,2000,3000 rangequery.out shape:rect</code></pre></div>
+<p>主要的索引结构，文件存储形式等在官网有相关文档。</p>
+
+<p>具体运行的参数和运行的命令很多没有介绍，输入bin/shadoop以及bin/shadoop 接命令能够看到命令的基本使用情况，更具体的估计要去找源码了。</p>
+
+</div>
+
+  
+<footer class='entry-footer'>
+  <div class='container sep-before'><div class='categories'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M22,19a2,2,0,0,1-2,2H4a2,2,0,0,1-2-2V5A2,2,0,0,1,4,3H9l2,3h9a2,2,0,0,1,2,2Z"/>
+  
+</svg>
+<span class='screen-reader-text'>分类: </span><a class='category' href='/categories/cloud-computing/'>Cloud computing</a></div>
+<div class='tags'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M20.59,13.41l-7.17,7.17a2,2,0,0,1-2.83,0L2,12V2H12l8.59,8.59A2,2,0,0,1,20.59,13.41Z"/>
+  <line x1="7" y1="7" x2="7" y2="7"/>
+  
+</svg>
+<span class='screen-reader-text'>标签: </span><a class='tag' href='/tags/hadoop/'>Hadoop</a>, <a class='tag' href='/tags/gis/'>GIS</a></div>
+
+  </div>
+</footer>
+
+
+</article>
+
+<nav class='entry-nav'>
+  <div class='container'><div class='prev-entry sep-before'>
+      <a href='/posts/technical/hadoop_yarn_resource_scheduler/'>
+        <span aria-hidden='true'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="20" y1="12" x2="4" y2="12"/>
+  <polyline points="10 18 4 12 10 6"/>
+  
+</svg>
+ 上一个</span>
+        <span class='screen-reader-text'>上一篇文章: </span>Hadoop YARN 调度器（scheduler） —— 资源调度策略</a>
+    </div></div>
+</nav>
+
+
+
+
+      </main>
+
+      <footer id='footer' class='footer'>
+        <div class='container sep-before'><section class='widget widget-social_menu sep-after'><header>
+    <h4 class='title widget-title'>Contact</h4>
+  </header><nav aria-label='社交菜单'>
+    <ul><li>
+        <a href='https://github.com/extendswind' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>在新标签打开Github的账户</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+  
+</svg>
+</a>
+      </li><li>
+        <a href='mailto:extendswind@foxmail.com' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>通过邮件联系</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+  <polyline points="22,6 12,13 2,6"/>
+  
+</svg>
+</a>
+      </li></ul>
+  </nav>
+</section><div class='copyright'>
+  <p> &copy; 2018 extendswind </p>
+</div>
+
+        </div>
+      </footer>
+
+    </div>
+  </div><script>window.__public_path__='\/assets\/js\/'</script>
+
+<script src='/assets/js/main.59f76c44.js'></script>
+
+</body>
+
+</html>
+

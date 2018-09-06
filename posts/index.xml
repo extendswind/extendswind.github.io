@@ -5,10 +5,51 @@
     <link>http://extendswind.top/posts/</link>
     <description>Recent content in Posts on extendswind</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Thu, 26 Jul 2018 21:30:00 +0800</lastBuildDate>
+    <lastBuildDate>Wed, 05 Sep 2018 10:30:00 +0800</lastBuildDate>
     
 	<atom:link href="http://extendswind.top/posts/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>SpatialHadoop的编译与运行</title>
+      <link>http://extendswind.top/posts/technical/spatialhadoop_compile_and_run/</link>
+      <pubDate>Wed, 05 Sep 2018 10:30:00 +0800</pubDate>
+      
+      <guid>http://extendswind.top/posts/technical/spatialhadoop_compile_and_run/</guid>
+      <description>SpatialHadoop相对HadoopGIS等库，在MapReduce时代的空间数据处理开源库算处理较好。SpatialHadoop在效率上相对一些新的基于Spark空间数据处理开源库明显偏低，加上本身的功能实现得差不多，最近提交的更新越来越少，感觉发展趋势不太好，主要用于学习相关的索引技术。
+编译与运行 主页上有已经编译好的包，可以直接解压到Hadoop目录下运行，但官方的版本解压有错误，因此下载github上源码编译。
+需要的环境：
+ jdk8 Hadoop 2.7.7 maven  源码编译 源码地址 https://github.com/aseldawy/spatialhadoop2，直接下载或者git clone到本地。
+需要安装maven用于代码编译。
+编译前将pom.xml文件中hadoop相关的版本改为需要的版本。
+mvn compile 编译源码 mvn assembly:assembly 代码打包，会在target目录下生成jar和一个包含jar与相关依赖的tar.gz包
+在2f1aefd32860d0279f2fc479a8bafb68d07e3761版本（Mar 13,2018）编译时会由于缺少一个测试文件测试失败，可以选择跳过测试，或者注释掉测试的代码（src/test/java/edu/umn/cs/spatialHadoop/indexing/RStarTreeTest.java中的某个函数）。
+运行 首先需要有一个Hadoop集群，能够提交yarn任务。
+将target目录下生成的tar.gz包（spatialhadoop-2.4.3-SNAPSHOT-bin.tar.gz）拷贝到Hadoop目录下并解压即可。
+cp target/spatialhadoop-2.4.3-SNAPSHOT-bin.tar.gz $HADOOP_HOME/ cd $HADOOP_HOME tar -zxvf spatialhadoop-2.4.3-SNAPSHOT-bin.tar.gz Hadoop目录下运行下面的测试代码，会向HDFS中写入一个随机生成的矩形文件。
+sbin/shadoop generate test.rects size:1.gb shape:rect mbr:0,0,1000000,1000000 -overwrite
+SpatialHadoop运行机制 shadoop 脚本 SpatialHadoop 通过脚本shadoop运行命令，脚本就只有几行代码
+bin=`dirname &amp;#34;$0&amp;#34;` bin=`cd &amp;#34;$bin&amp;#34; &amp;gt; /dev/null; pwd` # Call Hadoop with the operations.Main as the main class . &amp;#34;$bin&amp;#34;/hadoop edu.umn.cs.spatialHadoop.operations.Main $@ 其实只是将spatialhadoop的jar包与相关依赖jar包放入Hadoop的包目录中，然后通过shadoop脚本调用Hadoop脚本调用包中的一个类，向YARN提交MapReduce任务。</description>
+    </item>
+    
+    <item>
+      <title>Hadoop YARN 调度器（scheduler） —— 资源调度策略</title>
+      <link>http://extendswind.top/posts/technical/hadoop_yarn_resource_scheduler/</link>
+      <pubDate>Tue, 04 Sep 2018 10:30:00 +0800</pubDate>
+      
+      <guid>http://extendswind.top/posts/technical/hadoop_yarn_resource_scheduler/</guid>
+      <description>搜了一些博客，发现写得最清楚的还是《Hadoop权威指南》，以下内容主要来自《Hadoop The Definitive Guide》 4th Edition 2015.3。
+Hadoop YARN Scheduler 三个调度器 YARN提供了CapacityScheduler, FairScheduler, FifoScheduler三个调度器，继承于AbstractYarnScheduler，Resource Manager通过调度器决定对提交application分配的资源大小。
+CapacityScheduler首先将所有资源分配到hierarchical queue中，每个任务执行时指定对应的queue，使大任务不会占用整个集群的资源，通过对queue的资源管理提高整个集群的资源共享能力。通常会使小任务执行更快，大任务更慢。
+Fair Scheduler 会在第一个任务运行时分配当前同级队列的所有资源，当有其它任务运行时，回收前面任务运行时的部分资源（一般为运行完成的Container）用于其它任务。
+至于FIFO，源码里都没有描述，可能就是一般的先进先出了。
+YARN默认使用CapacityScheduler，通过下面的属性配置：
+&amp;lt;property&amp;gt; &amp;lt;name&amp;gt;yarn.resourcemanager.scheduler.class&amp;lt;/name&amp;gt; &amp;lt;value&amp;gt;org.apache.hadoop.yarn.server.resourcemanager.scheduler.fair.FairScheduler&amp;lt;/value&amp;gt; &amp;lt;/property&amp;gt; YARN 动态资源分配 YARN 能够动态申请资源，如MapReduce中reduce的container会在map过程结束后申请。但Spark On YARN的机制为申请固定的executor，而不动态改变已申请的资源。
+YARN上新运行的任务能够使用已运行任务回收的资源(如运行完Map task的container)，甚至还能够通过强行结束先前任务的container抢占资源。
+Capacity Scheduler CapacityScheduler重点解决多个组织共享集群资源，并保证每个组织自己的资源使用量。当自己的资源不足时能够使用其它组织的空闲资源。
+资源通过层级队列（hierarchical queues）的形式进行组织，配置在etc/hadoop/capacity-scheduler.xml.
+&amp;lt;!-- 队列结构设置 --&amp;gt; &amp;lt;property&amp;gt; &amp;lt;name&amp;gt;yarn.scheduler.capacity.root.queues&amp;lt;/name&amp;gt; &amp;lt;value&amp;gt;a,b&amp;lt;/value&amp;gt; &amp;lt;description&amp;gt;The queues at the this level (root is the root queue). &amp;lt;/description&amp;gt; &amp;lt;/property&amp;gt; &amp;lt;property&amp;gt; &amp;lt;name&amp;gt;yarn.scheduler.capacity.root.a.queues&amp;lt;/name&amp;gt; &amp;lt;value&amp;gt;a1,a2&amp;lt;/value&amp;gt; &amp;lt;description&amp;gt;The queues at the this level (root is the root queue).</description>
+    </item>
     
     <item>
       <title>Hadoop HDFS 远程调试（Docker环境下的Hadoop集群）</title>
@@ -66,8 +107,7 @@ https://forum.manjaro.org/t/grub-error-computer-with-no-os-installed-invalid-arc
 主要实现思想：
  对象的复制只需要在每个类中实现一个clone函数即可 使用工厂模式相关思想获取具体的clone对象  java实现的clone操作 下面的实现基于java，如c++一类的语言对于每个对象的复制需要自行处理。
 java的所有类都继承于Object，Object类中定义了native实现的clone函数，但需要实现Cloneable接口才能调用。通过clone函数能够直接复制内存中的对象而不用调用构造函数。
-注意，java Object的clone函数为 浅拷贝，只会复制对象地址而不创建新的对象。需要根据实际情况判读是否做相应的深拷贝修改。
-吐槽：很多博客和书上的示例实质上就下面这一段，然后加个实例里n个成员变量和函数凑出十几到几十行，实现个Cloneable接口加个clone函数就算完了&amp;hellip;.
+注意，java Object的clone函数为 浅拷贝，只会复制类成员对象地址而不创建新的对象。需要根据实际情况判读是否做相应的深拷贝修改。 吐槽：很多博客和书上的示例实质上就下面这一段，然后加个实例里n个成员变量和函数凑出十几到几十行，实现个Cloneable接口加个clone函数就算完了&amp;hellip;.
 class Prototype implements Cloneable{ int attr; public Prototype clone(){ Prototype prototype = null; try { prototype = (Prototype)super.clone(); } catch (CloneNotSupportedException e) { e.printStackTrace(); } return prototype; } } 一个不使用java特性的简单实现 class Prototype{ int attr; public Prototype clone(){ Prototype clone = new Prototype(); clone.attr = this.attr; return clone; } } 同上，注意深拷贝和浅拷贝问题。</description>
     </item>
     
@@ -142,8 +182,8 @@ abstract class Logger { public void writeLog(){ System.out.println(&amp;#34;writ
       <guid>http://extendswind.top/posts/life/blog_first/</guid>
       <description>终于初步搞定了这个博客，首先吐槽：Hugo虽然自称最快，但要想找个合适的主题外加适应中文真不是一般的折腾，各种css调了半天还没达到想要的效果。只是作为一个折腾的helloworld程序员，即便有aur一键安装，也难忍搞个博客还要来一波nodejs或ruby。
 改成中文各种看起来不舒服，还没搞清楚具体怎么翻译。域名申请还是等后面有点内容的时候再说吧。
-搞个博客能干啥，最近发现自己一直违背了高效工作必备的“要事优先”原则，博客园、简书、豆瓣等不折腾平台还是够用了。不过理由，只要是找肯定会有的：不想多个平台换；感觉博客这东西应该用git一类的工具管理；吐槽学术界大部分方向的封闭；一键上传；说不定写写小说好用；看到很多人用；反正就是折腾了。
-作为一个还在学术界又不确定以后会不会在学术界的半个researcher，准备先走走技术流，有个博客记录总是好的，就这么开头吧。
+搞个博客能干啥，最近发现自己一直违背了高效工作必备的“要事优先”原则，博客园、简书、豆瓣等不折腾平台还是够用了。不过还是有点折腾博客的理由：不想多个平台换；感觉博客这东西应该用git一类的工具管理；吐槽学术界大部分方向的封闭；一键上传；说不定写写小说好用；看到很多人用；反正就是折腾了。
+作为一个还在学术界又不确定以后会不会在学术界的半个researcher，准备先走走技术流，有个博客记录总是好的。
 聊聊技术，谈谈学术，写写人生。</description>
     </item>
     
