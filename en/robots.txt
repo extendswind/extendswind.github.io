@@ -1,2 +1,13 @@
 User-agent: *
-Disallow:
+
+
+Disallow: /en/authors/
+
+Disallow: /en/categories/
+
+Disallow: /en/series/
+
+Disallow: /en/tags/
+
+Disallow: /en/
+
