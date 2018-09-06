@@ -38,8 +38,7 @@ tags:
 
 java的所有类都继承于Object，Object类中定义了native实现的clone函数，但需要实现Cloneable接口才能调用。通过clone函数能够直接复制内存中的对象而不用调用构造函数。
 
-注意，java Object的clone函数为 **浅拷贝**，只会复制对象地址而不创建新的对象。需要根据实际情况判读是否做相应的深拷贝修改。
-
+注意，java Object的clone函数为 **浅拷贝**，只会复制类成员对象地址而不创建新的对象。需要根据实际情况判读是否做相应的深拷贝修改。 
 吐槽：很多博客和书上的示例实质上就下面这一段，然后加个实例里n个成员变量和函数凑出十几到几十行，实现个Cloneable接口加个clone函数就算完了....
 
 ```java
@@ -101,7 +100,7 @@ class ConcretePrototype2 extends Prototype {
 
 ## 客户端实现
 
-客户端需要初始化具体的类对象，并根据参数决定具体克隆的对象，一般考虑几个工厂模式的思想。
+客户端用于初始化具体的类对象，和工厂模式中的工厂类似，根据参数决定具体克隆的对象，一般考虑几个工厂模式的思想。
 
 简单工厂模式实现：
 
@@ -112,7 +111,7 @@ class PrototypeFactory{
         prototypes = new Prototype[3];
         prototypes[0] = new ConcretePrototype1();
         prototypes[1] = new ConcretePrototype2();
-        prototypes[1] = new ConcretePrototype2();// 可以对同一个类进行两种不同的初始化
+        prototypes[2] = new ConcretePrototype2();// 可以考虑在后面对同一个类进行两种不同的初始化
         // 此处省略初始化操作....
     }
     public static Prototype getProduct(int id){
@@ -136,6 +135,4 @@ public class PrototypePattern {
 通过克隆已经初始化对象的方式创建新的对象是一种比较好的思想。在掌握几种工厂模式的基础上，其实实现没什么难度，不用在意各种书和博客上的细节。
 
 原型模式的典型缺点：当类成员较为复杂时，clone函数中的复制会较为复杂。（如有一堆同样需要clone的对象作为成员）
-
-
 
