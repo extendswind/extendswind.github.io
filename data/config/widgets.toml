@@ -4,7 +4,7 @@
 # About Widget config
 [about]
 title = "extendswind"                            # default: .Site.Title
-description = "class * extends Wind " #"class ? extends Wind"    
+description = " " #"class ? extends Wind"    
 # default: .Site.Params.info.description
 
 # Follow my blade

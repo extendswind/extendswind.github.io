@@ -27,6 +27,7 @@ defaultContentLanguage = "zh"
 
 [params.info]
 description = "a simple blog site" # 显示在右上方的标题下 不被覆盖的话会在左方的名字下
+
 title404 = "Nothing's here!  404 "
 # A programmer or a researcher
 [params.assets]
