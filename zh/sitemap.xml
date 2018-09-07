@@ -3,188 +3,77 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>http://extendswind.top/</loc>
-    <lastmod>2018-09-05T10:30:00+08:00</lastmod>
-    <xhtml:link
-                rel="alternate"
-                hreflang="en"
-                href="http://extendswind.top/en/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="zh"
-                href="http://extendswind.top/"
-                />
-  </url>
-  
-  <url>
-    <loc>http://extendswind.top/posts/technical/spatialhadoop_compile_and_run/</loc>
-    <lastmod>2018-09-05T10:30:00+08:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>http://extendswind.top/posts/technical/hadoop_yarn_resource_scheduler/</loc>
-    <lastmod>2018-09-04T10:30:00+08:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>http://extendswind.top/posts/technical/remote_debug_of_hadoop_in_docker/</loc>
-    <lastmod>2018-07-26T21:30:00+08:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>http://extendswind.top/posts/technical/manjaro_install_problem_grub/</loc>
-    <lastmod>2018-07-17T20:59:49+08:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>http://extendswind.top/posts/technical/design_patterns_prototype/</loc>
-    <lastmod>2018-07-03T21:25:25+08:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>http://extendswind.top/posts/technical/design_patterns_singleton/</loc>
-    <lastmod>2018-07-02T11:25:25+08:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>http://extendswind.top/posts/technical/linux_desktop_distribution/</loc>
-    <lastmod>2018-06-29T20:59:49+08:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>http://extendswind.top/posts/technical/design_patterns_static_proxy_and_decoration/</loc>
-    <lastmod>2018-06-20T17:25:25+08:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>http://extendswind.top/posts/technical/design_patterns_factory/</loc>
-    <lastmod>2018-06-15T17:25:25+08:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>http://extendswind.top/posts/life/blog_first/</loc>
-    <lastmod>2018-06-04T22:40:48+08:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>http://extendswind.top/authors/</loc>
+    <loc>http://extendswind.top/zh/authors/</loc>
     <priority>0</priority>
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://extendswind.top/en/authors/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="zh"
                 href="http://extendswind.top/authors/"
                 />
+    <xhtml:link
+                rel="alternate"
+                hreflang="zh"
+                href="http://extendswind.top/zh/authors/"
+                />
   </url>
   
   <url>
-    <loc>http://extendswind.top/categories/</loc>
+    <loc>http://extendswind.top/zh/categories/</loc>
     <priority>0</priority>
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://extendswind.top/en/categories/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="zh"
                 href="http://extendswind.top/categories/"
                 />
+    <xhtml:link
+                rel="alternate"
+                hreflang="zh"
+                href="http://extendswind.top/zh/categories/"
+                />
   </url>
   
   <url>
-    <loc>http://extendswind.top/categories/cloud-computing/</loc>
-    <lastmod>2018-09-05T10:30:00+08:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>http://extendswind.top/tags/design-patterns/</loc>
-    <lastmod>2018-07-03T21:25:25+08:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>http://extendswind.top/tags/gis/</loc>
-    <lastmod>2018-09-05T10:30:00+08:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>http://extendswind.top/tags/hadoop/</loc>
-    <lastmod>2018-09-05T10:30:00+08:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>http://extendswind.top/categories/life/</loc>
-    <lastmod>2018-06-04T22:40:48+08:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>http://extendswind.top/tags/life/</loc>
-    <lastmod>2018-06-04T22:40:48+08:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>http://extendswind.top/tags/linux/</loc>
-    <lastmod>2018-07-17T20:59:49+08:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>http://extendswind.top/categories/linux-desktop/</loc>
-    <lastmod>2018-07-17T20:59:49+08:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>http://extendswind.top/posts/</loc>
-    <lastmod>2018-09-05T10:30:00+08:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>http://extendswind.top/categories/programming/</loc>
-    <lastmod>2018-07-03T21:25:25+08:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>http://extendswind.top/series/</loc>
+    <loc>http://extendswind.top/zh/series/</loc>
     <priority>0</priority>
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://extendswind.top/en/series/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="zh"
                 href="http://extendswind.top/series/"
                 />
+    <xhtml:link
+                rel="alternate"
+                hreflang="zh"
+                href="http://extendswind.top/zh/series/"
+                />
   </url>
   
   <url>
-    <loc>http://extendswind.top/tags/</loc>
-    <lastmod>2018-07-03T21:25:25+08:00</lastmod>
+    <loc>http://extendswind.top/zh/tags/</loc>
     <priority>0</priority>
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://extendswind.top/en/tags/"
+                href="http://extendswind.top/tags/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="zh"
-                href="http://extendswind.top/tags/"
+                href="http://extendswind.top/zh/tags/"
+                />
+  </url>
+  
+  <url>
+    <loc>http://extendswind.top/zh/</loc>
+    <priority>0</priority>
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="http://extendswind.top/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="zh"
+                href="http://extendswind.top/zh/"
                 />
   </url>
   
