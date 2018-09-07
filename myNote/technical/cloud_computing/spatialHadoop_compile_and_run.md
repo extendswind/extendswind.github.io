@@ -111,3 +111,12 @@ shadoop rangequery test.grid rect:10,10,2000,3000 rangequery.out shape:rect
 主要的索引结构，文件存储形式等在官网有相关文档。
 
 具体运行的参数和运行的命令很多没有介绍，输入bin/shadoop以及bin/shadoop 接命令能够看到命令的基本使用情况，更具体的估计要去找源码了。
+
+
+
+# 主要参考链接
+
+- http://spatialhadoop.cs.umn.edu/all_operations.html 所有操作和说明
+- http://spatialhadoop.cs.umn.edu/ 官网
+- https://github.com/aseldawy/spatialhadoop2  github仓库
+

@@ -23,7 +23,7 @@ pygmentsCodefences = true
 enableEmoji = true
 
 # Missing translations will default to this content language
-defaultContentLanguage = "zh"
+defaultContentLanguage = "en"
 
 [params.info]
 description = "a simple blog site" # 显示在右上方的标题下 不被覆盖的话会在左方的名字下
@@ -156,8 +156,8 @@ hrefTargetBlank = true
 [languages.en]
 lang = "en"
 languageName = "English"
-weight = 3
+weight = 10
 [languages.zh]
 lang = "zh"
 languageName = "Chinese"
-weight = 10
+weight = 5
