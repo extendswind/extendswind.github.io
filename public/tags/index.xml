@@ -5,10 +5,19 @@
     <link>http://extendswind.top/tags/</link>
     <description>Recent content in Tags on extendswind</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Tue, 03 Jul 2018 21:25:25 +0800</lastBuildDate>
+    <lastBuildDate>Tue, 04 Sep 2018 10:30:00 +0800</lastBuildDate>
     
 	<atom:link href="http://extendswind.top/tags/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Blog</title>
+      <link>http://extendswind.top/tags/blog/</link>
+      <pubDate>Tue, 04 Sep 2018 10:30:00 +0800</pubDate>
+      
+      <guid>http://extendswind.top/tags/blog/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>Design patterns</title>
