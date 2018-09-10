@@ -28,6 +28,11 @@
   </url>
   
   <url>
+    <loc>http://extendswind.top/posts/technical/hugo_blog_host_and_seo/</loc>
+    <lastmod>2018-09-04T10:30:00+08:00</lastmod>
+  </url>
+  
+  <url>
     <loc>http://extendswind.top/posts/technical/remote_debug_of_hadoop_in_docker/</loc>
     <lastmod>2018-07-26T21:30:00+08:00</lastmod>
   </url>
@@ -80,6 +85,12 @@
                 hreflang="en"
                 href="http://extendswind.top/authors/"
                 />
+  </url>
+  
+  <url>
+    <loc>http://extendswind.top/tags/blog/</loc>
+    <lastmod>2018-09-04T10:30:00+08:00</lastmod>
+    <priority>0</priority>
   </url>
   
   <url>
@@ -146,6 +157,12 @@
   </url>
   
   <url>
+    <loc>http://extendswind.top/categories/operation/</loc>
+    <lastmod>2018-09-04T10:30:00+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>http://extendswind.top/posts/</loc>
     <lastmod>2018-09-05T10:30:00+08:00</lastmod>
     <priority>0</priority>
@@ -174,7 +191,7 @@
   
   <url>
     <loc>http://extendswind.top/tags/</loc>
-    <lastmod>2018-07-03T21:25:25+08:00</lastmod>
+    <lastmod>2018-09-04T10:30:00+08:00</lastmod>
     <priority>0</priority>
     <xhtml:link
                 rel="alternate"

@@ -33,7 +33,7 @@ Capacity Scheduler CapacityScheduler重点解决多个组织共享集群资源�
 <meta property='og:site_name' content='extendswind'>
 <meta property='og:type' content='article'><meta property='article:section' content='posts'><meta property='article:tag' content='hadoop'><meta property='article:tag' content='GIS'><meta property='article:published_time' content='2018-09-04T10:30:00&#43;08:00'/><meta property='article:modified_time' content='2018-09-04T10:30:00&#43;08:00'/><meta name='twitter:card' content='summary'>
 
-<meta name="generator" content="Hugo 0.46" />
+<meta name="generator" content="Hugo 0.48" />
 
   <title>Hadoop YARN 调度器（scheduler） —— 资源调度策略 • extendswind</title>
   <link rel='canonical' href='http://extendswind.top/posts/technical/hadoop_yarn_resource_scheduler/'>
@@ -44,7 +44,7 @@ Capacity Scheduler CapacityScheduler重点解决多个组织共享集群资源�
 :root{--color-accent:#cccccc;}
 </style>
 
-<script>
+<script type="application/javascript">
 var doNotTrack = false;
 if (!doNotTrack) {
 	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
@@ -104,6 +104,8 @@ if (!doNotTrack) {
   <div class='container list-container'>
   <ul class='list taxonomy-cloud'><li>
         <a href='/tags/gis/' style='font-size:1em'>GIS</a>
+      </li><li>
+        <a href='/tags/blog/' style='font-size:1em'>Blog</a>
       </li><li>
         <a href='/tags/design-patterns/' style='font-size:1em'>Design patterns</a>
       </li><li>
@@ -286,11 +288,12 @@ if (!doNotTrack) {
   <span style="color:#f92672">&lt;name&gt;</span>yarn.scheduler.capacity.root.a.maximum-capacity<span style="color:#f92672">&lt;/name&gt;</span>
   <span style="color:#f92672">&lt;value&gt;</span>75<span style="color:#f92672">&lt;/value&gt;</span>
 <span style="color:#f92672">&lt;/property&gt;</span></code></pre></div>
-<p>root
-├── a 40%
-|   ├── a1 50%
-|   └── a2 50%
-└── b 60%</p>
+<pre><code>root  
+├── a 40%  
+|   ├── a1 50%  
+|   └── a2 50%  
+└── b 60%  
+</code></pre>
 
 <p>上面的设置形成了如图的hierarchical queues，并指定a队列使用40%的资源，b队列60%，a1 a2各占a队列的50%，a队列在b队列资源空闲时，最高可占用集群75%的资源。</p>
 
@@ -326,11 +329,12 @@ if (!doNotTrack) {
 <span style="color:#f92672">&lt;/allocations&gt;</span></code></pre></div>
 <p>上面的配置文件给出了一个如下图的层级队列。</p>
 
-<p>root
+<pre><code>root 
 ├── a (权重4 因此占用总体40%的资源）
-|   ├── a1  没有指定权重，因此与a2队列平分a队列40%的资源；队列内部的多个应用使用fifo策略。
-|   └── a2
-└── b （权重6 因此占用总体60%的资源）</p>
+|   ├── a1  没有指定权重，因此与a2队列平分a队列40%的资源；队列内部的多个应用使用fifo策略。 
+|   └── a2 
+└── b （权重6 因此占用总体60%的资源）
+</code></pre>
 
 <p>向a1队列中提交任务1时，首先会占用整个集群；向b队列提交任务2时，会从任务1中回收60%的资源用于任务2；向a1队列中继续提交任务3时，会按fifo的策略使用a队列的40%资源；向a2队列提交任务4时，会从a1队列的任务1、任务3中回收资源，使a1队列资源和a2队列相同。</p>
 
@@ -374,7 +378,7 @@ if (!doNotTrack) {
 
 <nav class='entry-nav'>
   <div class='container'><div class='prev-entry sep-before'>
-      <a href='/posts/technical/remote_debug_of_hadoop_in_docker/'>
+      <a href='/posts/technical/hugo_blog_host_and_seo/'>
         <span aria-hidden='true'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
   
   <line x1="20" y1="12" x2="4" y2="12"/>
@@ -382,7 +386,7 @@ if (!doNotTrack) {
   
 </svg>
  Previous</span>
-        <span class='screen-reader-text'>Previous post: </span>Hadoop HDFS 远程调试（Docker环境下的Hadoop集群）</a>
+        <span class='screen-reader-text'>Previous post: </span>静态blog的免费托管部署、加域名与搜索优化（SEO）</a>
     </div><div class='next-entry sep-before'>
       <a href='/posts/technical/spatialhadoop_compile_and_run/'>
         <span class='screen-reader-text'>Next post: </span>SpatialHadoop的编译与运行<span aria-hidden='true'>Next <svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
