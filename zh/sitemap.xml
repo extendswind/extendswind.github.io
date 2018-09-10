@@ -3,77 +3,77 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>http://extendswind.top/zh/authors/</loc>
+    <loc>https://extendswind.top/zh/authors/</loc>
     <priority>0</priority>
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://extendswind.top/authors/"
+                href="https://extendswind.top/authors/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="zh"
-                href="http://extendswind.top/zh/authors/"
+                href="https://extendswind.top/zh/authors/"
                 />
   </url>
   
   <url>
-    <loc>http://extendswind.top/zh/categories/</loc>
+    <loc>https://extendswind.top/zh/categories/</loc>
     <priority>0</priority>
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://extendswind.top/categories/"
+                href="https://extendswind.top/categories/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="zh"
-                href="http://extendswind.top/zh/categories/"
+                href="https://extendswind.top/zh/categories/"
                 />
   </url>
   
   <url>
-    <loc>http://extendswind.top/zh/series/</loc>
+    <loc>https://extendswind.top/zh/series/</loc>
     <priority>0</priority>
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://extendswind.top/series/"
+                href="https://extendswind.top/series/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="zh"
-                href="http://extendswind.top/zh/series/"
+                href="https://extendswind.top/zh/series/"
                 />
   </url>
   
   <url>
-    <loc>http://extendswind.top/zh/tags/</loc>
+    <loc>https://extendswind.top/zh/tags/</loc>
     <priority>0</priority>
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://extendswind.top/tags/"
+                href="https://extendswind.top/tags/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="zh"
-                href="http://extendswind.top/zh/tags/"
+                href="https://extendswind.top/zh/tags/"
                 />
   </url>
   
   <url>
-    <loc>http://extendswind.top/zh/</loc>
+    <loc>https://extendswind.top/zh/</loc>
     <priority>0</priority>
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://extendswind.top/"
+                href="https://extendswind.top/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="zh"
-                href="http://extendswind.top/zh/"
+                href="https://extendswind.top/zh/"
                 />
   </url>
   

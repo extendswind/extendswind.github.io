@@ -2,20 +2,20 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Linux desktop on extendswind</title>
-    <link>http://extendswind.top/categories/linux-desktop/</link>
+    <link>https://extendswind.top/categories/linux-desktop/</link>
     <description>Recent content in Linux desktop on extendswind</description>
     <generator>Hugo -- gohugo.io</generator>
     <lastBuildDate>Tue, 17 Jul 2018 20:59:49 +0800</lastBuildDate>
     
-	<atom:link href="http://extendswind.top/categories/linux-desktop/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://extendswind.top/categories/linux-desktop/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>使用u盘安装linux(manjaro)时Grub报错</title>
-      <link>http://extendswind.top/posts/technical/manjaro_install_problem_grub/</link>
+      <link>https://extendswind.top/posts/technical/manjaro_install_problem_grub/</link>
       <pubDate>Tue, 17 Jul 2018 20:59:49 +0800</pubDate>
       
-      <guid>http://extendswind.top/posts/technical/manjaro_install_problem_grub/</guid>
+      <guid>https://extendswind.top/posts/technical/manjaro_install_problem_grub/</guid>
       <description>错误  error: invalid arch-independent ELF magic. Entering rescue mode&amp;hellip; grub rescue&amp;gt;
  使用Rufu ISO模式烧录的U盘，lagency 模式能够启动，但点安装后出上面错误；UEFI模式直接出上面错误。
 解决方案 不多说，百度背锅，google答案的前几个就是正解。
@@ -27,10 +27,10 @@ https://forum.manjaro.org/t/grub-error-computer-with-no-os-installed-invalid-arc
     
     <item>
       <title>linux桌面发行版简介</title>
-      <link>http://extendswind.top/posts/technical/linux_desktop_distribution/</link>
+      <link>https://extendswind.top/posts/technical/linux_desktop_distribution/</link>
       <pubDate>Fri, 29 Jun 2018 20:59:49 +0800</pubDate>
       
-      <guid>http://extendswind.top/posts/technical/linux_desktop_distribution/</guid>
+      <guid>https://extendswind.top/posts/technical/linux_desktop_distribution/</guid>
       <description>linux系统 桌面操作系统：windows，MacOS和各linux发行版。
 2017年数据，windows份额超过90%，MacOS约6%，Linux份额最高的记录在2016年7月创下，是2.33%。
 貌似用linux和MacOS的大多是程序员了。MacOS和linux系统正常使用（看书、上网、看电影等）已经比较成熟，没有太大的体验差异。

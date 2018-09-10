@@ -29,14 +29,14 @@ YARN上新运行的任务能够使用已运行任务回收的资源(如运行完
 Capacity Scheduler CapacityScheduler重点解决多个组织共享集群资源，并保证每个组织自己的资源使用量。当自己的资源不足时能够使用其它组织的空闲资源。
 资源通过层级队列（hierarchical queues）的形式进行组织，配置在etc/hadoop/capacity-scheduler.xml.
 &lt;!-- 队列结构设置 --&gt; &lt;property&gt; &lt;name&gt;yarn.scheduler.capacity.root.queues&lt;/name&gt; &lt;value&gt;a,b&lt;/value&gt; &lt;description&gt;The queues at the this level (root is the root queue). &lt;/description&gt; &lt;/property&gt; &lt;property&gt; &lt;name&gt;yarn.scheduler.capacity.root.a.queues&lt;/name&gt; &lt;value&gt;a1,a2&lt;/value&gt; &lt;description&gt;The queues at the this level (root is the root queue).'>
-<meta property='og:url' content='http://extendswind.top/posts/technical/hadoop_yarn_resource_scheduler/'>
+<meta property='og:url' content='https://extendswind.top/posts/technical/hadoop_yarn_resource_scheduler/'>
 <meta property='og:site_name' content='extendswind'>
 <meta property='og:type' content='article'><meta property='article:section' content='posts'><meta property='article:tag' content='hadoop'><meta property='article:tag' content='GIS'><meta property='article:published_time' content='2018-09-04T10:30:00&#43;08:00'/><meta property='article:modified_time' content='2018-09-04T10:30:00&#43;08:00'/><meta name='twitter:card' content='summary'>
 
 <meta name="generator" content="Hugo 0.48" />
 
   <title>Hadoop YARN 调度器（scheduler） —— 资源调度策略 • extendswind</title>
-  <link rel='canonical' href='http://extendswind.top/posts/technical/hadoop_yarn_resource_scheduler/'>
+  <link rel='canonical' href='https://extendswind.top/posts/technical/hadoop_yarn_resource_scheduler/'>
   
   
   <link rel='icon' href='/images/wind.jpeg'>

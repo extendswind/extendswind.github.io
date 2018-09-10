@@ -35,14 +35,14 @@ cp target/spatialhadoop-2.4.3-SNAPSHOT-bin.tar.gz $HADOOP_HOME/ cd $HADOOP_HOME 
 sbin/shadoop generate test.rects size:1.gb shape:rect mbr:0,0,1000000,1000000 -overwrite
 SpatialHadoop运行机制 shadoop 脚本 SpatialHadoop 通过脚本shadoop运行命令，脚本就只有几行代码
 bin=`dirname &#34;$0&#34;` bin=`cd &#34;$bin&#34; &gt; /dev/null; pwd` # Call Hadoop with the operations.Main as the main class . &#34;$bin&#34;/hadoop edu.umn.cs.spatialHadoop.operations.Main $@ 其实只是将spatialhadoop的jar包与相关依赖jar包放入Hadoop的包目录中，然后通过shadoop脚本调用Hadoop脚本调用包中的一个类，向YARN提交MapReduce任务。'>
-<meta property='og:url' content='http://extendswind.top/posts/technical/spatialhadoop_compile_and_run/'>
+<meta property='og:url' content='https://extendswind.top/posts/technical/spatialhadoop_compile_and_run/'>
 <meta property='og:site_name' content='extendswind'>
 <meta property='og:type' content='article'><meta property='article:section' content='posts'><meta property='article:tag' content='hadoop'><meta property='article:tag' content='GIS'><meta property='article:published_time' content='2018-09-05T10:30:00&#43;08:00'/><meta property='article:modified_time' content='2018-09-05T10:30:00&#43;08:00'/><meta name='twitter:card' content='summary'>
 
 <meta name="generator" content="Hugo 0.48" />
 
   <title>SpatialHadoop的编译与运行 • extendswind</title>
-  <link rel='canonical' href='http://extendswind.top/posts/technical/spatialhadoop_compile_and_run/'>
+  <link rel='canonical' href='https://extendswind.top/posts/technical/spatialhadoop_compile_and_run/'>
   
   
   <link rel='icon' href='/images/wind.jpeg'>

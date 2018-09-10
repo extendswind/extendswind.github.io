@@ -2,55 +2,55 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Categories on extendswind</title>
-    <link>http://extendswind.top/categories/</link>
+    <link>https://extendswind.top/categories/</link>
     <description>Recent content in Categories on extendswind</description>
     <generator>Hugo -- gohugo.io</generator>
     
-	<atom:link href="http://extendswind.top/categories/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://extendswind.top/categories/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Cloud computing</title>
-      <link>http://extendswind.top/categories/cloud-computing/</link>
+      <link>https://extendswind.top/categories/cloud-computing/</link>
       <pubDate>Wed, 05 Sep 2018 10:30:00 +0800</pubDate>
       
-      <guid>http://extendswind.top/categories/cloud-computing/</guid>
+      <guid>https://extendswind.top/categories/cloud-computing/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Life</title>
-      <link>http://extendswind.top/categories/life/</link>
+      <link>https://extendswind.top/categories/life/</link>
       <pubDate>Mon, 04 Jun 2018 22:40:48 +0800</pubDate>
       
-      <guid>http://extendswind.top/categories/life/</guid>
+      <guid>https://extendswind.top/categories/life/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Linux desktop</title>
-      <link>http://extendswind.top/categories/linux-desktop/</link>
+      <link>https://extendswind.top/categories/linux-desktop/</link>
       <pubDate>Tue, 17 Jul 2018 20:59:49 +0800</pubDate>
       
-      <guid>http://extendswind.top/categories/linux-desktop/</guid>
+      <guid>https://extendswind.top/categories/linux-desktop/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Operation</title>
-      <link>http://extendswind.top/categories/operation/</link>
+      <link>https://extendswind.top/categories/operation/</link>
       <pubDate>Tue, 04 Sep 2018 10:30:00 +0800</pubDate>
       
-      <guid>http://extendswind.top/categories/operation/</guid>
+      <guid>https://extendswind.top/categories/operation/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Programming</title>
-      <link>http://extendswind.top/categories/programming/</link>
+      <link>https://extendswind.top/categories/programming/</link>
       <pubDate>Tue, 03 Jul 2018 21:25:25 +0800</pubDate>
       
-      <guid>http://extendswind.top/categories/programming/</guid>
+      <guid>https://extendswind.top/categories/programming/</guid>
       <description></description>
     </item>
     

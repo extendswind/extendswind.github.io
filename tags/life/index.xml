@@ -2,20 +2,20 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Life on extendswind</title>
-    <link>http://extendswind.top/tags/life/</link>
+    <link>https://extendswind.top/tags/life/</link>
     <description>Recent content in Life on extendswind</description>
     <generator>Hugo -- gohugo.io</generator>
     <lastBuildDate>Mon, 04 Jun 2018 22:40:48 +0800</lastBuildDate>
     
-	<atom:link href="http://extendswind.top/tags/life/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://extendswind.top/tags/life/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>第一篇博客</title>
-      <link>http://extendswind.top/posts/life/blog_first/</link>
+      <link>https://extendswind.top/posts/life/blog_first/</link>
       <pubDate>Mon, 04 Jun 2018 22:40:48 +0800</pubDate>
       
-      <guid>http://extendswind.top/posts/life/blog_first/</guid>
+      <guid>https://extendswind.top/posts/life/blog_first/</guid>
       <description>终于初步搞定了这个博客，首先吐槽：Hugo虽然自称最快，但要想找个合适的主题外加适应中文真不是一般的折腾，各种css调了半天还没达到想要的效果。只是作为一个折腾的helloworld程序员，即便有aur一键安装，也难忍搞个博客还要来一波nodejs或ruby。
 改成中文各种看起来不舒服，还没搞清楚具体怎么翻译。域名申请还是等后面有点内容的时候再说吧。
 搞个博客能干啥，最近发现自己一直违背了高效工作必备的“要事优先”原则，博客园、简书、豆瓣等不折腾平台还是够用了。不过还是有点折腾博客的理由：不想多个平台换；感觉博客这东西应该用git一类的工具管理；吐槽学术界大部分方向的封闭；一键上传；说不定写写小说好用；看到很多人用；反正就是折腾了。

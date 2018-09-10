@@ -2,20 +2,20 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>GIS on extendswind</title>
-    <link>http://extendswind.top/tags/gis/</link>
+    <link>https://extendswind.top/tags/gis/</link>
     <description>Recent content in GIS on extendswind</description>
     <generator>Hugo -- gohugo.io</generator>
     <lastBuildDate>Wed, 05 Sep 2018 10:30:00 +0800</lastBuildDate>
     
-	<atom:link href="http://extendswind.top/tags/gis/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://extendswind.top/tags/gis/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>SpatialHadoop的编译与运行</title>
-      <link>http://extendswind.top/posts/technical/spatialhadoop_compile_and_run/</link>
+      <link>https://extendswind.top/posts/technical/spatialhadoop_compile_and_run/</link>
       <pubDate>Wed, 05 Sep 2018 10:30:00 +0800</pubDate>
       
-      <guid>http://extendswind.top/posts/technical/spatialhadoop_compile_and_run/</guid>
+      <guid>https://extendswind.top/posts/technical/spatialhadoop_compile_and_run/</guid>
       <description>SpatialHadoop相对HadoopGIS等库，在MapReduce时代的空间数据处理开源库算处理较好。SpatialHadoop在效率上相对一些新的基于Spark空间数据处理开源库明显偏低，加上本身的功能实现得差不多，最近提交的更新越来越少，感觉发展趋势不太好，主要用于学习相关的索引技术。
 编译与运行 主页上有已经编译好的包，可以直接解压到Hadoop目录下运行，但官方的版本解压有错误，因此下载github上源码编译。
 需要的环境：
@@ -34,10 +34,10 @@ bin=`dirname &amp;#34;$0&amp;#34;` bin=`cd &amp;#34;$bin&amp;#34; &amp;gt; /dev/
     
     <item>
       <title>Hadoop YARN 调度器（scheduler） —— 资源调度策略</title>
-      <link>http://extendswind.top/posts/technical/hadoop_yarn_resource_scheduler/</link>
+      <link>https://extendswind.top/posts/technical/hadoop_yarn_resource_scheduler/</link>
       <pubDate>Tue, 04 Sep 2018 10:30:00 +0800</pubDate>
       
-      <guid>http://extendswind.top/posts/technical/hadoop_yarn_resource_scheduler/</guid>
+      <guid>https://extendswind.top/posts/technical/hadoop_yarn_resource_scheduler/</guid>
       <description>搜了一些博客，发现写得最清楚的还是《Hadoop权威指南》，以下内容主要来自《Hadoop The Definitive Guide》 4th Edition 2015.3。
 Hadoop YARN Scheduler 三个调度器 YARN提供了CapacityScheduler, FairScheduler, FifoScheduler三个调度器，继承于AbstractYarnScheduler，Resource Manager通过调度器决定对提交application分配的资源大小。
 CapacityScheduler首先将所有资源分配到hierarchical queue中，每个任务执行时指定对应的queue，使大任务不会占用整个集群的资源，通过对queue的资源管理提高整个集群的资源共享能力。通常会使小任务执行更快，大任务更慢。
