@@ -1,0 +1,1 @@
+../../../myNote/./technical/programming_basic/git_code_roll_back_revert_and_reset.md
