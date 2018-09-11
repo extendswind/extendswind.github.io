@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang='en'>
+
+<head>
+  <meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<meta name='description' content='reset 某些特殊的情况下，需要回退到先前的某一次提交。
+git log 查找想要回退的commit的id后运行：
+git reset --hard 2c1e288
+回退后git log只会显示回退版本之前的提交。如果需要返回最新的提交，使用git reflog查看对应的id。
+git reset只适合本地的回退和查看先前代码。如果远程仓库已有最新的提交，git会认为远程仓库的代码较新，需要先同步远程代码再进行修改，此情况下建议使用revert。
+git reset &ndash;soft &ndash;mixed &ndash;hard 以HEAD～为例（HEAD前的一次提交）
+git reset --soft HEAD~ 会回到前一次提交的commit执行之前的状态 git reset --mixed HEAD~ 会回到前一次提交的add执行之前的状态 git reset --hard HEAD~ 会回到前一次提交的add执行之前的状态，并且将目录里的所有文件调整为前一次的提交状态
+通常回退时需要将文件也回退需要加 &ndash;hard 标签。
+git的文件组织 git将所有的文件以hash码命名放在仓库中存储。
+HEAD指针，一般可以理解为当前commit状态的一个快照（指向仓库中当前commit的所有的文件）。每次commit或者merge等会创建新的commit节点时，会让HEAD指向新的位置。
+reset会改变HEAD指针的位置与HEAD对应的分支指针的位置，checkout只会改变HEAD指针指向的分支。
+revert git revert &lt;commit-id&gt; 相当于取消一次commit ，会让结果和没有这一次提交一样，并非像reset那样直接回到某一次commit的代码。
+使用revert不会破坏历史记录，只是提交一个新的修改使修改后代码和以前一致。
+实质上相当于用前的代码merge 后的代码，因此如果后面对代码文件做了修改需要解决冲突。
+revert一个merge commit 注意revert用在merge的commit上的情况有坑
+git revert &lt;commit-id&gt; -m 1 需要添加-m参数，指定是merge前的第几个分支（git log上的merge后）。
+revert的主要麻烦：如果存在分支合并的情况，如下，从m1 revert到a2时会添加一个新的提交m2，当m2与b2 merge时会显示已经merge过。
+a1 -&gt; a2 -&gt; m1 -&gt; m2 b1 -&gt; b2 /'>
+<meta name='theme-color' content='#cccccc'>
+
+<meta property='og:title' content='git 代码回滚与爬坑 -- reset and revert • extendswind'>
+<meta property='og:description' content='reset 某些特殊的情况下，需要回退到先前的某一次提交。
+git log 查找想要回退的commit的id后运行：
+git reset --hard 2c1e288
+回退后git log只会显示回退版本之前的提交。如果需要返回最新的提交，使用git reflog查看对应的id。
+git reset只适合本地的回退和查看先前代码。如果远程仓库已有最新的提交，git会认为远程仓库的代码较新，需要先同步远程代码再进行修改，此情况下建议使用revert。
+git reset &ndash;soft &ndash;mixed &ndash;hard 以HEAD～为例（HEAD前的一次提交）
+git reset --soft HEAD~ 会回到前一次提交的commit执行之前的状态 git reset --mixed HEAD~ 会回到前一次提交的add执行之前的状态 git reset --hard HEAD~ 会回到前一次提交的add执行之前的状态，并且将目录里的所有文件调整为前一次的提交状态
+通常回退时需要将文件也回退需要加 &ndash;hard 标签。
+git的文件组织 git将所有的文件以hash码命名放在仓库中存储。
+HEAD指针，一般可以理解为当前commit状态的一个快照（指向仓库中当前commit的所有的文件）。每次commit或者merge等会创建新的commit节点时，会让HEAD指向新的位置。
+reset会改变HEAD指针的位置与HEAD对应的分支指针的位置，checkout只会改变HEAD指针指向的分支。
+revert git revert &lt;commit-id&gt; 相当于取消一次commit ，会让结果和没有这一次提交一样，并非像reset那样直接回到某一次commit的代码。
+使用revert不会破坏历史记录，只是提交一个新的修改使修改后代码和以前一致。
+实质上相当于用前的代码merge 后的代码，因此如果后面对代码文件做了修改需要解决冲突。
+revert一个merge commit 注意revert用在merge的commit上的情况有坑
+git revert &lt;commit-id&gt; -m 1 需要添加-m参数，指定是merge前的第几个分支（git log上的merge后）。
+revert的主要麻烦：如果存在分支合并的情况，如下，从m1 revert到a2时会添加一个新的提交m2，当m2与b2 merge时会显示已经merge过。
+a1 -&gt; a2 -&gt; m1 -&gt; m2 b1 -&gt; b2 /'>
+<meta property='og:url' content='https://extendswind.top/posts/technical/git_code_roll_back_revert_and_reset/'>
+<meta property='og:site_name' content='extendswind'>
+<meta property='og:type' content='article'><meta property='article:section' content='posts'><meta property='article:tag' content='git'><meta property='article:published_time' content='2018-09-11T10:30:00&#43;08:00'/><meta property='article:modified_time' content='2018-09-11T10:30:00&#43;08:00'/><meta name='twitter:card' content='summary'>
+
+<meta name="generator" content="Hugo 0.48" />
+
+  <title>git 代码回滚与爬坑 -- reset and revert • extendswind</title>
+  <link rel='canonical' href='https://extendswind.top/posts/technical/git_code_roll_back_revert_and_reset/'>
+  
+  
+  <link rel='icon' href='/images/wind.jpeg'>
+<link rel='stylesheet' href='/assets/css/main.4267b3fa.css'><link rel='stylesheet' href='/css/custom.css'><style>
+:root{--color-accent:#cccccc;}
+</style>
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-125329544-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+  
+
+</head>
+
+
+<body class='page type-posts has-sidebar'>
+
+  <div class='site'>
+
+    <div id='sidebar' class='sidebar'>
+  <a class='screen-reader-text' href='#main-menu'>Skip to Main Menu</a>
+
+  <div class='container'><section class='widget widget-about sep-after'>
+  <header>
+    
+    <div class='logo'>
+      <a href='/'>
+        <img src='/images/wind.jpeg'>
+      </a>
+    </div>
+    
+    <h2 class='title site-title '>
+    extendswind
+    </h2>
+    <div class='desc'>
+    
+    </div>
+  </header>
+
+</section>
+<section class='widget widget-sidebar_menu sep-after'><nav id='sidebar-menu' class='menu sidebar-menu' aria-label='Sidebar Menu'>
+    <div class='container'>
+      <ul><li class='item'>
+  <a href='/'>Home</a></li><li class='item'>
+  <a href='/posts'>Posts</a></li><li class='item'>
+  <a href='/categories'>Categories</a></li><li class='item'>
+  <a href='https://github.com/extendswind'>GitHub</a></li><li class='item'>
+  <a href='http://www.cnblogs.com/fly2wind/'>Cnblog</a></li></ul>
+    </div>
+  </nav>
+
+</section><section class='widget widget-taxonomy_cloud sep-after'>
+  <header>
+    <h4 class='title widget-title'>Tags</h4>
+  </header>
+
+  <div class='container list-container'>
+  <ul class='list taxonomy-cloud'><li>
+        <a href='/tags/gis/' style='font-size:1em'>GIS</a>
+      </li><li>
+        <a href='/tags/blog/' style='font-size:1em'>Blog</a>
+      </li><li>
+        <a href='/tags/design-patterns/' style='font-size:1em'>Design patterns</a>
+      </li><li>
+        <a href='/tags/git/' style='font-size:1em'>Git</a>
+      </li><li>
+        <a href='/tags/hadoop/' style='font-size:1em'>Hadoop</a>
+      </li><li>
+        <a href='/tags/life/' style='font-size:1em'>Life</a>
+      </li><li>
+        <a href='/tags/linux/' style='font-size:1em'>Linux</a>
+      </li></ul>
+</div>
+
+
+</section>
+</div>
+
+  <div class='sidebar-overlay'></div>
+</div>
+
+    <div class='main'>
+
+      <a class='screen-reader-text' href='#content'>Skip to Content</a>
+
+<button id='sidebar-toggler' class='sidebar-toggler' aria-controls='sidebar'>
+  <span class='screen-reader-text'>Toggle Sidebar</span>
+  <span class='open'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="3" y1="12" x2="21" y2="12" />
+  <line x1="3" y1="6" x2="21" y2="6" />
+  <line x1="3" y1="18" x2="21" y2="18" />
+  
+</svg>
+</span>
+  <span class='close'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="18" y1="6" x2="6" y2="18" />
+  <line x1="6" y1="6" x2="18" y2="18" />
+  
+</svg>
+</span>
+</button>
+
+      <header id='header' class='header site-header'>
+        <div class='container sep-after'>
+          <div class='header-info'><p class='site-title title'>extendswind</p><p class='desc site-desc'>a simple blog site</p>
+          </div>
+        </div>
+      </header>
+
+      <main id='content'>
+
+
+<article lang='en' class='entry'>
+  <header class='header entry-header'>
+  <div class='container sep-after'>
+    <div class='header-info'>
+      <h1 class='title'>git 代码回滚与爬坑 -- reset and revert</h1>
+      
+
+    </div>
+    
+<div class='entry-meta'>
+  <span class='posted-on'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+  <line x1="16" y1="2" x2="16" y2="6"/>
+  <line x1="8" y1="2" x2="8" y2="6"/>
+  <line x1="3" y1="10" x2="21" y2="10"/>
+  
+</svg>
+<span class='screen-reader-text'>Posted on </span>
+  <time class='entry-date' datetime='2018-09-11T10:30:00&#43;08:00'>2018, Sep 11</time>
+</span>
+
+  
+  
+
+</div>
+
+
+  </div>
+</header>
+
+  
+  
+<details class='container entry-toc' open>
+  <summary class='title'>
+    <span>Table of Contents</span>
+  </summary>
+  <nav id="TableOfContents">
+<ul>
+<li><a href="#reset">reset</a></li>
+<li><a href="#git-reset-soft-mixed-hard">git reset &ndash;soft &ndash;mixed &ndash;hard</a></li>
+<li><a href="#git的文件组织">git的文件组织</a></li>
+<li><a href="#revert">revert</a></li>
+<li><a href="#revert一个merge-commit">revert一个merge commit</a></li>
+<li><a href="#不常用的回退">不常用的回退</a></li>
+</ul>
+</nav>
+</details>
+
+
+  <div class='container entry-content'>
+  
+
+<h1 id="reset">reset</h1>
+
+<p>某些特殊的情况下，需要回退到先前的某一次提交。</p>
+
+<p>git log 查找想要回退的commit的id后运行：</p>
+
+<p><code>git reset --hard 2c1e288</code></p>
+
+<p>回退后git log只会显示回退版本之前的提交。如果需要返回最新的提交，使用git reflog查看对应的id。</p>
+
+<p><strong>git reset只适合本地的回退和查看先前代码。如果远程仓库已有最新的提交，git会认为远程仓库的代码较新，需要先同步远程代码再进行修改，此情况下建议使用revert。</strong></p>
+
+<h1 id="git-reset-soft-mixed-hard">git reset &ndash;soft &ndash;mixed &ndash;hard</h1>
+
+<p>以<code>HEAD～</code>为例（HEAD前的一次提交）</p>
+
+<p><code>git reset --soft HEAD~</code>  会回到前一次提交的commit执行之前的状态
+<code>git reset --mixed HEAD~</code>  会回到前一次提交的add执行之前的状态
+<code>git reset --hard HEAD~</code>  会回到前一次提交的add执行之前的状态，并且将目录里的所有文件调整为前一次的提交状态</p>
+
+<p>通常回退时需要将文件也回退需要加 &ndash;hard 标签。</p>
+
+<h1 id="git的文件组织">git的文件组织</h1>
+
+<p>git将所有的文件以hash码命名放在仓库中存储。</p>
+
+<p>HEAD指针，一般可以理解为当前commit状态的一个快照（指向仓库中当前commit的所有的文件）。每次commit或者merge等会创建新的commit节点时，会让HEAD指向新的位置。</p>
+
+<p>reset会改变HEAD指针的位置与HEAD对应的分支指针的位置，checkout只会改变HEAD指针指向的分支。</p>
+
+<h1 id="revert">revert</h1>
+
+<p><code>git revert &lt;commit-id&gt;</code> <strong>相当于取消一次commit ，会让结果和没有<commit-id>这一次提交一样，并非像reset那样直接回到某一次commit的代码。</strong></p>
+
+<p>使用revert不会破坏历史记录，只是提交一个新的修改使修改后代码和以前一致。</p>
+
+<p>实质上相当于用<commit-id>前的代码merge <commit-id>后的代码，因此如果后面对代码文件做了修改需要解决冲突。</p>
+
+<h1 id="revert一个merge-commit">revert一个merge commit</h1>
+
+<p><strong>注意revert用在merge的commit上的情况有坑</strong></p>
+
+<p><code>git revert &lt;commit-id&gt; -m 1</code> 需要添加-m参数，指定是merge前的第几个分支（git log上的merge后）。</p>
+
+<p>revert的主要麻烦：如果存在分支合并的情况，如下，从m1 revert到a2时会添加一个新的提交m2，<strong>当m2与b2 merge时会显示已经merge过</strong>。</p>
+
+<p>a1 -&gt; a2 -&gt; m1 -&gt; m2
+  b1 -&gt; b2 /</p>
+
+<p><strong>因此在两个分支还需要合并时，不能直接使用merge，而要先revert上一次的revert，让两次revert抵消，也就是 <code>git revert &lt;m2 commit id&gt;</code> 。</strong></p>
+
+<p>为了少折腾，碰到两个分支以后注定还是要合并的情况，还是不要revert了吧，或者revert之后改完相应的代码就revert回来，貌似没人提到更好的解决方案&hellip;.</p>
+
+<h1 id="不常用的回退">不常用的回退</h1>
+
+<p>以下命令存在危险性不建议使用，而且一般也没有使用必要。注意某些操作针对未提交前的处理，可能导致对文件修改的丢失。git对已提交的文件几乎总是可以恢复的，因此建议尽量在提交后处理。</p>
+
+<p><code>git checkout &lt;file&gt;</code> 撤销文件修改（到上一次提交）。
+<code>git commit --amend</code> 重新提交，提交后删除上一次提交。</p>
+
+</div>
+
+  
+<footer class='entry-footer'>
+  <div class='container sep-before'><div class='categories'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M22,19a2,2,0,0,1-2,2H4a2,2,0,0,1-2-2V5A2,2,0,0,1,4,3H9l2,3h9a2,2,0,0,1,2,2Z"/>
+  
+</svg>
+<span class='screen-reader-text'>Categories: </span><a class='category' href='/categories/programming-basic/'>Programming basic</a></div>
+<div class='tags'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M20.59,13.41l-7.17,7.17a2,2,0,0,1-2.83,0L2,12V2H12l8.59,8.59A2,2,0,0,1,20.59,13.41Z"/>
+  <line x1="7" y1="7" x2="7" y2="7"/>
+  
+</svg>
+<span class='screen-reader-text'>Tags: </span><a class='tag' href='/tags/git/'>Git</a></div>
+
+  </div>
+</footer>
+
+
+</article>
+
+<nav class='entry-nav'>
+  <div class='container'><div class='prev-entry sep-before'>
+      <a href='/posts/technical/spatialhadoop_compile_and_run/'>
+        <span aria-hidden='true'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="20" y1="12" x2="4" y2="12"/>
+  <polyline points="10 18 4 12 10 6"/>
+  
+</svg>
+ Previous</span>
+        <span class='screen-reader-text'>Previous post: </span>SpatialHadoop的编译与运行</a>
+    </div></div>
+</nav>
+
+
+
+
+      </main>
+
+      <footer id='footer' class='footer'>
+        <div class='container sep-before'><section class='widget widget-social_menu sep-after'><header>
+    <h4 class='title widget-title'>Contact</h4>
+  </header><nav aria-label='Social Menu'>
+    <ul><li>
+        <a href='https://github.com/extendswind' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Open Github account in new tab</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+  
+</svg>
+</a>
+      </li><li>
+        <a href='mailto:extendswind@foxmail.com' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Contact via Email</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+  <polyline points="22,6 12,13 2,6"/>
+  
+</svg>
+</a>
+      </li></ul>
+  </nav>
+</section><div class='copyright'>
+  <p> &copy; 2018 extendswind </p>
+</div>
+
+        </div>
+      </footer>
+
+    </div>
+  </div><script>window.__public_path__='\/assets\/js\/'</script>
+
+<script src='/assets/js/main.59f76c44.js'></script>
+
+</body>
+
+</html>
+

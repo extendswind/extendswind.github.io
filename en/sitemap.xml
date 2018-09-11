@@ -4,7 +4,7 @@
   
   <url>
     <loc>https://extendswind.top/</loc>
-    <lastmod>2018-09-05T10:30:00+08:00</lastmod>
+    <lastmod>2018-09-11T10:30:00+08:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="zh"
@@ -15,6 +15,11 @@
                 hreflang="en"
                 href="https://extendswind.top/"
                 />
+  </url>
+  
+  <url>
+    <loc>https://extendswind.top/posts/technical/git_code_roll_back_revert_and_reset/</loc>
+    <lastmod>2018-09-11T10:30:00+08:00</lastmod>
   </url>
   
   <url>
@@ -127,19 +132,25 @@
   </url>
   
   <url>
+    <loc>https://extendswind.top/tags/git/</loc>
+    <lastmod>2018-09-11T10:30:00+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>https://extendswind.top/tags/hadoop/</loc>
     <lastmod>2018-09-05T10:30:00+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://extendswind.top/tags/life/</loc>
+    <loc>https://extendswind.top/categories/life/</loc>
     <lastmod>2018-06-04T22:40:48+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://extendswind.top/categories/life/</loc>
+    <loc>https://extendswind.top/tags/life/</loc>
     <lastmod>2018-06-04T22:40:48+08:00</lastmod>
     <priority>0</priority>
   </url>
@@ -164,13 +175,19 @@
   
   <url>
     <loc>https://extendswind.top/posts/</loc>
-    <lastmod>2018-09-05T10:30:00+08:00</lastmod>
+    <lastmod>2018-09-11T10:30:00+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>https://extendswind.top/categories/programming/</loc>
     <lastmod>2018-07-03T21:25:25+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://extendswind.top/categories/programming-basic/</loc>
+    <lastmod>2018-09-11T10:30:00+08:00</lastmod>
     <priority>0</priority>
   </url>
   
