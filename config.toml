@@ -155,13 +155,13 @@ description = "test diecription"
 [blackfriday]
 hrefTargetBlank = true
 
-[languages]
-# edit this block for your own language
-[languages.en]
-lang = "en"
-languageName = "English"
-weight = 10
-[languages.zh]
-lang = "zh"
-languageName = "Chinese"
-weight = 5
+# [languages]
+# # edit this block for your own language
+# [languages.en]
+# lang = "en"
+# languageName = "English"
+# weight = 10
+# [languages.zh]
+# lang = "zh"
+# languageName = "Chinese"
+# weight = 5
