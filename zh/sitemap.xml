@@ -4,6 +4,7 @@
   
   <url>
     <loc>https://extendswind.top/zh/authors/</loc>
+    <changefreq>monthly</changefreq>
     <priority>0</priority>
     <xhtml:link
                 rel="alternate"
@@ -19,6 +20,7 @@
   
   <url>
     <loc>https://extendswind.top/zh/categories/</loc>
+    <changefreq>monthly</changefreq>
     <priority>0</priority>
     <xhtml:link
                 rel="alternate"
@@ -34,6 +36,7 @@
   
   <url>
     <loc>https://extendswind.top/zh/series/</loc>
+    <changefreq>monthly</changefreq>
     <priority>0</priority>
     <xhtml:link
                 rel="alternate"
@@ -49,6 +52,7 @@
   
   <url>
     <loc>https://extendswind.top/zh/tags/</loc>
+    <changefreq>monthly</changefreq>
     <priority>0</priority>
     <xhtml:link
                 rel="alternate"
@@ -64,6 +68,7 @@
   
   <url>
     <loc>https://extendswind.top/zh/</loc>
+    <changefreq>monthly</changefreq>
     <priority>0</priority>
     <xhtml:link
                 rel="alternate"
