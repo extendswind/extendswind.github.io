@@ -111,6 +111,10 @@ tag = "tags"
 [permalinks]
 page = "/:slug/"
 
+[sitemap]
+  changefreq = "monthly"
+  priority = 0.5
+  filename = "sitemap.xml"
 
 [menu]
 
