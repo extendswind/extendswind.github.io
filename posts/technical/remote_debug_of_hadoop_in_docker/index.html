@@ -21,7 +21,7 @@ Run -&gt; Edit Configurations , 点“加号” -&gt; remote，然后填上被�
 Hadoop 远程调试 思路和上面的操作一致。下面以调试HDFS中的namenode为例。
 具体操作 1、修改Hadoop启动参数为debug模式 如果需要调试namenode服务，在etc/hadoop/hadoop-env.sh文件后添加：
 export HDFS_NAMENODE_OPTS=&quot;-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8000&quot;
-HDFS启动的jvm主要为namenode和datanode，jvm启动的参数设置在etc/hadoop/hadoop-env.sh中。其中namenode启动参数环境变量为 HDFS_NAMENODE_OPTS，datanode为 HDFS_DATANODE_OPTS。（对于Hadoop3.1.0，早期版本设置为Hadoop_NAMENODE_OPTS HADOOP_NAMENODE_OPTS）。YARN等服务对应的环境变量需要另查。
+HDFS启动的jvm主要为namenode和datanode，jvm启动的参数设置在etc/hadoop/hadoop-env.sh中。其中namenode启动参数环境变量为 HDFS_NAMENODE_OPTS，datanode为 HDFS_DATANODE_OPTS（针对Hadoop3，hadoop2的设置为HADOOP_NAMENODE_OPTS HADOOP_NAMENODE_OPTS）。YARN等服务对应的环境变量需要另查。
 2、启动服务 sbin/start-dfs.sh 或者 bin/hdfs --daemon start namenode仅启动namenode'>
 <meta name='theme-color' content='#cccccc'>
 
@@ -43,13 +43,13 @@ Run -&gt; Edit Configurations , 点“加号” -&gt; remote，然后填上被�
 Hadoop 远程调试 思路和上面的操作一致。下面以调试HDFS中的namenode为例。
 具体操作 1、修改Hadoop启动参数为debug模式 如果需要调试namenode服务，在etc/hadoop/hadoop-env.sh文件后添加：
 export HDFS_NAMENODE_OPTS=&quot;-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8000&quot;
-HDFS启动的jvm主要为namenode和datanode，jvm启动的参数设置在etc/hadoop/hadoop-env.sh中。其中namenode启动参数环境变量为 HDFS_NAMENODE_OPTS，datanode为 HDFS_DATANODE_OPTS。（对于Hadoop3.1.0，早期版本设置为Hadoop_NAMENODE_OPTS HADOOP_NAMENODE_OPTS）。YARN等服务对应的环境变量需要另查。
+HDFS启动的jvm主要为namenode和datanode，jvm启动的参数设置在etc/hadoop/hadoop-env.sh中。其中namenode启动参数环境变量为 HDFS_NAMENODE_OPTS，datanode为 HDFS_DATANODE_OPTS（针对Hadoop3，hadoop2的设置为HADOOP_NAMENODE_OPTS HADOOP_NAMENODE_OPTS）。YARN等服务对应的环境变量需要另查。
 2、启动服务 sbin/start-dfs.sh 或者 bin/hdfs --daemon start namenode仅启动namenode'>
 <meta property='og:url' content='https://extendswind.top/posts/technical/remote_debug_of_hadoop_in_docker/'>
 <meta property='og:site_name' content='extendswind'>
 <meta property='og:type' content='article'><meta property='article:section' content='posts'><meta property='article:tag' content='hadoop'><meta property='article:published_time' content='2018-07-26T21:30:00&#43;08:00'/><meta property='article:modified_time' content='2018-07-26T21:30:00&#43;08:00'/><meta name='twitter:card' content='summary'>
 
-<meta name="generator" content="Hugo 0.48" />
+<meta name="generator" content="Hugo 0.49" />
 
   <title>Hadoop HDFS 远程调试（Docker环境下的Hadoop集群） • extendswind</title>
   <link rel='canonical' href='https://extendswind.top/posts/technical/remote_debug_of_hadoop_in_docker/'>
@@ -121,17 +121,17 @@ if (!doNotTrack) {
   <ul class='list taxonomy-cloud'><li>
         <a href='/tags/gis/' style='font-size:1em'>GIS</a>
       </li><li>
-        <a href='/tags/blog/' style='font-size:1em'>Blog</a>
+        <a href='/tags/blog/' style='font-size:1em'>blog</a>
       </li><li>
-        <a href='/tags/design-patterns/' style='font-size:1em'>Design patterns</a>
+        <a href='/tags/design-patterns/' style='font-size:1em'>design patterns</a>
       </li><li>
-        <a href='/tags/git/' style='font-size:1em'>Git</a>
+        <a href='/tags/git/' style='font-size:1em'>git</a>
       </li><li>
-        <a href='/tags/hadoop/' style='font-size:1em'>Hadoop</a>
+        <a href='/tags/hadoop/' style='font-size:1em'>hadoop</a>
       </li><li>
-        <a href='/tags/life/' style='font-size:1em'>Life</a>
+        <a href='/tags/life/' style='font-size:1em'>life</a>
       </li><li>
-        <a href='/tags/linux/' style='font-size:1em'>Linux</a>
+        <a href='/tags/linux/' style='font-size:1em'>linux</a>
       </li></ul>
 </div>
 
@@ -294,7 +294,7 @@ jdk3 及以前: <code>-Xnoagent -Djava.compiler=NONE -Xdebug -Xrunjdwp:transport
 
 <p><code>export HDFS_NAMENODE_OPTS=&quot;-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8000&quot;</code></p>
 
-<p>HDFS启动的jvm主要为namenode和datanode，jvm启动的参数设置在<code>etc/hadoop/hadoop-env.sh</code>中。其中namenode启动参数环境变量为 <code>HDFS_NAMENODE_OPTS</code>，datanode为 <code>HDFS_DATANODE_OPTS</code>。（对于Hadoop3.1.0，早期版本设置为<code>Hadoop_NAMENODE_OPTS</code> <code>HADOOP_NAMENODE_OPTS</code>）。YARN等服务对应的环境变量需要另查。</p>
+<p>HDFS启动的jvm主要为namenode和datanode，jvm启动的参数设置在<code>etc/hadoop/hadoop-env.sh</code>中。其中namenode启动参数环境变量为 <code>HDFS_NAMENODE_OPTS</code>，datanode为 <code>HDFS_DATANODE_OPTS</code>（针对Hadoop3，hadoop2的设置为<code>HADOOP_NAMENODE_OPTS</code> <code>HADOOP_NAMENODE_OPTS</code>）。YARN等服务对应的环境变量需要另查。</p>
 
 <h3 id="2-启动服务">2、启动服务</h3>
 
@@ -337,14 +337,14 @@ jdk3 及以前: <code>-Xnoagent -Djava.compiler=NONE -Xdebug -Xrunjdwp:transport
   <path d="M22,19a2,2,0,0,1-2,2H4a2,2,0,0,1-2-2V5A2,2,0,0,1,4,3H9l2,3h9a2,2,0,0,1,2,2Z"/>
   
 </svg>
-<span class='screen-reader-text'>Categories: </span><a class='category' href='/categories/cloud-computing/'>Cloud computing</a></div>
+<span class='screen-reader-text'>Categories: </span><a class='category' href='/categories/cloud-computing/'>cloud computing</a></div>
 <div class='tags'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
   
   <path d="M20.59,13.41l-7.17,7.17a2,2,0,0,1-2.83,0L2,12V2H12l8.59,8.59A2,2,0,0,1,20.59,13.41Z"/>
   <line x1="7" y1="7" x2="7" y2="7"/>
   
 </svg>
-<span class='screen-reader-text'>Tags: </span><a class='tag' href='/tags/hadoop/'>Hadoop</a></div>
+<span class='screen-reader-text'>Tags: </span><a class='tag' href='/tags/hadoop/'>hadoop</a></div>
 
   </div>
 </footer>

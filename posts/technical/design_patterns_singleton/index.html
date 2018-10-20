@@ -5,7 +5,7 @@
   <meta charset='utf-8'>
 <meta name='viewport' content='width=device-width, initial-scale=1'>
 <meta name='description' content='singleton pattern
-主要目标：得到一个对象，对象只创建一次，并保证每次得到相同的对象。
+主要目标：对象只创建一次，每次都获得先前第一次创建的对象而不创建新的对象。
 实现思想：使用静态方法getInstance得到对象，为了保证对象只能通过getInstance创建，使构造函数私有。
 主要麻烦在于：
  多线程环境下getInstance方法的调用可能产生多个对象 使用synchronized关键字可能降低高并发效率  单例模式有很多种，大多用于解决多线程环境下的效率问题，高并发场景可以具体搜索相关方案，一般情况下思想比较简单感觉不必深究。
@@ -15,7 +15,7 @@
 
 <meta property='og:title' content='设计模式 之 单例模式 • extendswind'>
 <meta property='og:description' content='singleton pattern
-主要目标：得到一个对象，对象只创建一次，并保证每次得到相同的对象。
+主要目标：对象只创建一次，每次都获得先前第一次创建的对象而不创建新的对象。
 实现思想：使用静态方法getInstance得到对象，为了保证对象只能通过getInstance创建，使构造函数私有。
 主要麻烦在于：
  多线程环境下getInstance方法的调用可能产生多个对象 使用synchronized关键字可能降低高并发效率  单例模式有很多种，大多用于解决多线程环境下的效率问题，高并发场景可以具体搜索相关方案，一般情况下思想比较简单感觉不必深究。
@@ -25,7 +25,7 @@
 <meta property='og:site_name' content='extendswind'>
 <meta property='og:type' content='article'><meta property='article:section' content='posts'><meta property='article:tag' content='design patterns'><meta property='article:published_time' content='2018-07-02T11:25:25&#43;08:00'/><meta property='article:modified_time' content='2018-07-02T11:25:25&#43;08:00'/><meta name='twitter:card' content='summary'>
 
-<meta name="generator" content="Hugo 0.48" />
+<meta name="generator" content="Hugo 0.49" />
 
   <title>设计模式 之 单例模式 • extendswind</title>
   <link rel='canonical' href='https://extendswind.top/posts/technical/design_patterns_singleton/'>
@@ -97,17 +97,17 @@ if (!doNotTrack) {
   <ul class='list taxonomy-cloud'><li>
         <a href='/tags/gis/' style='font-size:1em'>GIS</a>
       </li><li>
-        <a href='/tags/blog/' style='font-size:1em'>Blog</a>
+        <a href='/tags/blog/' style='font-size:1em'>blog</a>
       </li><li>
-        <a href='/tags/design-patterns/' style='font-size:1em'>Design patterns</a>
+        <a href='/tags/design-patterns/' style='font-size:1em'>design patterns</a>
       </li><li>
-        <a href='/tags/git/' style='font-size:1em'>Git</a>
+        <a href='/tags/git/' style='font-size:1em'>git</a>
       </li><li>
-        <a href='/tags/hadoop/' style='font-size:1em'>Hadoop</a>
+        <a href='/tags/hadoop/' style='font-size:1em'>hadoop</a>
       </li><li>
-        <a href='/tags/life/' style='font-size:1em'>Life</a>
+        <a href='/tags/life/' style='font-size:1em'>life</a>
       </li><li>
-        <a href='/tags/linux/' style='font-size:1em'>Linux</a>
+        <a href='/tags/linux/' style='font-size:1em'>linux</a>
       </li></ul>
 </div>
 
@@ -195,7 +195,7 @@ if (!doNotTrack) {
   <div class='container entry-content'>
   <p>singleton pattern</p>
 
-<p>主要目标：得到一个对象，对象只创建一次，并保证每次得到相同的对象。</p>
+<p>主要目标：对象只创建一次，每次都获得先前第一次创建的对象而不创建新的对象。</p>
 
 <p>实现思想：使用静态方法getInstance得到对象，为了保证对象只能通过getInstance创建，使构造函数私有。</p>
 
@@ -359,14 +359,14 @@ if (!doNotTrack) {
   <path d="M22,19a2,2,0,0,1-2,2H4a2,2,0,0,1-2-2V5A2,2,0,0,1,4,3H9l2,3h9a2,2,0,0,1,2,2Z"/>
   
 </svg>
-<span class='screen-reader-text'>Categories: </span><a class='category' href='/categories/programming/'>Programming</a></div>
+<span class='screen-reader-text'>Categories: </span><a class='category' href='/categories/programming/'>programming</a></div>
 <div class='tags'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
   
   <path d="M20.59,13.41l-7.17,7.17a2,2,0,0,1-2.83,0L2,12V2H12l8.59,8.59A2,2,0,0,1,20.59,13.41Z"/>
   <line x1="7" y1="7" x2="7" y2="7"/>
   
 </svg>
-<span class='screen-reader-text'>Tags: </span><a class='tag' href='/tags/design-patterns/'>Design patterns</a></div>
+<span class='screen-reader-text'>Tags: </span><a class='tag' href='/tags/design-patterns/'>design patterns</a></div>
 
   </div>
 </footer>

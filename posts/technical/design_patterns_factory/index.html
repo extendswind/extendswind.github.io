@@ -4,9 +4,11 @@
 <head>
   <meta charset='utf-8'>
 <meta name='viewport' content='width=device-width, initial-scale=1'>
-<meta name='description' content='几种工厂模式(Factory Pattern)简介 工厂模式主要分为：
- 简单工厂模式（Simple Factory Pattern） 工厂方法模式（Factory Method Pattern 经常简称为工厂模式） 抽象工厂模式（Abstract Factory Pattern）  主要思想：将类的初始化过程转移到工厂类中，使用类的位置通过工厂类直接得到产品类，使产品类的初始化逻辑清晰，并容易添加新的产品。
-需求示例 简单工厂模式 和 工厂方法模式  实现多个日志记录器logger(文件logger，数据库logger等) 通过配置文件确定使用的具体logger类 添加新的logger类不修改源码（添加新的java包并修改配置文件）  抽象工厂模式 抽象工厂模式应用场景略有不同。
+<meta name='description' content='TODO 某些思想感觉没写清楚和有重复
+几种工厂模式(Factory Pattern)简介 工厂模式主要分为：
+ 简单工厂模式（Simple Factory Pattern） 工厂方法模式（Factory Method Pattern 经常简称为工厂模式） 抽象工厂模式（Abstract Factory Pattern）  主要思想：将类的创建逻辑转移到工厂类中，工厂类直接得到初始化后的产品类，使产品类的初始化逻辑清晰、一致，容易添加新的产品。
+目标：
+ 将产品的创建逻辑(如读取本地文件、连接数据库）放入工厂类，简化使用逻辑。 隐藏具体创建的对象，提高代码的通用性 （网上博客很多地方没提这点，只有结合java反射机制才行）  需求示例 简单工厂模式 和 工厂方法模式  实现多个日志记录器logger(文件logger，数据库logger等) 通过配置文件确定使用的具体logger类 添加新的logger类不修改源码（添加新的java包并修改配置文件）  抽象工厂模式 抽象工厂模式应用场景略有不同。
 存在多种不同的主题，每个主题都有不同的Button和Text的实现逻辑，因此每个主题都有Button和Text控件的派生类，导致类的初始化较多。
 容易添加新的主题
 不应用工厂模式的一般实现 （FactoryProblem.java）  logger 基类实现通用的日志记录功能，子类实现各自的特有功能 使用时根据配置文件中的类型，new相应的子类  类的实现：
@@ -14,9 +16,11 @@ abstract class Logger { public void writeLog(){ System.out.println(&#34;writeLog
 <meta name='theme-color' content='#cccccc'>
 
 <meta property='og:title' content='设计模式 之 工厂模式 • extendswind'>
-<meta property='og:description' content='几种工厂模式(Factory Pattern)简介 工厂模式主要分为：
- 简单工厂模式（Simple Factory Pattern） 工厂方法模式（Factory Method Pattern 经常简称为工厂模式） 抽象工厂模式（Abstract Factory Pattern）  主要思想：将类的初始化过程转移到工厂类中，使用类的位置通过工厂类直接得到产品类，使产品类的初始化逻辑清晰，并容易添加新的产品。
-需求示例 简单工厂模式 和 工厂方法模式  实现多个日志记录器logger(文件logger，数据库logger等) 通过配置文件确定使用的具体logger类 添加新的logger类不修改源码（添加新的java包并修改配置文件）  抽象工厂模式 抽象工厂模式应用场景略有不同。
+<meta property='og:description' content='TODO 某些思想感觉没写清楚和有重复
+几种工厂模式(Factory Pattern)简介 工厂模式主要分为：
+ 简单工厂模式（Simple Factory Pattern） 工厂方法模式（Factory Method Pattern 经常简称为工厂模式） 抽象工厂模式（Abstract Factory Pattern）  主要思想：将类的创建逻辑转移到工厂类中，工厂类直接得到初始化后的产品类，使产品类的初始化逻辑清晰、一致，容易添加新的产品。
+目标：
+ 将产品的创建逻辑(如读取本地文件、连接数据库）放入工厂类，简化使用逻辑。 隐藏具体创建的对象，提高代码的通用性 （网上博客很多地方没提这点，只有结合java反射机制才行）  需求示例 简单工厂模式 和 工厂方法模式  实现多个日志记录器logger(文件logger，数据库logger等) 通过配置文件确定使用的具体logger类 添加新的logger类不修改源码（添加新的java包并修改配置文件）  抽象工厂模式 抽象工厂模式应用场景略有不同。
 存在多种不同的主题，每个主题都有不同的Button和Text的实现逻辑，因此每个主题都有Button和Text控件的派生类，导致类的初始化较多。
 容易添加新的主题
 不应用工厂模式的一般实现 （FactoryProblem.java）  logger 基类实现通用的日志记录功能，子类实现各自的特有功能 使用时根据配置文件中的类型，new相应的子类  类的实现：
@@ -25,7 +29,7 @@ abstract class Logger { public void writeLog(){ System.out.println(&#34;writeLog
 <meta property='og:site_name' content='extendswind'>
 <meta property='og:type' content='article'><meta property='article:section' content='posts'><meta property='article:tag' content='design patterns'><meta property='article:published_time' content='2018-06-15T17:25:25&#43;08:00'/><meta property='article:modified_time' content='2018-06-15T17:25:25&#43;08:00'/><meta name='twitter:card' content='summary'>
 
-<meta name="generator" content="Hugo 0.48" />
+<meta name="generator" content="Hugo 0.49" />
 
   <title>设计模式 之 工厂模式 • extendswind</title>
   <link rel='canonical' href='https://extendswind.top/posts/technical/design_patterns_factory/'>
@@ -97,17 +101,17 @@ if (!doNotTrack) {
   <ul class='list taxonomy-cloud'><li>
         <a href='/tags/gis/' style='font-size:1em'>GIS</a>
       </li><li>
-        <a href='/tags/blog/' style='font-size:1em'>Blog</a>
+        <a href='/tags/blog/' style='font-size:1em'>blog</a>
       </li><li>
-        <a href='/tags/design-patterns/' style='font-size:1em'>Design patterns</a>
+        <a href='/tags/design-patterns/' style='font-size:1em'>design patterns</a>
       </li><li>
-        <a href='/tags/git/' style='font-size:1em'>Git</a>
+        <a href='/tags/git/' style='font-size:1em'>git</a>
       </li><li>
-        <a href='/tags/hadoop/' style='font-size:1em'>Hadoop</a>
+        <a href='/tags/hadoop/' style='font-size:1em'>hadoop</a>
       </li><li>
-        <a href='/tags/life/' style='font-size:1em'>Life</a>
+        <a href='/tags/life/' style='font-size:1em'>life</a>
       </li><li>
-        <a href='/tags/linux/' style='font-size:1em'>Linux</a>
+        <a href='/tags/linux/' style='font-size:1em'>linux</a>
       </li></ul>
 </div>
 
@@ -217,6 +221,8 @@ if (!doNotTrack) {
   <div class='container entry-content'>
   
 
+<p>TODO 某些思想感觉没写清楚和有重复</p>
+
 <h1 id="几种工厂模式-factory-pattern-简介">几种工厂模式(Factory Pattern)简介</h1>
 
 <p>工厂模式主要分为：</p>
@@ -227,7 +233,14 @@ if (!doNotTrack) {
 <li>抽象工厂模式（Abstract Factory Pattern）</li>
 </ul>
 
-<p>主要思想：将类的初始化过程转移到工厂类中，使用类的位置通过工厂类直接得到产品类，使产品类的初始化逻辑清晰，并容易添加新的产品。</p>
+<p>主要思想：将类的创建逻辑转移到工厂类中，工厂类直接得到初始化后的产品类，使产品类的初始化逻辑清晰、一致，容易添加新的产品。</p>
+
+<p>目标：</p>
+
+<ul>
+<li>将产品的创建逻辑(如读取本地文件、连接数据库）放入工厂类，简化使用逻辑。</li>
+<li>隐藏具体创建的对象，提高代码的通用性 （网上博客很多地方没提这点，只有结合java反射机制才行）</li>
+</ul>
 
 <h1 id="需求示例">需求示例</h1>
 
@@ -295,13 +308,14 @@ if (!doNotTrack) {
 <p>简单工厂模式将对象的初始化放入工厂类中，以简化调用类的逻辑。（还可以使用后面的反射机制）</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">// simple factoryPatten
 </span><span style="color:#75715e"></span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">SimpleFact</span> <span style="color:#f92672">{</span>
-    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> Logger <span style="color:#a6e22e">produceLogger</span><span style="color:#f92672">(</span>String loggerType<span style="color:#f92672">){</span>
-        Logger logger<span style="color:#f92672">;</span>
-        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>loggerType <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;database&#34;</span><span style="color:#f92672">){</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> Logger <span style="color:#a6e22e">produceLogger</span><span style="color:#f92672">(){</span>
+        String loggerType<span style="color:#f92672">;</span><span style="color:#75715e">// 从配置文件中读取 也可放在函数的参数中
+</span><span style="color:#75715e"></span>        Logger logger<span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>loggerType <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;file&#34;</span><span style="color:#f92672">){</span>
             <span style="color:#75715e">// 此处一般会添加相应的初始化（连接数据库等）
 </span><span style="color:#75715e"></span>            logger <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> FileLogger<span style="color:#f92672">();</span>
         <span style="color:#f92672">}</span>
-        <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span><span style="color:#f92672">(</span>loggerType <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;file&#34;</span><span style="color:#f92672">){</span>
+        <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span><span style="color:#f92672">(</span>loggerType <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;database&#34;</span><span style="color:#f92672">){</span>
             <span style="color:#75715e">// 此处一般会添加相应的初始化 （创建日志文件等）
 </span><span style="color:#75715e"></span>            logger <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> DataBaseLogger<span style="color:#f92672">();</span>
         <span style="color:#f92672">}</span>
@@ -311,10 +325,10 @@ if (!doNotTrack) {
     <span style="color:#f92672">}</span>
 <span style="color:#f92672">}</span></code></pre></div>
 <p>使用时直接通过工厂类得到对象</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">Logger logger <span style="color:#f92672">=</span> SimpleFact<span style="color:#f92672">.</span><span style="color:#a6e22e">produceLogger</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;database&#34;</span><span style="color:#f92672">);</span></code></pre></div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">Logger logger <span style="color:#f92672">=</span> SimpleFact<span style="color:#f92672">.</span><span style="color:#a6e22e">produceLogger</span><span style="color:#f92672">();</span></code></pre></div>
 <p>实质上主要提高了代码的可读性，将logger的具体类型和初始化过程用单独的简单工厂类处理，主要为逻辑清晰上的优点。</p>
 
-<p>添加新的对象需要修改简单工厂类。</p>
+<p>仍存在添加新的对象需要修改简单工厂类的问题。</p>
 
 <h2 id="问题二-添加新的对象需要修改源码的问题">问题二：添加新的对象需要修改源码的问题</h2>
 
@@ -331,9 +345,13 @@ if (!doNotTrack) {
 <span style="color:#f92672">}</span></code></pre></div>
 <p>添加新类时，直接添加新类的jar包，将类名添加到配置文件即可。</p>
 
+<p>无法解决不同类的初始化逻辑不同的问题。</p>
+
 <h2 id="问题三-不同logger的初始化需要各自不同的设置">问题三：不同logger的初始化需要各自不同的设置</h2>
 
 <p>前面的反射使客户端无法对各个具体的logger派生类实现不同的初始化。<strong>当初始化过程复杂时，放在另一个类（工厂类）中会让逻辑更为清晰。（工厂模式）</strong></p>
+
+<p><strong>而且通过工厂类的封装后有了相同的初始化逻辑，能够直接上用上面的反射创建工厂</strong></p>
 
 <p>对每个logger构建一个工厂类，使用工厂类初始化logger后得到最后的对象。</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">abstract</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Logger</span> <span style="color:#f92672">{</span>
@@ -453,6 +471,7 @@ if (!doNotTrack) {
 <p>个人认为工厂模式的主要作用为：</p>
 
 <ul>
+<li>将new具体的对象的过程放入工厂类解耦（需要和反射机制结合）</li>
 <li>处理多个产品的选择逻辑（通过if或者反射机制）</li>
 <li>处理产品的初始化逻辑</li>
 <li>对产品分类创建（抽象工厂）</li>
@@ -463,12 +482,14 @@ if (!doNotTrack) {
 <p>主要的启示：</p>
 
 <ul>
-<li>在有多个产品或以后可能有多个产品扩展的情况下（而且数量不会过多、初始化逻辑不复杂），使用简单工厂模式将产品的选择逻辑放在工厂类以简化使用代码。</li>
+<li>在有多个产品或以后可能有多个产品扩展的情况下（而且数量不会过多、初始化逻辑不复杂），使用简单工厂模式将产品的选择逻辑放在工厂类，出现产品变化时只需要修改工厂类而不需要修改每一处的使用逻辑。</li>
 <li>在产品类有较为复杂的初始化和其他逻辑时，使用工厂方法模式构建工厂类包装简化使用。</li>
 <li>在产品类较多且有明显的分类时，使用抽象工厂模式对每个分类的产品构建一个工厂类。</li>
 </ul>
 
 <h2 id="吐槽">吐槽</h2>
+
+<p>很多人的工厂方法模式，将new具体的对象变成了new具体的工厂，然后工厂类就变成了一对一的产品初始化类，正常人都能想到的吧&hellip;</p>
 
 <p>某些书上讲的各种问题感觉就是根据已有的模式写法强套的问题，如很多提到简单工厂模式的缺点在于不适合管理多个产品，添加新产品需要修改源码。前者只在于产品类需要复杂的初始化逻辑，后者和工厂方法模式一样使用反射就能解决了。</p>
 
@@ -485,14 +506,14 @@ if (!doNotTrack) {
   <path d="M22,19a2,2,0,0,1-2,2H4a2,2,0,0,1-2-2V5A2,2,0,0,1,4,3H9l2,3h9a2,2,0,0,1,2,2Z"/>
   
 </svg>
-<span class='screen-reader-text'>Categories: </span><a class='category' href='/categories/programming/'>Programming</a></div>
+<span class='screen-reader-text'>Categories: </span><a class='category' href='/categories/programming/'>programming</a></div>
 <div class='tags'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
   
   <path d="M20.59,13.41l-7.17,7.17a2,2,0,0,1-2.83,0L2,12V2H12l8.59,8.59A2,2,0,0,1,20.59,13.41Z"/>
   <line x1="7" y1="7" x2="7" y2="7"/>
   
 </svg>
-<span class='screen-reader-text'>Tags: </span><a class='tag' href='/tags/design-patterns/'>Design patterns</a></div>
+<span class='screen-reader-text'>Tags: </span><a class='tag' href='/tags/design-patterns/'>design patterns</a></div>
 
   </div>
 </footer>
