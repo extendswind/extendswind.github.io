@@ -62,7 +62,7 @@ Run -> Edit Configurations , 点“加号” -> remote，然后填上被调试�
 
 `export HDFS_NAMENODE_OPTS="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8000" ` 
 
-HDFS启动的jvm主要为namenode和datanode，jvm启动的参数设置在`etc/hadoop/hadoop-env.sh`中。其中namenode启动参数环境变量为 `HDFS_NAMENODE_OPTS`，datanode为 `HDFS_DATANODE_OPTS`。（对于Hadoop3.1.0，早期版本设置为`Hadoop_NAMENODE_OPTS` `HADOOP_NAMENODE_OPTS`）。YARN等服务对应的环境变量需要另查。
+HDFS启动的jvm主要为namenode和datanode，jvm启动的参数设置在`etc/hadoop/hadoop-env.sh`中。其中namenode启动参数环境变量为 `HDFS_NAMENODE_OPTS`，datanode为 `HDFS_DATANODE_OPTS`（针对Hadoop3，hadoop2的设置为`HADOOP_NAMENODE_OPTS` `HADOOP_NAMENODE_OPTS`）。YARN等服务对应的环境变量需要另查。
 
 ### 2、启动服务
 

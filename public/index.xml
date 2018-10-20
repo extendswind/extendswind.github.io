@@ -5,10 +5,23 @@
     <link>https://extendswind.top/</link>
     <description>Recent content in Home on extendswind</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Tue, 11 Sep 2018 10:30:00 +0800</lastBuildDate>
+    <lastBuildDate>Sat, 20 Oct 2018 20:59:49 +0800</lastBuildDate>
     
 	<atom:link href="https://extendswind.top/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>使用AwesomeWM作为Mate(Gnome相同) Desktop的窗口管理器</title>
+      <link>https://extendswind.top/posts/technical/using_awesomewm_as_wm_of_mate_desktop/</link>
+      <pubDate>Sat, 20 Oct 2018 20:59:49 +0800</pubDate>
+      
+      <guid>https://extendswind.top/posts/technical/using_awesomewm_as_wm_of_mate_desktop/</guid>
+      <description>AwesomeWM这种平铺的窗口管理器用得很爽，只是基于wine的qq最近又莫名其妙抽风，感觉还是切到deepin-wine上比较靠谱。而deepin-wine在awesome下运行qq会报错X Error of failed request: BadWindow (invalid Window parameter) Major opcode of failed request: 20 (X_GetProperty)，而在Gnome系下运行正常。看到Gnome和Mate能够运行i3wm，就折腾了一下试试。
+ 安装AwesomeWM、Mate桌面环境与dconf-editor（arch下使用pacman -S）。
+ 进入Mate桌面环境后，修改org.mate.session.required-components windowmanager的值为&amp;rsquo;awesome&amp;rsquo;，如果不需要桌面上的图标，可以将org.mate.session.required-components的值只留下windowmanager。
+ 上面的设置无法通过命令行打开awesome，需要添加awesome的图标。在/usr/share/applications目录下新建awesome.desktop，内容如下（网上直接粘的，估计有些可以不要，懒得试了）：
+  [Desktop Entry] Type=Application Name=awesome Exec=awesome NoDisplay=true # name of loadable control center module X-MATE-WMSettingsModule=awesome # name we put on the WM spec check window X-MATE-WMName=awesome # back compat only X-MateWMSettingsLibrary=awesome X-MATE-Bugzilla-Bugzilla=MATE X-MATE-Bugzilla-Product=awesome X-MATE-Bugzilla-Component=general X-MATE-Autostart-Phase=WindowManager X-MATE-Provides=windowmanager X-MATE-Autostart-Notify=true  </description>
+    </item>
     
     <item>
       <title>git 代码回滚与爬坑 -- reset and revert</title>
@@ -124,7 +137,7 @@ Run -&amp;gt; Edit Configurations , 点“加号” -&amp;gt; remote，然后填
 Hadoop 远程调试 思路和上面的操作一致。下面以调试HDFS中的namenode为例。
 具体操作 1、修改Hadoop启动参数为debug模式 如果需要调试namenode服务，在etc/hadoop/hadoop-env.sh文件后添加：
 export HDFS_NAMENODE_OPTS=&amp;quot;-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8000&amp;quot;
-HDFS启动的jvm主要为namenode和datanode，jvm启动的参数设置在etc/hadoop/hadoop-env.sh中。其中namenode启动参数环境变量为 HDFS_NAMENODE_OPTS，datanode为 HDFS_DATANODE_OPTS。（对于Hadoop3.1.0，早期版本设置为Hadoop_NAMENODE_OPTS HADOOP_NAMENODE_OPTS）。YARN等服务对应的环境变量需要另查。
+HDFS启动的jvm主要为namenode和datanode，jvm启动的参数设置在etc/hadoop/hadoop-env.sh中。其中namenode启动参数环境变量为 HDFS_NAMENODE_OPTS，datanode为 HDFS_DATANODE_OPTS（针对Hadoop3，hadoop2的设置为HADOOP_NAMENODE_OPTS HADOOP_NAMENODE_OPTS）。YARN等服务对应的环境变量需要另查。
 2、启动服务 sbin/start-dfs.sh 或者 bin/hdfs --daemon start namenode仅启动namenode</description>
     </item>
     
@@ -168,7 +181,7 @@ class Prototype implements Cloneable{ int attr; public Prototype clone(){ Protot
       
       <guid>https://extendswind.top/posts/technical/design_patterns_singleton/</guid>
       <description>singleton pattern
-主要目标：得到一个对象，对象只创建一次，并保证每次得到相同的对象。
+主要目标：对象只创建一次，每次都获得先前第一次创建的对象而不创建新的对象。
 实现思想：使用静态方法getInstance得到对象，为了保证对象只能通过getInstance创建，使构造函数私有。
 主要麻烦在于：
  多线程环境下getInstance方法的调用可能产生多个对象 使用synchronized关键字可能降低高并发效率  单例模式有很多种，大多用于解决多线程环境下的效率问题，高并发场景可以具体搜索相关方案，一般情况下思想比较简单感觉不必深究。
@@ -215,9 +228,11 @@ interface Logger { void writeLog(); } // 被代理类 class LoggerSubject implem
       <pubDate>Fri, 15 Jun 2018 17:25:25 +0800</pubDate>
       
       <guid>https://extendswind.top/posts/technical/design_patterns_factory/</guid>
-      <description>几种工厂模式(Factory Pattern)简介 工厂模式主要分为：
- 简单工厂模式（Simple Factory Pattern） 工厂方法模式（Factory Method Pattern 经常简称为工厂模式） 抽象工厂模式（Abstract Factory Pattern）  主要思想：将类的初始化过程转移到工厂类中，使用类的位置通过工厂类直接得到产品类，使产品类的初始化逻辑清晰，并容易添加新的产品。
-需求示例 简单工厂模式 和 工厂方法模式  实现多个日志记录器logger(文件logger，数据库logger等) 通过配置文件确定使用的具体logger类 添加新的logger类不修改源码（添加新的java包并修改配置文件）  抽象工厂模式 抽象工厂模式应用场景略有不同。
+      <description>TODO 某些思想感觉没写清楚和有重复
+几种工厂模式(Factory Pattern)简介 工厂模式主要分为：
+ 简单工厂模式（Simple Factory Pattern） 工厂方法模式（Factory Method Pattern 经常简称为工厂模式） 抽象工厂模式（Abstract Factory Pattern）  主要思想：将类的创建逻辑转移到工厂类中，工厂类直接得到初始化后的产品类，使产品类的初始化逻辑清晰、一致，容易添加新的产品。
+目标：
+ 将产品的创建逻辑(如读取本地文件、连接数据库）放入工厂类，简化使用逻辑。 隐藏具体创建的对象，提高代码的通用性 （网上博客很多地方没提这点，只有结合java反射机制才行）  需求示例 简单工厂模式 和 工厂方法模式  实现多个日志记录器logger(文件logger，数据库logger等) 通过配置文件确定使用的具体logger类 添加新的logger类不修改源码（添加新的java包并修改配置文件）  抽象工厂模式 抽象工厂模式应用场景略有不同。
 存在多种不同的主题，每个主题都有不同的Button和Text的实现逻辑，因此每个主题都有Button和Text控件的派生类，导致类的初始化较多。
 容易添加新的主题
 不应用工厂模式的一般实现 （FactoryProblem.java）  logger 基类实现通用的日志记录功能，子类实现各自的特有功能 使用时根据配置文件中的类型，new相应的子类  类的实现：

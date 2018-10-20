@@ -5,28 +5,10 @@
     <link>https://extendswind.top/tags/</link>
     <description>Recent content in Tags on extendswind</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Tue, 04 Sep 2018 10:30:00 +0800</lastBuildDate>
+    <lastBuildDate>Wed, 05 Sep 2018 10:30:00 +0800</lastBuildDate>
     
 	<atom:link href="https://extendswind.top/tags/index.xml" rel="self" type="application/rss+xml" />
     
-    
-    <item>
-      <title>Blog</title>
-      <link>https://extendswind.top/tags/blog/</link>
-      <pubDate>Tue, 04 Sep 2018 10:30:00 +0800</pubDate>
-      
-      <guid>https://extendswind.top/tags/blog/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Design patterns</title>
-      <link>https://extendswind.top/tags/design-patterns/</link>
-      <pubDate>Tue, 03 Jul 2018 21:25:25 +0800</pubDate>
-      
-      <guid>https://extendswind.top/tags/design-patterns/</guid>
-      <description></description>
-    </item>
     
     <item>
       <title>GIS</title>
@@ -38,7 +20,25 @@
     </item>
     
     <item>
-      <title>Git</title>
+      <title>blog</title>
+      <link>https://extendswind.top/tags/blog/</link>
+      <pubDate>Tue, 04 Sep 2018 10:30:00 +0800</pubDate>
+      
+      <guid>https://extendswind.top/tags/blog/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>design patterns</title>
+      <link>https://extendswind.top/tags/design-patterns/</link>
+      <pubDate>Tue, 03 Jul 2018 21:25:25 +0800</pubDate>
+      
+      <guid>https://extendswind.top/tags/design-patterns/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>git</title>
       <link>https://extendswind.top/tags/git/</link>
       <pubDate>Tue, 11 Sep 2018 10:30:00 +0800</pubDate>
       
@@ -47,7 +47,7 @@
     </item>
     
     <item>
-      <title>Hadoop</title>
+      <title>hadoop</title>
       <link>https://extendswind.top/tags/hadoop/</link>
       <pubDate>Wed, 05 Sep 2018 10:30:00 +0800</pubDate>
       
@@ -56,7 +56,7 @@
     </item>
     
     <item>
-      <title>Life</title>
+      <title>life</title>
       <link>https://extendswind.top/tags/life/</link>
       <pubDate>Mon, 04 Jun 2018 22:40:48 +0800</pubDate>
       
@@ -65,9 +65,9 @@
     </item>
     
     <item>
-      <title>Linux</title>
+      <title>linux</title>
       <link>https://extendswind.top/tags/linux/</link>
-      <pubDate>Tue, 17 Jul 2018 20:59:49 +0800</pubDate>
+      <pubDate>Sat, 20 Oct 2018 20:59:49 +0800</pubDate>
       
       <guid>https://extendswind.top/tags/linux/</guid>
       <description></description>

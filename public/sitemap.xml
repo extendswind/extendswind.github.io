@@ -4,7 +4,14 @@
   
   <url>
     <loc>https://extendswind.top/</loc>
-    <lastmod>2018-09-11T10:30:00+08:00</lastmod>
+    <lastmod>2018-10-20T20:59:49+08:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://extendswind.top/posts/technical/using_awesomewm_as_wm_of_mate_desktop/</loc>
+    <lastmod>2018-10-20T20:59:49+08:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
@@ -100,14 +107,48 @@
   </url>
   
   <url>
-    <loc>https://extendswind.top/tags/blog/</loc>
+    <loc>https://extendswind.top/categories/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://extendswind.top/tags/gis/</loc>
+    <lastmod>2018-09-05T10:30:00+08:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://extendswind.top/categories/operation/</loc>
     <lastmod>2018-09-04T10:30:00+08:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://extendswind.top/categories/</loc>
+    <loc>https://extendswind.top/posts/</loc>
+    <lastmod>2018-10-20T20:59:49+08:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://extendswind.top/series/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://extendswind.top/tags/</loc>
+    <lastmod>2018-09-05T10:30:00+08:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://extendswind.top/tags/blog/</loc>
+    <lastmod>2018-09-04T10:30:00+08:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0</priority>
   </url>
@@ -127,13 +168,6 @@
   </url>
   
   <url>
-    <loc>https://extendswind.top/tags/gis/</loc>
-    <lastmod>2018-09-05T10:30:00+08:00</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0</priority>
-  </url>
-  
-  <url>
     <loc>https://extendswind.top/tags/git/</loc>
     <lastmod>2018-09-11T10:30:00+08:00</lastmod>
     <changefreq>monthly</changefreq>
@@ -148,13 +182,6 @@
   </url>
   
   <url>
-    <loc>https://extendswind.top/categories/life/</loc>
-    <lastmod>2018-06-04T22:40:48+08:00</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0</priority>
-  </url>
-  
-  <url>
     <loc>https://extendswind.top/tags/life/</loc>
     <lastmod>2018-06-04T22:40:48+08:00</lastmod>
     <changefreq>monthly</changefreq>
@@ -162,29 +189,22 @@
   </url>
   
   <url>
+    <loc>https://extendswind.top/categories/life/</loc>
+    <lastmod>2018-06-04T22:40:48+08:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>https://extendswind.top/tags/linux/</loc>
-    <lastmod>2018-07-17T20:59:49+08:00</lastmod>
+    <lastmod>2018-10-20T20:59:49+08:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>https://extendswind.top/categories/linux-desktop/</loc>
-    <lastmod>2018-07-17T20:59:49+08:00</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://extendswind.top/categories/operation/</loc>
-    <lastmod>2018-09-04T10:30:00+08:00</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://extendswind.top/posts/</loc>
-    <lastmod>2018-09-11T10:30:00+08:00</lastmod>
+    <lastmod>2018-10-20T20:59:49+08:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0</priority>
   </url>
@@ -199,19 +219,6 @@
   <url>
     <loc>https://extendswind.top/categories/programming-basic/</loc>
     <lastmod>2018-09-11T10:30:00+08:00</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://extendswind.top/series/</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://extendswind.top/tags/</loc>
-    <lastmod>2018-09-04T10:30:00+08:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0</priority>
   </url>

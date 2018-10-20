@@ -10,33 +10,6 @@
     
     
     <item>
-      <title>Cloud computing</title>
-      <link>https://extendswind.top/categories/cloud-computing/</link>
-      <pubDate>Wed, 05 Sep 2018 10:30:00 +0800</pubDate>
-      
-      <guid>https://extendswind.top/categories/cloud-computing/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Life</title>
-      <link>https://extendswind.top/categories/life/</link>
-      <pubDate>Mon, 04 Jun 2018 22:40:48 +0800</pubDate>
-      
-      <guid>https://extendswind.top/categories/life/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Linux desktop</title>
-      <link>https://extendswind.top/categories/linux-desktop/</link>
-      <pubDate>Tue, 17 Jul 2018 20:59:49 +0800</pubDate>
-      
-      <guid>https://extendswind.top/categories/linux-desktop/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>Operation</title>
       <link>https://extendswind.top/categories/operation/</link>
       <pubDate>Tue, 04 Sep 2018 10:30:00 +0800</pubDate>
@@ -46,7 +19,34 @@
     </item>
     
     <item>
-      <title>Programming</title>
+      <title>cloud computing</title>
+      <link>https://extendswind.top/categories/cloud-computing/</link>
+      <pubDate>Wed, 05 Sep 2018 10:30:00 +0800</pubDate>
+      
+      <guid>https://extendswind.top/categories/cloud-computing/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>life</title>
+      <link>https://extendswind.top/categories/life/</link>
+      <pubDate>Mon, 04 Jun 2018 22:40:48 +0800</pubDate>
+      
+      <guid>https://extendswind.top/categories/life/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>linux desktop</title>
+      <link>https://extendswind.top/categories/linux-desktop/</link>
+      <pubDate>Sat, 20 Oct 2018 20:59:49 +0800</pubDate>
+      
+      <guid>https://extendswind.top/categories/linux-desktop/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>programming</title>
       <link>https://extendswind.top/categories/programming/</link>
       <pubDate>Tue, 03 Jul 2018 21:25:25 +0800</pubDate>
       
@@ -55,7 +55,7 @@
     </item>
     
     <item>
-      <title>Programming basic</title>
+      <title>programming basic</title>
       <link>https://extendswind.top/categories/programming-basic/</link>
       <pubDate>Tue, 11 Sep 2018 10:30:00 +0800</pubDate>
       
