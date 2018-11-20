@@ -1,0 +1,1 @@
+../../../myNote/./technical/programming_basic/leetcode4.md
