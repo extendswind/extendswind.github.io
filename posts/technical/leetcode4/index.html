@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang='en'>
+
+<head>
+  <meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<meta name='description' content='题目  Median of Two Sorted Arrays There are two sorted arrays nums1 and nums2 of size m and n respectively. Find the median of the two sorted arrays. The overall run time complexity should be O(log (m&#43;n)). You may assume nums1 and nums2 cannot be both empty. Example 1: nums1 = [1, 3] nums2 = [2] The median is 2.0 Example 2: nums1 = [1, 2] nums2 = [3, 4] The median is (2 &#43; 3)/2 = 2.'>
+<meta name='theme-color' content='#cccccc'>
+
+<meta property='og:title' content='leetcode: Median of Two Sorted Arrays • extendswind'>
+<meta property='og:description' content='题目  Median of Two Sorted Arrays There are two sorted arrays nums1 and nums2 of size m and n respectively. Find the median of the two sorted arrays. The overall run time complexity should be O(log (m&#43;n)). You may assume nums1 and nums2 cannot be both empty. Example 1: nums1 = [1, 3] nums2 = [2] The median is 2.0 Example 2: nums1 = [1, 2] nums2 = [3, 4] The median is (2 &#43; 3)/2 = 2.'>
+<meta property='og:url' content='https://extendswind.top/posts/technical/leetcode4/'>
+<meta property='og:site_name' content='extendswind'>
+<meta property='og:type' content='article'><meta property='article:section' content='posts'><meta property='article:tag' content='git'><meta property='article:published_time' content='2018-11-13T10:30:00&#43;08:00'/><meta property='article:modified_time' content='2018-11-13T10:30:00&#43;08:00'/><meta name='twitter:card' content='summary'>
+
+<meta name="generator" content="Hugo 0.51" />
+
+  <title>leetcode: Median of Two Sorted Arrays • extendswind</title>
+  <link rel='canonical' href='https://extendswind.top/posts/technical/leetcode4/'>
+  
+  
+  <link rel='icon' href='/images/wind.jpeg'>
+<link rel='stylesheet' href='/assets/css/main.4267b3fa.css'><link rel='stylesheet' href='/css/custom.css'><style>
+:root{--color-accent:#cccccc;}
+</style>
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-125329544-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+  
+
+</head>
+
+
+<body class='page type-posts has-sidebar'>
+
+  <div class='site'>
+
+    <div id='sidebar' class='sidebar'>
+  <a class='screen-reader-text' href='#main-menu'>Skip to Main Menu</a>
+
+  <div class='container'><section class='widget widget-about sep-after'>
+  <header>
+    
+    <div class='logo'>
+      <a href='/'>
+        <img src='/images/wind.jpeg'>
+      </a>
+    </div>
+    
+    <h2 class='title site-title '>
+    extendswind
+    </h2>
+    <div class='desc'>
+    
+    </div>
+  </header>
+
+</section>
+<section class='widget widget-sidebar_menu sep-after'><nav id='sidebar-menu' class='menu sidebar-menu' aria-label='Sidebar Menu'>
+    <div class='container'>
+      <ul><li class='item'>
+  <a href='/'>Home</a></li><li class='item'>
+  <a href='/posts'>Posts</a></li><li class='item'>
+  <a href='/categories'>Categories</a></li><li class='item'>
+  <a href='https://github.com/extendswind'>GitHub</a></li><li class='item'>
+  <a href='http://www.cnblogs.com/fly2wind/'>Cnblog</a></li></ul>
+    </div>
+  </nav>
+
+</section><section class='widget widget-taxonomy_cloud sep-after'>
+  <header>
+    <h4 class='title widget-title'>Tags</h4>
+  </header>
+
+  <div class='container list-container'>
+  <ul class='list taxonomy-cloud'><li>
+        <a href='/tags/gis/' style='font-size:1em'>GIS</a>
+      </li><li>
+        <a href='/tags/blog/' style='font-size:1em'>blog</a>
+      </li><li>
+        <a href='/tags/design-patterns/' style='font-size:1em'>design patterns</a>
+      </li><li>
+        <a href='/tags/git/' style='font-size:1em'>git</a>
+      </li><li>
+        <a href='/tags/hadoop/' style='font-size:1em'>hadoop</a>
+      </li><li>
+        <a href='/tags/life/' style='font-size:1em'>life</a>
+      </li><li>
+        <a href='/tags/linux/' style='font-size:1em'>linux</a>
+      </li></ul>
+</div>
+
+
+</section>
+</div>
+
+  <div class='sidebar-overlay'></div>
+</div>
+
+    <div class='main'>
+
+      <a class='screen-reader-text' href='#content'>Skip to Content</a>
+
+<button id='sidebar-toggler' class='sidebar-toggler' aria-controls='sidebar'>
+  <span class='screen-reader-text'>Toggle Sidebar</span>
+  <span class='open'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="3" y1="12" x2="21" y2="12" />
+  <line x1="3" y1="6" x2="21" y2="6" />
+  <line x1="3" y1="18" x2="21" y2="18" />
+  
+</svg>
+</span>
+  <span class='close'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="18" y1="6" x2="6" y2="18" />
+  <line x1="6" y1="6" x2="18" y2="18" />
+  
+</svg>
+</span>
+</button>
+
+      <header id='header' class='header site-header'>
+        <div class='container sep-after'>
+          <div class='header-info'><p class='site-title title'>extendswind</p><p class='desc site-desc'>a simple blog site</p>
+          </div>
+        </div>
+      </header>
+
+      <main id='content'>
+
+
+<article lang='en' class='entry'>
+  <header class='header entry-header'>
+  <div class='container sep-after'>
+    <div class='header-info'>
+      <h1 class='title'>leetcode: Median of Two Sorted Arrays</h1>
+      
+
+    </div>
+    
+<div class='entry-meta'>
+  <span class='posted-on'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+  <line x1="16" y1="2" x2="16" y2="6"/>
+  <line x1="8" y1="2" x2="8" y2="6"/>
+  <line x1="3" y1="10" x2="21" y2="10"/>
+  
+</svg>
+<span class='screen-reader-text'>Posted on </span>
+  <time class='entry-date' datetime='2018-11-13T10:30:00&#43;08:00'>2018, Nov 13</time>
+</span>
+
+  
+  
+
+</div>
+
+
+  </div>
+</header>
+
+  
+  
+<details class='container entry-toc' open>
+  <summary class='title'>
+    <span>Table of Contents</span>
+  </summary>
+  <nav id="TableOfContents">
+<ul>
+<li><a href="#题目">题目</a></li>
+<li><a href="#主要思想">主要思想</a></li>
+<li><a href="#具体实现">具体实现</a></li>
+</ul>
+</nav>
+</details>
+
+
+  <div class='container entry-content'>
+  
+
+<h1 id="题目">题目</h1>
+
+<blockquote>
+<p>Median of Two Sorted Arrays
+There are two sorted arrays nums1 and nums2 of size m and n respectively.
+Find the median of the two sorted arrays. The overall run time complexity should be O(log (m+n)).
+You may assume nums1 and nums2 cannot be both empty.
+Example 1:
+nums1 = [1, 3]
+nums2 = [2]
+The median is 2.0
+Example 2:
+nums1 = [1, 2]
+nums2 = [3, 4]
+The median is (2 + 3)/2 = 2.5</p>
+</blockquote>
+
+<h1 id="主要思想">主要思想</h1>
+
+<p>为找到合适的位置划分两个数组:</p>
+
+<p>在nums1和nums2两个数组中分别截取i,j两个长度，将两个数组划分成4部分，使</p>
+
+<ul>
+<li>划分后两个数组的左部分的数量和与右部分数量和相等 i+j == (m+n)/2 (奇数偶数情况都满足此式）   &amp;&amp;</li>
+<li>左部分的最大值小于右部分的最小值 max(nums1[i-1], nums2[j-1]) &lt;  min(nums1[i], nums2[j]) (由于数组有序)</li>
+</ul>
+
+<p>注： i==0时，nums所有元素被分配到右方； i==nums1.length时，nums所有元素被分到左方</p>
+
+<p>则:</p>
+
+<ul>
+<li>当m+n为偶数时，(max(nums1[i-1], nums1[j-1]) + min(nums1[i], nums2[j]))/2对应的位置为中位数的位置</li>
+<li>当m+n为奇数时，max(nums1[i-1], nums1[j-1])对应的位置为中位数的位置</li>
+</ul>
+
+<h1 id="具体实现">具体实现</h1>
+
+<p>在nums1中二分查找i，对于每个i可以直接计算 j=(m+n)/2-i，然后判断是否满足条件，不满足条件则继续搜索。</p>
+
+<p>主要的麻烦在于处理几个极端情况，i、j为0和长度为最大时。</p>
+
+<p>leetcode题目的解决方案提到需要让i成为较长的数组，上面的处理没用到。</p>
+
+<p>此时算法复杂度为O(log(m))，将数组调换位置，每次搜索较短的数组，能够将算法复杂度降低到O**(log(min(m,n)))。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Solution</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">double</span> <span style="color:#a6e22e">findMedianSortedArrays</span><span style="color:#f92672">(</span><span style="color:#66d9ef">int</span><span style="color:#f92672">[]</span> nums1<span style="color:#f92672">,</span> <span style="color:#66d9ef">int</span><span style="color:#f92672">[]</span> nums2<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>nums1<span style="color:#f92672">.</span><span style="color:#a6e22e">length</span> <span style="color:#f92672">==</span> 0<span style="color:#f92672">)</span>
+            <span style="color:#66d9ef">return</span> <span style="color:#f92672">(</span>nums2<span style="color:#f92672">[(</span>nums2<span style="color:#f92672">.</span><span style="color:#a6e22e">length</span> <span style="color:#f92672">-</span> 1<span style="color:#f92672">)</span> <span style="color:#f92672">/</span> 2<span style="color:#f92672">]</span> <span style="color:#f92672">+</span> nums2<span style="color:#f92672">[</span>nums2<span style="color:#f92672">.</span><span style="color:#a6e22e">length</span> <span style="color:#f92672">/</span> 2<span style="color:#f92672">])</span> <span style="color:#f92672">/</span> 2<span style="color:#f92672">.</span><span style="color:#a6e22e">0</span><span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>nums2<span style="color:#f92672">.</span><span style="color:#a6e22e">length</span> <span style="color:#f92672">==</span> 0<span style="color:#f92672">)</span> <span style="color:#75715e">// return median of nums1
+</span><span style="color:#75715e"></span>            <span style="color:#66d9ef">return</span> <span style="color:#f92672">(</span>nums1<span style="color:#f92672">[(</span>nums1<span style="color:#f92672">.</span><span style="color:#a6e22e">length</span> <span style="color:#f92672">-</span> 1<span style="color:#f92672">)</span> <span style="color:#f92672">/</span> 2<span style="color:#f92672">]</span> <span style="color:#f92672">+</span> nums1<span style="color:#f92672">[</span>nums1<span style="color:#f92672">.</span><span style="color:#a6e22e">length</span> <span style="color:#f92672">/</span> 2<span style="color:#f92672">])</span> <span style="color:#f92672">/</span> 2<span style="color:#f92672">.</span><span style="color:#a6e22e">0</span><span style="color:#f92672">;</span>
+
+        <span style="color:#66d9ef">int</span> iMin <span style="color:#f92672">=</span> 0<span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">int</span> iMax <span style="color:#f92672">=</span> nums1<span style="color:#f92672">.</span><span style="color:#a6e22e">length</span><span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">int</span> i<span style="color:#f92672">;</span>  <span style="color:#75715e">// represent begin of right array of divided position, range in [0, nums1.length]
+</span><span style="color:#75715e"></span>        <span style="color:#75715e">// i = 0 means all nums1 will be put in right
+</span><span style="color:#75715e"></span>        <span style="color:#75715e">// i = nums1.length means all nums1 will be put in left
+</span><span style="color:#75715e"></span>
+        <span style="color:#66d9ef">while</span> <span style="color:#f92672">(</span>iMin <span style="color:#f92672">&lt;=</span> iMax<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            i <span style="color:#f92672">=</span> <span style="color:#f92672">(</span>iMin <span style="color:#f92672">+</span> iMax<span style="color:#f92672">)</span> <span style="color:#f92672">/</span> 2<span style="color:#f92672">;</span>
+
+            <span style="color:#66d9ef">int</span> j <span style="color:#f92672">=</span> <span style="color:#f92672">(</span>nums1<span style="color:#f92672">.</span><span style="color:#a6e22e">length</span> <span style="color:#f92672">+</span> nums2<span style="color:#f92672">.</span><span style="color:#a6e22e">length</span><span style="color:#f92672">)</span> <span style="color:#f92672">/</span> 2 <span style="color:#f92672">-</span> i<span style="color:#f92672">;</span>  <span style="color:#75715e">// range in [0, jNum.length]
+</span><span style="color:#75715e"></span>            <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>j <span style="color:#f92672">&lt;</span> 0<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                iMax <span style="color:#f92672">=</span> i <span style="color:#f92672">-</span> 1<span style="color:#f92672">;</span>
+                <span style="color:#66d9ef">continue</span><span style="color:#f92672">;</span>
+            <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>j <span style="color:#f92672">&gt;</span> nums2<span style="color:#f92672">.</span><span style="color:#a6e22e">length</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                iMin <span style="color:#f92672">=</span> i <span style="color:#f92672">+</span> 1<span style="color:#f92672">;</span>
+                <span style="color:#66d9ef">continue</span><span style="color:#f92672">;</span>
+            <span style="color:#f92672">}</span>
+
+            <span style="color:#66d9ef">int</span> leftEnd1<span style="color:#f92672">;</span> <span style="color:#75715e">// end element of left part in nums1
+</span><span style="color:#75715e"></span>            <span style="color:#66d9ef">int</span> leftEnd2<span style="color:#f92672">;</span>
+            <span style="color:#66d9ef">int</span> rightBegin1<span style="color:#f92672">;</span>
+            <span style="color:#66d9ef">int</span> rightBegin2<span style="color:#f92672">;</span>
+
+            <span style="color:#75715e">//  nums1 may be all put to right(==0) or left(==nums1.length)
+</span><span style="color:#75715e"></span>            <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>i <span style="color:#f92672">==</span> 0<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                leftEnd1 <span style="color:#f92672">=</span> Integer<span style="color:#f92672">.</span><span style="color:#a6e22e">MIN_VALUE</span><span style="color:#f92672">;</span> <span style="color:#75715e">// leftEnd1 is not existed
+</span><span style="color:#75715e"></span>                rightBegin1 <span style="color:#f92672">=</span> nums1<span style="color:#f92672">[</span>i<span style="color:#f92672">];</span>
+            <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>i <span style="color:#f92672">==</span> nums1<span style="color:#f92672">.</span><span style="color:#a6e22e">length</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                leftEnd1 <span style="color:#f92672">=</span> nums1<span style="color:#f92672">[</span>i <span style="color:#f92672">-</span> 1<span style="color:#f92672">];</span>
+                rightBegin1 <span style="color:#f92672">=</span> Integer<span style="color:#f92672">.</span><span style="color:#a6e22e">MAX_VALUE</span><span style="color:#f92672">;</span>
+            <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#f92672">{</span>
+                leftEnd1 <span style="color:#f92672">=</span> nums1<span style="color:#f92672">[</span>i <span style="color:#f92672">-</span> 1<span style="color:#f92672">];</span>
+                rightBegin1 <span style="color:#f92672">=</span> nums1<span style="color:#f92672">[</span>i<span style="color:#f92672">];</span>
+            <span style="color:#f92672">}</span>
+
+            <span style="color:#75715e">//  nums2 may be all put to right(==0) or left(==nums2.length)
+</span><span style="color:#75715e"></span>            <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>j <span style="color:#f92672">==</span> 0<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                leftEnd2 <span style="color:#f92672">=</span> Integer<span style="color:#f92672">.</span><span style="color:#a6e22e">MIN_VALUE</span><span style="color:#f92672">;</span>
+                rightBegin2 <span style="color:#f92672">=</span> nums2<span style="color:#f92672">[</span>j<span style="color:#f92672">];</span>
+            <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>j <span style="color:#f92672">==</span> nums2<span style="color:#f92672">.</span><span style="color:#a6e22e">length</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                leftEnd2 <span style="color:#f92672">=</span> nums2<span style="color:#f92672">[</span>j <span style="color:#f92672">-</span> 1<span style="color:#f92672">];</span>
+                rightBegin2 <span style="color:#f92672">=</span> Integer<span style="color:#f92672">.</span><span style="color:#a6e22e">MAX_VALUE</span><span style="color:#f92672">;</span>
+            <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#f92672">{</span>
+                leftEnd2 <span style="color:#f92672">=</span> nums2<span style="color:#f92672">[</span>j <span style="color:#f92672">-</span> 1<span style="color:#f92672">];</span>
+                rightBegin2 <span style="color:#f92672">=</span> nums2<span style="color:#f92672">[</span>j<span style="color:#f92672">];</span>
+            <span style="color:#f92672">}</span>
+
+            <span style="color:#66d9ef">int</span> maxLeftEnd <span style="color:#f92672">=</span> Math<span style="color:#f92672">.</span><span style="color:#a6e22e">max</span><span style="color:#f92672">(</span>leftEnd1<span style="color:#f92672">,</span> leftEnd2<span style="color:#f92672">);</span>
+            <span style="color:#66d9ef">int</span> minRightBegin <span style="color:#f92672">=</span> Math<span style="color:#f92672">.</span><span style="color:#a6e22e">min</span><span style="color:#f92672">(</span>rightBegin1<span style="color:#f92672">,</span> rightBegin2<span style="color:#f92672">);</span>
+
+            <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>maxLeftEnd <span style="color:#f92672">&lt;=</span> minRightBegin<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                <span style="color:#66d9ef">if</span> <span style="color:#f92672">((</span>nums1<span style="color:#f92672">.</span><span style="color:#a6e22e">length</span> <span style="color:#f92672">+</span> nums2<span style="color:#f92672">.</span><span style="color:#a6e22e">length</span><span style="color:#f92672">)</span> <span style="color:#f92672">%</span> 2 <span style="color:#f92672">==</span> 0<span style="color:#f92672">)</span>
+                    <span style="color:#66d9ef">return</span> <span style="color:#f92672">(</span>minRightBegin <span style="color:#f92672">+</span> maxLeftEnd<span style="color:#f92672">)</span> <span style="color:#f92672">/</span> 2<span style="color:#f92672">.</span><span style="color:#a6e22e">0</span><span style="color:#f92672">;</span>
+                <span style="color:#66d9ef">else</span>
+                    <span style="color:#66d9ef">return</span> minRightBegin<span style="color:#f92672">;</span>
+            <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#f92672">{</span>
+                <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>j <span style="color:#f92672">==</span> 0<span style="color:#f92672">)</span>
+                    iMax <span style="color:#f92672">=</span> i <span style="color:#f92672">-</span> 1<span style="color:#f92672">;</span>
+                <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>i <span style="color:#f92672">==</span> 0<span style="color:#f92672">)</span>
+                    iMin <span style="color:#f92672">=</span> i <span style="color:#f92672">+</span> 1<span style="color:#f92672">;</span>
+                <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>nums1<span style="color:#f92672">[</span>i <span style="color:#f92672">-</span> 1<span style="color:#f92672">]</span> <span style="color:#f92672">&gt;</span> nums2<span style="color:#f92672">[</span>j <span style="color:#f92672">-</span> 1<span style="color:#f92672">])</span>
+                    iMax <span style="color:#f92672">=</span> i <span style="color:#f92672">-</span> 1<span style="color:#f92672">;</span>
+                <span style="color:#66d9ef">else</span>
+                    iMin <span style="color:#f92672">=</span> i <span style="color:#f92672">+</span> 1<span style="color:#f92672">;</span>
+            <span style="color:#f92672">}</span>
+        <span style="color:#f92672">}</span>
+
+        <span style="color:#66d9ef">return</span> <span style="color:#f92672">-</span>999<span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">_4MedianOfTwoSortedArrays</span> <span style="color:#f92672">{</span>
+
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span><span style="color:#f92672">(</span>String<span style="color:#f92672">[]</span> argv<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">int</span><span style="color:#f92672">[]</span> nums1 <span style="color:#f92672">=</span> <span style="color:#f92672">{</span>1<span style="color:#f92672">,</span> 3<span style="color:#f92672">,</span> 4<span style="color:#f92672">};</span>
+        <span style="color:#66d9ef">int</span><span style="color:#f92672">[]</span> nums2 <span style="color:#f92672">=</span> <span style="color:#f92672">{</span>2<span style="color:#f92672">,</span> 5<span style="color:#f92672">,</span> 8<span style="color:#f92672">,</span> 10<span style="color:#f92672">};</span>
+
+        Solution solution <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Solution<span style="color:#f92672">();</span>
+        <span style="color:#66d9ef">double</span> result <span style="color:#f92672">=</span> solution<span style="color:#f92672">.</span><span style="color:#a6e22e">findMedianSortedArrays</span><span style="color:#f92672">(</span>nums1<span style="color:#f92672">,</span> nums2<span style="color:#f92672">);</span>
+        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span>result<span style="color:#f92672">);</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span></code></pre></div>
+</div>
+
+  
+<footer class='entry-footer'>
+  <div class='container sep-before'><div class='categories'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M22,19a2,2,0,0,1-2,2H4a2,2,0,0,1-2-2V5A2,2,0,0,1,4,3H9l2,3h9a2,2,0,0,1,2,2Z"/>
+  
+</svg>
+<span class='screen-reader-text'>Categories: </span><a class='category' href='/categories/programming-basic/'>programming basic</a></div>
+<div class='tags'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M20.59,13.41l-7.17,7.17a2,2,0,0,1-2.83,0L2,12V2H12l8.59,8.59A2,2,0,0,1,20.59,13.41Z"/>
+  <line x1="7" y1="7" x2="7" y2="7"/>
+  
+</svg>
+<span class='screen-reader-text'>Tags: </span><a class='tag' href='/tags/git/'>git</a></div>
+
+  </div>
+</footer>
+
+
+</article>
+
+<nav class='entry-nav'>
+  <div class='container'><div class='prev-entry sep-before'>
+      <a href='/posts/technical/using_awesomewm_as_wm_of_mate_desktop/'>
+        <span aria-hidden='true'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="20" y1="12" x2="4" y2="12"/>
+  <polyline points="10 18 4 12 10 6"/>
+  
+</svg>
+ Previous</span>
+        <span class='screen-reader-text'>Previous post: </span>使用AwesomeWM作为Mate(Gnome相同) Desktop的窗口管理器</a>
+    </div><div class='next-entry sep-before'>
+      <a href='/posts/technical/netease_music_can_not_open/'>
+        <span class='screen-reader-text'>Next post: </span>arch linux下网易云音乐运行没反应，只能使用root用户运行<span aria-hidden='true'>Next <svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="4" y1="12" x2="20" y2="12"/>
+  <polyline points="14 6 20 12 14 18"/>
+  
+</svg>
+</span>
+      </a>
+    </div></div>
+</nav>
+
+
+
+
+      </main>
+
+      <footer id='footer' class='footer'>
+        <div class='container sep-before'><section class='widget widget-social_menu sep-after'><header>
+    <h4 class='title widget-title'>Contact</h4>
+  </header><nav aria-label='Social Menu'>
+    <ul><li>
+        <a href='https://github.com/extendswind' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Open Github account in new tab</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+  
+</svg>
+</a>
+      </li><li>
+        <a href='mailto:extendswind@foxmail.com' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Contact via Email</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+  <polyline points="22,6 12,13 2,6"/>
+  
+</svg>
+</a>
+      </li></ul>
+  </nav>
+</section><div class='copyright'>
+  <p> &copy; 2018 extendswind </p>
+</div>
+
+        </div>
+      </footer>
+
+    </div>
+  </div><script>window.__public_path__='\/assets\/js\/'</script>
+
+<script src='/assets/js/main.59f76c44.js'></script>
+
+</body>
+
+</html>
+

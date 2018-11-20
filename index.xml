@@ -5,10 +5,36 @@
     <link>https://extendswind.top/</link>
     <description>Recent content in Home on extendswind</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Sat, 20 Oct 2018 20:59:49 +0800</lastBuildDate>
+    <lastBuildDate>Tue, 20 Nov 2018 19:59:49 +0800</lastBuildDate>
     
 	<atom:link href="https://extendswind.top/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>arch linux下网易云音乐运行没反应，只能使用root用户运行</title>
+      <link>https://extendswind.top/posts/technical/netease_music_can_not_open/</link>
+      <pubDate>Tue, 20 Nov 2018 19:59:49 +0800</pubDate>
+      
+      <guid>https://extendswind.top/posts/technical/netease_music_can_not_open/</guid>
+      <description>最近打开网易云音乐没有反应，只在htop命令下能看到运行的进程（manjaro+mate+awesome）。
+命令行sudo可以正常运行
+无用尝试  安装官网给的最新1.1.3的deepin与ubuntu16两个版本 网上提到的&amp;ndash;no-sandbox参数运行 kill已经运行的netease-cloud-music相关进程  解决方案 回退到更早的1.0.0版，估计新版没有在各个linux系统下测试。
+http://s1.music.126.net/download/pc/netease-cloud-music_1.0.0-2_amd64_ubuntu16.04.deb
+debian系就直接dpkg -i吧
+arch系通过AUR安装稍麻烦:
+ 卸载原版本 yaourt -S netease-cloud-music 按y Edit PKGBUILD 将1.1.3的安装包地址替换为1.1.0的安装包地址，并且将对应hash值改为skip，具体如下  改之前：
+source=( &amp;quot;http://packages.deepin.com/deepin/pool/main/n/netease-cloud-music/netease-cloud-music_${pkgver}-${_pkgrel}_amd64.deb&amp;quot; &amp;quot;http://music.163.com/html/web2/service.html&amp;quot; ) md5sums=(&#39;53c47c1bf6797b2a0e455bc59833ab2d&#39; &#39;SKIP&#39;)  改之后
+source=( &amp;quot;http://s1.music.126.net/download/pc/netease-cloud-music_1.0.0-2_amd64_ubuntu16.04.deb&amp;quot; &amp;quot;http://music.163.com/html/web2/service.html&amp;quot; ) md5sums=(&#39;SKIP&#39; &#39;SKIP&#39;)  然后正常安装即可</description>
+    </item>
+    
+    <item>
+      <title>leetcode: Median of Two Sorted Arrays</title>
+      <link>https://extendswind.top/posts/technical/leetcode4/</link>
+      <pubDate>Tue, 13 Nov 2018 10:30:00 +0800</pubDate>
+      
+      <guid>https://extendswind.top/posts/technical/leetcode4/</guid>
+      <description>题目  Median of Two Sorted Arrays There are two sorted arrays nums1 and nums2 of size m and n respectively. Find the median of the two sorted arrays. The overall run time complexity should be O(log (m+n)). You may assume nums1 and nums2 cannot be both empty. Example 1: nums1 = [1, 3] nums2 = [2] The median is 2.0 Example 2: nums1 = [1, 2] nums2 = [3, 4] The median is (2 + 3)/2 = 2.</description>
+    </item>
     
     <item>
       <title>使用AwesomeWM作为Mate(Gnome相同) Desktop的窗口管理器</title>
@@ -88,6 +114,22 @@ YARN上新运行的任务能够使用已运行任务回收的资源(如运行完
 Capacity Scheduler CapacityScheduler重点解决多个组织共享集群资源，并保证每个组织自己的资源使用量。当自己的资源不足时能够使用其它组织的空闲资源。
 资源通过层级队列（hierarchical queues）的形式进行组织，配置在etc/hadoop/capacity-scheduler.xml.
 &amp;lt;!-- 队列结构设置 --&amp;gt; &amp;lt;property&amp;gt; &amp;lt;name&amp;gt;yarn.scheduler.capacity.root.queues&amp;lt;/name&amp;gt; &amp;lt;value&amp;gt;a,b&amp;lt;/value&amp;gt; &amp;lt;description&amp;gt;The queues at the this level (root is the root queue). &amp;lt;/description&amp;gt; &amp;lt;/property&amp;gt; &amp;lt;property&amp;gt; &amp;lt;name&amp;gt;yarn.scheduler.capacity.root.a.queues&amp;lt;/name&amp;gt; &amp;lt;value&amp;gt;a1,a2&amp;lt;/value&amp;gt; &amp;lt;description&amp;gt;The queues at the this level (root is the root queue).</description>
+    </item>
+    
+    <item>
+      <title>使用Python3发布博客到支持mateweblog的平台（博客园等）</title>
+      <link>https://extendswind.top/posts/technical/python3_publish_blog/</link>
+      <pubDate>Tue, 04 Sep 2018 10:30:00 +0800</pubDate>
+      
+      <guid>https://extendswind.top/posts/technical/python3_publish_blog/</guid>
+      <description>用个人域名搭建的博客在百度搜索上的SEO太差，百度一直只收录主页，懒得再为这些问题折腾，直接同步到博客园算了，考虑用Python。
+貌似CSDN已经关闭了metawebblog接口，只在博客园上测试。
+Python发博客的主要方案  通过xmlprc的metaweblog接口（首选） CSDN和博客园的api（定位不是用来发博客的，申请key和调接口略麻烦） 使用抓包的技术模拟浏览器登录发博客（没悬念更折腾）  代码 对于支持metaweblog的博客平台，只要提供用户名、密码和博客相关信息。
+python2 需要将后面的xmlrpc.client改为xmlrpclib，并且import xmlrpclib
+#!/bin/python3 import xmlrpc.client username = &amp;#39;&amp;#39; # TODO your username passwd = &amp;#39;&amp;#39; # TODO your passwd url = &amp;#39;http://www.cnblogs.com/fly2wind/services/metaweblog.aspx&amp;#39; title = &amp;#34;helloWorld&amp;#34; content = &amp;#34;&amp;lt;p&amp;gt; test &amp;lt;p&amp;gt;&amp;#34; tags = &amp;#34;tag1, tag2&amp;#34; blogProxy = xmlrpc.client.ServerProxy(url) # 获取最近博客列表 print(blogProxy.metaWeblog.getRecentPosts(&amp;#39;&amp;#39;, username, passwd, 1)) # 发布博客 blogProxy.metaWeblog.newPost(&amp;#39;&amp;#39;, username, passwd, dict(title=title, description=content, mt_keywords=tags), True) 参考 https://rpc.cnblogs.com/metaweblog/fly2wind#Post API文档
+https://magicsword.wordpress.com/2012/01/17/tet34/
+https://blog.csdn.net/shajunxing/article/details/79553472
+https://github.com/RussellLuo/pymwa</description>
     </item>
     
     <item>
@@ -237,6 +279,30 @@ interface Logger { void writeLog(); } // 被代理类 class LoggerSubject implem
 容易添加新的主题
 不应用工厂模式的一般实现 （FactoryProblem.java）  logger 基类实现通用的日志记录功能，子类实现各自的特有功能 使用时根据配置文件中的类型，new相应的子类  类的实现：
 abstract class Logger { public void writeLog(){ System.out.println(&amp;#34;writeLog by Logger&amp;#34;); } // 可添加公共实现 } class FileLogger extends Logger { @Override public void writeLog(){ System.out.println(&amp;#34;writeLog by the FileLogger&amp;#34;); } } class DataBaseLogger extends Logger { @Override public void writeLog(){ System.</description>
+    </item>
+    
+    <item>
+      <title>第一篇博客</title>
+      <link>https://extendswind.top/posts/life/_13_reviewes/</link>
+      <pubDate>Mon, 04 Jun 2018 22:40:48 +0800</pubDate>
+      
+      <guid>https://extendswind.top/posts/life/_13_reviewes/</guid>
+      <description>看了奇葩说后查了一下李诞，又因为一些博客里提到了这个采访才看了《十三邀》。一个在综艺节目中脑回路极大、思维敏捷、搞笑，而又在生活中保持佛系态度,让我想看看采访中表达的思想。
+看了对马东和李诞两个人的采访，五十多分钟的访谈看完了似乎没什么感觉，又印象有很多带动点思考的东西。
+看一些评论有点意思，从一段对话里带着个人色彩解读，展示一些看不到的东西，虽然某些只以一个节目批判许知远人品和采访能力的论述略显浮躁。
+评价一个人没什么意思，特别是以并不能展示全貌的公众视角，只谈看视频后的各种对自己的联想。
+许知远似乎一直想表现出心底的与众不同，或者可能是在故意把自己的观点展示得更为偏激以试探对方的反应。很多地方表现出对当前社会状态的不满，期待对方有相同的感受，而感觉上马东和李诞都表示出某些理解，而现在又不属于同样的感觉。
+马东作为一个老练的主持人表现得很成熟，表现出这个世界的悲凉，但又保持一个积极的态度，像是以一个太极的感觉回应许知远对时代的不满。
+和李诞的访谈中，他们看起来是在以不同的方式做自己的坚持。一个处处展示自己知识分子的身份和追求，表现出愤青的批判；一个以佛系的心态面对生活，放低姿态以“浅薄”自嘲。
+对当前的生活状态，显然谈不上不太满意，无论是能力还是心态上都还距离自己想要的高度甚远。过去的一段时间，想给自己贴上成熟的标签，但又总感觉少了点青春，某些严肃也显得和自己略不协调。在《天才在左，疯子在右》中某个善于模仿他人的“患者”提到，人一生的最理想状态应该是历经沧桑后老年人的平和状态。也经常想象自己在心态上的终极追求，年老时最想要达到的心态，或许，成熟之中，还需要李诞那样的一份佛系和“浅薄”。
+记下的一点东西 李诞 佛系。
+通过笑话说实话。
+“人是社会动物，人就是为了别人活的，你充分的自得，活在自己的精神世界里面，你就死了”。
+“好吧，我就是想活在浅薄里，我就是想活得流于表面。”
+*马东 每个时代都追求精致，但又难以找到精致。
+开始《奇葩说》是因为有很多吸引他的未知的东西，技术、平台等。
+人生的底色是凄凉，不像积极主义者，凄凉是指无法改变的东西。
+“被误会是表达者的宿命”。</description>
     </item>
     
     <item>
