@@ -31,6 +31,13 @@
   </url>
   
   <url>
+    <loc>https://extendswind.top/posts/life/_13_reviewes/</loc>
+    <lastmod>2018-09-30T22:40:48+08:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
     <loc>https://extendswind.top/posts/technical/git_code_roll_back_revert_and_reset/</loc>
     <lastmod>2018-09-11T10:30:00+08:00</lastmod>
     <changefreq>monthly</changefreq>
@@ -110,13 +117,6 @@
   <url>
     <loc>https://extendswind.top/posts/technical/design_patterns_factory/</loc>
     <lastmod>2018-06-15T17:25:25+08:00</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>https://extendswind.top/posts/life/_13_reviewes/</loc>
-    <lastmod>2018-06-04T22:40:48+08:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
@@ -211,14 +211,14 @@
   
   <url>
     <loc>https://extendswind.top/tags/life/</loc>
-    <lastmod>2018-06-04T22:40:48+08:00</lastmod>
+    <lastmod>2018-09-30T22:40:48+08:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>https://extendswind.top/categories/life/</loc>
-    <lastmod>2018-06-04T22:40:48+08:00</lastmod>
+    <lastmod>2018-09-30T22:40:48+08:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0</priority>
   </url>

@@ -32,7 +32,7 @@ git log 查找想要回退的commit的id后运行：
 `git reset --mixed HEAD~`  会回到前一次提交的add执行之前的状态
 `git reset --hard HEAD~`  会回到前一次提交的add执行之前的状态，并且将目录里的所有文件调整为前一次的提交状态
 
-通常回退时需要将文件也回退需要加 --hard 标签。
+通常回退时需要将文件也回退需要加 `--hard` 标签。
 
 # git的文件组织
 

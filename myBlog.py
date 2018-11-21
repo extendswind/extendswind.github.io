@@ -2,6 +2,10 @@
 
 import xmlrpc.client
 import re
+import time
+
+
+from bs4 import BeautifulSoup
 
 
 username = 'fly2wind'
@@ -27,25 +31,47 @@ for blog in allBlogs:
 # 获取hugo生成的所有blog
 sitemapfile = open("public/sitemap.xml", "r")
 for line in sitemapfile:
-    if re.match(".*<loc>.*post.*</loc>.*", line) != None:
-        path = "public/posts/" + re.findall("<loc>.*posts/(.*)</loc>", line)[0] + "index.html"
-        print(path)
+    if re.match(".*<loc>.*posts/.*/.*</loc>.*", line) != None:
+        print(line)
 
+        continue
+
+        # 博客网址
+        loc = re.findall("<loc>(.*)</loc>", line)[0].strip("/")
+
+        # 本地路径
+        path = "public/posts/" + re.findall("<loc>.*posts/(.*)</loc>", line)[0] + "index.html"
+
+        # 打开博客文件
         file = open(path)
         content = file.read()
-        title = re.findall("<h1 class='title'>(.*)</h1>", content)[0]
-        print(title)
+        soup = BeautifulSoup(content)
 
-        tag = re.findall("<a class='tag'.*>(.*)</a>", content)
+        # 读取文章名
+        title = soup.find("h1",attrs={'class':'title'}).get_text()
+
+        # 读取标签
+        tagList = [i.get_text() for i in soup.findAll("a",attrs={'class':'tag'})]
         commaStr = ","
-        tags = commaStr.join(tag)
-        print(tags)
+        tags = commaStr.join(tagList)
+
+        # 读取文章内容
+        blogContent = str(soup.find("div", attrs={"class":'container entry-content'}))
+
+        # 加转载说明
+        blogContent = "<font size='0.9em' color='#009966'>本文通过MetaWeblog自动发布，原文及更新链接：" + "<a href=" + loc +">" + loc + "</a>" + "</font>" + blogContent
+
+       # print(blogContent)
 
         if not (title in allTitles):
+            print()
+            print("//////////")
             print("publish to cnblogs  " + "username:" + username + "   title:" + title)
-            blogProxy.metaWeblog.newPost('', username, passwd, dict(title=title, description=content, mt_keywords=tags), True)
+            blogProxy.metaWeblog.newPost('', username, passwd, dict(title=title, description=blogContent, mt_keywords=tags), True)
+            print("//////////")
 
-        break
+            # 博客园30s内只能发布一篇博客
+            time.sleep(30)
 
 
 
