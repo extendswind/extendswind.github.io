@@ -32,7 +32,7 @@ git reset --hard 2c1e288
 git reset只适合本地的回退和查看先前代码。如果远程仓库已有最新的提交，git会认为远程仓库的代码较新，需要先同步远程代码再进行修改，此情况下建议使用revert。
 git reset &amp;ndash;soft &amp;ndash;mixed &amp;ndash;hard 以HEAD～为例（HEAD前的一次提交）
 git reset --soft HEAD~ 会回到前一次提交的commit执行之前的状态 git reset --mixed HEAD~ 会回到前一次提交的add执行之前的状态 git reset --hard HEAD~ 会回到前一次提交的add执行之前的状态，并且将目录里的所有文件调整为前一次的提交状态
-通常回退时需要将文件也回退需要加 &amp;ndash;hard 标签。
+通常回退时需要将文件也回退需要加 --hard 标签。
 git的文件组织 git将所有的文件以hash码命名放在仓库中存储。
 HEAD指针，一般可以理解为当前commit状态的一个快照（指向仓库中当前commit的所有的文件）。每次commit或者merge等会创建新的commit节点时，会让HEAD指向新的位置。
 reset会改变HEAD指针的位置与HEAD对应的分支指针的位置，checkout只会改变HEAD指针指向的分支。

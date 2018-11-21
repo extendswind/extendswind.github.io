@@ -11,7 +11,7 @@ git reset --hard 2c1e288
 git reset只适合本地的回退和查看先前代码。如果远程仓库已有最新的提交，git会认为远程仓库的代码较新，需要先同步远程代码再进行修改，此情况下建议使用revert。
 git reset &ndash;soft &ndash;mixed &ndash;hard 以HEAD～为例（HEAD前的一次提交）
 git reset --soft HEAD~ 会回到前一次提交的commit执行之前的状态 git reset --mixed HEAD~ 会回到前一次提交的add执行之前的状态 git reset --hard HEAD~ 会回到前一次提交的add执行之前的状态，并且将目录里的所有文件调整为前一次的提交状态
-通常回退时需要将文件也回退需要加 &ndash;hard 标签。
+通常回退时需要将文件也回退需要加 --hard 标签。
 git的文件组织 git将所有的文件以hash码命名放在仓库中存储。
 HEAD指针，一般可以理解为当前commit状态的一个快照（指向仓库中当前commit的所有的文件）。每次commit或者merge等会创建新的commit节点时，会让HEAD指向新的位置。
 reset会改变HEAD指针的位置与HEAD对应的分支指针的位置，checkout只会改变HEAD指针指向的分支。
@@ -32,7 +32,7 @@ git reset --hard 2c1e288
 git reset只适合本地的回退和查看先前代码。如果远程仓库已有最新的提交，git会认为远程仓库的代码较新，需要先同步远程代码再进行修改，此情况下建议使用revert。
 git reset &ndash;soft &ndash;mixed &ndash;hard 以HEAD～为例（HEAD前的一次提交）
 git reset --soft HEAD~ 会回到前一次提交的commit执行之前的状态 git reset --mixed HEAD~ 会回到前一次提交的add执行之前的状态 git reset --hard HEAD~ 会回到前一次提交的add执行之前的状态，并且将目录里的所有文件调整为前一次的提交状态
-通常回退时需要将文件也回退需要加 &ndash;hard 标签。
+通常回退时需要将文件也回退需要加 --hard 标签。
 git的文件组织 git将所有的文件以hash码命名放在仓库中存储。
 HEAD指针，一般可以理解为当前commit状态的一个快照（指向仓库中当前commit的所有的文件）。每次commit或者merge等会创建新的commit节点时，会让HEAD指向新的位置。
 reset会改变HEAD指针的位置与HEAD对应的分支指针的位置，checkout只会改变HEAD指针指向的分支。
@@ -246,7 +246,7 @@ if (!doNotTrack) {
 <code>git reset --mixed HEAD~</code>  会回到前一次提交的add执行之前的状态
 <code>git reset --hard HEAD~</code>  会回到前一次提交的add执行之前的状态，并且将目录里的所有文件调整为前一次的提交状态</p>
 
-<p>通常回退时需要将文件也回退需要加 &ndash;hard 标签。</p>
+<p>通常回退时需要将文件也回退需要加 <code>--hard</code> 标签。</p>
 
 <h1 id="git的文件组织">git的文件组织</h1>
 
@@ -322,8 +322,8 @@ if (!doNotTrack) {
  Previous</span>
         <span class='screen-reader-text'>Previous post: </span>SpatialHadoop的编译与运行</a>
     </div><div class='next-entry sep-before'>
-      <a href='/posts/technical/using_awesomewm_as_wm_of_mate_desktop/'>
-        <span class='screen-reader-text'>Next post: </span>使用AwesomeWM作为Mate(Gnome相同) Desktop的窗口管理器<span aria-hidden='true'>Next <svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+      <a href='/posts/life/_13_reviewes/'>
+        <span class='screen-reader-text'>Next post: </span>《十三邀》--李诞、马东、许知远<span aria-hidden='true'>Next <svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
   
   <line x1="4" y1="12" x2="20" y2="12"/>
   <polyline points="14 6 20 12 14 18"/>

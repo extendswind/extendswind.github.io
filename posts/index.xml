@@ -42,11 +42,35 @@ source=( &amp;quot;http://s1.music.126.net/download/pc/netease-cloud-music_1.0.0
       <pubDate>Sat, 20 Oct 2018 20:59:49 +0800</pubDate>
       
       <guid>https://extendswind.top/posts/technical/using_awesomewm_as_wm_of_mate_desktop/</guid>
-      <description>AwesomeWM这种平铺的窗口管理器用得很爽，只是基于wine的qq最近又莫名其妙抽风，感觉还是切到deepin-wine上比较靠谱。而deepin-wine在awesome下运行qq会报错X Error of failed request: BadWindow (invalid Window parameter) Major opcode of failed request: 20 (X_GetProperty)，而在Gnome系下运行正常。看到Gnome和Mate能够运行i3wm，就折腾了一下试试。
- 安装AwesomeWM、Mate桌面环境与dconf-editor（arch下使用pacman -S）。
+      <description> AwesomeWM这种平铺的窗口管理器用得很爽，只是基于wine的qq最近又莫名其妙抽风，感觉还是切到deepin-wine上比较靠谱。而deepin-wine在awesome下运行qq会报错X Error of failed request: BadWindow (invalid Window parameter) Major opcode of failed request: 20 (X_GetProperty)，而在Gnome系下运行正常。看到Gnome和Mate能够运行i3wm，就折腾了一下试试。
+具体折腾  安装AwesomeWM、Mate桌面环境与dconf-editor（arch下使用pacman -S）。
  进入Mate桌面环境后，修改org.mate.session.required-components windowmanager的值为&amp;rsquo;awesome&amp;rsquo;，如果不需要桌面上的图标，可以将org.mate.session.required-components的值只留下windowmanager。
  上面的设置无法通过命令行打开awesome，需要添加awesome的图标。在/usr/share/applications目录下新建awesome.desktop，内容如下（网上直接粘的，估计有些可以不要，懒得试了）：
   [Desktop Entry] Type=Application Name=awesome Exec=awesome NoDisplay=true # name of loadable control center module X-MATE-WMSettingsModule=awesome # name we put on the WM spec check window X-MATE-WMName=awesome # back compat only X-MateWMSettingsLibrary=awesome X-MATE-Bugzilla-Bugzilla=MATE X-MATE-Bugzilla-Product=awesome X-MATE-Bugzilla-Component=general X-MATE-Autostart-Phase=WindowManager X-MATE-Provides=windowmanager X-MATE-Autostart-Notify=true  </description>
+    </item>
+    
+    <item>
+      <title>《十三邀》--李诞、马东、许知远</title>
+      <link>https://extendswind.top/posts/life/_13_reviewes/</link>
+      <pubDate>Sun, 30 Sep 2018 22:40:48 +0800</pubDate>
+      
+      <guid>https://extendswind.top/posts/life/_13_reviewes/</guid>
+      <description>看了奇葩说后查了一下李诞，又因为一些博客里提到了这个采访才看了《十三邀》。一个在综艺节目中脑回路极大、思维敏捷、搞笑，而又在生活中保持佛系态度,让我想看看采访中表达的思想。
+看了对马东和李诞两个人的采访，五十多分钟的访谈看完了似乎没什么感觉，又印象有很多带动点思考的东西。
+看一些评论有点意思，从一段对话里带着个人色彩解读，展示一些看不到的东西，虽然某些只以一个节目批判许知远人品和采访能力的论述略显浮躁。
+评价一个人没什么意思，特别是以并不能展示全貌的公众视角，只谈看视频后的各种对自己的联想。
+许知远似乎一直想表现出心底的与众不同，或者可能是在故意把自己的观点展示得更为偏激以试探对方的反应。很多地方表现出对当前社会状态的不满，期待对方有相同的感受，而感觉上马东和李诞都表示出某些理解，而现在又不属于同样的感觉。
+马东作为一个老练的主持人表现得很成熟，表现出这个世界的悲凉，但又保持一个积极的态度，像是以一个太极的感觉回应许知远对时代的不满。
+和李诞的访谈中，他们看起来是在以不同的方式做自己的坚持。一个处处展示自己知识分子的身份和追求，表现出愤青的批判；一个以佛系的心态面对生活，放低姿态以“浅薄”自嘲。
+对当前的生活状态，显然谈不上不太满意，无论是能力还是心态上都还距离自己想要的高度甚远。过去的一段时间，想给自己贴上成熟的标签，但又总感觉少了点青春，某些严肃也显得和自己略不协调。在《天才在左，疯子在右》中某个善于模仿他人的“患者”提到，人一生的最理想状态或许是历经沧桑后老年人的那种平和。也经常想象自己在心态上的终极追求，年老时最想要达到的心态，或许，成熟之中，还需要李诞那样的一份佛系和“浅薄”。
+记下的一点东西 李诞 佛系。
+通过笑话说实话。
+“人是社会动物，人就是为了别人活的，你充分的自得，活在自己的精神世界里面，你就死了”。
+“好吧，我就是想活在浅薄里，我就是想活得流于表面。”
+*马东 每个时代都追求精致，但又难以找到精致。
+开始《奇葩说》是因为有很多吸引他的未知的东西，技术、平台等。
+人生的底色是凄凉，不像积极主义者，凄凉是指无法改变的东西。
+“被误会是表达者的宿命”。</description>
     </item>
     
     <item>
@@ -62,7 +86,7 @@ git reset --hard 2c1e288
 git reset只适合本地的回退和查看先前代码。如果远程仓库已有最新的提交，git会认为远程仓库的代码较新，需要先同步远程代码再进行修改，此情况下建议使用revert。
 git reset &amp;ndash;soft &amp;ndash;mixed &amp;ndash;hard 以HEAD～为例（HEAD前的一次提交）
 git reset --soft HEAD~ 会回到前一次提交的commit执行之前的状态 git reset --mixed HEAD~ 会回到前一次提交的add执行之前的状态 git reset --hard HEAD~ 会回到前一次提交的add执行之前的状态，并且将目录里的所有文件调整为前一次的提交状态
-通常回退时需要将文件也回退需要加 &amp;ndash;hard 标签。
+通常回退时需要将文件也回退需要加 --hard 标签。
 git的文件组织 git将所有的文件以hash码命名放在仓库中存储。
 HEAD指针，一般可以理解为当前commit状态的一个快照（指向仓库中当前commit的所有的文件）。每次commit或者merge等会创建新的commit节点时，会让HEAD指向新的位置。
 reset会改变HEAD指针的位置与HEAD对应的分支指针的位置，checkout只会改变HEAD指针指向的分支。
@@ -279,30 +303,6 @@ interface Logger { void writeLog(); } // 被代理类 class LoggerSubject implem
 容易添加新的主题
 不应用工厂模式的一般实现 （FactoryProblem.java）  logger 基类实现通用的日志记录功能，子类实现各自的特有功能 使用时根据配置文件中的类型，new相应的子类  类的实现：
 abstract class Logger { public void writeLog(){ System.out.println(&amp;#34;writeLog by Logger&amp;#34;); } // 可添加公共实现 } class FileLogger extends Logger { @Override public void writeLog(){ System.out.println(&amp;#34;writeLog by the FileLogger&amp;#34;); } } class DataBaseLogger extends Logger { @Override public void writeLog(){ System.</description>
-    </item>
-    
-    <item>
-      <title>第一篇博客</title>
-      <link>https://extendswind.top/posts/life/_13_reviewes/</link>
-      <pubDate>Mon, 04 Jun 2018 22:40:48 +0800</pubDate>
-      
-      <guid>https://extendswind.top/posts/life/_13_reviewes/</guid>
-      <description>看了奇葩说后查了一下李诞，又因为一些博客里提到了这个采访才看了《十三邀》。一个在综艺节目中脑回路极大、思维敏捷、搞笑，而又在生活中保持佛系态度,让我想看看采访中表达的思想。
-看了对马东和李诞两个人的采访，五十多分钟的访谈看完了似乎没什么感觉，又印象有很多带动点思考的东西。
-看一些评论有点意思，从一段对话里带着个人色彩解读，展示一些看不到的东西，虽然某些只以一个节目批判许知远人品和采访能力的论述略显浮躁。
-评价一个人没什么意思，特别是以并不能展示全貌的公众视角，只谈看视频后的各种对自己的联想。
-许知远似乎一直想表现出心底的与众不同，或者可能是在故意把自己的观点展示得更为偏激以试探对方的反应。很多地方表现出对当前社会状态的不满，期待对方有相同的感受，而感觉上马东和李诞都表示出某些理解，而现在又不属于同样的感觉。
-马东作为一个老练的主持人表现得很成熟，表现出这个世界的悲凉，但又保持一个积极的态度，像是以一个太极的感觉回应许知远对时代的不满。
-和李诞的访谈中，他们看起来是在以不同的方式做自己的坚持。一个处处展示自己知识分子的身份和追求，表现出愤青的批判；一个以佛系的心态面对生活，放低姿态以“浅薄”自嘲。
-对当前的生活状态，显然谈不上不太满意，无论是能力还是心态上都还距离自己想要的高度甚远。过去的一段时间，想给自己贴上成熟的标签，但又总感觉少了点青春，某些严肃也显得和自己略不协调。在《天才在左，疯子在右》中某个善于模仿他人的“患者”提到，人一生的最理想状态应该是历经沧桑后老年人的平和状态。也经常想象自己在心态上的终极追求，年老时最想要达到的心态，或许，成熟之中，还需要李诞那样的一份佛系和“浅薄”。
-记下的一点东西 李诞 佛系。
-通过笑话说实话。
-“人是社会动物，人就是为了别人活的，你充分的自得，活在自己的精神世界里面，你就死了”。
-“好吧，我就是想活在浅薄里，我就是想活得流于表面。”
-*马东 每个时代都追求精致，但又难以找到精致。
-开始《奇葩说》是因为有很多吸引他的未知的东西，技术、平台等。
-人生的底色是凄凉，不像积极主义者，凄凉是指无法改变的东西。
-“被误会是表达者的宿命”。</description>
     </item>
     
     <item>

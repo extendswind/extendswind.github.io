@@ -4,16 +4,16 @@
 <head>
   <meta charset='utf-8'>
 <meta name='viewport' content='width=device-width, initial-scale=1'>
-<meta name='description' content='AwesomeWM这种平铺的窗口管理器用得很爽，只是基于wine的qq最近又莫名其妙抽风，感觉还是切到deepin-wine上比较靠谱。而deepin-wine在awesome下运行qq会报错X Error of failed request: BadWindow (invalid Window parameter) Major opcode of failed request: 20 (X_GetProperty)，而在Gnome系下运行正常。看到Gnome和Mate能够运行i3wm，就折腾了一下试试。
- 安装AwesomeWM、Mate桌面环境与dconf-editor（arch下使用pacman -S）。
+<meta name='description' content=' AwesomeWM这种平铺的窗口管理器用得很爽，只是基于wine的qq最近又莫名其妙抽风，感觉还是切到deepin-wine上比较靠谱。而deepin-wine在awesome下运行qq会报错X Error of failed request: BadWindow (invalid Window parameter) Major opcode of failed request: 20 (X_GetProperty)，而在Gnome系下运行正常。看到Gnome和Mate能够运行i3wm，就折腾了一下试试。
+具体折腾  安装AwesomeWM、Mate桌面环境与dconf-editor（arch下使用pacman -S）。
  进入Mate桌面环境后，修改org.mate.session.required-components windowmanager的值为&rsquo;awesome&rsquo;，如果不需要桌面上的图标，可以将org.mate.session.required-components的值只留下windowmanager。
  上面的设置无法通过命令行打开awesome，需要添加awesome的图标。在/usr/share/applications目录下新建awesome.desktop，内容如下（网上直接粘的，估计有些可以不要，懒得试了）：
   [Desktop Entry] Type=Application Name=awesome Exec=awesome NoDisplay=true # name of loadable control center module X-MATE-WMSettingsModule=awesome # name we put on the WM spec check window X-MATE-WMName=awesome # back compat only X-MateWMSettingsLibrary=awesome X-MATE-Bugzilla-Bugzilla=MATE X-MATE-Bugzilla-Product=awesome X-MATE-Bugzilla-Component=general X-MATE-Autostart-Phase=WindowManager X-MATE-Provides=windowmanager X-MATE-Autostart-Notify=true  '>
 <meta name='theme-color' content='#cccccc'>
 
 <meta property='og:title' content='使用AwesomeWM作为Mate(Gnome相同) Desktop的窗口管理器 • extendswind'>
-<meta property='og:description' content='AwesomeWM这种平铺的窗口管理器用得很爽，只是基于wine的qq最近又莫名其妙抽风，感觉还是切到deepin-wine上比较靠谱。而deepin-wine在awesome下运行qq会报错X Error of failed request: BadWindow (invalid Window parameter) Major opcode of failed request: 20 (X_GetProperty)，而在Gnome系下运行正常。看到Gnome和Mate能够运行i3wm，就折腾了一下试试。
- 安装AwesomeWM、Mate桌面环境与dconf-editor（arch下使用pacman -S）。
+<meta property='og:description' content=' AwesomeWM这种平铺的窗口管理器用得很爽，只是基于wine的qq最近又莫名其妙抽风，感觉还是切到deepin-wine上比较靠谱。而deepin-wine在awesome下运行qq会报错X Error of failed request: BadWindow (invalid Window parameter) Major opcode of failed request: 20 (X_GetProperty)，而在Gnome系下运行正常。看到Gnome和Mate能够运行i3wm，就折腾了一下试试。
+具体折腾  安装AwesomeWM、Mate桌面环境与dconf-editor（arch下使用pacman -S）。
  进入Mate桌面环境后，修改org.mate.session.required-components windowmanager的值为&rsquo;awesome&rsquo;，如果不需要桌面上的图标，可以将org.mate.session.required-components的值只留下windowmanager。
  上面的设置无法通过命令行打开awesome，需要添加awesome的图标。在/usr/share/applications目录下新建awesome.desktop，内容如下（网上直接粘的，估计有些可以不要，懒得试了）：
   [Desktop Entry] Type=Application Name=awesome Exec=awesome NoDisplay=true # name of loadable control center module X-MATE-WMSettingsModule=awesome # name we put on the WM spec check window X-MATE-WMName=awesome # back compat only X-MateWMSettingsLibrary=awesome X-MATE-Bugzilla-Bugzilla=MATE X-MATE-Bugzilla-Product=awesome X-MATE-Bugzilla-Component=general X-MATE-Autostart-Phase=WindowManager X-MATE-Provides=windowmanager X-MATE-Autostart-Notify=true  '>
@@ -182,7 +182,11 @@ if (!doNotTrack) {
   
 
   <div class='container entry-content'>
-  <p>AwesomeWM这种平铺的窗口管理器用得很爽，只是基于wine的qq最近又莫名其妙抽风，感觉还是切到deepin-wine上比较靠谱。而deepin-wine在awesome下运行qq会报错<code>X Error of failed request: BadWindow (invalid Window parameter) Major opcode of failed request: 20 (X_GetProperty)</code>，而在Gnome系下运行正常。看到Gnome和Mate能够运行i3wm，就折腾了一下试试。</p>
+  
+
+<p>AwesomeWM这种平铺的窗口管理器用得很爽，只是基于wine的qq最近又莫名其妙抽风，感觉还是切到deepin-wine上比较靠谱。而deepin-wine在awesome下运行qq会报错<code>X Error of failed request: BadWindow (invalid Window parameter) Major opcode of failed request: 20 (X_GetProperty)</code>，而在Gnome系下运行正常。看到Gnome和Mate能够运行i3wm，就折腾了一下试试。</p>
+
+<h1 id="具体折腾">具体折腾</h1>
 
 <ol>
 <li><p>安装AwesomeWM、Mate桌面环境与dconf-editor（arch下使用<code>pacman -S</code>）。</p></li>
@@ -237,7 +241,7 @@ X-MATE-Autostart-Notify=true
 
 <nav class='entry-nav'>
   <div class='container'><div class='prev-entry sep-before'>
-      <a href='/posts/technical/git_code_roll_back_revert_and_reset/'>
+      <a href='/posts/life/_13_reviewes/'>
         <span aria-hidden='true'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
   
   <line x1="20" y1="12" x2="4" y2="12"/>
@@ -245,7 +249,7 @@ X-MATE-Autostart-Notify=true
   
 </svg>
  Previous</span>
-        <span class='screen-reader-text'>Previous post: </span>git 代码回滚与爬坑 -- reset and revert</a>
+        <span class='screen-reader-text'>Previous post: </span>《十三邀》--李诞、马东、许知远</a>
     </div><div class='next-entry sep-before'>
       <a href='/posts/technical/leetcode4/'>
         <span class='screen-reader-text'>Next post: </span>leetcode: Median of Two Sorted Arrays<span aria-hidden='true'>Next <svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
