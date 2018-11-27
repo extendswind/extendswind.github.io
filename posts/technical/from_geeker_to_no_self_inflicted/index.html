@@ -4,31 +4,31 @@
 <head>
   <meta charset='utf-8'>
 <meta name='viewport' content='width=device-width, initial-scale=1'>
-<meta name='description' content='错误  error: invalid arch-independent ELF magic. Entering rescue mode&hellip; grub rescue&gt;
- 使用Rufu ISO模式烧录的U盘，lagency 模式能够启动，但点安装后出上面错误；UEFI模式直接出上面错误。
-解决方案 不多说，百度背锅，google答案的前几个就是正解。
-U盘烧录问题，使用rufu烧录U盘时，最好使用DD模式而非ISO模式。（去年安装manjaro-xfce4时用ISO模式没出过）
-https://forum.manjaro.org/t/grub-error-computer-with-no-os-installed-invalid-arch-independent-elf-magic/21805
-解决方案：使用Rufu烧录U盘，点开始后会有选择DD模式或者ISO模式，此时选DD模式，然后UEFI启动即可。
-论坛上还推荐使用etcher'>
+<meta name='description' content='用了很长一段时间的linux，和很多人对linux相比windows的优点评价相同，linux是非常自由的操作系统。从内核到桌面环境到各个应用都可以自行定制，能够完全按照自己的喜好修改，实在没有的功能甚至能够自己造轮子。
+也因此对于我这样的强迫症患者，在各个组件上都想追求一个最舒适的解决方案。这样一个系统确实用得舒服，但也总有用得不舒服的地方需要持续改善，不断调整各个组件以及造一些脚本级的轮子。
+最近连续几周效率严重偏低，也突然发现自己在这些看似意义不大的地方耗费的时间太多。一个emacs各种折腾最后只是写写简单的c&#43;&#43;、Python和org；awesomeWM嵌入Mate其实相比传统的多workspace方式也没特别大的区别；软件尽可能找到开源替代与商业版本隔离。
+或许太多时候以geek自居追求某种“无强迫”环境，而忘记要事优先。
+提醒一下自己刚开始读研的目标，在一堆感兴趣的hello world基础之上有所深入。
+感兴趣的技术太多，总要有所舍弃。
+linux是用来折腾的，更是用来解决问题的。'>
 <meta name='theme-color' content='#cccccc'>
 
-<meta property='og:title' content='使用u盘安装linux(manjaro)时Grub报错 • extendswind'>
-<meta property='og:description' content='错误  error: invalid arch-independent ELF magic. Entering rescue mode&hellip; grub rescue&gt;
- 使用Rufu ISO模式烧录的U盘，lagency 模式能够启动，但点安装后出上面错误；UEFI模式直接出上面错误。
-解决方案 不多说，百度背锅，google答案的前几个就是正解。
-U盘烧录问题，使用rufu烧录U盘时，最好使用DD模式而非ISO模式。（去年安装manjaro-xfce4时用ISO模式没出过）
-https://forum.manjaro.org/t/grub-error-computer-with-no-os-installed-invalid-arch-independent-elf-magic/21805
-解决方案：使用Rufu烧录U盘，点开始后会有选择DD模式或者ISO模式，此时选DD模式，然后UEFI启动即可。
-论坛上还推荐使用etcher'>
-<meta property='og:url' content='https://extendswind.top/posts/technical/manjaro_install_problem_grub/'>
+<meta property='og:title' content='开启不折腾模式 • extendswind'>
+<meta property='og:description' content='用了很长一段时间的linux，和很多人对linux相比windows的优点评价相同，linux是非常自由的操作系统。从内核到桌面环境到各个应用都可以自行定制，能够完全按照自己的喜好修改，实在没有的功能甚至能够自己造轮子。
+也因此对于我这样的强迫症患者，在各个组件上都想追求一个最舒适的解决方案。这样一个系统确实用得舒服，但也总有用得不舒服的地方需要持续改善，不断调整各个组件以及造一些脚本级的轮子。
+最近连续几周效率严重偏低，也突然发现自己在这些看似意义不大的地方耗费的时间太多。一个emacs各种折腾最后只是写写简单的c&#43;&#43;、Python和org；awesomeWM嵌入Mate其实相比传统的多workspace方式也没特别大的区别；软件尽可能找到开源替代与商业版本隔离。
+或许太多时候以geek自居追求某种“无强迫”环境，而忘记要事优先。
+提醒一下自己刚开始读研的目标，在一堆感兴趣的hello world基础之上有所深入。
+感兴趣的技术太多，总要有所舍弃。
+linux是用来折腾的，更是用来解决问题的。'>
+<meta property='og:url' content='https://extendswind.top/posts/technical/from_geeker_to_no_self_inflicted/'>
 <meta property='og:site_name' content='extendswind'>
 <meta property='og:type' content='article'><meta property='article:section' content='posts'><meta property='article:tag' content='linux'><meta property='article:published_time' content='2018-07-17T20:59:49&#43;08:00'/><meta property='article:modified_time' content='2018-07-17T20:59:49&#43;08:00'/><meta name='twitter:card' content='summary'>
 
 <meta name="generator" content="Hugo 0.51" />
 
-  <title>使用u盘安装linux(manjaro)时Grub报错 • extendswind</title>
-  <link rel='canonical' href='https://extendswind.top/posts/technical/manjaro_install_problem_grub/'>
+  <title>开启不折腾模式 • extendswind</title>
+  <link rel='canonical' href='https://extendswind.top/posts/technical/from_geeker_to_no_self_inflicted/'>
   
   
   <link rel='icon' href='/images/wind.jpeg'>
@@ -155,7 +155,7 @@ if (!doNotTrack) {
   <header class='header entry-header'>
   <div class='container sep-after'>
     <div class='header-info'>
-      <h1 class='title'>使用u盘安装linux(manjaro)时Grub报错</h1>
+      <h1 class='title'>开启不折腾模式</h1>
       
 
     </div>
@@ -188,39 +188,24 @@ if (!doNotTrack) {
   <summary class='title'>
     <span>Table of Contents</span>
   </summary>
-  <nav id="TableOfContents">
-<ul>
-<li><a href="#错误">错误</a></li>
-<li><a href="#解决方案">解决方案</a></li>
-</ul>
-</nav>
+  
 </details>
 
 
   <div class='container entry-content'>
-  
+  <p>用了很长一段时间的linux，和很多人对linux相比windows的优点评价相同，linux是非常自由的操作系统。从内核到桌面环境到各个应用都可以自行定制，能够完全按照自己的喜好修改，实在没有的功能甚至能够自己造轮子。</p>
 
-<h1 id="错误">错误</h1>
+<p>也因此对于我这样的强迫症患者，在各个组件上都想追求一个最舒适的解决方案。这样一个系统确实用得舒服，但也总有用得不舒服的地方需要持续改善，不断调整各个组件以及造一些脚本级的轮子。</p>
 
-<blockquote>
-<p>error: invalid arch-independent ELF magic.
-Entering rescue mode&hellip;
-grub rescue&gt;</p>
-</blockquote>
+<p>最近连续几周效率严重偏低，也突然发现自己在这些看似意义不大的地方耗费的时间太多。一个emacs各种折腾最后只是写写简单的c++、Python和org；awesomeWM嵌入Mate其实相比传统的多workspace方式也没特别大的区别；软件尽可能找到开源替代与商业版本隔离。</p>
 
-<p>使用Rufu ISO模式烧录的U盘，lagency 模式能够启动，但点安装后出上面错误；UEFI模式直接出上面错误。</p>
+<p>或许太多时候以geek自居追求某种“无强迫”环境，而忘记要事优先。</p>
 
-<h1 id="解决方案">解决方案</h1>
+<p>提醒一下自己刚开始读研的目标，在一堆感兴趣的hello world基础之上有所深入。</p>
 
-<p>不多说，百度背锅，google答案的前几个就是正解。</p>
+<p>感兴趣的技术太多，总要有所舍弃。</p>
 
-<p>U盘烧录问题，使用rufu烧录U盘时，最好使用DD模式而非ISO模式。（去年安装manjaro-xfce4时用ISO模式没出过）</p>
-
-<p><a href="https://forum.manjaro.org/t/grub-error-computer-with-no-os-installed-invalid-arch-independent-elf-magic/21805" target="_blank">https://forum.manjaro.org/t/grub-error-computer-with-no-os-installed-invalid-arch-independent-elf-magic/21805</a></p>
-
-<p>解决方案：使用Rufu烧录U盘，点开始后会有选择DD模式或者ISO模式，此时选DD模式，然后UEFI启动即可。</p>
-
-<p>论坛上还推荐使用etcher</p>
+<p>linux是用来折腾的，更是用来解决问题的。</p>
 
 </div>
 
@@ -248,7 +233,7 @@ grub rescue&gt;</p>
 
 <nav class='entry-nav'>
   <div class='container'><div class='prev-entry sep-before'>
-      <a href='/posts/technical/from_geeker_to_no_self_inflicted/'>
+      <a href='/posts/technical/design_patterns_prototype/'>
         <span aria-hidden='true'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
   
   <line x1="20" y1="12" x2="4" y2="12"/>
@@ -256,10 +241,10 @@ grub rescue&gt;</p>
   
 </svg>
  Previous</span>
-        <span class='screen-reader-text'>Previous post: </span>开启不折腾模式</a>
+        <span class='screen-reader-text'>Previous post: </span>设计模式 之 原型模式</a>
     </div><div class='next-entry sep-before'>
-      <a href='/posts/technical/remote_debug_of_hadoop_in_docker/'>
-        <span class='screen-reader-text'>Next post: </span>Hadoop HDFS 远程调试（Docker环境下的Hadoop集群）<span aria-hidden='true'>Next <svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+      <a href='/posts/technical/manjaro_install_problem_grub/'>
+        <span class='screen-reader-text'>Next post: </span>使用u盘安装linux(manjaro)时Grub报错<span aria-hidden='true'>Next <svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
   
   <line x1="4" y1="12" x2="20" y2="12"/>
   <polyline points="14 6 20 12 14 18"/>
