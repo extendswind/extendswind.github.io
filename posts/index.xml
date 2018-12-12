@@ -5,10 +5,22 @@
     <link>https://extendswind.top/posts/</link>
     <description>Recent content in Posts on extendswind</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Tue, 20 Nov 2018 19:59:49 +0800</lastBuildDate>
+    <lastBuildDate>Tue, 11 Dec 2018 21:30:00 +0800</lastBuildDate>
     
 	<atom:link href="https://extendswind.top/posts/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Hadoop 副本放置策略的源码阅读和设置</title>
+      <link>https://extendswind.top/posts/technical/hadoop_block_placement_policy/</link>
+      <pubDate>Tue, 11 Dec 2018 21:30:00 +0800</pubDate>
+      
+      <guid>https://extendswind.top/posts/technical/hadoop_block_placement_policy/</guid>
+      <description>大多数的叫法都是副本放置策略，实质上是HDFS对所有数据的位置放置策略，并非只是针对数据的副本。因此Hadoop的源码里有block replicator(configuration)、 BlockPlacementPolicy(具体逻辑源码)两种叫法。
+主要用途：上传文件时决定文件在HDFS上存储的位置（具体到datanode上的具体存储介质，如具体到存储在哪块硬盘）；rebalance、datanode退出集群、副本数量更改等导致数据移动的操作中，数据移动的具体位置。
+BlockPlacementPolicy BlockPlacementPolicy 作为虚基类提供了基本的接口，具体的子类重点实现下面 选择副本 、 验证副本放置是否满足要求 、 选择能够删除的副本 三个函数：
+/** * 核心的副本放置策略实现，返回副本放置数量的存储位置 * **如果有效节点数量不够（少于副本数），返回尽可能多的节点，而非失败** * * @param srcPath 上传文件的路径 * @param numOfReplicas 除下面chosen参数里已经选择的datanode，还需要的副本数量 * @param writer 写数据的机器, null if not in the cluster. 一般用于放置第一个副本以降低网络通信 * @param chosen 已经选择的节点 * @param returnChosenNodes 返回结果里是否包含chosen的datanode * @param excludedNodes 不选的节点 * @param blocksize 块大小 * @return 排序好的选择结果 */ public abstract DatanodeStorageInfo[] chooseTarget(String srcPath, int numOfReplicas, Node writer, List&amp;lt;DatanodeStorageInfo&amp;gt; chosen, boolean returnChosenNodes, Set&amp;lt;Node&amp;gt; excludedNodes, long blocksize, BlockStoragePolicy storagePolicy); /** * 判断传入的放置方式是否符合要求 */ abstract public BlockPlacementStatus verifyBlockPlacement( DatanodeInfo[] locs, int numOfReplicas); /** * 当副本数量较多时，选择需要删除的节点 */ abstract public List&amp;lt;DatanodeStorageInfo&amp;gt; chooseReplicasToDelete( Collection&amp;lt;DatanodeStorageInfo&amp;gt; candidates, int expectedNumOfReplicas, List&amp;lt;StorageType&amp;gt; excessTypes, DatanodeDescriptor addedNode, DatanodeDescriptor delNodeHint); Hadoop 提供的 BlockPlacementPolicy 实现 Hadoop提供了BlockPlacementPolicyDefault、BlockPlacementPolicyWithNodeGroup、AvailableSpaceBlockPlacementPolicy三种实现（hadoop 2.</description>
+    </item>
     
     <item>
       <title>arch linux下网易云音乐运行没反应，只能使用root用户运行</title>
