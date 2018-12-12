@@ -10,8 +10,6 @@ categories:
 
 tags:
 - "hadoop"
-- "GIS"
-
 ---
 
 

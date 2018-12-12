@@ -9,7 +9,6 @@ categories:
 
 tags:
 - "hadoop"
-- "GIS"
 
 ---
 
@@ -107,7 +106,7 @@ return chooseTarget(numOfReplicas, writer, chosenNodes, returnChosenNodes,
 
 因此**默认的副本放置策略，在同一文件包含多个block时，每个block的存储位置独立考虑，并非存储在同一datanode**。
 
-## 选择副本放置策略
+## 处理favoredNodes
 
 上传文件时可以指定favoredNodes（默认为空），首先对favoredNodes所在的节点判断是否合适。如果满足条件的节点数还低于副本数，则添加新的副本。
 
