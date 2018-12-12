@@ -48,7 +48,7 @@ for line in sitemapfile:
         # 打开博客文件
         file = open(path)
         content = file.read()
-        soup = BeautifulSoup(content)
+        soup = BeautifulSoup(content, features="html5lib")
 
         # 读取文章名
         title = soup.find("h1",attrs={'class':'title'}).get_text()
