@@ -5,10 +5,45 @@
     <link>https://extendswind.top/posts/</link>
     <description>Recent content in Posts on extendswind</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Wed, 12 Dec 2018 11:20:00 +0800</lastBuildDate>
+    <lastBuildDate>Wed, 09 Jan 2019 09:59:49 +0800</lastBuildDate>
     
 	<atom:link href="https://extendswind.top/posts/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>zotero zotfile插件 pdf附件文件夹在多系统下的同步设置</title>
+      <link>https://extendswind.top/posts/research/zotero_multiple_directory_pdf_sync/</link>
+      <pubDate>Wed, 09 Jan 2019 09:59:49 +0800</pubDate>
+      
+      <guid>https://extendswind.top/posts/research/zotero_multiple_directory_pdf_sync/</guid>
+      <description>之前的附件使用zotfile单独的文件夹管理，换了一块硬盘，挂载目录发生变化后zotero里所有的附件都打不开，在zotero的目录设置和zotfile的目录设置里改了都没用。
+使用sqllite的浏览器看了一眼zotero的存储数据库(zotero.sqlite)，在表itemAttachments中存储了所有附件的类型地址等信息，发现里头的地址全都使用的绝对路径！！
+重点在于设置zotero和zotfile的附件路径和转移文件。
+使用网盘同步的不用折腾这些。
+设置  zotero preferences -&amp;gt; Files and Folders -&amp;gt; Linked Attachment Base Directory 设置存储路径 （注意不是 data directory） 把zotfile里的路径也改到这（不知道具体什么机制，zotfile有个相对路径的pull request不知道读的是不是这个，懒得多折腾）  已有的文件移动  如果由于换硬盘换系统一类的问题，先使用软连接指向原来的目录，让zotero能够找到原来的文件。（源目录可以使用sqllite的浏览器看到）
+ 在library下全选所有的items，然后右键 Manage Attachments -&amp;gt; Rename Attachments。（看起来是重命名，实质上会移动所有的文件）
+  此时此前附件中的绝对路径/mnt/data/...会变成attachments：catagory1/test1.pdf 类似的相对路径。
+更高端一点的可以直接操作sqllite数据库来改&amp;hellip;
+最后 跨操作系统或者跨目录直接设置到相同的目录即可。</description>
+    </item>
+    
+    <item>
+      <title>Spark设置自定义的InputFormat读取HDFS文件</title>
+      <link>https://extendswind.top/posts/technical/problem_spark_reading_hdfs_serializable/</link>
+      <pubDate>Sat, 15 Dec 2018 11:30:00 +0800</pubDate>
+      
+      <guid>https://extendswind.top/posts/technical/problem_spark_reading_hdfs_serializable/</guid>
+      <description>Spark提供了HDFS上一般的文件文件读取接口 sc.textFile()，但在某些情况下HDFS中需要存储自定义格式的文件，需要更加灵活的读取方式。
+使用KeyValueTextInputFormat Hadoop的MapReduce框架下提供了一些InputFormat的实现，其中MapReduce2的接口(org.apache.hadoop.mapreduce下)与先前MapReduce1(org.apache.hadoop.mapred下)有区别，对应于newAPIHadoopFile函数。
+使用KeyValueTextInputFormat的文件读取如下
+import org.apache.hadoop.mapreduce.lib.input.KeyValueTextInputFormat import org.apache.hadoop.io.Text val hFile = sc.newAPIHadoopFile(&amp;#34;hdfs://hadoopmaster:9000/user/sparkl/README.md&amp;#34;, classOf[KeyValueTextInputFormat], classOf[Text], classOf[Text]) hFile.collect 使用自定义InputFormat InputFormat是MapReduce框架下将输入的文件解析成字符串的组件，Spark对HDFS中的文件实现自定义读写需要通过InputFormat的子类实现。下面只写简单的思路，具体的可以参考InputFormat和MapReduce相关资料。
+InputFormat的修改可以参考TextInputFormat，继承FileInputFormat后，重载createRecordReader返回一个新的继承RecordReader的类，通过新的RecordReader读取数据返回键值对。
+打包后注意上传时将jar包一起上传：
+`./spark-shell &amp;ndash;jars newInputFormat.jar
+运行的代码和上面差不多，import相关的包后
+val hFile = sc.newAPIHadoopFile(&amp;#34;hdfs://hadoopmaster:9000/user/sparkl/README.md&amp;#34;, classOf[NewTextInputFormat], classOf[Text], classOf[Text]) 一些坑 序列化问题 在读取文件后使用first或者collect时，出现下面的错误
+ ERROR scheduler.TaskSetManager: Task 0.0 in stage 2.0 (TID 18) had a not serializable result: org.apache.hadoop.io.IntWritable Serialization stack: - object not serializable (class: org.apache.hadoop.io.IntWritable, value: 35) - element of array (index: 0) - array (class [Lorg.</description>
+    </item>
     
     <item>
       <title>Hadoop 机架（集群拓扑）设置</title>
