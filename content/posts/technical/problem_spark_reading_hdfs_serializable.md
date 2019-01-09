@@ -1,0 +1,1 @@
+../../../myNote/./technical/cloud_computing/problem_spark_reading_hdfs_serializable.md

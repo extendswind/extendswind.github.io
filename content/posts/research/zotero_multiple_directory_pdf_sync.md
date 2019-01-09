@@ -1,0 +1,1 @@
+../../../myNote/./research/zotero_multiple_directory_pdf_sync.md
