@@ -1,0 +1,1 @@
+../../../myNote/./technical/linux_desktop/deepin_wine_run_in_not_gnome_desktop_environment.md
