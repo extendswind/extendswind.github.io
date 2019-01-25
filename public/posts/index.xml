@@ -5,10 +5,83 @@
     <link>https://extendswind.top/posts/</link>
     <description>Recent content in Posts on extendswind</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Wed, 09 Jan 2019 09:59:49 +0800</lastBuildDate>
+    <lastBuildDate>Mon, 21 Jan 2019 20:59:49 +0800</lastBuildDate>
     
 	<atom:link href="https://extendswind.top/posts/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>manjaro (arch) 安装搜狗输入法</title>
+      <link>https://extendswind.top/posts/technical/sogou_input_install_in_arch_manjaro/</link>
+      <pubDate>Mon, 21 Jan 2019 20:59:49 +0800</pubDate>
+      
+      <guid>https://extendswind.top/posts/technical/sogou_input_install_in_arch_manjaro/</guid>
+      <description>本来还很简单的事，被默认的选项弄出一堆坑
+步骤 先安装fcitx用来管理输入法，然后安装搜狗输入法并配置，然后添加环境变量使相关的应用默认加载fcitx。
+1. 安装fcitx以及配置 sudo pacman -S fcitx fcitx-im fcitx-configtool
+fcitx 为基础安装包，fcitx-im用于GTK/QT等界面上使用的包，fcitx-configtool为配置界面（kde下还能安装一个kde版的configtool）。
+2. 安装搜狗输入法 yaourt fcitx-sogoupinyin
+此处有坑，默认的安装方式会编译安装qtwebkit，速度非常的慢（一个小时午觉后还没好&amp;hellip;)
+在库的官方说明中（来自 https://aur.archlinux.org/packages/fcitx-sogoupinyin/ ）依赖项为qtwebkit (qtwebkit-bin)
+其实只依赖qtwebkit-bin，因此先安装qtwebkit-bin可以解决依赖问题（不到一分钟&amp;hellip;)
+yaourt -S qtwebkit-bin
+3. fcitx 设置中添加搜狗拼音 fcitx configuration中点加号添加sogou pinyin（默认语言为英语时需要勾选一个选项）
+4. fcitx环境变量的添加 gui应用的环境变量一般不通过profile和bashrc。
+arch wiki下的内容：
+ KDM, GDM, LightDM 等显示管理器，请使用 ~/.xprofile arch wiki 警告: 上述用户不要在~/.xinitrc中加入下述脚本，否则会造成无法登陆。(但在里头加了也没挂) 如果您用 startx 或者 Slim 启动，请使用~/.xinitrc 中加入
+export GTK_IM_MODULE=fcitx export QT_IM_MODULE=fcitx export XMODIFIERS=@im=fcitx
+如果你使用的是较新版本的GNOME，使用 Wayland 显示管理器，则请在/etc/environment中加入
+GTK_IM_MODULE=fcitx QT_IM_MODULE=fcitx XMODIFIERS=@im=fcitx
+ 参考链接中有更详细的说明，我用的manjaro+xfce4以及后面改装的cinnamon和awesome都是在lightDM下该的.xinitrc，没有.xprofile文件，也能正常用。 （注意添加在最后exec $(&amp;hellip;)的前面）</description>
+    </item>
+    
+    <item>
+      <title>arch linux (manjaro) 下运行tim和qq</title>
+      <link>https://extendswind.top/posts/technical/tim_install_wine/</link>
+      <pubDate>Sun, 20 Jan 2019 21:59:49 +0800</pubDate>
+      
+      <guid>https://extendswind.top/posts/technical/tim_install_wine/</guid>
+      <description>基于AUR的安装是没什么难度了，主要安装后会出各种问题，还有选不同的包的影响。
+官方的wiki上推荐安装deepin-wine-tim，基于wine和最新版的tim。安装后存在qq密码每次都要输入的问题（201804测试没有此问题，但还是不太稳定，2018年因为wine的更新导致挂了两次只能回退）。
+更推荐使用的deepin.com.qq.office，基于deepin-wine，配置好了比较稳定。
+安装步骤 安装 yaourt -S deepin.com.qq.office
+ps：吐槽，安装deepin-wine的各个确认略多。 d
+qq提取消息、截图等快捷键设置 在/opt/deepinwine/tools/sendkeys.sh脚本能够传递快捷键，如直接运行./sendkeys.sh a 则会向qq或tim进程发送 ctrl+alt+a。
+不同桌面环境添加快捷键的方法差不多，主要步骤：
+ setting -&amp;gt; keyboard -&amp;gt; shortcut 添加快捷键，选择上面的脚本，在脚本后面加上a 指定运行脚本的快捷键  此时按快捷键后相当于qq中按 ctrl+alt+a (截图)
+同理可以设置qq其它快捷键
+一般问题 大多出现在基于wine的tim上，基于deepin的tim问题很少。
+deepin-wine在非gnome系的桌面上的运行问题 3wm, kde, awesome等桌面管理器或桌面环境里运行基于deepin-wine的qq和tim时，会出现下面的错误
+ X Error of failed request: BadWindow (invalid Window parameter) Major opcode of failed request: 20 (X_GetProperty)
+ 由于deepin-wine依赖了gnome系（mate,cinnamon,gnome）的setting-daemon，需要安装后运行（一般加入开机启动）
+sudo pacman -S cinnamon-settings-daemon /usr/lib/cinnamon-settings-daemon/csd-xsettings 无法输入中文 如果其它地方可以使用输入法，一般为环境变量的问题，fcitx没有配置好。
+粗暴解决方式: 下面的文件夹中加入环境变量
+/opt/deepinwine/apps/Deepin-TIM/run.sh
+ export XMODIFIERS=&amp;ldquo;@im=fcitx&amp;rdquo; export GTK_IM_MODULE=&amp;ldquo;fcitx&amp;rdquo; export QT_IM_MODULE=&amp;ldquo;fcitx&amp;rdquo;</description>
+    </item>
+    
+    <item>
+      <title>在非gnome系桌面环境下运行deepin-wine tim的错误解决</title>
+      <link>https://extendswind.top/posts/technical/deepin_wine_run_in_not_gnome_desktop_environment/</link>
+      <pubDate>Sun, 20 Jan 2019 20:59:49 +0800</pubDate>
+      
+      <guid>https://extendswind.top/posts/technical/deepin_wine_run_in_not_gnome_desktop_environment/</guid>
+      <description>i3wm, kde, awesome等桌面管理器或桌面环境里运行基于deepin-wine的qq和tim时，会出现下面的错误
+ X Error of failed request: BadWindow (invalid Window parameter) Major opcode of failed request: 20 (X_GetProperty)
+ 在gnome、mate、cinnamon三个桌面上运行较好，xfce4上运行有少许焦点上的bug，其它桌面环境和管理器下直接出上面的错误。
+最近终于在aur上看到是因为deepin-wine依赖了gnome-setttings-daemon。（xsettings的一个后台进程，cinnamon和mate的xsettings进程也能用）
+解决方案 貌似是因为对gnome-setttings-daemon的依赖。
+arch系：
+sudo pacman -S gnome-settings-daemon /usr/lib/gsd-setttings 运行tim和qq即可
+ubuntu 下的包和运行的程序名略不一样，参考：
+https://github.com/wszqkzqk/deepin-wine-ubuntu/issues/12#issuecomment-443656358
+注意 在使用xsettings之后，主题等需要与对应的xsettings设置相对应。如使用gnome-settings-daemon时，需要在gnome的设置里更改主题。使用lxappearance修改主题只会更改~/.gtkrc-2.0等文件，不会生效。
+附：使用cinnamon的xsettings的设置 主题的问题略坑，懒得去试gnome上的主题设置需要哪些包，安装整个gnome的包需要800多M，直接安装了cinnamon的基础包（90M左右）。
+cinnamon的xsettings默认也没用那个不太能忍的主题。
+sudo pacman -S cinnamon # awesome的autorun里加入下面程序使开机运行 /usr/lib/cinnamon-settings-daemon/csd-xsettings 在系统设置里可以下载和更改主题
+小坑 tim和qq都会在点击好友图像时卡死，原因是因为pulseaudio进程，kill掉就行，会影响声音的调整。（千里之外的两个程序不知道为什么会卡一起）
+最后 又从mate+awesomewm回到纯awesomewm，但运行了一个xsetting进程也不知道和直接mate+awesome比能节约多少内存。</description>
+    </item>
     
     <item>
       <title>zotero zotfile插件 pdf附件文件夹在多系统下的同步设置</title>
@@ -20,11 +93,12 @@
 使用sqllite的浏览器看了一眼zotero的存储数据库(zotero.sqlite)，在表itemAttachments中存储了所有附件的类型地址等信息，发现里头的地址全都使用的绝对路径！！
 重点在于设置zotero和zotfile的附件路径和转移文件。
 使用网盘同步的不用折腾这些。
-设置  zotero preferences -&amp;gt; Files and Folders -&amp;gt; Linked Attachment Base Directory 设置存储路径 （注意不是 data directory） 把zotfile里的路径也改到这（不知道具体什么机制，zotfile有个相对路径的pull request不知道读的是不是这个，懒得多折腾）  已有的文件移动  如果由于换硬盘换系统一类的问题，先使用软连接指向原来的目录，让zotero能够找到原来的文件。（源目录可以使用sqllite的浏览器看到）
+方法一：设置为相对路径并修改文件 设置  zotero preferences -&amp;gt; Files and Folders -&amp;gt; Linked Attachment Base Directory 设置存储路径 （注意不是 data directory） 把zotfile里的路径也改到这（不知道具体什么机制，zotfile有个相对路径的pull request不知道读的是不是这个，懒得多折腾）  已有的文件移动  如果由于换硬盘换系统一类的问题，先使用软连接指向原来的目录，让zotero能够找到原来的文件。（源目录可以使用sqllite的浏览器看到）
  在library下全选所有的items，然后右键 Manage Attachments -&amp;gt; Rename Attachments。（看起来是重命名，实质上会移动所有的文件）
   此时此前附件中的绝对路径/mnt/data/...会变成attachments：catagory1/test1.pdf 类似的相对路径。
-更高端一点的可以直接操作sqllite数据库来改&amp;hellip;
-最后 跨操作系统或者跨目录直接设置到相同的目录即可。</description>
+方法二：直接操作sqllite数据库来改 下面的语句供参考，建议稍了解后操作，使用update导致数据丢失会很麻烦。
+把下面路径中的/home/fly/public_download/改成自己数据库里的路径即可。
+update itemAttachments set path=replace(path, &#39;/home/fly/public_download/&#39;, &#39;attachments:&#39;) where path like &#39;/home/fly/public_download%&#39;  最后 跨操作系统或者跨目录直接设置到相同的目录即可。</description>
     </item>
     
     <item>
@@ -107,33 +181,16 @@ source=( &amp;quot;http://s1.music.126.net/download/pc/netease-cloud-music_1.0.0
       <pubDate>Sat, 20 Oct 2018 20:59:49 +0800</pubDate>
       
       <guid>https://extendswind.top/posts/technical/using_awesomewm_as_wm_of_mate_desktop/</guid>
-      <description> 20180118更新:
+      <description> 20190118更新:
 最近发现有在非gnome系的DE下运行deepin-wine的解决方案，没必要专门跑一个mate。
-安装gnome-setttings-daemon，然后运行/usr/lib/gsd-xsettings。（不同系统不一样）
+安装gnome-setttings-daemon，然后运行/usr/lib/gsd-xsettings。（不同系统会不一样）
 具体记录在另一篇博客
-AwesomeWM这种平铺的窗口管理器用得很爽，只是基于wine的qq最近又莫名其妙抽风，感觉还是切到deepin-wine上比较靠谱。而deepin-wine在awesome下运行qq会报错X Error of failed request: BadWindow (invalid Window parameter) Major opcode of failed request: 20 (X_GetProperty)，而在Gnome系下运行正常。看到Gnome和Mate能够运行i3wm，就折腾了一下试试。
+AwesomeWM这种平铺的窗口管理器用得很爽，只是基于wine的qq最近又莫名其妙抽风，感觉还是切到deepin-wine上比较靠谱。而deepin-wine在awesome下运行qq会报错X Error of failed request: BadWindow (invalid Window parameter) Major opcode of failed request: 20 (X_GetProperty)，而在Gnome系下运行正常。看到Gnome和Mate能够运行awesomewm，就折腾了一下试试。
+Awesome只是Gnome等桌面管理器的组件之一，gnome系的Mate可以修改默认的窗口管理器。
 具体折腾  安装AwesomeWM、Mate桌面环境与dconf-editor（arch下使用pacman -S）。
  进入Mate桌面环境后，修改org.mate.session.required-components windowmanager的值为&amp;rsquo;awesome&amp;rsquo;，如果不需要桌面上的图标，可以将org.mate.session.required-components的值只留下windowmanager。
  上面的设置无法通过命令行打开awesome，需要添加awesome的图标。在/usr/share/applications目录下新建awesome.desktop，内容如下（网上直接粘的，估计有些可以不要，懒得试了）：
   [Desktop Entry] Type=Application Name=awesome Exec=awesome NoDisplay=true # name of loadable control center module X-MATE-WMSettingsModule=awesome # name we put on the WM spec check window X-MATE-WMName=awesome # back compat only X-MateWMSettingsLibrary=awesome X-MATE-Bugzilla-Bugzilla=MATE X-MATE-Bugzilla-Product=awesome X-MATE-Bugzilla-Component=general X-MATE-Autostart-Phase=WindowManager X-MATE-Provides=windowmanager X-MATE-Autostart-Notify=true  </description>
-    </item>
-    
-    <item>
-      <title>在非gnome系桌面环境下运行deepin-wine tim</title>
-      <link>https://extendswind.top/posts/technical/deepin_wine_run_in_not_gnome_desktop_environment/</link>
-      <pubDate>Sat, 20 Oct 2018 20:59:49 +0800</pubDate>
-      
-      <guid>https://extendswind.top/posts/technical/deepin_wine_run_in_not_gnome_desktop_environment/</guid>
-      <description>i3wm, kde, awesome等桌面管理器或桌面环境里运行基于deepin-wine的qq和tim时，会出现下面的错误
- X Error of failed request: BadWindow (invalid Window parameter) Major opcode of failed request: 20 (X_GetProperty)
- 在gnome、mate、cinnamon三个桌面上运行较好，xfce4上运行有少许焦点上的bug，其它桌面环境和管理器下直接出上面的错误。
-最近终于在aur上看到是因为deepin-wine依赖了gnome-setttings-daemon。
-解决方案 貌似是因为对gnome-setttings-daemon的依赖。
-arch系：
-sudo pacman -S gnome-settings-daemon /usr/lib/gsd-setttings 运行tim和qq即可
-ubuntu 下的包和运行的程序名略不一样，参考：
-https://github.com/wszqkzqk/deepin-wine-ubuntu/issues/12#issuecomment-443656358
-完 又从mate+awesomewm回到纯awesomewm。</description>
     </item>
     
     <item>

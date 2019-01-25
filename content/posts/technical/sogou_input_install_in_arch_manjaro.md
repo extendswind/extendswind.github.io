@@ -1,0 +1,1 @@
+../../../myNote/./technical/linux_desktop/sogou_input_install_in_arch_manjaro.md

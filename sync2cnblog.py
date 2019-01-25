@@ -63,7 +63,7 @@ for line in sitemapfile:
         # 加转载说明
         blogContent = "<font size='0.9em' color='#009966'>本文通过MetaWeblog自动发布，原文及更新链接：" + "<a href=" + loc +">" + loc + "</a>" + "</font>" + blogContent
 
-        blogProxy.metaWeblog.newPost('', username, passwd, dict(title="test", description="test", mt_keywords="testtag"), True)
+#        blogProxy.metaWeblog.newPost('', username, passwd, dict(title="test", description="test", mt_keywords="testtag"), True)
  
         if not (title in allTitles):
             print()

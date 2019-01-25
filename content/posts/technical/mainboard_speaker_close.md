@@ -1,0 +1,1 @@
+../../../myNote/./technical/linux_desktop/mainboard_speaker_close.md

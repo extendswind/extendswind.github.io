@@ -10,18 +10,19 @@ tags:
 ---
 
 
-
-20180118更新:
+20190118更新:
 
 最近发现有在非gnome系的DE下运行deepin-wine的解决方案，没必要专门跑一个mate。
 
-安装gnome-setttings-daemon，然后运行/usr/lib/gsd-xsettings。（不同系统不一样）
+安装gnome-setttings-daemon，然后运行/usr/lib/gsd-xsettings。（不同系统会不一样）
 
 具体记录在另一篇博客
 
 ---------------------------
 
-AwesomeWM这种平铺的窗口管理器用得很爽，只是基于wine的qq最近又莫名其妙抽风，感觉还是切到deepin-wine上比较靠谱。而deepin-wine在awesome下运行qq会报错`X Error of failed request: BadWindow (invalid Window parameter) Major opcode of failed request: 20 (X_GetProperty)`，而在Gnome系下运行正常。看到Gnome和Mate能够运行i3wm，就折腾了一下试试。
+AwesomeWM这种平铺的窗口管理器用得很爽，只是基于wine的qq最近又莫名其妙抽风，感觉还是切到deepin-wine上比较靠谱。而deepin-wine在awesome下运行qq会报错`X Error of failed request: BadWindow (invalid Window parameter) Major opcode of failed request: 20 (X_GetProperty)`，而在Gnome系下运行正常。看到Gnome和Mate能够运行awesomewm，就折腾了一下试试。
+
+Awesome只是Gnome等桌面管理器的组件之一，gnome系的Mate可以修改默认的窗口管理器。
 
 
 # 具体折腾

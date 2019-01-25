@@ -18,12 +18,14 @@ tags:
 
 **使用网盘同步的不用折腾这些。**
 
-# 设置
+# 方法一：设置为相对路径并修改文件
+
+## 设置
 
 1. zotero preferences -> Files and Folders -> Linked Attachment Base Directory 设置存储路径 （注意不是 data directory）
 2. 把zotfile里的路径也改到这（不知道具体什么机制，zotfile有个相对路径的pull request不知道读的是不是这个，懒得多折腾）
 
-# 已有的文件移动
+## 已有的文件移动
 
 1. 如果由于换硬盘换系统一类的问题，先使用软连接指向原来的目录，让zotero能够找到原来的文件。（源目录可以使用sqllite的浏览器看到）
 
@@ -31,7 +33,16 @@ tags:
 
 此时此前附件中的绝对路径`/mnt/data/...`会变成`attachments：catagory1/test1.pdf` 类似的相对路径。
 
-更高端一点的可以直接操作sqllite数据库来改...
+
+# 方法二：直接操作sqllite数据库来改
+
+下面的语句供参考，建议稍了解后操作，使用update导致数据丢失会很麻烦。
+
+把下面路径中的`/home/fly/public_download/`改成自己数据库里的路径即可。
+
+```
+update itemAttachments set path=replace(path, '/home/fly/public_download/', 'attachments:') where path like '/home/fly/public_download%'
+```
 
 
 # 最后
