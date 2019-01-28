@@ -5,10 +5,175 @@
     <link>https://extendswind.top/posts/</link>
     <description>Recent content in Posts on extendswind</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Tue, 11 Dec 2018 21:30:00 +0800</lastBuildDate>
+    <lastBuildDate>Fri, 25 Jan 2019 10:59:49 +0800</lastBuildDate>
     
 	<atom:link href="https://extendswind.top/posts/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>linux 关闭主板上的蜂鸣器声音</title>
+      <link>https://extendswind.top/posts/technical/mainboard_speaker_close/</link>
+      <pubDate>Fri, 25 Jan 2019 10:59:49 +0800</pubDate>
+      
+      <guid>https://extendswind.top/posts/technical/mainboard_speaker_close/</guid>
+      <description>在从deepin的kdd桌面换到xfce桌面后，命令行和界面操作上动不动会让主机响一声。
+manjaro的xfce版也是如此，不知道是不是linux下xfce的通病。
+主要是搜索的时候百度的结果很奇葩&amp;hellip;
+用关键字 beep of xfce4 搜到了arch wiki下的内容，原来这玩意叫pc speaker，针对不同的情况有不同的解决方案。
+最简单粗暴的方式 内核中加载了pcspkr模块导致的主板声音，rmmod移除此模块，然后/etc/modprobe.d文件夹下加入黑名单，使开机过程不加载。
+ rmmod pcspkr echo &amp;ldquo;blacklist pcspkr&amp;rdquo; &amp;gt; /etc/modprobe.d/nobeep.conf  具体参考 https://wiki.archlinux.org/index.php/PC_speaker</description>
+    </item>
+    
+    <item>
+      <title>manjaro AwesomeWM 上使用双显示器</title>
+      <link>https://extendswind.top/posts/technical/dual_monitor_manjaro_awesome/</link>
+      <pubDate>Thu, 24 Jan 2019 21:59:49 +0800</pubDate>
+      
+      <guid>https://extendswind.top/posts/technical/dual_monitor_manjaro_awesome/</guid>
+      <description>安装manjaro时使用独显的单显示器，在主板上接第二个显示器一直没反应。
+几个问题和解决 BIOS里检查是否关闭了集显开关 大多数显卡的默认设置都会在识别独显后关闭集显，要使用集显上的接口需要单独设置。
+如果接口允许，最好将两个显示器都接在独显上。
+xrandr 识别和控制显示器 xrandr 直接执行会得到显示器的连接状态
+xrandr --output DVI-I-1-1 --mode 1440x900 --primary --output VGA1 --mode 1366x768 --pos 1440x132 设置输出的显示器以及显示参数，每个--output后接显示器名以及参数，--mode指定分辨率，--primary指定主显示器，--pos指定位置，或者用--right-of指定相对位置。
+更进一步的设置可以在arch wiki
+xrandr 找不到显示器 xrandr &amp;ndash;listproviders 得到当前的显示器输入设备（一般name为Intel的是集显，name为nouveau的是开源独显驱动，Nvidia为闭源显卡驱动）
+xrandr &amp;ndash;setprovideroutputsource 0 1 将上面的设备设置为输入源
+如果xrandr &amp;ndash;listproviders 没有得到所有的输入源，则需要折腾驱动。
+驱动问题 在manjaro和deepin两个系统下发现NVIDIA驱动都有问题，primary显示器会显示两个显示器的内容。
+我的渣渣NVIDIA显卡切换到开源驱动用和主板的双显示器不折腾。
+mhwd -li --pci 查看已经安装的驱动 mhwd -l --pci 查看能用的驱动 sudo mhwd -r pci video-nvidia 移除驱动video-nvidia sudo mhwd -a pci videa-linux 安装开源显卡驱动（nouveau）  manjaro上通过mhwd简化了各种配置，详见：
+https://wiki.manjaro.org/index.php/Configure_Graphics_Cards
+基于KDE等桌面 如果主板和显卡驱动正常，一般各大桌面环境都支持自动配置，可以在显示设置里直接修改。
+AwesomeWM 默认快捷键：
+ctrl+super+j/k 屏幕之间焦点移动 super+o 当前窗口移动到另一个屏幕</description>
+    </item>
+    
+    <item>
+      <title>manjaro (arch) 安装搜狗输入法</title>
+      <link>https://extendswind.top/posts/technical/sogou_input_install_in_arch_manjaro/</link>
+      <pubDate>Mon, 21 Jan 2019 20:59:49 +0800</pubDate>
+      
+      <guid>https://extendswind.top/posts/technical/sogou_input_install_in_arch_manjaro/</guid>
+      <description>本来还很简单的事，被默认的选项弄出一堆坑
+步骤 先安装fcitx用来管理输入法，然后安装搜狗输入法并配置，然后添加环境变量使相关的应用默认加载fcitx。
+1. 安装fcitx以及配置 sudo pacman -S fcitx fcitx-im fcitx-configtool
+fcitx 为基础安装包，fcitx-im用于GTK/QT等界面上使用的包，fcitx-configtool为配置界面（kde下还能安装一个kde版的configtool）。
+2. 安装搜狗输入法 yaourt fcitx-sogoupinyin
+此处有坑，默认的安装方式会编译安装qtwebkit，速度非常的慢（一个小时午觉后还没好&amp;hellip;)
+在库的官方说明中（来自 https://aur.archlinux.org/packages/fcitx-sogoupinyin/ ）依赖项为qtwebkit (qtwebkit-bin)
+其实只依赖qtwebkit-bin，因此先安装qtwebkit-bin可以解决依赖问题（不到一分钟&amp;hellip;)
+yaourt -S qtwebkit-bin
+3. fcitx 设置中添加搜狗拼音 fcitx configuration中点加号添加sogou pinyin（默认语言为英语时需要勾选一个选项）
+4. fcitx环境变量的添加 gui应用的环境变量一般不通过profile和bashrc。
+arch wiki下的内容：
+ KDM, GDM, LightDM 等显示管理器，请使用 ~/.xprofile arch wiki 警告: 上述用户不要在~/.xinitrc中加入下述脚本，否则会造成无法登陆。(但在里头加了也没挂) 如果您用 startx 或者 Slim 启动，请使用~/.xinitrc 中加入
+export GTK_IM_MODULE=fcitx export QT_IM_MODULE=fcitx export XMODIFIERS=@im=fcitx
+如果你使用的是较新版本的GNOME，使用 Wayland 显示管理器，则请在/etc/environment中加入
+GTK_IM_MODULE=fcitx QT_IM_MODULE=fcitx XMODIFIERS=@im=fcitx
+ 参考链接中有更详细的说明，我用的manjaro+xfce4以及后面改装的cinnamon和awesome都是在lightDM下该的.xinitrc，没有.xprofile文件，也能正常用。 （注意添加在最后exec $(&amp;hellip;)的前面）</description>
+    </item>
+    
+    <item>
+      <title>arch linux (manjaro) 下运行tim和qq</title>
+      <link>https://extendswind.top/posts/technical/tim_install_wine/</link>
+      <pubDate>Sun, 20 Jan 2019 21:59:49 +0800</pubDate>
+      
+      <guid>https://extendswind.top/posts/technical/tim_install_wine/</guid>
+      <description>基于AUR的安装是没什么难度了，主要安装后会出各种问题，还有选不同的包的影响。
+官方的wiki上推荐安装deepin-wine-tim，基于wine和最新版的tim。安装后存在qq密码每次都要输入的问题（201804测试没有此问题，但还是不太稳定，2018年因为wine的更新导致挂了两次只能回退）。
+更推荐使用的deepin.com.qq.office，基于deepin-wine，配置好了比较稳定。
+安装步骤 安装 yaourt -S deepin.com.qq.office
+ps：吐槽，安装deepin-wine的各个确认略多。 d
+qq提取消息、截图等快捷键设置 在/opt/deepinwine/tools/sendkeys.sh脚本能够传递快捷键，如直接运行./sendkeys.sh a 则会向qq或tim进程发送 ctrl+alt+a。
+不同桌面环境添加快捷键的方法差不多，主要步骤：
+ setting -&amp;gt; keyboard -&amp;gt; shortcut 添加快捷键，选择上面的脚本，在脚本后面加上a 指定运行脚本的快捷键  此时按快捷键后相当于qq中按 ctrl+alt+a (截图)
+同理可以设置qq其它快捷键
+一般问题 大多出现在基于wine的tim上，基于deepin的tim问题很少。
+deepin-wine在非gnome系的桌面上的运行问题 3wm, kde, awesome等桌面管理器或桌面环境里运行基于deepin-wine的qq和tim时，会出现下面的错误
+ X Error of failed request: BadWindow (invalid Window parameter) Major opcode of failed request: 20 (X_GetProperty)
+ 由于deepin-wine依赖了gnome系（mate,cinnamon,gnome）的setting-daemon，需要安装后运行（一般加入开机启动）
+sudo pacman -S cinnamon-settings-daemon /usr/lib/cinnamon-settings-daemon/csd-xsettings 无法输入中文 如果其它地方可以使用输入法，一般为环境变量的问题，fcitx没有配置好。
+粗暴解决方式: 下面的文件夹中加入环境变量
+/opt/deepinwine/apps/Deepin-TIM/run.sh
+ export XMODIFIERS=&amp;ldquo;@im=fcitx&amp;rdquo; export GTK_IM_MODULE=&amp;ldquo;fcitx&amp;rdquo; export QT_IM_MODULE=&amp;ldquo;fcitx&amp;rdquo;</description>
+    </item>
+    
+    <item>
+      <title>在非gnome系桌面环境下运行deepin-wine tim的错误解决</title>
+      <link>https://extendswind.top/posts/technical/deepin_wine_run_in_not_gnome_desktop_environment/</link>
+      <pubDate>Sun, 20 Jan 2019 20:59:49 +0800</pubDate>
+      
+      <guid>https://extendswind.top/posts/technical/deepin_wine_run_in_not_gnome_desktop_environment/</guid>
+      <description>i3wm, kde, awesome等桌面管理器或桌面环境里运行基于deepin-wine的qq和tim时，会出现下面的错误
+ X Error of failed request: BadWindow (invalid Window parameter) Major opcode of failed request: 20 (X_GetProperty)
+ 在gnome、mate、cinnamon三个桌面上运行较好，xfce4上运行有少许焦点上的bug，其它桌面环境和管理器下直接出上面的错误。
+最近终于在aur上看到是因为deepin-wine依赖了gnome-setttings-daemon。（xsettings的一个后台进程，cinnamon和mate的xsettings进程也能用）
+解决方案 貌似是因为对gnome-setttings-daemon的依赖。
+arch系：
+sudo pacman -S gnome-settings-daemon /usr/lib/gsd-setttings 运行tim和qq即可
+ubuntu 下的包和运行的程序名略不一样，参考：
+https://github.com/wszqkzqk/deepin-wine-ubuntu/issues/12#issuecomment-443656358
+注意 在使用xsettings之后，主题等需要与对应的xsettings设置相对应。如使用gnome-settings-daemon时，需要在gnome的设置里更改主题。使用lxappearance修改主题只会更改~/.gtkrc-2.0等文件，不会生效。
+附：使用cinnamon的xsettings的设置 主题的问题略坑，懒得去试gnome上的主题设置需要哪些包，安装整个gnome的包需要800多M，直接安装了cinnamon的基础包（90M左右）。
+cinnamon的xsettings默认也没用那个不太能忍的主题。
+sudo pacman -S cinnamon # awesome的autorun里加入下面程序使开机运行 /usr/lib/cinnamon-settings-daemon/csd-xsettings 在系统设置里可以下载和更改主题
+小坑 tim和qq都会在点击好友图像时卡死，原因是因为pulseaudio进程，kill掉就行，会影响声音的调整。（千里之外的两个程序不知道为什么会卡一起）
+最后 又从mate+awesomewm回到纯awesomewm，但运行了一个xsetting进程也不知道和直接mate+awesome比能节约多少内存。</description>
+    </item>
+    
+    <item>
+      <title>zotero zotfile插件 pdf附件文件夹在多系统下的同步设置</title>
+      <link>https://extendswind.top/posts/research/zotero_multiple_directory_pdf_sync/</link>
+      <pubDate>Wed, 09 Jan 2019 09:59:49 +0800</pubDate>
+      
+      <guid>https://extendswind.top/posts/research/zotero_multiple_directory_pdf_sync/</guid>
+      <description>之前的附件使用zotfile单独的文件夹管理，换了一块硬盘，挂载目录发生变化后zotero里所有的附件都打不开，在zotero的目录设置和zotfile的目录设置里改了都没用。
+使用sqllite的浏览器看了一眼zotero的存储数据库(zotero.sqlite)，在表itemAttachments中存储了所有附件的类型地址等信息，发现里头的地址全都使用的绝对路径！！
+重点在于设置zotero和zotfile的附件路径和转移文件。
+使用网盘同步的不用折腾这些。
+方法一：设置为相对路径并修改文件 设置  zotero preferences -&amp;gt; Files and Folders -&amp;gt; Linked Attachment Base Directory 设置存储路径 （注意不是 data directory） 把zotfile里的路径也改到这（不知道具体什么机制，zotfile有个相对路径的pull request不知道读的是不是这个，懒得多折腾）  已有的文件移动  如果由于换硬盘换系统一类的问题，先使用软连接指向原来的目录，让zotero能够找到原来的文件。（源目录可以使用sqllite的浏览器看到）
+ 在library下全选所有的items，然后右键 Manage Attachments -&amp;gt; Rename Attachments。（看起来是重命名，实质上会移动所有的文件）
+  此时此前附件中的绝对路径/mnt/data/...会变成attachments：catagory1/test1.pdf 类似的相对路径。
+方法二：直接操作sqllite数据库来改 下面的语句供参考，建议稍了解后操作，使用update导致数据丢失会很麻烦。
+把下面路径中的/home/fly/public_download/改成自己数据库里的路径即可。
+update itemAttachments set path=replace(path, &#39;/home/fly/public_download/&#39;, &#39;attachments:&#39;) where path like &#39;/home/fly/public_download%&#39;  最后 跨操作系统或者跨目录直接设置到相同的目录即可。</description>
+    </item>
+    
+    <item>
+      <title>Spark设置自定义的InputFormat读取HDFS文件</title>
+      <link>https://extendswind.top/posts/technical/problem_spark_reading_hdfs_serializable/</link>
+      <pubDate>Sat, 15 Dec 2018 11:30:00 +0800</pubDate>
+      
+      <guid>https://extendswind.top/posts/technical/problem_spark_reading_hdfs_serializable/</guid>
+      <description>Spark提供了HDFS上一般的文件文件读取接口 sc.textFile()，但在某些情况下HDFS中需要存储自定义格式的文件，需要更加灵活的读取方式。
+使用KeyValueTextInputFormat Hadoop的MapReduce框架下提供了一些InputFormat的实现，其中MapReduce2的接口(org.apache.hadoop.mapreduce下)与先前MapReduce1(org.apache.hadoop.mapred下)有区别，对应于newAPIHadoopFile函数。
+使用KeyValueTextInputFormat的文件读取如下
+import org.apache.hadoop.mapreduce.lib.input.KeyValueTextInputFormat import org.apache.hadoop.io.Text val hFile = sc.newAPIHadoopFile(&amp;#34;hdfs://hadoopmaster:9000/user/sparkl/README.md&amp;#34;, classOf[KeyValueTextInputFormat], classOf[Text], classOf[Text]) hFile.collect 使用自定义InputFormat InputFormat是MapReduce框架下将输入的文件解析成字符串的组件，Spark对HDFS中的文件实现自定义读写需要通过InputFormat的子类实现。下面只写简单的思路，具体的可以参考InputFormat和MapReduce相关资料。
+InputFormat的修改可以参考TextInputFormat，继承FileInputFormat后，重载createRecordReader返回一个新的继承RecordReader的类，通过新的RecordReader读取数据返回键值对。
+打包后注意上传时将jar包一起上传：
+`./spark-shell &amp;ndash;jars newInputFormat.jar
+运行的代码和上面差不多，import相关的包后
+val hFile = sc.newAPIHadoopFile(&amp;#34;hdfs://hadoopmaster:9000/user/sparkl/README.md&amp;#34;, classOf[NewTextInputFormat], classOf[Text], classOf[Text]) 一些坑 序列化问题 在读取文件后使用first或者collect时，出现下面的错误
+ ERROR scheduler.TaskSetManager: Task 0.0 in stage 2.0 (TID 18) had a not serializable result: org.apache.hadoop.io.IntWritable Serialization stack: - object not serializable (class: org.apache.hadoop.io.IntWritable, value: 35) - element of array (index: 0) - array (class [Lorg.</description>
+    </item>
+    
+    <item>
+      <title>Hadoop 机架（集群拓扑）设置</title>
+      <link>https://extendswind.top/posts/technical/hadoop_rack_awareness/</link>
+      <pubDate>Wed, 12 Dec 2018 11:20:00 +0800</pubDate>
+      
+      <guid>https://extendswind.top/posts/technical/hadoop_rack_awareness/</guid>
+      <description>Hadoop会通过集群的拓扑（节点在交换机的连接形式）优化文件的存储，降低跨交换机的数据通信，使副本跨交换机以保证数据安全。
+但Hadoop没有默认的集群拓扑识别机制，需要使用额外的java类或脚本两种形式设置。
+官网上给了集群拓扑的基本说明（!(Rack Awareness)[https://hadoop.apache.org/docs/current/hadoop-project-dist/hadoop-common/RackAwareness.html]），给出来的那两段脚本看得有点懵，就自己试了一下，写了个更简单的。
+其实只是Hadoop会调用脚本，将多个Datanode的ip作为输入，每次最多输入的ip数设置在net.topology.script.number.args，将输入的ip转换成/rack-num的形式(以/开头的字符串)，用标准输出流（如Python的print）输出结果。
+具体操作 编写脚本 下面的脚本在输入
+192.168.3.1 192.168.3.4  时，会输出
+/rack1 /rack4  #!/bin/python3 import sys # 第一个参数是脚本路径，直接pop掉 sys.argv.pop(0) # 0-3 rack0 # 4-7 rack1 # 8-11 rack2 # ... # 其它的参数里每个参数都是一个ip，此处直接取ip的最后一位除以4作为Racknum # 实践上可以读文件确定ip的对应关系 for ip in sys.argv: hostNum = int(ip.split(&amp;#34;.&amp;#34;)[3]) print(&amp;#34;/rack&amp;#34; + str(int(hostNum/4))) 设置配置参数 &amp;lt;property&amp;gt; &amp;lt;name&amp;gt;net.topology.script.file.name&amp;lt;/name&amp;gt; &amp;lt;value&amp;gt;/home/sparkl/hadoop/etc/hadoop/topology.py&amp;lt;/value&amp;gt; &amp;lt;/property&amp;gt; 重启集群即可
+验证结果 以下命令能够直接获取某一个文件的分布状态，以及总的rack数量：
+hdfs fsck /readme.md -files -blocks -racks
+貌似没有直接以树状的形式输出集群拓扑的命令，namenode的日志中能看到datanode在连接时的拓扑位置。</description>
+    </item>
     
     <item>
       <title>Hadoop 副本放置策略的源码阅读和设置</title>
@@ -54,7 +219,12 @@ source=( &amp;quot;http://s1.music.126.net/download/pc/netease-cloud-music_1.0.0
       <pubDate>Sat, 20 Oct 2018 20:59:49 +0800</pubDate>
       
       <guid>https://extendswind.top/posts/technical/using_awesomewm_as_wm_of_mate_desktop/</guid>
-      <description> AwesomeWM这种平铺的窗口管理器用得很爽，只是基于wine的qq最近又莫名其妙抽风，感觉还是切到deepin-wine上比较靠谱。而deepin-wine在awesome下运行qq会报错X Error of failed request: BadWindow (invalid Window parameter) Major opcode of failed request: 20 (X_GetProperty)，而在Gnome系下运行正常。看到Gnome和Mate能够运行i3wm，就折腾了一下试试。
+      <description> 20190118更新:
+最近发现有在非gnome系的DE下运行deepin-wine的解决方案，没必要专门跑一个mate。
+安装gnome-setttings-daemon，然后运行/usr/lib/gsd-xsettings。（不同系统会不一样）
+具体记录在另一篇博客
+AwesomeWM这种平铺的窗口管理器用得很爽，只是基于wine的qq最近又莫名其妙抽风，感觉还是切到deepin-wine上比较靠谱。而deepin-wine在awesome下运行qq会报错X Error of failed request: BadWindow (invalid Window parameter) Major opcode of failed request: 20 (X_GetProperty)，而在Gnome系下运行正常。看到Gnome和Mate能够运行awesomewm，就折腾了一下试试。
+Awesome只是Gnome等桌面管理器的组件之一，gnome系的Mate可以修改默认的窗口管理器。
 具体折腾  安装AwesomeWM、Mate桌面环境与dconf-editor（arch下使用pacman -S）。
  进入Mate桌面环境后，修改org.mate.session.required-components windowmanager的值为&amp;rsquo;awesome&amp;rsquo;，如果不需要桌面上的图标，可以将org.mate.session.required-components的值只留下windowmanager。
  上面的设置无法通过命令行打开awesome，需要添加awesome的图标。在/usr/share/applications目录下新建awesome.desktop，内容如下（网上直接粘的，估计有些可以不要，懒得试了）：

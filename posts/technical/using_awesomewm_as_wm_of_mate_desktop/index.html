@@ -4,7 +4,12 @@
 <head>
   <meta charset='utf-8'>
 <meta name='viewport' content='width=device-width, initial-scale=1'>
-<meta name='description' content=' AwesomeWM这种平铺的窗口管理器用得很爽，只是基于wine的qq最近又莫名其妙抽风，感觉还是切到deepin-wine上比较靠谱。而deepin-wine在awesome下运行qq会报错X Error of failed request: BadWindow (invalid Window parameter) Major opcode of failed request: 20 (X_GetProperty)，而在Gnome系下运行正常。看到Gnome和Mate能够运行i3wm，就折腾了一下试试。
+<meta name='description' content=' 20190118更新:
+最近发现有在非gnome系的DE下运行deepin-wine的解决方案，没必要专门跑一个mate。
+安装gnome-setttings-daemon，然后运行/usr/lib/gsd-xsettings。（不同系统会不一样）
+具体记录在另一篇博客
+AwesomeWM这种平铺的窗口管理器用得很爽，只是基于wine的qq最近又莫名其妙抽风，感觉还是切到deepin-wine上比较靠谱。而deepin-wine在awesome下运行qq会报错X Error of failed request: BadWindow (invalid Window parameter) Major opcode of failed request: 20 (X_GetProperty)，而在Gnome系下运行正常。看到Gnome和Mate能够运行awesomewm，就折腾了一下试试。
+Awesome只是Gnome等桌面管理器的组件之一，gnome系的Mate可以修改默认的窗口管理器。
 具体折腾  安装AwesomeWM、Mate桌面环境与dconf-editor（arch下使用pacman -S）。
  进入Mate桌面环境后，修改org.mate.session.required-components windowmanager的值为&rsquo;awesome&rsquo;，如果不需要桌面上的图标，可以将org.mate.session.required-components的值只留下windowmanager。
  上面的设置无法通过命令行打开awesome，需要添加awesome的图标。在/usr/share/applications目录下新建awesome.desktop，内容如下（网上直接粘的，估计有些可以不要，懒得试了）：
@@ -12,7 +17,12 @@
 <meta name='theme-color' content='#cccccc'>
 
 <meta property='og:title' content='使用AwesomeWM作为Mate(Gnome相同) Desktop的窗口管理器 • extendswind'>
-<meta property='og:description' content=' AwesomeWM这种平铺的窗口管理器用得很爽，只是基于wine的qq最近又莫名其妙抽风，感觉还是切到deepin-wine上比较靠谱。而deepin-wine在awesome下运行qq会报错X Error of failed request: BadWindow (invalid Window parameter) Major opcode of failed request: 20 (X_GetProperty)，而在Gnome系下运行正常。看到Gnome和Mate能够运行i3wm，就折腾了一下试试。
+<meta property='og:description' content=' 20190118更新:
+最近发现有在非gnome系的DE下运行deepin-wine的解决方案，没必要专门跑一个mate。
+安装gnome-setttings-daemon，然后运行/usr/lib/gsd-xsettings。（不同系统会不一样）
+具体记录在另一篇博客
+AwesomeWM这种平铺的窗口管理器用得很爽，只是基于wine的qq最近又莫名其妙抽风，感觉还是切到deepin-wine上比较靠谱。而deepin-wine在awesome下运行qq会报错X Error of failed request: BadWindow (invalid Window parameter) Major opcode of failed request: 20 (X_GetProperty)，而在Gnome系下运行正常。看到Gnome和Mate能够运行awesomewm，就折腾了一下试试。
+Awesome只是Gnome等桌面管理器的组件之一，gnome系的Mate可以修改默认的窗口管理器。
 具体折腾  安装AwesomeWM、Mate桌面环境与dconf-editor（arch下使用pacman -S）。
  进入Mate桌面环境后，修改org.mate.session.required-components windowmanager的值为&rsquo;awesome&rsquo;，如果不需要桌面上的图标，可以将org.mate.session.required-components的值只留下windowmanager。
  上面的设置无法通过命令行打开awesome，需要添加awesome的图标。在/usr/share/applications目录下新建awesome.desktop，内容如下（网上直接粘的，估计有些可以不要，懒得试了）：
@@ -21,7 +31,7 @@
 <meta property='og:site_name' content='extendswind'>
 <meta property='og:type' content='article'><meta property='article:section' content='posts'><meta property='article:tag' content='linux'><meta property='article:published_time' content='2018-10-20T20:59:49&#43;08:00'/><meta property='article:modified_time' content='2018-10-20T20:59:49&#43;08:00'/><meta name='twitter:card' content='summary'>
 
-<meta name="generator" content="Hugo 0.52" />
+<meta name="generator" content="Hugo 0.53" />
 
   <title>使用AwesomeWM作为Mate(Gnome相同) Desktop的窗口管理器 • extendswind</title>
   <link rel='canonical' href='https://extendswind.top/posts/technical/using_awesomewm_as_wm_of_mate_desktop/'>
@@ -104,6 +114,8 @@ if (!doNotTrack) {
         <a href='/tags/life/' style='font-size:1em'>life</a>
       </li><li>
         <a href='/tags/linux/' style='font-size:1em'>linux</a>
+      </li><li>
+        <a href='/tags/spark/' style='font-size:1em'>spark</a>
       </li></ul>
 </div>
 
@@ -184,7 +196,19 @@ if (!doNotTrack) {
   <div class='container entry-content'>
   
 
-<p>AwesomeWM这种平铺的窗口管理器用得很爽，只是基于wine的qq最近又莫名其妙抽风，感觉还是切到deepin-wine上比较靠谱。而deepin-wine在awesome下运行qq会报错<code>X Error of failed request: BadWindow (invalid Window parameter) Major opcode of failed request: 20 (X_GetProperty)</code>，而在Gnome系下运行正常。看到Gnome和Mate能够运行i3wm，就折腾了一下试试。</p>
+<p>20190118更新:</p>
+
+<p>最近发现有在非gnome系的DE下运行deepin-wine的解决方案，没必要专门跑一个mate。</p>
+
+<p>安装gnome-setttings-daemon，然后运行/usr/lib/gsd-xsettings。（不同系统会不一样）</p>
+
+<p>具体记录在另一篇博客</p>
+
+<hr />
+
+<p>AwesomeWM这种平铺的窗口管理器用得很爽，只是基于wine的qq最近又莫名其妙抽风，感觉还是切到deepin-wine上比较靠谱。而deepin-wine在awesome下运行qq会报错<code>X Error of failed request: BadWindow (invalid Window parameter) Major opcode of failed request: 20 (X_GetProperty)</code>，而在Gnome系下运行正常。看到Gnome和Mate能够运行awesomewm，就折腾了一下试试。</p>
+
+<p>Awesome只是Gnome等桌面管理器的组件之一，gnome系的Mate可以修改默认的窗口管理器。</p>
 
 <h1 id="具体折腾">具体折腾</h1>
 
@@ -292,7 +316,7 @@ X-MATE-Autostart-Notify=true
       </li></ul>
   </nav>
 </section><div class='copyright'>
-  <p> &copy; 2018 extendswind </p>
+  <p> &copy; 2018-2019 extendswind </p>
 </div>
 
         </div>

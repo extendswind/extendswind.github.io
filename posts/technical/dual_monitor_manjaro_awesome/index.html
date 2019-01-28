@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang='en'>
+
+<head>
+  <meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<meta name='description' content='安装manjaro时使用独显的单显示器，在主板上接第二个显示器一直没反应。
+几个问题和解决 BIOS里检查是否关闭了集显开关 大多数显卡的默认设置都会在识别独显后关闭集显，要使用集显上的接口需要单独设置。
+如果接口允许，最好将两个显示器都接在独显上。
+xrandr 识别和控制显示器 xrandr 直接执行会得到显示器的连接状态
+xrandr --output DVI-I-1-1 --mode 1440x900 --primary --output VGA1 --mode 1366x768 --pos 1440x132 设置输出的显示器以及显示参数，每个--output后接显示器名以及参数，--mode指定分辨率，--primary指定主显示器，--pos指定位置，或者用--right-of指定相对位置。
+更进一步的设置可以在arch wiki
+xrandr 找不到显示器 xrandr &ndash;listproviders 得到当前的显示器输入设备（一般name为Intel的是集显，name为nouveau的是开源独显驱动，Nvidia为闭源显卡驱动）
+xrandr &ndash;setprovideroutputsource 0 1 将上面的设备设置为输入源
+如果xrandr &ndash;listproviders 没有得到所有的输入源，则需要折腾驱动。
+驱动问题 在manjaro和deepin两个系统下发现NVIDIA驱动都有问题，primary显示器会显示两个显示器的内容。
+我的渣渣NVIDIA显卡切换到开源驱动用和主板的双显示器不折腾。
+mhwd -li --pci 查看已经安装的驱动 mhwd -l --pci 查看能用的驱动 sudo mhwd -r pci video-nvidia 移除驱动video-nvidia sudo mhwd -a pci videa-linux 安装开源显卡驱动（nouveau）  manjaro上通过mhwd简化了各种配置，详见：
+https://wiki.manjaro.org/index.php/Configure_Graphics_Cards
+基于KDE等桌面 如果主板和显卡驱动正常，一般各大桌面环境都支持自动配置，可以在显示设置里直接修改。
+AwesomeWM 默认快捷键：
+ctrl&#43;super&#43;j/k 屏幕之间焦点移动 super&#43;o 当前窗口移动到另一个屏幕'>
+<meta name='theme-color' content='#cccccc'>
+
+<meta property='og:title' content='manjaro AwesomeWM 上使用双显示器 • extendswind'>
+<meta property='og:description' content='安装manjaro时使用独显的单显示器，在主板上接第二个显示器一直没反应。
+几个问题和解决 BIOS里检查是否关闭了集显开关 大多数显卡的默认设置都会在识别独显后关闭集显，要使用集显上的接口需要单独设置。
+如果接口允许，最好将两个显示器都接在独显上。
+xrandr 识别和控制显示器 xrandr 直接执行会得到显示器的连接状态
+xrandr --output DVI-I-1-1 --mode 1440x900 --primary --output VGA1 --mode 1366x768 --pos 1440x132 设置输出的显示器以及显示参数，每个--output后接显示器名以及参数，--mode指定分辨率，--primary指定主显示器，--pos指定位置，或者用--right-of指定相对位置。
+更进一步的设置可以在arch wiki
+xrandr 找不到显示器 xrandr &ndash;listproviders 得到当前的显示器输入设备（一般name为Intel的是集显，name为nouveau的是开源独显驱动，Nvidia为闭源显卡驱动）
+xrandr &ndash;setprovideroutputsource 0 1 将上面的设备设置为输入源
+如果xrandr &ndash;listproviders 没有得到所有的输入源，则需要折腾驱动。
+驱动问题 在manjaro和deepin两个系统下发现NVIDIA驱动都有问题，primary显示器会显示两个显示器的内容。
+我的渣渣NVIDIA显卡切换到开源驱动用和主板的双显示器不折腾。
+mhwd -li --pci 查看已经安装的驱动 mhwd -l --pci 查看能用的驱动 sudo mhwd -r pci video-nvidia 移除驱动video-nvidia sudo mhwd -a pci videa-linux 安装开源显卡驱动（nouveau）  manjaro上通过mhwd简化了各种配置，详见：
+https://wiki.manjaro.org/index.php/Configure_Graphics_Cards
+基于KDE等桌面 如果主板和显卡驱动正常，一般各大桌面环境都支持自动配置，可以在显示设置里直接修改。
+AwesomeWM 默认快捷键：
+ctrl&#43;super&#43;j/k 屏幕之间焦点移动 super&#43;o 当前窗口移动到另一个屏幕'>
+<meta property='og:url' content='https://extendswind.top/posts/technical/dual_monitor_manjaro_awesome/'>
+<meta property='og:site_name' content='extendswind'>
+<meta property='og:type' content='article'><meta property='article:section' content='posts'><meta property='article:tag' content='linux'><meta property='article:published_time' content='2019-01-24T21:59:49&#43;08:00'/><meta property='article:modified_time' content='2019-01-24T21:59:49&#43;08:00'/><meta name='twitter:card' content='summary'>
+
+<meta name="generator" content="Hugo 0.53" />
+
+  <title>manjaro AwesomeWM 上使用双显示器 • extendswind</title>
+  <link rel='canonical' href='https://extendswind.top/posts/technical/dual_monitor_manjaro_awesome/'>
+  
+  
+  <link rel='icon' href='/images/wind.jpeg'>
+<link rel='stylesheet' href='/assets/css/main.4267b3fa.css'><link rel='stylesheet' href='/css/custom.css'><style>
+:root{--color-accent:#cccccc;}
+</style>
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-125329544-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+  
+
+</head>
+
+
+<body class='page type-posts has-sidebar'>
+
+  <div class='site'>
+
+    <div id='sidebar' class='sidebar'>
+  <a class='screen-reader-text' href='#main-menu'>Skip to Main Menu</a>
+
+  <div class='container'><section class='widget widget-about sep-after'>
+  <header>
+    
+    <div class='logo'>
+      <a href='/'>
+        <img src='/images/wind.jpeg'>
+      </a>
+    </div>
+    
+    <h2 class='title site-title '>
+    extendswind
+    </h2>
+    <div class='desc'>
+    
+    </div>
+  </header>
+
+</section>
+<section class='widget widget-sidebar_menu sep-after'><nav id='sidebar-menu' class='menu sidebar-menu' aria-label='Sidebar Menu'>
+    <div class='container'>
+      <ul><li class='item'>
+  <a href='/'>Home</a></li><li class='item'>
+  <a href='/posts'>Posts</a></li><li class='item'>
+  <a href='/categories'>Categories</a></li><li class='item'>
+  <a href='https://github.com/extendswind'>GitHub</a></li><li class='item'>
+  <a href='http://www.cnblogs.com/fly2wind/'>Cnblog</a></li></ul>
+    </div>
+  </nav>
+
+</section><section class='widget widget-taxonomy_cloud sep-after'>
+  <header>
+    <h4 class='title widget-title'>Tags</h4>
+  </header>
+
+  <div class='container list-container'>
+  <ul class='list taxonomy-cloud'><li>
+        <a href='/tags/gis/' style='font-size:1em'>GIS</a>
+      </li><li>
+        <a href='/tags/blog/' style='font-size:1em'>blog</a>
+      </li><li>
+        <a href='/tags/design-patterns/' style='font-size:1em'>design patterns</a>
+      </li><li>
+        <a href='/tags/git/' style='font-size:1em'>git</a>
+      </li><li>
+        <a href='/tags/hadoop/' style='font-size:1em'>hadoop</a>
+      </li><li>
+        <a href='/tags/life/' style='font-size:1em'>life</a>
+      </li><li>
+        <a href='/tags/linux/' style='font-size:1em'>linux</a>
+      </li><li>
+        <a href='/tags/spark/' style='font-size:1em'>spark</a>
+      </li></ul>
+</div>
+
+
+</section>
+</div>
+
+  <div class='sidebar-overlay'></div>
+</div>
+
+    <div class='main'>
+
+      <a class='screen-reader-text' href='#content'>Skip to Content</a>
+
+<button id='sidebar-toggler' class='sidebar-toggler' aria-controls='sidebar'>
+  <span class='screen-reader-text'>Toggle Sidebar</span>
+  <span class='open'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="3" y1="12" x2="21" y2="12" />
+  <line x1="3" y1="6" x2="21" y2="6" />
+  <line x1="3" y1="18" x2="21" y2="18" />
+  
+</svg>
+</span>
+  <span class='close'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="18" y1="6" x2="6" y2="18" />
+  <line x1="6" y1="6" x2="18" y2="18" />
+  
+</svg>
+</span>
+</button>
+
+      <header id='header' class='header site-header'>
+        <div class='container sep-after'>
+          <div class='header-info'><p class='site-title title'>extendswind</p><p class='desc site-desc'>a simple blog site</p>
+          </div>
+        </div>
+      </header>
+
+      <main id='content'>
+
+
+<article lang='en' class='entry'>
+  <header class='header entry-header'>
+  <div class='container sep-after'>
+    <div class='header-info'>
+      <h1 class='title'>manjaro AwesomeWM 上使用双显示器</h1>
+      
+
+    </div>
+    
+<div class='entry-meta'>
+  <span class='posted-on'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+  <line x1="16" y1="2" x2="16" y2="6"/>
+  <line x1="8" y1="2" x2="8" y2="6"/>
+  <line x1="3" y1="10" x2="21" y2="10"/>
+  
+</svg>
+<span class='screen-reader-text'>Posted on </span>
+  <time class='entry-date' datetime='2019-01-24T21:59:49&#43;08:00'>2019, Jan 24</time>
+</span>
+
+  
+  
+
+</div>
+
+
+  </div>
+</header>
+
+  
+  
+
+  <div class='container entry-content'>
+  
+
+<p>安装manjaro时使用独显的单显示器，在主板上接第二个显示器一直没反应。</p>
+
+<h1 id="几个问题和解决">几个问题和解决</h1>
+
+<h2 id="bios里检查是否关闭了集显开关">BIOS里检查是否关闭了集显开关</h2>
+
+<p>大多数显卡的默认设置都会在识别独显后关闭集显，要使用集显上的接口需要单独设置。</p>
+
+<p>如果接口允许，最好将两个显示器都接在独显上。</p>
+
+<h2 id="xrandr-识别和控制显示器">xrandr 识别和控制显示器</h2>
+
+<p>xrandr  直接执行会得到显示器的连接状态</p>
+
+<p><code>xrandr --output DVI-I-1-1 --mode 1440x900 --primary --output VGA1 --mode 1366x768 --pos 1440x132</code>  设置输出的显示器以及显示参数，每个<code>--output</code>后接显示器名以及参数，<code>--mode</code>指定分辨率，<code>--primary</code>指定主显示器，<code>--pos</code>指定位置，或者用<code>--right-of</code>指定相对位置。</p>
+
+<p>更进一步的设置可以在arch wiki</p>
+
+<h2 id="xrandr-找不到显示器">xrandr 找不到显示器</h2>
+
+<p>xrandr &ndash;listproviders  得到当前的显示器输入设备（一般name为Intel的是集显，name为nouveau的是开源独显驱动，Nvidia为闭源显卡驱动）</p>
+
+<p>xrandr &ndash;setprovideroutputsource 0 1  将上面的设备设置为输入源</p>
+
+<p>如果xrandr &ndash;listproviders 没有得到所有的输入源，则需要折腾驱动。</p>
+
+<h2 id="驱动问题">驱动问题</h2>
+
+<p>在manjaro和deepin两个系统下发现NVIDIA驱动都有问题，primary显示器会显示两个显示器的内容。</p>
+
+<p>我的渣渣NVIDIA显卡切换到开源驱动用和主板的双显示器不折腾。</p>
+
+<pre><code>mhwd -li --pci 查看已经安装的驱动
+mhwd -l --pci 查看能用的驱动
+sudo mhwd -r pci video-nvidia 移除驱动video-nvidia
+sudo mhwd -a pci videa-linux 安装开源显卡驱动（nouveau）
+</code></pre>
+
+<p>manjaro上通过mhwd简化了各种配置，详见：</p>
+
+<p><code>https://wiki.manjaro.org/index.php/Configure_Graphics_Cards</code></p>
+
+<h2 id="基于kde等桌面">基于KDE等桌面</h2>
+
+<p>如果主板和显卡驱动正常，一般各大桌面环境都支持自动配置，可以在显示设置里直接修改。</p>
+
+<h2 id="awesomewm">AwesomeWM</h2>
+
+<p>默认快捷键：</p>
+
+<p>ctrl+super+j/k  屏幕之间焦点移动
+super+o  当前窗口移动到另一个屏幕</p>
+
+<p>默认的设置不多，想要的功能可以自己撸，如</p>
+
+<p>添加一个快捷键，将窗口移动到另一个屏幕并且保持焦点在当前屏幕</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-lua" data-lang="lua">awful.key({ modkey, <span style="color:#e6db74">&#34;Shift&#34;</span> }, <span style="color:#e6db74">&#34;o&#34;</span>, <span style="color:#66d9ef">function</span> (c) c:
+      move_to_screen()
+      awful.screen.focus_relative(<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>)
+    <span style="color:#66d9ef">end</span> , 
+    {description <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;move to other screen without move focus&#34;</span>, group <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;MySettings&#34;</span>})</code></pre></div>
+</div>
+
+  
+<footer class='entry-footer'>
+  <div class='container sep-before'><div class='categories'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M22,19a2,2,0,0,1-2,2H4a2,2,0,0,1-2-2V5A2,2,0,0,1,4,3H9l2,3h9a2,2,0,0,1,2,2Z"/>
+  
+</svg>
+<span class='screen-reader-text'>Categories: </span><a class='category' href='/categories/linux-desktop/'>linux desktop</a></div>
+<div class='tags'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M20.59,13.41l-7.17,7.17a2,2,0,0,1-2.83,0L2,12V2H12l8.59,8.59A2,2,0,0,1,20.59,13.41Z"/>
+  <line x1="7" y1="7" x2="7" y2="7"/>
+  
+</svg>
+<span class='screen-reader-text'>Tags: </span><a class='tag' href='/tags/linux/'>linux</a></div>
+
+  </div>
+</footer>
+
+
+</article>
+
+<nav class='entry-nav'>
+  <div class='container'><div class='prev-entry sep-before'>
+      <a href='/posts/technical/sogou_input_install_in_arch_manjaro/'>
+        <span aria-hidden='true'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="20" y1="12" x2="4" y2="12"/>
+  <polyline points="10 18 4 12 10 6"/>
+  
+</svg>
+ Previous</span>
+        <span class='screen-reader-text'>Previous post: </span>manjaro (arch) 安装搜狗输入法</a>
+    </div><div class='next-entry sep-before'>
+      <a href='/posts/technical/mainboard_speaker_close/'>
+        <span class='screen-reader-text'>Next post: </span>linux 关闭主板上的蜂鸣器声音<span aria-hidden='true'>Next <svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="4" y1="12" x2="20" y2="12"/>
+  <polyline points="14 6 20 12 14 18"/>
+  
+</svg>
+</span>
+      </a>
+    </div></div>
+</nav>
+
+
+
+
+      </main>
+
+      <footer id='footer' class='footer'>
+        <div class='container sep-before'><section class='widget widget-social_menu sep-after'><header>
+    <h4 class='title widget-title'>Contact</h4>
+  </header><nav aria-label='Social Menu'>
+    <ul><li>
+        <a href='https://github.com/extendswind' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Open Github account in new tab</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+  
+</svg>
+</a>
+      </li><li>
+        <a href='mailto:extendswind@foxmail.com' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Contact via Email</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+  <polyline points="22,6 12,13 2,6"/>
+  
+</svg>
+</a>
+      </li></ul>
+  </nav>
+</section><div class='copyright'>
+  <p> &copy; 2018-2019 extendswind </p>
+</div>
+
+        </div>
+      </footer>
+
+    </div>
+  </div><script>window.__public_path__='\/assets\/js\/'</script>
+
+<script src='/assets/js/main.59f76c44.js'></script>
+
+</body>
+
+</html>
+

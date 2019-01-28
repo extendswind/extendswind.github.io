@@ -17,9 +17,9 @@ BlockPlacementPolicy BlockPlacementPolicy 作为虚基类提供了基本的接�
 /** * 核心的副本放置策略实现，返回副本放置数量的存储位置 * **如果有效节点数量不够（少于副本数），返回尽可能多的节点，而非失败** * * @param srcPath 上传文件的路径 * @param numOfReplicas 除下面chosen参数里已经选择的datanode，还需要的副本数量 * @param writer 写数据的机器, null if not in the cluster. 一般用于放置第一个副本以降低网络通信 * @param chosen 已经选择的节点 * @param returnChosenNodes 返回结果里是否包含chosen的datanode * @param excludedNodes 不选的节点 * @param blocksize 块大小 * @return 排序好的选择结果 */ public abstract DatanodeStorageInfo[] chooseTarget(String srcPath, int numOfReplicas, Node writer, List&lt;DatanodeStorageInfo&gt; chosen, boolean returnChosenNodes, Set&lt;Node&gt; excludedNodes, long blocksize, BlockStoragePolicy storagePolicy); /** * 判断传入的放置方式是否符合要求 */ abstract public BlockPlacementStatus verifyBlockPlacement( DatanodeInfo[] locs, int numOfReplicas); /** * 当副本数量较多时，选择需要删除的节点 */ abstract public List&lt;DatanodeStorageInfo&gt; chooseReplicasToDelete( Collection&lt;DatanodeStorageInfo&gt; candidates, int expectedNumOfReplicas, List&lt;StorageType&gt; excessTypes, DatanodeDescriptor addedNode, DatanodeDescriptor delNodeHint); Hadoop 提供的 BlockPlacementPolicy 实现 Hadoop提供了BlockPlacementPolicyDefault、BlockPlacementPolicyWithNodeGroup、AvailableSpaceBlockPlacementPolicy三种实现（hadoop 2.'>
 <meta property='og:url' content='https://extendswind.top/posts/technical/hadoop_block_placement_policy/'>
 <meta property='og:site_name' content='extendswind'>
-<meta property='og:type' content='article'><meta property='article:section' content='posts'><meta property='article:tag' content='hadoop'><meta property='article:tag' content='GIS'><meta property='article:published_time' content='2018-12-11T21:30:00&#43;08:00'/><meta property='article:modified_time' content='2018-12-11T21:30:00&#43;08:00'/><meta name='twitter:card' content='summary'>
+<meta property='og:type' content='article'><meta property='article:section' content='posts'><meta property='article:tag' content='hadoop'><meta property='article:published_time' content='2018-12-11T21:30:00&#43;08:00'/><meta property='article:modified_time' content='2018-12-11T21:30:00&#43;08:00'/><meta name='twitter:card' content='summary'>
 
-<meta name="generator" content="Hugo 0.52" />
+<meta name="generator" content="Hugo 0.53" />
 
   <title>Hadoop 副本放置策略的源码阅读和设置 • extendswind</title>
   <link rel='canonical' href='https://extendswind.top/posts/technical/hadoop_block_placement_policy/'>
@@ -102,6 +102,8 @@ if (!doNotTrack) {
         <a href='/tags/life/' style='font-size:1em'>life</a>
       </li><li>
         <a href='/tags/linux/' style='font-size:1em'>linux</a>
+      </li><li>
+        <a href='/tags/spark/' style='font-size:1em'>spark</a>
       </li></ul>
 </div>
 
@@ -189,7 +191,7 @@ if (!doNotTrack) {
 <li><a href="#blockplacementpolicydefault-源码阅读">BlockPlacementPolicyDefault 源码阅读</a>
 <ul>
 <li><a href="#首先">首先</a></li>
-<li><a href="#选择副本放置策略">选择副本放置策略</a></li>
+<li><a href="#处理favorednodes">处理favoredNodes</a></li>
 <li><a href="#三副本选择">三副本选择</a></li>
 <li><a href="#再到具体的选择">再到具体的选择</a></li>
 </ul></li>
@@ -285,7 +287,7 @@ if (!doNotTrack) {
         excludedNodes<span style="color:#f92672">,</span> blocksize<span style="color:#f92672">,</span> storagePolicy<span style="color:#f92672">,</span> flags<span style="color:#f92672">);</span> <span style="color:#f92672">//</span> ignore srcPath</code></pre></div>
 <p>因此<strong>默认的副本放置策略，在同一文件包含多个block时，每个block的存储位置独立考虑，并非存储在同一datanode</strong>。</p>
 
-<h2 id="选择副本放置策略">选择副本放置策略</h2>
+<h2 id="处理favorednodes">处理favoredNodes</h2>
 
 <p>上传文件时可以指定favoredNodes（默认为空），首先对favoredNodes所在的节点判断是否合适。如果满足条件的节点数还低于副本数，则添加新的副本。</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"> <span style="color:#75715e">// --------------Choose favored nodes ---------------
@@ -416,7 +418,7 @@ if (!doNotTrack) {
   <line x1="7" y1="7" x2="7" y2="7"/>
   
 </svg>
-<span class='screen-reader-text'>Tags: </span><a class='tag' href='/tags/hadoop/'>hadoop</a>, <a class='tag' href='/tags/gis/'>GIS</a></div>
+<span class='screen-reader-text'>Tags: </span><a class='tag' href='/tags/hadoop/'>hadoop</a></div>
 
   </div>
 </footer>
@@ -435,6 +437,16 @@ if (!doNotTrack) {
 </svg>
  Previous</span>
         <span class='screen-reader-text'>Previous post: </span>arch linux下网易云音乐运行没反应，只能使用root用户运行</a>
+    </div><div class='next-entry sep-before'>
+      <a href='/posts/technical/hadoop_rack_awareness/'>
+        <span class='screen-reader-text'>Next post: </span>Hadoop 机架（集群拓扑）设置<span aria-hidden='true'>Next <svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="4" y1="12" x2="20" y2="12"/>
+  <polyline points="14 6 20 12 14 18"/>
+  
+</svg>
+</span>
+      </a>
     </div></div>
 </nav>
 
@@ -467,7 +479,7 @@ if (!doNotTrack) {
       </li></ul>
   </nav>
 </section><div class='copyright'>
-  <p> &copy; 2018 extendswind </p>
+  <p> &copy; 2018-2019 extendswind </p>
 </div>
 
         </div>
