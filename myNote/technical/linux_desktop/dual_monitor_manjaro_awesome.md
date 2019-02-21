@@ -20,9 +20,15 @@ tags:
 
 如果接口允许，最好将两个显示器都接在独显上。
 
-## xrandr 识别和控制显示器
+## 基于KDE等桌面
 
-xrandr  直接执行会得到显示器的连接状态
+如果主板和显卡驱动正常，一般各大桌面环境都支持GUI配置，可以在显示设置里直接修改。
+
+## 使用 xrandr 识别和控制显示器
+
+xrandr  直接执行会得到显示器的连接状态，获取显示器的名称后可以用下面的命令显示。
+
+（其中DVI-I-1-1与VGA1为两个显示器的名称）
 
 `xrandr --output DVI-I-1-1 --mode 1440x900 --primary --output VGA1 --mode 1366x768 --pos 1440x132`  设置输出的显示器以及显示参数，每个`--output`后接显示器名以及参数，`--mode`指定分辨率，`--primary`指定主显示器，`--pos`指定位置，或者用`--right-of`指定相对位置。
 
@@ -38,9 +44,9 @@ xrandr --setprovideroutputsource 0 1  将上面的设备设置为输入源
 
 ## 驱动问题
 
-在manjaro和deepin两个系统下发现NVIDIA驱动都有问题，primary显示器会显示两个显示器的内容。
+一般建议将两个显示器都接在独显上，出问题的概率更低（独显一般口不够或者需要转换略尴尬）。
 
-我的渣渣NVIDIA显卡切换到开源驱动用和主板的双显示器不折腾。
+我将显示器分别接在独显和主板接口上，在manjaro和deepin两个系统下都发现NVIDIA驱动有问题，primary显示器会显示两个显示器的内容。而将显卡驱动切换到开源驱动（nouveau）时正常(据说开源驱动性能略低）。
 
 ```
 mhwd -li --pci 查看已经安装的驱动
@@ -52,10 +58,6 @@ sudo mhwd -a pci videa-linux 安装开源显卡驱动（nouveau）
 manjaro上通过mhwd简化了各种配置，详见：
 
 `https://wiki.manjaro.org/index.php/Configure_Graphics_Cards`
-
-## 基于KDE等桌面
-
-如果主板和显卡驱动正常，一般各大桌面环境都支持自动配置，可以在显示设置里直接修改。
 
 ## AwesomeWM
 
@@ -72,7 +74,7 @@ super+o  当前窗口移动到另一个屏幕
 awful.key({ modkey, "Shift" }, "o", function (c) c:
       move_to_screen()
       awful.screen.focus_relative(-1)
-    end , 
+    end, 
     {description = "move to other screen without move focus", group = "MySettings"})
 ```
 
