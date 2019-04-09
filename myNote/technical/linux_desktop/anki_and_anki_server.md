@@ -24,6 +24,7 @@ tags:
 - 添加单词可以用`Word Query`
 
 官方文档[https://apps.ankiweb.net/docs/manual.html](https://apps.ankiweb.net/docs/manual.html)
+
 插件编写文档[https://apps.ankiweb.net/docs/addons.html](https://apps.ankiweb.net/docs/addons.html)
 
 
@@ -36,18 +37,18 @@ tags:
 
 官网的速度爆表，而且有数据安全问题，因此官网给出了自建anki server的解决方案。
 
-百度上的大多使用 https://github.com/dsnopek/anki-sync-server，可以基于pip2和python2直接安装，个人在基于Arch的linux下感觉坑多，在linux上的anki 2.1.9连不上上面python2的服务器（bug解决一个又出一个），更建议使用基于python3的fork项目：https://github.com/tsudoko/anki-sync-server。
+百度上的大多使用 https://github.com/dsnopek/anki-sync-server ，可以基于pip2和python2直接安装，个人在基于Arch的linux下感觉坑多，在linux上的anki 2.1.9连不上上面python2的服务器（bug解决一个又出一个），更建议使用基于python3的fork项目：https://github.com/tsudoko/anki-sync-server 。
 
 
 ## 基于python3的仓库
 
 github上的readme已经写得比较清楚，下面的搬运点大概。
 
-1. clone 仓库
+1、clone 仓库
 
 ` git clone https://github.com/tsudoko/anki-sync-server.git`
 
-2. 安装anki或anki-bundled相关的库
+2、安装anki或anki-bundled相关的库
 
 直接使用包管理器安装 `sudo pacman -S anki` 
 
@@ -59,19 +60,19 @@ github上的readme已经写得比较清楚，下面的搬运点大概。
  $ pip install -r requirements.txt  # 安装相关的库
 ```
 
-3. 安装webob
+3、安装webob
 
 `pip install webob`
 
-4. 修改 ankisyncd.conf 文件
+4、修改 ankisyncd.conf 文件
 
 文件中保存了主要的配置，主要改端口，默认端口一般也就能用。
 
-5. 创建用户
+5、创建用户
 
 `./ankisyncctl.py adduser <username>`
 
-6. 启动服务器
+6、启动服务器
 
 ` python -m ankisyncd`
 

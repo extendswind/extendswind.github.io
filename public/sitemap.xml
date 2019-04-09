@@ -4,7 +4,14 @@
   
   <url>
     <loc>https://extendswind.top/</loc>
-    <lastmod>2019-03-04T21:59:49+08:00</lastmod>
+    <lastmod>2019-04-02T11:25:25+08:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://extendswind.top/posts/life/reading_brief_history_of_humankind_1/</loc>
+    <lastmod>2019-04-02T11:25:25+08:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
@@ -233,7 +240,7 @@
   
   <url>
     <loc>https://extendswind.top/posts/</loc>
-    <lastmod>2019-03-04T21:59:49+08:00</lastmod>
+    <lastmod>2019-04-02T11:25:25+08:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0</priority>
   </url>
@@ -287,15 +294,15 @@
   </url>
   
   <url>
-    <loc>https://extendswind.top/categories/life/</loc>
+    <loc>https://extendswind.top/tags/life/</loc>
     <lastmod>2018-09-30T22:40:48+08:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://extendswind.top/tags/life/</loc>
-    <lastmod>2018-09-30T22:40:48+08:00</lastmod>
+    <loc>https://extendswind.top/categories/life/</loc>
+    <lastmod>2019-04-02T11:25:25+08:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0</priority>
   </url>
@@ -324,6 +331,13 @@
   <url>
     <loc>https://extendswind.top/categories/programming-basic/</loc>
     <lastmod>2018-11-13T10:30:00+08:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://extendswind.top/tags/reading/</loc>
+    <lastmod>2019-04-02T11:25:25+08:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0</priority>
   </url>
