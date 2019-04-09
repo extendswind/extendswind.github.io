@@ -7,32 +7,44 @@
 <meta name='description' content='首先吐槽，anki作为老牌软件，国内资料并不多。
 虽然html的卡片显示和python的插件式开发上看比较适合程序员，但从各种配置上感觉程序员用户量并不大。
 因此，想深度使用准备折腾。
-简单使用  淘制作好的卡片，导入 卡片可以套模板更美观（添加时的Cards选项，支持html） 插件里的awesome TTS很多人推荐但速度略慢 添加单词可以用Word Query  官方文档https://apps.ankiweb.net/docs/manual.html 插件编写文档https://apps.ankiweb.net/docs/addons.html
+简单使用  淘制作好的卡片，导入 卡片可以套模板更美观（添加时的Cards选项，支持html） 插件里的awesome TTS很多人推荐但速度略慢 添加单词可以用Word Query  官方文档https://apps.ankiweb.net/docs/manual.html
+插件编写文档https://apps.ankiweb.net/docs/addons.html
 一些坑 删除卡片不会删除对应的媒体文件，需要点击 check media 后手动删除。
 anki server 的安装 官网的速度爆表，而且有数据安全问题，因此官网给出了自建anki server的解决方案。
-百度上的大多使用 https://github.com/dsnopek/anki-sync-server，可以基于pip2和python2直接安装，个人在基于Arch的linux下感觉坑多，在linux上的anki 2.1.9连不上上面python2的服务器（bug解决一个又出一个），更建议使用基于python3的fork项目：https://github.com/tsudoko/anki-sync-server。
+百度上的大多使用 https://github.com/dsnopek/anki-sync-server ，可以基于pip2和python2直接安装，个人在基于Arch的linux下感觉坑多，在linux上的anki 2.1.9连不上上面python2的服务器（bug解决一个又出一个），更建议使用基于python3的fork项目：https://github.com/tsudoko/anki-sync-server 。
 基于python3的仓库 github上的readme已经写得比较清楚，下面的搬运点大概。
- clone 仓库  git clone https://github.com/tsudoko/anki-sync-server.git
- 安装anki或anki-bundled相关的库  直接使用包管理器安装 sudo pacman -S anki
+1、clone 仓库
+git clone https://github.com/tsudoko/anki-sync-server.git
+2、安装anki或anki-bundled相关的库
+直接使用包管理器安装 sudo pacman -S anki
 如果包管理器里没有anki（如debian），也可以用pip安装anki-bundled相关的库
-$ git submodule update --init # anki-bundled已经加入为submodule，可以先更新 $ cd anki-bundled $ pip install -r requirements.txt # 安装相关的库  安装webob  pip install webob
- 修改 ankisyncd.'>
+$ git submodule update --init # anki-bundled已经加入为submodule，可以先更新 $ cd anki-bundled $ pip install -r requirements.txt # 安装相关的库 3、安装webob
+pip install webob
+4、修改 ankisyncd.conf 文件
+文件中保存了主要的配置，主要改端口，默认端口一般也就能用。
+5、创建用户'>
 <meta name='theme-color' content='#cccccc'>
 
 <meta property='og:title' content='anki的使用以及anki server的配置 • extendswind'>
 <meta property='og:description' content='首先吐槽，anki作为老牌软件，国内资料并不多。
 虽然html的卡片显示和python的插件式开发上看比较适合程序员，但从各种配置上感觉程序员用户量并不大。
 因此，想深度使用准备折腾。
-简单使用  淘制作好的卡片，导入 卡片可以套模板更美观（添加时的Cards选项，支持html） 插件里的awesome TTS很多人推荐但速度略慢 添加单词可以用Word Query  官方文档https://apps.ankiweb.net/docs/manual.html 插件编写文档https://apps.ankiweb.net/docs/addons.html
+简单使用  淘制作好的卡片，导入 卡片可以套模板更美观（添加时的Cards选项，支持html） 插件里的awesome TTS很多人推荐但速度略慢 添加单词可以用Word Query  官方文档https://apps.ankiweb.net/docs/manual.html
+插件编写文档https://apps.ankiweb.net/docs/addons.html
 一些坑 删除卡片不会删除对应的媒体文件，需要点击 check media 后手动删除。
 anki server 的安装 官网的速度爆表，而且有数据安全问题，因此官网给出了自建anki server的解决方案。
-百度上的大多使用 https://github.com/dsnopek/anki-sync-server，可以基于pip2和python2直接安装，个人在基于Arch的linux下感觉坑多，在linux上的anki 2.1.9连不上上面python2的服务器（bug解决一个又出一个），更建议使用基于python3的fork项目：https://github.com/tsudoko/anki-sync-server。
+百度上的大多使用 https://github.com/dsnopek/anki-sync-server ，可以基于pip2和python2直接安装，个人在基于Arch的linux下感觉坑多，在linux上的anki 2.1.9连不上上面python2的服务器（bug解决一个又出一个），更建议使用基于python3的fork项目：https://github.com/tsudoko/anki-sync-server 。
 基于python3的仓库 github上的readme已经写得比较清楚，下面的搬运点大概。
- clone 仓库  git clone https://github.com/tsudoko/anki-sync-server.git
- 安装anki或anki-bundled相关的库  直接使用包管理器安装 sudo pacman -S anki
+1、clone 仓库
+git clone https://github.com/tsudoko/anki-sync-server.git
+2、安装anki或anki-bundled相关的库
+直接使用包管理器安装 sudo pacman -S anki
 如果包管理器里没有anki（如debian），也可以用pip安装anki-bundled相关的库
-$ git submodule update --init # anki-bundled已经加入为submodule，可以先更新 $ cd anki-bundled $ pip install -r requirements.txt # 安装相关的库  安装webob  pip install webob
- 修改 ankisyncd.'>
+$ git submodule update --init # anki-bundled已经加入为submodule，可以先更新 $ cd anki-bundled $ pip install -r requirements.txt # 安装相关的库 3、安装webob
+pip install webob
+4、修改 ankisyncd.conf 文件
+文件中保存了主要的配置，主要改端口，默认端口一般也就能用。
+5、创建用户'>
 <meta property='og:url' content='https://extendswind.top/posts/technical/anki_and_anki_server/'>
 <meta property='og:site_name' content='extendswind'>
 <meta property='og:type' content='article'><meta property='article:section' content='posts'><meta property='article:tag' content='software'><meta property='article:published_time' content='2019-03-04T21:59:49&#43;08:00'/><meta property='article:modified_time' content='2019-03-04T21:59:49&#43;08:00'/><meta name='twitter:card' content='summary'>
@@ -120,6 +132,8 @@ if (!doNotTrack) {
         <a href='/tags/life/' style='font-size:1em'>life</a>
       </li><li>
         <a href='/tags/linux/' style='font-size:1em'>linux</a>
+      </li><li>
+        <a href='/tags/reading/' style='font-size:1em'>reading</a>
       </li><li>
         <a href='/tags/software/' style='font-size:1em'>software</a>
       </li><li>
@@ -219,8 +233,9 @@ if (!doNotTrack) {
 <li>添加单词可以用<code>Word Query</code></li>
 </ul>
 
-<p>官方文档<a href="https://apps.ankiweb.net/docs/manual.html" target="_blank">https://apps.ankiweb.net/docs/manual.html</a>
-插件编写文档<a href="https://apps.ankiweb.net/docs/addons.html" target="_blank">https://apps.ankiweb.net/docs/addons.html</a></p>
+<p>官方文档<a href="https://apps.ankiweb.net/docs/manual.html" target="_blank">https://apps.ankiweb.net/docs/manual.html</a></p>
+
+<p>插件编写文档<a href="https://apps.ankiweb.net/docs/addons.html" target="_blank">https://apps.ankiweb.net/docs/addons.html</a></p>
 
 <h1 id="一些坑">一些坑</h1>
 
@@ -230,21 +245,17 @@ if (!doNotTrack) {
 
 <p>官网的速度爆表，而且有数据安全问题，因此官网给出了自建anki server的解决方案。</p>
 
-<p>百度上的大多使用 <a href="https://github.com/dsnopek/anki-sync-server，可以基于pip2和python2直接安装，个人在基于Arch的linux下感觉坑多，在linux上的anki" target="_blank">https://github.com/dsnopek/anki-sync-server，可以基于pip2和python2直接安装，个人在基于Arch的linux下感觉坑多，在linux上的anki</a> 2.1.9连不上上面python2的服务器（bug解决一个又出一个），更建议使用基于python3的fork项目：<a href="https://github.com/tsudoko/anki-sync-server。" target="_blank">https://github.com/tsudoko/anki-sync-server。</a></p>
+<p>百度上的大多使用 <a href="https://github.com/dsnopek/anki-sync-server" target="_blank">https://github.com/dsnopek/anki-sync-server</a> ，可以基于pip2和python2直接安装，个人在基于Arch的linux下感觉坑多，在linux上的anki 2.1.9连不上上面python2的服务器（bug解决一个又出一个），更建议使用基于python3的fork项目：<a href="https://github.com/tsudoko/anki-sync-server" target="_blank">https://github.com/tsudoko/anki-sync-server</a> 。</p>
 
 <h2 id="基于python3的仓库">基于python3的仓库</h2>
 
 <p>github上的readme已经写得比较清楚，下面的搬运点大概。</p>
 
-<ol>
-<li>clone 仓库</li>
-</ol>
+<p>1、clone 仓库</p>
 
 <p><code>git clone https://github.com/tsudoko/anki-sync-server.git</code></p>
 
-<ol>
-<li>安装anki或anki-bundled相关的库</li>
-</ol>
+<p>2、安装anki或anki-bundled相关的库</p>
 
 <p>直接使用包管理器安装 <code>sudo pacman -S anki</code></p>
 
@@ -252,27 +263,19 @@ if (!doNotTrack) {
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> $ git submodule update --init  <span style="color:#75715e"># anki-bundled已经加入为submodule，可以先更新</span>
  $ cd anki-bundled
  $ pip install -r requirements.txt  <span style="color:#75715e"># 安装相关的库</span></code></pre></div>
-<ol>
-<li>安装webob</li>
-</ol>
+<p>3、安装webob</p>
 
 <p><code>pip install webob</code></p>
 
-<ol>
-<li>修改 ankisyncd.conf 文件</li>
-</ol>
+<p>4、修改 ankisyncd.conf 文件</p>
 
 <p>文件中保存了主要的配置，主要改端口，默认端口一般也就能用。</p>
 
-<ol>
-<li>创建用户</li>
-</ol>
+<p>5、创建用户</p>
 
 <p><code>./ankisyncctl.py adduser &lt;username&gt;</code></p>
 
-<ol>
-<li>启动服务器</li>
-</ol>
+<p>6、启动服务器</p>
 
 <p><code>python -m ankisyncd</code></p>
 
@@ -359,6 +362,16 @@ ankiserverctl debug  <span style="color:#75715e"># debug模式启动 （为什�
 </svg>
  Previous</span>
         <span class='screen-reader-text'>Previous post: </span>linux 关闭主板上的蜂鸣器声音</a>
+    </div><div class='next-entry sep-before'>
+      <a href='/posts/life/reading_brief_history_of_humankind_1/'>
+        <span class='screen-reader-text'>Next post: </span>阅读《人类简史》-- 1.认知革命<span aria-hidden='true'>Next <svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="4" y1="12" x2="20" y2="12"/>
+  <polyline points="14 6 20 12 14 18"/>
+  
+</svg>
+</span>
+      </a>
     </div></div>
 </nav>
 

@@ -19,16 +19,22 @@
       <description>首先吐槽，anki作为老牌软件，国内资料并不多。
 虽然html的卡片显示和python的插件式开发上看比较适合程序员，但从各种配置上感觉程序员用户量并不大。
 因此，想深度使用准备折腾。
-简单使用  淘制作好的卡片，导入 卡片可以套模板更美观（添加时的Cards选项，支持html） 插件里的awesome TTS很多人推荐但速度略慢 添加单词可以用Word Query  官方文档https://apps.ankiweb.net/docs/manual.html 插件编写文档https://apps.ankiweb.net/docs/addons.html
+简单使用  淘制作好的卡片，导入 卡片可以套模板更美观（添加时的Cards选项，支持html） 插件里的awesome TTS很多人推荐但速度略慢 添加单词可以用Word Query  官方文档https://apps.ankiweb.net/docs/manual.html
+插件编写文档https://apps.ankiweb.net/docs/addons.html
 一些坑 删除卡片不会删除对应的媒体文件，需要点击 check media 后手动删除。
 anki server 的安装 官网的速度爆表，而且有数据安全问题，因此官网给出了自建anki server的解决方案。
-百度上的大多使用 https://github.com/dsnopek/anki-sync-server，可以基于pip2和python2直接安装，个人在基于Arch的linux下感觉坑多，在linux上的anki 2.1.9连不上上面python2的服务器（bug解决一个又出一个），更建议使用基于python3的fork项目：https://github.com/tsudoko/anki-sync-server。
+百度上的大多使用 https://github.com/dsnopek/anki-sync-server ，可以基于pip2和python2直接安装，个人在基于Arch的linux下感觉坑多，在linux上的anki 2.1.9连不上上面python2的服务器（bug解决一个又出一个），更建议使用基于python3的fork项目：https://github.com/tsudoko/anki-sync-server 。
 基于python3的仓库 github上的readme已经写得比较清楚，下面的搬运点大概。
- clone 仓库  git clone https://github.com/tsudoko/anki-sync-server.git
- 安装anki或anki-bundled相关的库  直接使用包管理器安装 sudo pacman -S anki
+1、clone 仓库
+git clone https://github.com/tsudoko/anki-sync-server.git
+2、安装anki或anki-bundled相关的库
+直接使用包管理器安装 sudo pacman -S anki
 如果包管理器里没有anki（如debian），也可以用pip安装anki-bundled相关的库
-$ git submodule update --init # anki-bundled已经加入为submodule，可以先更新 $ cd anki-bundled $ pip install -r requirements.txt # 安装相关的库  安装webob  pip install webob
- 修改 ankisyncd.</description>
+$ git submodule update --init # anki-bundled已经加入为submodule，可以先更新 $ cd anki-bundled $ pip install -r requirements.txt # 安装相关的库 3、安装webob
+pip install webob
+4、修改 ankisyncd.conf 文件
+文件中保存了主要的配置，主要改端口，默认端口一般也就能用。
+5、创建用户</description>
     </item>
     
     <item>
@@ -129,17 +135,18 @@ sudo pacman -S cinnamon-settings-daemon /usr/lib/cinnamon-settings-daemon/csd-xs
  X Error of failed request: BadWindow (invalid Window parameter) Major opcode of failed request: 20 (X_GetProperty)
  在gnome、mate、cinnamon三个桌面上运行较好，xfce4上运行有少许焦点上的bug，其它桌面环境和管理器下直接出上面的错误。
 最近终于在aur上看到是因为deepin-wine依赖了gnome-setttings-daemon。（xsettings的一个后台进程，cinnamon和mate的xsettings进程也能用）
-解决方案 貌似是因为对gnome-setttings-daemon的依赖。
-arch系：
-sudo pacman -S gnome-settings-daemon /usr/lib/gsd-setttings 运行tim和qq即可
-ubuntu 下的包和运行的程序名略不一样，参考：
+解决方案 1. 安装gnome-settings-daemon (arch 系） sudo pacman -S gnome-settings-daemon ubuntu 下的包和运行的程序名略不一样，参考：
 https://github.com/wszqkzqk/deepin-wine-ubuntu/issues/12#issuecomment-443656358
-注意 在使用xsettings之后，主题等需要与对应的xsettings设置相对应。如使用gnome-settings-daemon时，需要在gnome的设置里更改主题。使用lxappearance修改主题只会更改~/.gtkrc-2.0等文件，不会生效。
+2. 在tim启动脚本中加入启动 /opt/deepinwine/apps/Deepin-TIM/run.sh 的文件前添加下面的行：
+/usr/lib/gsd-setttings &amp;amp;
+注意 影响主题 在使用xsettings之后，主题等需要与对应的xsettings设置相对应。如使用gnome-settings-daemon时，需要在gnome的设置里更改主题。使用lxappearance修改主题只会更改~/.gtkrc-2.0等文件，不会生效。
+csd-xsettings 的影响 csd-xsettings 主要影响两个地方：1. 启动过程； 2. 在tim内调用外部程序打开链接的过程（如打开网页、打开本地目录）。
+可以考虑启动后关闭对tim，可以避免影响系统主题一类的问题，但无法调用外部程序。加上运行后5s关闭的参数即可:
+/usr/lib/cinnamon-settings-daemon/csd-xsettings --exit-time 5 &amp;amp;
 附：使用cinnamon的xsettings的设置 主题的问题略坑，懒得去试gnome上的主题设置需要哪些包，安装整个gnome的包需要800多M，直接安装了cinnamon的基础包（90M左右）。
 cinnamon的xsettings默认也没用那个不太能忍的主题。
 sudo pacman -S cinnamon # awesome的autorun里加入下面程序使开机运行 /usr/lib/cinnamon-settings-daemon/csd-xsettings 在系统设置里可以下载和更改主题
-小坑 tim和qq都会在点击好友图像时卡死，原因是因为pulseaudio进程，kill掉就行，会影响声音的调整。（千里之外的两个程序不知道为什么会卡一起）
-最后 又从mate+awesomewm回到纯awesomewm，但运行了一个xsetting进程也不知道和直接mate+awesome比能节约多少内存。</description>
+小坑 tim和qq都会在点击好友图像时卡死，原因是因为pulseaudio进程，kill掉就行，会影响声音的调整。（千里之外的两个程序不知道为什么会卡一起）</description>
     </item>
     
     <item>
