@@ -12,12 +12,14 @@ from bs4 import BeautifulSoup
 keyFile = open("cnblogkey", "r")
 username = keyFile.readline().strip("\n")
 passwd = keyFile.readline().strip("\n")
+print(username)
+print(passwd)
 
 title = "helloWorld"
 content = "<p> test <p>"
 tags = "tag1, tag2"
 
-url = 'http://www.cnblogs.com/' + username + '/services/metaweblog.aspx'
+url = 'http://www.cnblogs.com/' + 'fly2wind'+ '/services/metaweblog.aspx'
 # url = 'http://write.blog.csdn.net/xmlrpc/index'
 
 blogProxy = xmlrpc.client.ServerProxy(url)
