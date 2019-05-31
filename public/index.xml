@@ -5,10 +5,29 @@
     <link>https://extendswind.top/</link>
     <description>Recent content in Home on extendswind</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Tue, 02 Apr 2019 11:25:25 +0800</lastBuildDate>
+    <lastBuildDate>Wed, 29 May 2019 20:30:00 +0800</lastBuildDate>
     
 	<atom:link href="https://extendswind.top/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>log4j 1.2 配置和使用简述</title>
+      <link>https://extendswind.top/posts/technical/log4j_properties_simple_introduction/</link>
+      <pubDate>Wed, 29 May 2019 20:30:00 +0800</pubDate>
+      
+      <guid>https://extendswind.top/posts/technical/log4j_properties_simple_introduction/</guid>
+      <description>简述 使用log4j可以根据配置文件控制输出日志的级别，记录到文件、命令行等的位置，不需要代码上的更改。
+日志在一定程度上会影响性能，特别是高并发环境。一般更建议使用log4j 2.x，在性能上有较大的提高，由于hadoop 2.7使用的log4j 1.2，下面主要写这一版本。
+ 根据日志级别记录日志 (logger上设置） 运行时决定具体的记录位置（appender上设置）和日志格式（layout上设置）  一些概念 日志级别（priority，代码里为level） 日志级别从低到高为trace, debug, info, warn, error, fatal。默认级别为info，低于设置级别的日志不会被打印。
+常用组件 一般情况下常设置的组件有logger，appender， layout。
+用类的方式表达三个组件的关系为
+Logger{ name; level; // 控制日志级别 appenderList; // 可对应多个appender } Appender{ name; // 控制文件位置 如fileAppender layout; // 控制格式 filter; // 过滤部分日志 }  logger logger以一种树状关系管理日志的类型，log4j.rootCategory为根节点，如果没有标记 log4j.additivity.MyLogger = false ，则子logger会默认继承上一级的设置。
+通过树的组织形式，对不同的包中的不同的类，可以分别设置不同的日志方式。
+通过点表示层级，如com.foo为com.foo.Bar的上级
+关于category，早期的log4j使用category较多，但在log4j 1.2之后，建议使用logger代替category。
+appender 主要用于
+ 控制日志的输出位置，当前支持the console, files, GUI components, remote socket servers, NT Event Loggers, and remote UNIX Syslog daemons.</description>
+    </item>
     
     <item>
       <title>阅读《人类简史》-- 1.认知革命</title>
@@ -277,7 +296,7 @@ Awesome只是Gnome等桌面管理器的组件之一，gnome系的Mate可以修�
 具体折腾  安装AwesomeWM、Mate桌面环境与dconf-editor（arch下使用pacman -S）。
  进入Mate桌面环境后，修改org.mate.session.required-components windowmanager的值为&amp;rsquo;awesome&amp;rsquo;，如果不需要桌面上的图标，可以将org.mate.session.required-components的值只留下windowmanager。
  上面的设置无法通过命令行打开awesome，需要添加awesome的图标。在/usr/share/applications目录下新建awesome.desktop，内容如下（网上直接粘的，估计有些可以不要，懒得试了）：
-  [Desktop Entry] Type=Application Name=awesome Exec=awesome NoDisplay=true # name of loadable control center module X-MATE-WMSettingsModule=awesome # name we put on the WM spec check window X-MATE-WMName=awesome # back compat only X-MateWMSettingsLibrary=awesome X-MATE-Bugzilla-Bugzilla=MATE X-MATE-Bugzilla-Product=awesome X-MATE-Bugzilla-Component=general X-MATE-Autostart-Phase=WindowManager X-MATE-Provides=windowmanager X-MATE-Autostart-Notify=true  </description>
+[Desktop Entry] Type=Application Name=awesome Exec=awesome NoDisplay=true # name of loadable control center module X-MATE-WMSettingsModule=awesome # name we put on the WM spec check window X-MATE-WMName=awesome # back compat only X-MateWMSettingsLibrary=awesome X-MATE-Bugzilla-Bugzilla=MATE X-MATE-Bugzilla-Product=awesome X-MATE-Bugzilla-Component=general X-MATE-Autostart-Phase=WindowManager X-MATE-Provides=windowmanager X-MATE-Autostart-Notify=true   </description>
     </item>
     
     <item>
