@@ -16,7 +16,7 @@ X Error of failed request: BadWindow (invalid Window parameter) Major opcode of 
 
 在gnome、mate、cinnamon三个桌面上运行较好，xfce4上运行有少许焦点上的bug，其它桌面环境和管理器下直接出上面的错误。
 
-最近终于在aur上看到是因为deepin-wine依赖了gnome-settings-daemon（xsettings的一个后台进程，cinnamon和mate的xsettings进程也能用），启动后就能正常运行，但对某些环境的主题等有一定影响。(awesome会使用xsettings对应的主题，KDE基本正常运行）
+最近终于在aur上看到是因为deepin-wine依赖了gnome-settings-daemon（gnome系的cinnamon和mate的对应组件也能用），启动后就能正常运行，但AwesomeWM会使用xsettings对应的主题，KDE基本正常运行，其它非gnome系的桌面环境未测试。
 
 
 # 解决方案
@@ -43,7 +43,7 @@ ubuntu 下的包和运行的程序名略不一样，参考：
 
 ## 主要缺点——影响主题（某些桌面环境）
 
-在使用xsettings之后，主题等需要与对应的xsettings设置相对应。如使用gnome-settings-daemon时，需要在gnome的设置里更改主题。使用lxappearance修改主题只会更改~/.gtkrc-2.0等文件，不会生效。
+AwesomeWM在使用xsettings之后，主题等需要与对应的xsettings设置相对应。如使用gnome-settings-daemon时，需要在gnome的设置里更改主题。使用lxappearance修改主题只会更改~/.gtkrc-2.0等文件，不会生效。
 
 ## csd-xsettings 的影响
 
@@ -72,9 +72,9 @@ sudo pacman -S cinnamon
 
 ## 小坑
 
-tim和qq会在点击好友图像时卡死的情况。原因之一可能是pulseaudio进程，kill掉就行，会影响声音的调整。（千里之外的两个程序不知道为什么会卡一起）
+1. tim和qq会在点击好友图像时卡死的情况。原因之一可能是pulseaudio进程，kill掉就行，会影响声音的调整。（千里之外的两个程序不知道为什么会卡一起）
 
-使用csd-xsettings时可能出现无法调声音的情况，关了之后就行了，懒得再往下折腾了...
+2. 使用csd-xsettings时可能出现无法调声音的情况，关了之后就行了，懒得再往下折腾了...
 
 这两个问题不太记得当初什么情况，在kde版本的manjaro上已经不存在了（201907）。
 
