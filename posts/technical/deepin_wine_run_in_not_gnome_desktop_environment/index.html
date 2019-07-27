@@ -1,23 +1,21 @@
 <!DOCTYPE html>
-<html lang='en'>
-
-<head>
+<html lang='en'><head>
   <meta charset='utf-8'>
 <meta name='viewport' content='width=device-width, initial-scale=1'>
 <meta name='description' content='i3wm, kde, awesome等桌面管理器或桌面环境里运行基于deepin-wine的qq和tim时，会出现下面的错误
  X Error of failed request: BadWindow (invalid Window parameter) Major opcode of failed request: 20 (X_GetProperty)
  在gnome、mate、cinnamon三个桌面上运行较好，xfce4上运行有少许焦点上的bug，其它桌面环境和管理器下直接出上面的错误。
-最近终于在aur上看到是因为deepin-wine依赖了gnome-setttings-daemon（xsettings的一个后台进程，cinnamon和mate的xsettings进程也能用），启动后就能正常运行，但对主题等有一定影响。
+最近终于在aur上看到是因为deepin-wine依赖了gnome-settings-daemon（xsettings的一个后台进程，cinnamon和mate的xsettings进程也能用），启动后就能正常运行，但对某些环境的主题等有一定影响。(awesome会使用xsettings对应的主题，KDE基本正常运行）
 解决方案 1. 安装gnome-settings-daemon (arch 系） sudo pacman -S gnome-settings-daemon ubuntu 下的包和运行的程序名略不一样，参考：
 https://github.com/wszqkzqk/deepin-wine-ubuntu/issues/12#issuecomment-443656358
 2. 在tim启动脚本中加入启动 /opt/deepinwine/apps/Deepin-TIM/run.sh 的文件前添加下面的行：
-/usr/lib/gsd-xsetttings &amp;
-注意 主要缺点——影响主题 在使用xsettings之后，主题等需要与对应的xsettings设置相对应。如使用gnome-settings-daemon时，需要在gnome的设置里更改主题。使用lxappearance修改主题只会更改~/.gtkrc-2.0等文件，不会生效。
-csd-xsettings 的影响 因为一些原因从gnome的xsettings换到了cinnamon的xsettings，下面的设置在gsd-xsettings上未测试。
+/usr/lib/gsd-xsettings &amp;
+注意 主要缺点——影响主题（某些桌面环境） 在使用xsettings之后，主题等需要与对应的xsettings设置相对应。如使用gnome-settings-daemon时，需要在gnome的设置里更改主题。使用lxappearance修改主题只会更改~/.gtkrc-2.0等文件，不会生效。
+csd-xsettings 的影响 因为大小和简洁的原因从gnome的xsettings换到了cinnamon的xsettings，下面的设置在gsd-xsettings上未测试。
 csd-xsettings 主要影响两个地方：1. 启动过程； 2. 在tim内调用外部程序打开链接的过程（如打开网页、打开本地目录）。
 可以考虑启动后关闭对tim，可以避免影响系统主题一类的问题，但会导致无法调用外部程序。加上运行后5s关闭的参数即可:
 /usr/lib/cinnamon-settings-daemon/csd-xsettings --exit-time 5 &amp;
-附：使用cinnamon的xsettings的设置 主题的问题略坑，懒得去试gnome上的主题设置需要哪些包，安装整个gnome的包需要800多M，直接安装了cinnamon的基础包（90M左右）。和gnome只是些名字上的区别：
+附：使用cinnamon的xsettings的设置 主题的问题在awesome这种环境下略坑，懒得去试gnome上的主题设置需要哪些包，安装整个gnome的包需要800多M，直接安装了cinnamon的基础包（90M左右）。和gnome只是些名字上的区别：
 sudo pacman -S cinnamon # awesome的autorun里加入下面程序使开机运行 /usr/lib/cinnamon-settings-daemon/csd-xsettings 在系统设置里可以下载和更改主题
 小坑 tim和qq会在点击好友图像时卡死的情况。原因之一可能是pulseaudio进程，kill掉就行，会影响声音的调整。（千里之外的两个程序不知道为什么会卡一起）'>
 <meta name='theme-color' content='#cccccc'>
@@ -26,17 +24,17 @@ sudo pacman -S cinnamon # awesome的autorun里加入下面程序使开机运行 
 <meta property='og:description' content='i3wm, kde, awesome等桌面管理器或桌面环境里运行基于deepin-wine的qq和tim时，会出现下面的错误
  X Error of failed request: BadWindow (invalid Window parameter) Major opcode of failed request: 20 (X_GetProperty)
  在gnome、mate、cinnamon三个桌面上运行较好，xfce4上运行有少许焦点上的bug，其它桌面环境和管理器下直接出上面的错误。
-最近终于在aur上看到是因为deepin-wine依赖了gnome-setttings-daemon（xsettings的一个后台进程，cinnamon和mate的xsettings进程也能用），启动后就能正常运行，但对主题等有一定影响。
+最近终于在aur上看到是因为deepin-wine依赖了gnome-settings-daemon（xsettings的一个后台进程，cinnamon和mate的xsettings进程也能用），启动后就能正常运行，但对某些环境的主题等有一定影响。(awesome会使用xsettings对应的主题，KDE基本正常运行）
 解决方案 1. 安装gnome-settings-daemon (arch 系） sudo pacman -S gnome-settings-daemon ubuntu 下的包和运行的程序名略不一样，参考：
 https://github.com/wszqkzqk/deepin-wine-ubuntu/issues/12#issuecomment-443656358
 2. 在tim启动脚本中加入启动 /opt/deepinwine/apps/Deepin-TIM/run.sh 的文件前添加下面的行：
-/usr/lib/gsd-xsetttings &amp;
-注意 主要缺点——影响主题 在使用xsettings之后，主题等需要与对应的xsettings设置相对应。如使用gnome-settings-daemon时，需要在gnome的设置里更改主题。使用lxappearance修改主题只会更改~/.gtkrc-2.0等文件，不会生效。
-csd-xsettings 的影响 因为一些原因从gnome的xsettings换到了cinnamon的xsettings，下面的设置在gsd-xsettings上未测试。
+/usr/lib/gsd-xsettings &amp;
+注意 主要缺点——影响主题（某些桌面环境） 在使用xsettings之后，主题等需要与对应的xsettings设置相对应。如使用gnome-settings-daemon时，需要在gnome的设置里更改主题。使用lxappearance修改主题只会更改~/.gtkrc-2.0等文件，不会生效。
+csd-xsettings 的影响 因为大小和简洁的原因从gnome的xsettings换到了cinnamon的xsettings，下面的设置在gsd-xsettings上未测试。
 csd-xsettings 主要影响两个地方：1. 启动过程； 2. 在tim内调用外部程序打开链接的过程（如打开网页、打开本地目录）。
 可以考虑启动后关闭对tim，可以避免影响系统主题一类的问题，但会导致无法调用外部程序。加上运行后5s关闭的参数即可:
 /usr/lib/cinnamon-settings-daemon/csd-xsettings --exit-time 5 &amp;
-附：使用cinnamon的xsettings的设置 主题的问题略坑，懒得去试gnome上的主题设置需要哪些包，安装整个gnome的包需要800多M，直接安装了cinnamon的基础包（90M左右）。和gnome只是些名字上的区别：
+附：使用cinnamon的xsettings的设置 主题的问题在awesome这种环境下略坑，懒得去试gnome上的主题设置需要哪些包，安装整个gnome的包需要800多M，直接安装了cinnamon的基础包（90M左右）。和gnome只是些名字上的区别：
 sudo pacman -S cinnamon # awesome的autorun里加入下面程序使开机运行 /usr/lib/cinnamon-settings-daemon/csd-xsettings 在系统设置里可以下载和更改主题
 小坑 tim和qq会在点击好友图像时卡死的情况。原因之一可能是pulseaudio进程，kill掉就行，会影响声音的调整。（千里之外的两个程序不知道为什么会卡一起）'>
 <meta property='og:url' content='https://extendswind.top/posts/technical/deepin_wine_run_in_not_gnome_desktop_environment/'>
@@ -50,7 +48,7 @@ sudo pacman -S cinnamon # awesome的autorun里加入下面程序使开机运行 
   
   
   <link rel='icon' href='/images/wind.jpeg'>
-<link rel='stylesheet' href='/assets/css/main.4267b3fa.css'><link rel='stylesheet' href='/css/custom.css'><style>
+<link rel='stylesheet' href='/assets/css/main.6a060eb7.css'><link rel='stylesheet' href='/css/custom.css'><style>
 :root{--color-accent:#cccccc;}
 </style>
 
@@ -68,13 +66,9 @@ if (!doNotTrack) {
   
 
 </head>
-
-
 <body class='page type-posts has-sidebar'>
 
-  <div class='site'>
-
-    <div id='sidebar' class='sidebar'>
+  <div class='site'><div id='sidebar' class='sidebar'>
   <a class='screen-reader-text' href='#main-menu'>Skip to Main Menu</a>
 
   <div class='container'><section class='widget widget-about sep-after'>
@@ -87,7 +81,9 @@ if (!doNotTrack) {
     </div>
     
     <h2 class='title site-title '>
-    extendswind
+      <a href='/'>
+      extendswind
+      </a>
     </h2>
     <div class='desc'>
     
@@ -144,11 +140,7 @@ if (!doNotTrack) {
 </div>
 
   <div class='sidebar-overlay'></div>
-</div>
-
-    <div class='main'>
-
-      <a class='screen-reader-text' href='#content'>Skip to Content</a>
+</div><div class='main'><a class='screen-reader-text' href='#content'>Skip to Content</a>
 
 <button id='sidebar-toggler' class='sidebar-toggler' aria-controls='sidebar'>
   <span class='screen-reader-text'>Toggle Sidebar</span>
@@ -167,7 +159,9 @@ if (!doNotTrack) {
   
 </svg>
 </span>
-</button>
+</button><div class='header-widgets'>
+        <div class='container'></div>
+      </div>
 
       <header id='header' class='header site-header'>
         <div class='container sep-after'>
@@ -187,8 +181,7 @@ if (!doNotTrack) {
       
 
     </div>
-    
-<div class='entry-meta'>
+    <div class='entry-meta'>
   <span class='posted-on'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
   
   <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
@@ -224,7 +217,7 @@ if (!doNotTrack) {
 
 <p>在gnome、mate、cinnamon三个桌面上运行较好，xfce4上运行有少许焦点上的bug，其它桌面环境和管理器下直接出上面的错误。</p>
 
-<p>最近终于在aur上看到是因为deepin-wine依赖了gnome-setttings-daemon（xsettings的一个后台进程，cinnamon和mate的xsettings进程也能用），启动后就能正常运行，但对主题等有一定影响。</p>
+<p>最近终于在aur上看到是因为deepin-wine依赖了gnome-settings-daemon（xsettings的一个后台进程，cinnamon和mate的xsettings进程也能用），启动后就能正常运行，但对某些环境的主题等有一定影响。(awesome会使用xsettings对应的主题，KDE基本正常运行）</p>
 
 <h1 id="解决方案">解决方案</h1>
 
@@ -238,17 +231,17 @@ if (!doNotTrack) {
 
 <p><code>/opt/deepinwine/apps/Deepin-TIM/run.sh</code> 的文件前添加下面的行：</p>
 
-<p><code>/usr/lib/gsd-xsetttings &amp;</code></p>
+<p><code>/usr/lib/gsd-xsettings &amp;</code></p>
 
 <h1 id="注意">注意</h1>
 
-<h2 id="主要缺点-影响主题">主要缺点——影响主题</h2>
+<h2 id="主要缺点-影响主题-某些桌面环境">主要缺点——影响主题（某些桌面环境）</h2>
 
 <p>在使用xsettings之后，主题等需要与对应的xsettings设置相对应。如使用gnome-settings-daemon时，需要在gnome的设置里更改主题。使用lxappearance修改主题只会更改~/.gtkrc-2.0等文件，不会生效。</p>
 
 <h2 id="csd-xsettings-的影响">csd-xsettings 的影响</h2>
 
-<p>因为一些原因从gnome的xsettings换到了cinnamon的xsettings，下面的设置在gsd-xsettings上未测试。</p>
+<p>因为大小和简洁的原因从gnome的xsettings换到了cinnamon的xsettings，下面的设置在gsd-xsettings上未测试。</p>
 
 <p>csd-xsettings 主要影响两个地方：1. 启动过程； 2. 在tim内调用外部程序打开链接的过程（如打开网页、打开本地目录）。</p>
 
@@ -258,24 +251,20 @@ if (!doNotTrack) {
 
 <h3 id="附-使用cinnamon的xsettings的设置">附：使用cinnamon的xsettings的设置</h3>
 
-<p>主题的问题略坑，懒得去试gnome上的主题设置需要哪些包，安装整个gnome的包需要800多M，直接安装了cinnamon的基础包（90M左右）。和gnome只是些名字上的区别：</p>
+<p>主题的问题在awesome这种环境下略坑，懒得去试gnome上的主题设置需要哪些包，安装整个gnome的包需要800多M，直接安装了cinnamon的基础包（90M左右）。和gnome只是些名字上的区别：</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sudo pacman -S cinnamon
 
 <span style="color:#75715e"># awesome的autorun里加入下面程序使开机运行</span>
 /usr/lib/cinnamon-settings-daemon/csd-xsettings</code></pre></div>
 <p>在系统设置里可以下载和更改主题</p>
 
-<h1 id="小坑">小坑</h1>
+<h2 id="小坑">小坑</h2>
 
 <p>tim和qq会在点击好友图像时卡死的情况。原因之一可能是pulseaudio进程，kill掉就行，会影响声音的调整。（千里之外的两个程序不知道为什么会卡一起）</p>
 
 <p>使用csd-xsettings时可能出现无法调声音的情况，关了之后就行了，懒得再往下折腾了&hellip;</p>
 
-<p>这两个问题不太记得当初什么情况，在kde版本的arch上已经不存在了（201907）。</p>
-
-<h1 id="最后">最后</h1>
-
-<p>又从mate+awesomewm回到纯awesomewm，运行了一个xsetting进程也不知道和直接mate+awesome比能节约多少内存，至少在其它的几个桌面环境能够使用了。</p>
+<p>这两个问题不太记得当初什么情况，在kde版本的manjaro上已经不存在了（201907）。</p>
 
 </div>
 
@@ -286,7 +275,7 @@ if (!doNotTrack) {
   <path d="M22,19a2,2,0,0,1-2,2H4a2,2,0,0,1-2-2V5A2,2,0,0,1,4,3H9l2,3h9a2,2,0,0,1,2,2Z"/>
   
 </svg>
-<span class='screen-reader-text'>Categories: </span></div>
+<span class='screen-reader-text'>Categories: </span><a class='category' href='/categories/linux-desktop/'>linux desktop</a></div>
 <div class='tags'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
   
   <path d="M20.59,13.41l-7.17,7.17a2,2,0,0,1-2.83,0L2,12V2H12l8.59,8.59A2,2,0,0,1,20.59,13.41Z"/>
@@ -361,9 +350,9 @@ if (!doNotTrack) {
       </footer>
 
     </div>
-  </div><script>window.__public_path__='\/assets\/js\/'</script>
+  </div><script>window.__assets_js_src="/assets/js/"</script>
 
-<script src='/assets/js/main.59f76c44.js'></script>
+<script src='/assets/js/main.67d669ac.js'></script>
 
 </body>
 
