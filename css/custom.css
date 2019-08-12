@@ -82,6 +82,7 @@ div.container.entry-content h2{
     border-bottom-width:thin;
     border-bottom-style:dashed;
     padding-bottom: 0.3em;
+    padding-top: 0.5em;
 }
 
 h3{
@@ -123,7 +124,7 @@ body {
 
 p {
     margin: 0 0 1em;
-    font-family:'Source Code Pro',"PingFang SC","Microsoft YaHei",sans-serif;
+    font-family:"PingFang SC","Microsoft YaHei",'Source Code Pro',sans-serif;
 
 /*    text-indent: 2em; */
 }
