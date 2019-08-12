@@ -20,10 +20,7 @@
 貌似CSDN已经关闭了metawebblog接口，只在博客园上测试。
 Python发博客的主要方案  通过xmlprc的metaweblog接口（首选） CSDN和博客园的api（定位不是用来发博客的，申请key和调接口略麻烦） 使用抓包的技术模拟浏览器登录发博客（没悬念更折腾）  代码 对于支持metaweblog的博客平台，只要提供用户名、密码和博客相关信息。
 python2 需要将后面的xmlrpc.client改为xmlrpclib，并且import xmlrpclib
-#!/bin/python3 import xmlrpc.client username = &amp;#39;&amp;#39; # TODO your username passwd = &amp;#39;&amp;#39; # TODO your passwd url = &amp;#39;http://www.cnblogs.com/fly2wind/services/metaweblog.aspx&amp;#39; title = &amp;#34;helloWorld&amp;#34; content = &amp;#34;&amp;lt;p&amp;gt; test &amp;lt;p&amp;gt;&amp;#34; tags = &amp;#34;tag1, tag2&amp;#34; blogProxy = xmlrpc.client.ServerProxy(url) # 获取最近博客列表 print(blogProxy.metaWeblog.getRecentPosts(&amp;#39;&amp;#39;, username, passwd, 1)) # 发布博客 blogProxy.metaWeblog.newPost(&amp;#39;&amp;#39;, username, passwd, dict(title=title, description=content, mt_keywords=tags), True) 参考 https://rpc.cnblogs.com/metaweblog/fly2wind#Post API文档
-https://magicsword.wordpress.com/2012/01/17/tet34/
-https://blog.csdn.net/shajunxing/article/details/79553472
-https://github.com/RussellLuo/pymwa</description>
+#!/bin/python3 import xmlrpc.client username = &amp;#39;&amp;#39; # TODO your username passwd = &amp;#39;&amp;#39; # TODO your passwd # url = &amp;#39;http://www.cnblogs.com/&amp;#39; + username + &amp;#39;/services/metaweblog.aspx&amp;#39; # 此链接已挂 url = &amp;#39;https://rpc.cnblogs.com/metaweblog/&amp;#39; + username title = &amp;#34;helloWorld&amp;#34; content = &amp;#34;&amp;lt;p&amp;gt; test &amp;lt;p&amp;gt;&amp;#34; tags = &amp;#34;tag1, tag2&amp;#34; blogProxy = xmlrpc.client.ServerProxy(url) # 获取最近博客列表 print(blogProxy.metaWeblog.getRecentPosts(&amp;#39;&amp;#39;, username, passwd, 1)) # 发布博客 blogProxy.metaWeblog.newPost(&amp;#39;&amp;#39;, username, passwd, dict(title=title, description=content, mt_keywords=tags), True) 参考 https://rpc.</description>
     </item>
     
     <item>
