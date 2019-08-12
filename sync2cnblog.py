@@ -3,6 +3,7 @@
 import xmlrpc.client
 import re
 import time
+import urllib.parse
 
 from bs4 import BeautifulSoup
 
@@ -19,7 +20,8 @@ title = "helloWorld"
 content = "<p> test <p>"
 tags = "tag1, tag2"
 
-url = 'http://www.cnblogs.com/' + 'fly2wind'+ '/services/metaweblog.aspx'
+# url = 'http://www.cnblogs.com/' + 'fly2wind'+ '/services/metaweblog.aspx'
+url = 'https://rpc.cnblogs.com/metaweblog/fly2wind'
 # url = 'http://write.blog.csdn.net/xmlrpc/index'
 
 blogProxy = xmlrpc.client.ServerProxy(url)
@@ -47,7 +49,7 @@ for line in sitemapfile:
         path = "public/posts/" + re.findall("<loc>.*posts/(.*)</loc>", line)[0] + "index.html"
 
         # 打开博客文件
-        file = open(path)
+        file = open(urllib.parse.unquote(path))
         content = file.read()
         soup = BeautifulSoup(content, features="html5lib")
 
@@ -56,6 +58,13 @@ for line in sitemapfile:
 
         # 读取标签
         tagList = [i.get_text() for i in soup.findAll("a",attrs={'class':'tag'})]
+        isContainTag = False
+        for tag in tagList:
+            print(tag)
+            if tag == "life":
+                isContainTag = True
+        if isContainTag:
+            continue
         commaStr = ","
         tags = commaStr.join(tagList)
 

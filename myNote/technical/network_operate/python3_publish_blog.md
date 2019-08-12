@@ -11,9 +11,11 @@ tags:
 
 ---
 
+
 用个人域名搭建的博客在百度搜索上的SEO太差，百度一直只收录主页，懒得再为这些问题折腾，直接同步到博客园算了，考虑用Python。
 
 貌似CSDN已经关闭了metawebblog接口，只在博客园上测试。
+
 
 # Python发博客的主要方案
 
@@ -34,7 +36,8 @@ import xmlrpc.client
 
 username = ''  # TODO  your username
 passwd = '' # TODO your passwd
-url = 'http://www.cnblogs.com/fly2wind/services/metaweblog.aspx'
+# url = 'http://www.cnblogs.com/' + username + '/services/metaweblog.aspx' # 此链接已挂
+url = 'https://rpc.cnblogs.com/metaweblog/' + username
 
 title = "helloWorld"
 content = "<p> test <p>"

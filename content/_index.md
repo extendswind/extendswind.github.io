@@ -6,4 +6,4 @@ menu:
 weight: -270
 ---
 
-`class * extends Wind { // TODO   }  `
+`class MyWill extends Wind { // TODO   }  `

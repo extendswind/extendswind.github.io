@@ -5,7 +5,7 @@ draft: true
 emoji: true
 
 categories:
-- "我是一个什么样的人"
+- "life"
 
 tags:
 - "life"
