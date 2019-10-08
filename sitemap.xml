@@ -12,31 +12,22 @@
   <url>
     <loc>https://extendswind.top/categories/</loc>
     <lastmod>2019-05-29T20:30:00+08:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://extendswind.top/posts/</loc>
-    <lastmod>2019-05-29T20:30:00+08:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://extendswind.top/tags/</loc>
-    <lastmod>2019-05-29T20:30:00+08:00</lastmod>
-    <priority>0</priority>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
   </url>
   
   <url>
     <loc>https://extendswind.top/tags/java/</loc>
     <lastmod>2019-05-29T20:30:00+08:00</lastmod>
-    <priority>0</priority>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
   </url>
   
   <url>
     <loc>https://extendswind.top/tags/log4j/</loc>
     <lastmod>2019-05-29T20:30:00+08:00</lastmod>
-    <priority>0</priority>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
   </url>
   
   <url>
@@ -47,21 +38,38 @@
   </url>
   
   <url>
+    <loc>https://extendswind.top/posts/</loc>
+    <lastmod>2019-05-29T20:30:00+08:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
     <loc>https://extendswind.top/categories/programming-basic/</loc>
     <lastmod>2019-05-29T20:30:00+08:00</lastmod>
-    <priority>0</priority>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://extendswind.top/tags/</loc>
+    <lastmod>2019-05-29T20:30:00+08:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
   </url>
   
   <url>
     <loc>https://extendswind.top/categories/life/</loc>
     <lastmod>2019-04-02T11:25:25+08:00</lastmod>
-    <priority>0</priority>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
   </url>
   
   <url>
     <loc>https://extendswind.top/tags/reading/</loc>
     <lastmod>2019-04-02T11:25:25+08:00</lastmod>
-    <priority>0</priority>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
   </url>
   
   <url>
@@ -81,19 +89,22 @@
   <url>
     <loc>https://extendswind.top/categories/linux-desktop/</loc>
     <lastmod>2019-03-04T21:59:49+08:00</lastmod>
-    <priority>0</priority>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
   </url>
   
   <url>
     <loc>https://extendswind.top/tags/software/</loc>
     <lastmod>2019-03-04T21:59:49+08:00</lastmod>
-    <priority>0</priority>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
   </url>
   
   <url>
     <loc>https://extendswind.top/tags/linux/</loc>
     <lastmod>2019-01-25T10:59:49+08:00</lastmod>
-    <priority>0</priority>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
   </url>
   
   <url>
@@ -134,7 +145,8 @@
   <url>
     <loc>https://extendswind.top/categories/research/</loc>
     <lastmod>2019-01-09T09:59:49+08:00</lastmod>
-    <priority>0</priority>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
   </url>
   
   <url>
@@ -145,28 +157,31 @@
   </url>
   
   <url>
-    <loc>https://extendswind.top/posts/technical/problem_spark_reading_hdfs_serializable/</loc>
+    <loc>https://extendswind.top/categories/cloud-computing/</loc>
     <lastmod>2018-12-15T11:30:00+08:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>https://extendswind.top/categories/cloud-computing/</loc>
-    <lastmod>2018-12-15T11:30:00+08:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
     <loc>https://extendswind.top/tags/hadoop/</loc>
     <lastmod>2018-12-15T11:30:00+08:00</lastmod>
-    <priority>0</priority>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
   </url>
   
   <url>
     <loc>https://extendswind.top/tags/spark/</loc>
     <lastmod>2018-12-15T11:30:00+08:00</lastmod>
-    <priority>0</priority>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://extendswind.top/posts/technical/problem_spark_reading_hdfs_serializable/</loc>
+    <lastmod>2018-12-15T11:30:00+08:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
   </url>
   
   <url>
@@ -193,7 +208,8 @@
   <url>
     <loc>https://extendswind.top/tags/git/</loc>
     <lastmod>2018-11-13T10:30:00+08:00</lastmod>
-    <priority>0</priority>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
   </url>
   
   <url>
@@ -213,7 +229,8 @@
   <url>
     <loc>https://extendswind.top/tags/life/</loc>
     <lastmod>2018-09-30T22:40:48+08:00</lastmod>
-    <priority>0</priority>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
   </url>
   
   <url>
@@ -233,12 +250,20 @@
   <url>
     <loc>https://extendswind.top/tags/gis/</loc>
     <lastmod>2018-09-05T10:30:00+08:00</lastmod>
-    <priority>0</priority>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
   </url>
   
   <url>
     <loc>https://extendswind.top/posts/technical/spatialhadoop_compile_and_run/</loc>
     <lastmod>2018-09-05T10:30:00+08:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://extendswind.top/tags/blog/</loc>
+    <lastmod>2018-09-04T10:30:00+08:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
@@ -253,13 +278,8 @@
   <url>
     <loc>https://extendswind.top/categories/operation/</loc>
     <lastmod>2018-09-04T10:30:00+08:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://extendswind.top/tags/blog/</loc>
-    <lastmod>2018-09-04T10:30:00+08:00</lastmod>
-    <priority>0</priority>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
   </url>
   
   <url>
@@ -300,13 +320,15 @@
   <url>
     <loc>https://extendswind.top/tags/design-patterns/</loc>
     <lastmod>2018-07-03T21:25:25+08:00</lastmod>
-    <priority>0</priority>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
   </url>
   
   <url>
     <loc>https://extendswind.top/categories/programming/</loc>
     <lastmod>2018-07-03T21:25:25+08:00</lastmod>
-    <priority>0</priority>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
   </url>
   
   <url>
@@ -367,12 +389,14 @@
   
   <url>
     <loc>https://extendswind.top/authors/</loc>
-    <priority>0</priority>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
   </url>
   
   <url>
     <loc>https://extendswind.top/series/</loc>
-    <priority>0</priority>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
   </url>
   
 </urlset>
