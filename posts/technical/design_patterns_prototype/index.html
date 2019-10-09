@@ -14,7 +14,7 @@ java的所有类都继承于Object，Object类中定义了native实现的clone�
 class Prototype implements Cloneable{ int attr; public Prototype clone(){ Prototype prototype = null; try { prototype = (Prototype)super.clone(); } catch (CloneNotSupportedException e) { e.printStackTrace(); } return prototype; } } 一个不使用java特性的简单实现 class Prototype{ int attr; public Prototype clone(){ Prototype clone = new Prototype(); clone.attr = this.attr; return clone; } } 同上，注意深拷贝和浅拷贝问题。'>
 <meta name='theme-color' content='#cccccc'>
 
-<meta property='og:title' content='设计模式 之 原型模式 • extendswind'>
+<meta property='og:title' content='设计模式 之 原型模式 • A Notebook of Extendswind'>
 <meta property='og:description' content='吐槽 感觉这是至今最值得吐槽的设计模式之一，由于原型模式在本质上与工厂模式极为类似，并且简单，但相关的书和博客很少提到要点。某些书上和博客还直接在类里加个clone方法就告诉我这是原型模式，不说清楚为什么要划分原型类和具体类&hellip;.
 还有某些书上把原型模式划分为通用实现和java、c#一类的特定语言实现，不就是稍微改改clone函数的具体实现么，一点简单的语法而已&hellip;.
 有些地方提到原型模式与工厂模式类似，而极少有位置提到后面的客户端的实现问题&hellip;.
@@ -26,12 +26,12 @@ java的所有类都继承于Object，Object类中定义了native实现的clone�
 注意，java Object的clone函数为 浅拷贝，只会复制类成员对象地址而不创建新的对象。需要根据实际情况判读是否做相应的深拷贝修改。 吐槽：很多博客和书上的示例实质上就下面这一段，然后加个实例里n个成员变量和函数凑出十几到几十行，实现个Cloneable接口加个clone函数就算完了&hellip;.
 class Prototype implements Cloneable{ int attr; public Prototype clone(){ Prototype prototype = null; try { prototype = (Prototype)super.clone(); } catch (CloneNotSupportedException e) { e.printStackTrace(); } return prototype; } } 一个不使用java特性的简单实现 class Prototype{ int attr; public Prototype clone(){ Prototype clone = new Prototype(); clone.attr = this.attr; return clone; } } 同上，注意深拷贝和浅拷贝问题。'>
 <meta property='og:url' content='https://extendswind.top/posts/technical/design_patterns_prototype/'>
-<meta property='og:site_name' content='extendswind'>
+<meta property='og:site_name' content='A Notebook of Extendswind'>
 <meta property='og:type' content='article'><meta property='article:section' content='posts'><meta property='article:tag' content='design patterns'><meta property='article:published_time' content='2018-07-03T21:25:25&#43;08:00'/><meta property='article:modified_time' content='2018-07-03T21:25:25&#43;08:00'/><meta name='twitter:card' content='summary'>
 
 <meta name="generator" content="Hugo 0.57.2" />
 
-  <title>设计模式 之 原型模式 • extendswind</title>
+  <title>设计模式 之 原型模式 • A Notebook of Extendswind</title>
   <link rel='canonical' href='https://extendswind.top/posts/technical/design_patterns_prototype/'>
   
   
@@ -153,7 +153,7 @@ if (!doNotTrack) {
 
       <header id='header' class='header site-header'>
         <div class='container sep-after'>
-          <div class='header-info'><p class='site-title title'>extendswind</p><p class='desc site-desc'>a simple blog site</p>
+          <div class='header-info'><p class='site-title title'>A Notebook of Extendswind</p><p class='desc site-desc'>a simple blog site</p>
           </div>
         </div>
       </header>

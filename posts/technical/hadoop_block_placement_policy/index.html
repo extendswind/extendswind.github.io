@@ -8,18 +8,18 @@ BlockPlacementPolicy BlockPlacementPolicy 作为虚基类提供了基本的接�
 /** * 核心的副本放置策略实现，返回副本放置数量的存储位置 * **如果有效节点数量不够（少于副本数），返回尽可能多的节点，而非失败** * * @param srcPath 上传文件的路径 * @param numOfReplicas 除下面chosen参数里已经选择的datanode，还需要的副本数量 * @param writer 写数据的机器, null if not in the cluster. 一般用于放置第一个副本以降低网络通信 * @param chosen 已经选择的节点 * @param returnChosenNodes 返回结果里是否包含chosen的datanode * @param excludedNodes 不选的节点 * @param blocksize 块大小 * @return 排序好的选择结果 */ public abstract DatanodeStorageInfo[] chooseTarget(String srcPath, int numOfReplicas, Node writer, List&lt;DatanodeStorageInfo&gt; chosen, boolean returnChosenNodes, Set&lt;Node&gt; excludedNodes, long blocksize, BlockStoragePolicy storagePolicy); /** * 判断传入的放置方式是否符合要求 */ abstract public BlockPlacementStatus verifyBlockPlacement( DatanodeInfo[] locs, int numOfReplicas); /** * 当副本数量较多时，选择需要删除的节点 */ abstract public List&lt;DatanodeStorageInfo&gt; chooseReplicasToDelete( Collection&lt;DatanodeStorageInfo&gt; candidates, int expectedNumOfReplicas, List&lt;StorageType&gt; excessTypes, DatanodeDescriptor addedNode, DatanodeDescriptor delNodeHint); Hadoop 提供的 BlockPlacementPolicy 实现 Hadoop提供了BlockPlacementPolicyDefault、BlockPlacementPolicyWithNodeGroup、AvailableSpaceBlockPlacementPolicy三种实现（hadoop 2.'>
 <meta name='theme-color' content='#cccccc'>
 
-<meta property='og:title' content='Hadoop 副本放置策略的源码阅读和设置 • extendswind'>
+<meta property='og:title' content='Hadoop 副本放置策略的源码阅读和设置 • A Notebook of Extendswind'>
 <meta property='og:description' content='大多数的叫法都是副本放置策略，实质上是HDFS对所有数据的位置放置策略，并非只是针对数据的副本。因此Hadoop的源码里有block replicator(configuration)、 BlockPlacementPolicy(具体逻辑源码)两种叫法。
 主要用途：上传文件时决定文件在HDFS上存储的位置（具体到datanode上的具体存储介质，如具体到存储在哪块硬盘）；rebalance、datanode退出集群、副本数量更改等导致数据移动的操作中，数据移动的具体位置。
 BlockPlacementPolicy BlockPlacementPolicy 作为虚基类提供了基本的接口，具体的子类重点实现下面 选择副本 、 验证副本放置是否满足要求 、 选择能够删除的副本 三个函数：
 /** * 核心的副本放置策略实现，返回副本放置数量的存储位置 * **如果有效节点数量不够（少于副本数），返回尽可能多的节点，而非失败** * * @param srcPath 上传文件的路径 * @param numOfReplicas 除下面chosen参数里已经选择的datanode，还需要的副本数量 * @param writer 写数据的机器, null if not in the cluster. 一般用于放置第一个副本以降低网络通信 * @param chosen 已经选择的节点 * @param returnChosenNodes 返回结果里是否包含chosen的datanode * @param excludedNodes 不选的节点 * @param blocksize 块大小 * @return 排序好的选择结果 */ public abstract DatanodeStorageInfo[] chooseTarget(String srcPath, int numOfReplicas, Node writer, List&lt;DatanodeStorageInfo&gt; chosen, boolean returnChosenNodes, Set&lt;Node&gt; excludedNodes, long blocksize, BlockStoragePolicy storagePolicy); /** * 判断传入的放置方式是否符合要求 */ abstract public BlockPlacementStatus verifyBlockPlacement( DatanodeInfo[] locs, int numOfReplicas); /** * 当副本数量较多时，选择需要删除的节点 */ abstract public List&lt;DatanodeStorageInfo&gt; chooseReplicasToDelete( Collection&lt;DatanodeStorageInfo&gt; candidates, int expectedNumOfReplicas, List&lt;StorageType&gt; excessTypes, DatanodeDescriptor addedNode, DatanodeDescriptor delNodeHint); Hadoop 提供的 BlockPlacementPolicy 实现 Hadoop提供了BlockPlacementPolicyDefault、BlockPlacementPolicyWithNodeGroup、AvailableSpaceBlockPlacementPolicy三种实现（hadoop 2.'>
 <meta property='og:url' content='https://extendswind.top/posts/technical/hadoop_block_placement_policy/'>
-<meta property='og:site_name' content='extendswind'>
+<meta property='og:site_name' content='A Notebook of Extendswind'>
 <meta property='og:type' content='article'><meta property='article:section' content='posts'><meta property='article:tag' content='hadoop'><meta property='article:published_time' content='2018-12-11T21:30:00&#43;08:00'/><meta property='article:modified_time' content='2018-12-11T21:30:00&#43;08:00'/><meta name='twitter:card' content='summary'>
 
 <meta name="generator" content="Hugo 0.57.2" />
 
-  <title>Hadoop 副本放置策略的源码阅读和设置 • extendswind</title>
+  <title>Hadoop 副本放置策略的源码阅读和设置 • A Notebook of Extendswind</title>
   <link rel='canonical' href='https://extendswind.top/posts/technical/hadoop_block_placement_policy/'>
   
   
@@ -141,7 +141,7 @@ if (!doNotTrack) {
 
       <header id='header' class='header site-header'>
         <div class='container sep-after'>
-          <div class='header-info'><p class='site-title title'>extendswind</p><p class='desc site-desc'>a simple blog site</p>
+          <div class='header-info'><p class='site-title title'>A Notebook of Extendswind</p><p class='desc site-desc'>a simple blog site</p>
           </div>
         </div>
       </header>

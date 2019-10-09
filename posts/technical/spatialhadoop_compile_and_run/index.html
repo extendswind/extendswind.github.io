@@ -18,7 +18,7 @@ SpatialHadoop运行机制 shadoop 脚本 SpatialHadoop 通过脚本shadoop运行
 bin=`dirname &#34;$0&#34;` bin=`cd &#34;$bin&#34; &gt; /dev/null; pwd` # Call Hadoop with the operations.Main as the main class . &#34;$bin&#34;/hadoop edu.umn.cs.spatialHadoop.operations.Main $@ 其实只是将spatialhadoop的jar包与相关依赖jar包放入Hadoop的包目录中，然后通过shadoop脚本调用Hadoop脚本调用包中的一个类，向YARN提交MapReduce任务。'>
 <meta name='theme-color' content='#cccccc'>
 
-<meta property='og:title' content='SpatialHadoop的编译与运行 • extendswind'>
+<meta property='og:title' content='SpatialHadoop的编译与运行 • A Notebook of Extendswind'>
 <meta property='og:description' content='SpatialHadoop相对HadoopGIS等库，在MapReduce时代的空间数据处理开源库算处理较好。SpatialHadoop在效率上相对一些新的基于Spark空间数据处理开源库明显偏低，加上本身的功能实现得差不多，最近提交的更新越来越少，感觉发展趋势不太好，主要用于学习相关的索引技术。
 编译与运行 主页上有已经编译好的包，可以直接解压到Hadoop目录下运行，但官方的版本解压有错误，因此下载github上源码编译。
 需要的环境：
@@ -34,12 +34,12 @@ sbin/shadoop generate test.rects size:1.gb shape:rect mbr:0,0,1000000,1000000 -o
 SpatialHadoop运行机制 shadoop 脚本 SpatialHadoop 通过脚本shadoop运行命令，脚本就只有几行代码
 bin=`dirname &#34;$0&#34;` bin=`cd &#34;$bin&#34; &gt; /dev/null; pwd` # Call Hadoop with the operations.Main as the main class . &#34;$bin&#34;/hadoop edu.umn.cs.spatialHadoop.operations.Main $@ 其实只是将spatialhadoop的jar包与相关依赖jar包放入Hadoop的包目录中，然后通过shadoop脚本调用Hadoop脚本调用包中的一个类，向YARN提交MapReduce任务。'>
 <meta property='og:url' content='https://extendswind.top/posts/technical/spatialhadoop_compile_and_run/'>
-<meta property='og:site_name' content='extendswind'>
+<meta property='og:site_name' content='A Notebook of Extendswind'>
 <meta property='og:type' content='article'><meta property='article:section' content='posts'><meta property='article:tag' content='hadoop'><meta property='article:tag' content='GIS'><meta property='article:published_time' content='2018-09-05T10:30:00&#43;08:00'/><meta property='article:modified_time' content='2018-09-05T10:30:00&#43;08:00'/><meta name='twitter:card' content='summary'>
 
 <meta name="generator" content="Hugo 0.57.2" />
 
-  <title>SpatialHadoop的编译与运行 • extendswind</title>
+  <title>SpatialHadoop的编译与运行 • A Notebook of Extendswind</title>
   <link rel='canonical' href='https://extendswind.top/posts/technical/spatialhadoop_compile_and_run/'>
   
   
@@ -161,7 +161,7 @@ if (!doNotTrack) {
 
       <header id='header' class='header site-header'>
         <div class='container sep-after'>
-          <div class='header-info'><p class='site-title title'>extendswind</p><p class='desc site-desc'>a simple blog site</p>
+          <div class='header-info'><p class='site-title title'>A Notebook of Extendswind</p><p class='desc site-desc'>a simple blog site</p>
           </div>
         </div>
       </header>

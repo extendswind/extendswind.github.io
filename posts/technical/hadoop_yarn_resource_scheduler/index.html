@@ -15,7 +15,7 @@ Capacity Scheduler CapacityScheduler重点解决多个组织共享集群资源�
 &lt;!-- 队列结构设置 --&gt; &lt;property&gt; &lt;name&gt;yarn.scheduler.capacity.root.queues&lt;/name&gt; &lt;value&gt;a,b&lt;/value&gt; &lt;description&gt;The queues at the this level (root is the root queue). &lt;/description&gt; &lt;/property&gt; &lt;property&gt; &lt;name&gt;yarn.scheduler.capacity.root.a.queues&lt;/name&gt; &lt;value&gt;a1,a2&lt;/value&gt; &lt;description&gt;The queues at the this level (root is the root queue).'>
 <meta name='theme-color' content='#cccccc'>
 
-<meta property='og:title' content='Hadoop YARN 调度器（scheduler） —— 资源调度策略 • extendswind'>
+<meta property='og:title' content='Hadoop YARN 调度器（scheduler） —— 资源调度策略 • A Notebook of Extendswind'>
 <meta property='og:description' content='搜了一些博客，发现写得最清楚的还是《Hadoop权威指南》，以下内容主要来自《Hadoop The Definitive Guide》 4th Edition 2015.3。
 Hadoop YARN Scheduler 三个调度器 YARN提供了CapacityScheduler, FairScheduler, FifoScheduler三个调度器，继承于AbstractYarnScheduler，Resource Manager通过调度器决定对提交application分配的资源大小。
 CapacityScheduler首先将所有资源分配到hierarchical queue中，每个任务执行时指定对应的queue，使大任务不会占用整个集群的资源，通过对queue的资源管理提高整个集群的资源共享能力。通常会使小任务执行更快，大任务更慢。
@@ -28,12 +28,12 @@ Capacity Scheduler CapacityScheduler重点解决多个组织共享集群资源�
 资源通过层级队列（hierarchical queues）的形式进行组织，配置在etc/hadoop/capacity-scheduler.xml.
 &lt;!-- 队列结构设置 --&gt; &lt;property&gt; &lt;name&gt;yarn.scheduler.capacity.root.queues&lt;/name&gt; &lt;value&gt;a,b&lt;/value&gt; &lt;description&gt;The queues at the this level (root is the root queue). &lt;/description&gt; &lt;/property&gt; &lt;property&gt; &lt;name&gt;yarn.scheduler.capacity.root.a.queues&lt;/name&gt; &lt;value&gt;a1,a2&lt;/value&gt; &lt;description&gt;The queues at the this level (root is the root queue).'>
 <meta property='og:url' content='https://extendswind.top/posts/technical/hadoop_yarn_resource_scheduler/'>
-<meta property='og:site_name' content='extendswind'>
+<meta property='og:site_name' content='A Notebook of Extendswind'>
 <meta property='og:type' content='article'><meta property='article:section' content='posts'><meta property='article:tag' content='hadoop'><meta property='article:published_time' content='2018-09-04T10:30:00&#43;08:00'/><meta property='article:modified_time' content='2018-09-04T10:30:00&#43;08:00'/><meta name='twitter:card' content='summary'>
 
 <meta name="generator" content="Hugo 0.57.2" />
 
-  <title>Hadoop YARN 调度器（scheduler） —— 资源调度策略 • extendswind</title>
+  <title>Hadoop YARN 调度器（scheduler） —— 资源调度策略 • A Notebook of Extendswind</title>
   <link rel='canonical' href='https://extendswind.top/posts/technical/hadoop_yarn_resource_scheduler/'>
   
   
@@ -155,7 +155,7 @@ if (!doNotTrack) {
 
       <header id='header' class='header site-header'>
         <div class='container sep-after'>
-          <div class='header-info'><p class='site-title title'>extendswind</p><p class='desc site-desc'>a simple blog site</p>
+          <div class='header-info'><p class='site-title title'>A Notebook of Extendswind</p><p class='desc site-desc'>a simple blog site</p>
           </div>
         </div>
       </header>

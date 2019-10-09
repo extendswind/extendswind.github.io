@@ -11,7 +11,7 @@
 /** * 简单实现 * * 存在的问题： * * 当创建过程需要时间时，连续调用getInstance方法会导致创建多个对象，特别是涉及多线程时容易出问题。 */ class Singleton_problem { private static Singleton_problem m_singletonProblem = null; private Singleton_problem(){ // ...  } public static Singleton_problem getInstance(){ if (m_singletonProblem == null) m_singletonProblem = new Singleton_problem(); return m_singletonProblem; } } /** * 解决方案一： eager initialization * * 缺点在于没有lazy loading机制 */ class Singleton_eager{ private static final Singleton_eager m_singleton = new Singleton_eager(); private Singleton_eager(){ // .'>
 <meta name='theme-color' content='#cccccc'>
 
-<meta property='og:title' content='设计模式 之 单例模式 • extendswind'>
+<meta property='og:title' content='设计模式 之 单例模式 • A Notebook of Extendswind'>
 <meta property='og:description' content='singleton pattern
 主要目标：对象只创建一次，每次都获得先前第一次创建的对象而不创建新的对象。
 实现思想：使用静态方法getInstance得到对象，为了保证对象只能通过getInstance创建，使构造函数私有。
@@ -20,12 +20,12 @@
 （后面懒得用实际例子命名了，Log4j中获取的logger对象就使用了单例模式）
 /** * 简单实现 * * 存在的问题： * * 当创建过程需要时间时，连续调用getInstance方法会导致创建多个对象，特别是涉及多线程时容易出问题。 */ class Singleton_problem { private static Singleton_problem m_singletonProblem = null; private Singleton_problem(){ // ...  } public static Singleton_problem getInstance(){ if (m_singletonProblem == null) m_singletonProblem = new Singleton_problem(); return m_singletonProblem; } } /** * 解决方案一： eager initialization * * 缺点在于没有lazy loading机制 */ class Singleton_eager{ private static final Singleton_eager m_singleton = new Singleton_eager(); private Singleton_eager(){ // .'>
 <meta property='og:url' content='https://extendswind.top/posts/technical/design_patterns_singleton/'>
-<meta property='og:site_name' content='extendswind'>
+<meta property='og:site_name' content='A Notebook of Extendswind'>
 <meta property='og:type' content='article'><meta property='article:section' content='posts'><meta property='article:tag' content='design patterns'><meta property='article:published_time' content='2018-07-02T11:25:25&#43;08:00'/><meta property='article:modified_time' content='2018-07-02T11:25:25&#43;08:00'/><meta name='twitter:card' content='summary'>
 
 <meta name="generator" content="Hugo 0.57.2" />
 
-  <title>设计模式 之 单例模式 • extendswind</title>
+  <title>设计模式 之 单例模式 • A Notebook of Extendswind</title>
   <link rel='canonical' href='https://extendswind.top/posts/technical/design_patterns_singleton/'>
   
   
@@ -147,7 +147,7 @@ if (!doNotTrack) {
 
       <header id='header' class='header site-header'>
         <div class='container sep-after'>
-          <div class='header-info'><p class='site-title title'>extendswind</p><p class='desc site-desc'>a simple blog site</p>
+          <div class='header-info'><p class='site-title title'>A Notebook of Extendswind</p><p class='desc site-desc'>a simple blog site</p>
           </div>
         </div>
       </header>
