@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Posts on extendswind</title>
+    <title>Posts on A Notebook of Extendswind</title>
     <link>https://extendswind.top/posts/</link>
-    <description>Recent content in Posts on extendswind</description>
+    <description>Recent content in Posts on A Notebook of Extendswind</description>
     <generator>Hugo -- gohugo.io</generator>
     <lastBuildDate>Wed, 29 May 2019 20:30:00 +0800</lastBuildDate>
     
@@ -18,6 +18,7 @@
       <guid>https://extendswind.top/posts/technical/log4j_properties_simple_introduction/</guid>
       <description>简述 使用log4j可以根据配置文件控制输出日志的级别，记录到文件、命令行等的位置，不需要代码上的更改。
 日志在一定程度上会影响性能，特别是高并发环境。一般更建议使用log4j 2.x，在性能上有较大的提高，由于hadoop 2.7使用的log4j 1.2，下面主要写这一版本。
+本文主要介绍log4j：
  根据日志级别记录日志 (logger上设置） 运行时决定具体的记录位置（appender上设置）和日志格式（layout上设置）  一些概念 日志级别（priority，代码里为level） 日志级别从低到高为trace, debug, info, warn, error, fatal。默认级别为info，低于设置级别的日志不会被打印。
 常用组件 一般情况下常设置的组件有logger，appender， layout。
 用类的方式表达三个组件的关系为

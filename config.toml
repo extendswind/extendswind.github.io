@@ -1,6 +1,6 @@
 baseURL = "https://extendswind.top"
 # title = "extendswind" 显示在右上方
-title = "extendswind"
+title = "A Notebook of Extendswind"
 
 # for smart copyright line, leave this blank and check [params.copyright]
 copyright = ""
@@ -9,6 +9,7 @@ theme = "minimo"
 #theme = "hugo-icarus-theme"
 # 某些设置在data/config 目录下
 
+#disqusShortname = "extendswind"
 disqusShortname = "extendswind"
 googleAnalytics = "UA-125329544-1"
 
