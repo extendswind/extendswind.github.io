@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang='en'><head>
+  <meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<meta name='description' content='vsftpd (very secure ftpd)，这软件在权限管理什么的也太安全了点，一点小细节出问题也会出现访问不了的问题。只是想架个ftp局域网传文件，一些博客里小细节和背后设计没有提到，踩了一点坑，记录一下简单的匿名ftp访问方案。
+主要步骤 1. 使用包管理器安装 vsftpd 。（apt, yum, pacman等)
+2. 修改配置文件 /etc/vsftpd.conf
+anonymous_enable=YES # 允许匿名访问 write_enable=YES # 允许写文件 anon_upload_enable=YES # 允许匿名用户上传文件 anon_mkdir_write_enable=YES # 允许匿名用户创建目录和写权限 anon_other_write_enable=YES # 允许匿名用户删除、重命名等其它权限 这个在配置文件里默认找不到 3. 新建匿名访问的用户和文件夹
+通过 local_enable 选项能够允许ftp通过本地用户访问，登录之后会访问用户的主目录。当使用匿名用户访问时，vsftpd会将用户名为ftp的用户作为登录用户，进入ftp用户的主目录。
+注意，考虑到安全问题，ftp匿名用户的主目录必须为只读，如果需要上传文件，需要在主目录下新建有写权限的文件夹。
+通常会选择/var/ftp文件夹存放文件而不是用户默认的/home，因此可以修改用户的主目录位置（一般放在/var/ftp），不修改也能用。再次强调，注意主目录对ftp用户的权限必须为只读。
+sudo mkdir /var/ftp # 新建用户文件夹 sudo useradd -d /var/ftp ftp # 新建用户，并指定用户home目录 # 如果ftp用户已经存在，在/etc/passwd文件里改用户目录为/var/ftp sudo mkdir /var/ftp/pub # 新建一个用于写数据的文件夹 sudo chmod 777 /var/ftp/pub # 修改文件夹权限 4. 启动服务
+systemctl start vsftpd
+其它 防火墙和SELinux如果使用了需要添加响应的通过规则。'>
+<meta name='theme-color' content='#cccccc'>
+
+<meta property='og:title' content='vsftp 匿名访问设置设置 • A Notebook of Extendswind'>
+<meta property='og:description' content='vsftpd (very secure ftpd)，这软件在权限管理什么的也太安全了点，一点小细节出问题也会出现访问不了的问题。只是想架个ftp局域网传文件，一些博客里小细节和背后设计没有提到，踩了一点坑，记录一下简单的匿名ftp访问方案。
+主要步骤 1. 使用包管理器安装 vsftpd 。（apt, yum, pacman等)
+2. 修改配置文件 /etc/vsftpd.conf
+anonymous_enable=YES # 允许匿名访问 write_enable=YES # 允许写文件 anon_upload_enable=YES # 允许匿名用户上传文件 anon_mkdir_write_enable=YES # 允许匿名用户创建目录和写权限 anon_other_write_enable=YES # 允许匿名用户删除、重命名等其它权限 这个在配置文件里默认找不到 3. 新建匿名访问的用户和文件夹
+通过 local_enable 选项能够允许ftp通过本地用户访问，登录之后会访问用户的主目录。当使用匿名用户访问时，vsftpd会将用户名为ftp的用户作为登录用户，进入ftp用户的主目录。
+注意，考虑到安全问题，ftp匿名用户的主目录必须为只读，如果需要上传文件，需要在主目录下新建有写权限的文件夹。
+通常会选择/var/ftp文件夹存放文件而不是用户默认的/home，因此可以修改用户的主目录位置（一般放在/var/ftp），不修改也能用。再次强调，注意主目录对ftp用户的权限必须为只读。
+sudo mkdir /var/ftp # 新建用户文件夹 sudo useradd -d /var/ftp ftp # 新建用户，并指定用户home目录 # 如果ftp用户已经存在，在/etc/passwd文件里改用户目录为/var/ftp sudo mkdir /var/ftp/pub # 新建一个用于写数据的文件夹 sudo chmod 777 /var/ftp/pub # 修改文件夹权限 4. 启动服务
+systemctl start vsftpd
+其它 防火墙和SELinux如果使用了需要添加响应的通过规则。'>
+<meta property='og:url' content='https://extendswind.top/posts/technical/vsftpd_configuration/'>
+<meta property='og:site_name' content='A Notebook of Extendswind'>
+<meta property='og:type' content='article'><meta property='article:section' content='posts'><meta property='article:tag' content='software'><meta property='article:published_time' content='2019-10-18T21:59:49&#43;08:00'/><meta property='article:modified_time' content='2019-10-18T21:59:49&#43;08:00'/><meta name='twitter:card' content='summary'>
+
+<meta name="generator" content="Hugo 0.58.3" />
+
+  <title>vsftp 匿名访问设置设置 • A Notebook of Extendswind</title>
+  <link rel='canonical' href='https://extendswind.top/posts/technical/vsftpd_configuration/'>
+  
+  
+  <link rel='icon' href='/images/wind.jpeg'>
+<link rel='stylesheet' href='/assets/css/main.6a060eb7.css'><link rel='stylesheet' href='/css/custom.css'><style>
+:root{--color-accent:#cccccc;}
+</style>
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-125329544-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+  
+
+</head>
+<body class='page type-posts has-sidebar'>
+
+  <div class='site'><div id='sidebar' class='sidebar'>
+  <a class='screen-reader-text' href='#main-menu'>Skip to Main Menu</a>
+
+  <div class='container'><section class='widget widget-about sep-after'>
+  <header>
+    
+    <div class='logo'>
+      <a href='/'>
+        <img src='/images/wind.jpeg'>
+      </a>
+    </div>
+    
+    <h2 class='title site-title '>
+      <a href='/'>
+      extendswind
+      </a>
+    </h2>
+    <div class='desc'>
+    
+    </div>
+  </header>
+
+</section>
+<section class='widget widget-sidebar_menu sep-after'><nav id='sidebar-menu' class='menu sidebar-menu' aria-label='Sidebar Menu'>
+    <div class='container'>
+      <ul><li class='item'>
+  <a href='/'>Home</a></li><li class='item'>
+  <a href='/posts'>Posts</a></li><li class='item'>
+  <a href='/categories'>Categories</a></li><li class='item'>
+  <a href='https://github.com/extendswind'>GitHub</a></li><li class='item'>
+  <a href='http://www.cnblogs.com/fly2wind/'>Cnblog</a></li></ul>
+    </div>
+  </nav>
+
+</section><section class='widget widget-taxonomy_cloud sep-after'>
+  <header>
+    <h4 class='title widget-title'>Tags</h4>
+  </header>
+
+  <div class='container list-container'>
+  <ul class='list taxonomy-cloud'><li>
+        <a href='/tags/blog/' style='font-size:1em'>blog</a>
+      </li><li>
+        <a href='/tags/design-patterns/' style='font-size:1em'>design patterns</a>
+      </li><li>
+        <a href='/tags/gis/' style='font-size:1em'>GIS</a>
+      </li><li>
+        <a href='/tags/git/' style='font-size:1em'>git</a>
+      </li><li>
+        <a href='/tags/hadoop/' style='font-size:1em'>hadoop</a>
+      </li><li>
+        <a href='/tags/java/' style='font-size:1em'>java</a>
+      </li><li>
+        <a href='/tags/life/' style='font-size:1em'>life</a>
+      </li><li>
+        <a href='/tags/linux/' style='font-size:1em'>linux</a>
+      </li><li>
+        <a href='/tags/log4j/' style='font-size:1em'>log4j</a>
+      </li><li>
+        <a href='/tags/reading/' style='font-size:1em'>reading</a>
+      </li><li>
+        <a href='/tags/software/' style='font-size:1em'>software</a>
+      </li><li>
+        <a href='/tags/spark/' style='font-size:1em'>spark</a>
+      </li></ul>
+</div>
+
+
+</section>
+</div>
+
+  <div class='sidebar-overlay'></div>
+</div><div class='main'><a class='screen-reader-text' href='#content'>Skip to Content</a>
+
+<button id='sidebar-toggler' class='sidebar-toggler' aria-controls='sidebar'>
+  <span class='screen-reader-text'>Toggle Sidebar</span>
+  <span class='open'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="3" y1="12" x2="21" y2="12" />
+  <line x1="3" y1="6" x2="21" y2="6" />
+  <line x1="3" y1="18" x2="21" y2="18" />
+  
+</svg>
+</span>
+  <span class='close'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="18" y1="6" x2="6" y2="18" />
+  <line x1="6" y1="6" x2="18" y2="18" />
+  
+</svg>
+</span>
+</button><div class='header-widgets'>
+        <div class='container'></div>
+      </div>
+
+      <header id='header' class='header site-header'>
+        <div class='container sep-after'>
+          <div class='header-info'><p class='site-title title'>A Notebook of Extendswind</p><p class='desc site-desc'>a simple blog site</p>
+          </div>
+        </div>
+      </header>
+
+      <main id='content'>
+
+
+<article lang='en' class='entry'>
+  <header class='header entry-header'>
+  <div class='container sep-after'>
+    <div class='header-info'>
+      <h1 class='title'>vsftp 匿名访问设置设置</h1>
+      
+
+    </div>
+    <div class='entry-meta'>
+  <span class='posted-on'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+  <line x1="16" y1="2" x2="16" y2="6"/>
+  <line x1="8" y1="2" x2="8" y2="6"/>
+  <line x1="3" y1="10" x2="21" y2="10"/>
+  
+</svg>
+<span class='screen-reader-text'>Posted on </span>
+  <time class='entry-date' datetime='2019-10-18T21:59:49&#43;08:00'>2019, Oct 18</time>
+</span>
+
+  
+  
+
+</div>
+
+
+  </div>
+</header>
+
+  
+  
+
+  <div class='container entry-content'>
+  
+
+<p>vsftpd (very secure ftpd)，这软件在权限管理什么的也太安全了点，一点小细节出问题也会出现访问不了的问题。只是想架个ftp局域网传文件，一些博客里小细节和背后设计没有提到，踩了一点坑，记录一下简单的匿名ftp访问方案。</p>
+
+<h1 id="主要步骤">主要步骤</h1>
+
+<p><strong>1. 使用包管理器安装 <code>vsftpd</code> 。（apt, yum, pacman等)</strong></p>
+
+<p><strong>2. 修改配置文件 /etc/vsftpd.conf</strong></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">anonymous_enable<span style="color:#f92672">=</span>YES  <span style="color:#75715e"># 允许匿名访问</span>
+write_enable<span style="color:#f92672">=</span>YES  <span style="color:#75715e"># 允许写文件</span>
+anon_upload_enable<span style="color:#f92672">=</span>YES  <span style="color:#75715e"># 允许匿名用户上传文件</span>
+anon_mkdir_write_enable<span style="color:#f92672">=</span>YES  <span style="color:#75715e"># 允许匿名用户创建目录和写权限</span>
+anon_other_write_enable<span style="color:#f92672">=</span>YES  <span style="color:#75715e"># 允许匿名用户删除、重命名等其它权限  这个在配置文件里默认找不到</span></code></pre></div>
+<p><strong>3. 新建匿名访问的用户和文件夹</strong></p>
+
+<p>通过 <code>local_enable</code> 选项能够允许ftp通过本地用户访问，登录之后会访问用户的主目录。当使用匿名用户访问时，vsftpd会将用户名为ftp的用户作为登录用户，进入ftp用户的主目录。</p>
+
+<p><strong>注意，考虑到安全问题，ftp匿名用户的主目录必须为只读</strong>，如果需要上传文件，需要在主目录下新建有写权限的文件夹。</p>
+
+<p>通常会选择<code>/var/ftp</code>文件夹存放文件而不是用户默认的<code>/home</code>，因此可以修改用户的主目录位置（一般放在/var/ftp），不修改也能用。再次强调，<strong>注意主目录对ftp用户的权限必须为只读</strong>。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sudo mkdir /var/ftp  <span style="color:#75715e"># 新建用户文件夹</span>
+sudo useradd -d /var/ftp ftp  <span style="color:#75715e"># 新建用户，并指定用户home目录</span> 
+<span style="color:#75715e"># 如果ftp用户已经存在，在/etc/passwd文件里改用户目录为/var/ftp</span>
+
+sudo mkdir /var/ftp/pub  <span style="color:#75715e"># 新建一个用于写数据的文件夹</span>
+sudo chmod <span style="color:#ae81ff">777</span> /var/ftp/pub   <span style="color:#75715e"># 修改文件夹权限</span></code></pre></div>
+<p><strong>4. 启动服务</strong></p>
+
+<p><code>systemctl start vsftpd</code></p>
+
+<h1 id="其它">其它</h1>
+
+<p>防火墙和SELinux如果使用了需要添加响应的通过规则。</p>
+
+<p>测试访问可以直接用浏览器 <code>ftp://ip_address</code>，linux下可以使用FileZilla。</p>
+
+</div>
+
+  
+<footer class='entry-footer'>
+  <div class='container sep-before'><div class='categories'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M22,19a2,2,0,0,1-2,2H4a2,2,0,0,1-2-2V5A2,2,0,0,1,4,3H9l2,3h9a2,2,0,0,1,2,2Z"/>
+  
+</svg>
+<span class='screen-reader-text'>Categories: </span><a class='category' href='/categories/linux/'>linux</a></div>
+<div class='tags'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M20.59,13.41l-7.17,7.17a2,2,0,0,1-2.83,0L2,12V2H12l8.59,8.59A2,2,0,0,1,20.59,13.41Z"/>
+  <line x1="7" y1="7" x2="7" y2="7"/>
+  
+</svg>
+<span class='screen-reader-text'>Tags: </span><a class='tag' href='/tags/software/'>software</a></div>
+
+  </div>
+</footer>
+
+
+</article>
+
+<nav class='entry-nav'>
+  <div class='container'><div class='prev-entry sep-before'>
+      <a href='/posts/technical/log4j_properties_simple_introduction/'>
+        <span aria-hidden='true'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="20" y1="12" x2="4" y2="12"/>
+  <polyline points="10 18 4 12 10 6"/>
+  
+</svg>
+ Previous</span>
+        <span class='screen-reader-text'>Previous post: </span>log4j 1.2 配置和使用简述</a>
+    </div></div>
+</nav>
+
+
+
+
+      </main>
+
+      <footer id='footer' class='footer'>
+        <div class='container sep-before'><section class='widget widget-social_menu sep-after'><header>
+    <h4 class='title widget-title'>Contact</h4>
+  </header><nav aria-label='Social Menu'>
+    <ul><li>
+        <a href='https://github.com/extendswind' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Open Github account in new tab</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+  
+</svg>
+</a>
+      </li><li>
+        <a href='mailto:extendswind@foxmail.com' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Contact via Email</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+  <polyline points="22,6 12,13 2,6"/>
+  
+</svg>
+</a>
+      </li></ul>
+  </nav>
+</section><div class='copyright'>
+  <p> &copy; 2018-2019 extendswind </p>
+</div>
+
+        </div>
+      </footer>
+
+    </div>
+  </div><script>window.__assets_js_src="/assets/js/"</script>
+
+<script src='/assets/js/main.67d669ac.js'></script>
+
+</body>
+
+</html>
+
