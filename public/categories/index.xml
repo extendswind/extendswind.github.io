@@ -5,10 +5,19 @@
     <link>https://extendswind.top/categories/</link>
     <description>Recent content in Categories on A Notebook of Extendswind</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Wed, 29 May 2019 20:30:00 +0800</lastBuildDate>
+    <lastBuildDate>Fri, 18 Oct 2019 21:59:49 +0800</lastBuildDate>
     
 	<atom:link href="https://extendswind.top/categories/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>linux</title>
+      <link>https://extendswind.top/categories/linux/</link>
+      <pubDate>Fri, 18 Oct 2019 21:59:49 +0800</pubDate>
+      
+      <guid>https://extendswind.top/categories/linux/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>programming basic</title>
