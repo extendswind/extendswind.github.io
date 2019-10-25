@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang='en'><head>
+  <meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<meta name='description' content='网上教程很多，但是google和百度排在前面的博客操作起来各种问题，因此简单写写。
+1. 烧录系统 官网有可以系统可以下载，通常建议，有特殊需求可以考虑其它的几个系统。
+官网推荐使用balenaEtcher烧录系统。（很多博客推荐先一个工具格式化sd卡，然后win32imagewriter不知道是不是以前的做法）
+2. 配置系统 上面的烧录后，sd卡会被分为多个分区，其中windows系统下能识别的只有一个名为boot的分区，存储启动相关的配置文件。
+2.1 开启ssh raspbian 系统默认不开启ssh远程访问，在boot分区下新建文件名为SSH的文件（内容为空无后缀），系统启动时检测到此文件会开启ssh进程。
+2.2 配置wifi 在boot分区下新建文件名为wpa_supplicant.conf的文件，添加以下内容：
+country=CN ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev update_config=1 network={ ssid=&quot;yourWifiName&quot; psk=&quot;passwd&quot; key_mgmt=WPA-PSK priority=1 }  修改其中的wifi名和密码（ssid与psk）
+如果想省事可以直接用网线连上路由器
+3. 远程访问 3.1 查找树莓派ip 此处需要将电脑和树莓派连接在同一路由器下。
+方法一：浏览器上输入192.168.1.1 （根据不同路由器网关不同），进入管理页面查看树莓派ip。
+方法二：使用软件Advanced IP Scanner扫描局域网中的树莓派。
+3.2 ssh 远程登录 ssh是linux上最常用的命令行远程访问工具。
+使用软件putty用于远程ssh登录，输入树莓ip，密码为raspberry。
+3.3 开启vnc vnc类似windows上的rdp远程登录，是linux上最常用的带界面远程访问协议。
+sudo raspi-config 然后在Interfacing Options -&gt; VNC里enable VNC服务。（貌似是启动vnc的服务后设置了开机启动）
+然后使用realVNC viewer输入ip访问即可。
+vnc默认使用5900端口，当端口占用时会往后推使用5901等端口。多个vncserver运行时需要使用ip:590x的形式指定端口号。
+此处小坑 树莓派自带的vnc server使用的加密方式和tigerVNC viewer不兼容，会显示以下错误：
+Unknown authentication scheme from VNC server: 13, 5, 6, 130, 192'>
+<meta name='theme-color' content='#cccccc'>
+
+<meta property='og:title' content='树莓派从烧录系统到通过wifi远程访问（新树莓派配置，无显示器、网线、键盘） • A Notebook of Extendswind'>
+<meta property='og:description' content='网上教程很多，但是google和百度排在前面的博客操作起来各种问题，因此简单写写。
+1. 烧录系统 官网有可以系统可以下载，通常建议，有特殊需求可以考虑其它的几个系统。
+官网推荐使用balenaEtcher烧录系统。（很多博客推荐先一个工具格式化sd卡，然后win32imagewriter不知道是不是以前的做法）
+2. 配置系统 上面的烧录后，sd卡会被分为多个分区，其中windows系统下能识别的只有一个名为boot的分区，存储启动相关的配置文件。
+2.1 开启ssh raspbian 系统默认不开启ssh远程访问，在boot分区下新建文件名为SSH的文件（内容为空无后缀），系统启动时检测到此文件会开启ssh进程。
+2.2 配置wifi 在boot分区下新建文件名为wpa_supplicant.conf的文件，添加以下内容：
+country=CN ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev update_config=1 network={ ssid=&quot;yourWifiName&quot; psk=&quot;passwd&quot; key_mgmt=WPA-PSK priority=1 }  修改其中的wifi名和密码（ssid与psk）
+如果想省事可以直接用网线连上路由器
+3. 远程访问 3.1 查找树莓派ip 此处需要将电脑和树莓派连接在同一路由器下。
+方法一：浏览器上输入192.168.1.1 （根据不同路由器网关不同），进入管理页面查看树莓派ip。
+方法二：使用软件Advanced IP Scanner扫描局域网中的树莓派。
+3.2 ssh 远程登录 ssh是linux上最常用的命令行远程访问工具。
+使用软件putty用于远程ssh登录，输入树莓ip，密码为raspberry。
+3.3 开启vnc vnc类似windows上的rdp远程登录，是linux上最常用的带界面远程访问协议。
+sudo raspi-config 然后在Interfacing Options -&gt; VNC里enable VNC服务。（貌似是启动vnc的服务后设置了开机启动）
+然后使用realVNC viewer输入ip访问即可。
+vnc默认使用5900端口，当端口占用时会往后推使用5901等端口。多个vncserver运行时需要使用ip:590x的形式指定端口号。
+此处小坑 树莓派自带的vnc server使用的加密方式和tigerVNC viewer不兼容，会显示以下错误：
+Unknown authentication scheme from VNC server: 13, 5, 6, 130, 192'>
+<meta property='og:url' content='https://extendswind.top/posts/technical/raspberry_install_os/'>
+<meta property='og:site_name' content='A Notebook of Extendswind'>
+<meta property='og:type' content='article'><meta property='article:section' content='posts'><meta property='article:tag' content='raspberry'><meta property='article:published_time' content='2019-03-04T21:59:49&#43;08:00'/><meta property='article:modified_time' content='2019-03-04T21:59:49&#43;08:00'/><meta name='twitter:card' content='summary'>
+
+<meta name="generator" content="Hugo 0.58.3" />
+
+  <title>树莓派从烧录系统到通过wifi远程访问（新树莓派配置，无显示器、网线、键盘） • A Notebook of Extendswind</title>
+  <link rel='canonical' href='https://extendswind.top/posts/technical/raspberry_install_os/'>
+  
+  
+  <link rel='icon' href='/images/wind.jpeg'>
+<link rel='stylesheet' href='/assets/css/main.6a060eb7.css'><link rel='stylesheet' href='/css/custom.css'><style>
+:root{--color-accent:#cccccc;}
+</style>
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-125329544-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+  
+
+</head>
+<body class='page type-posts has-sidebar'>
+
+  <div class='site'><div id='sidebar' class='sidebar'>
+  <a class='screen-reader-text' href='#main-menu'>Skip to Main Menu</a>
+
+  <div class='container'><section class='widget widget-about sep-after'>
+  <header>
+    
+    <div class='logo'>
+      <a href='/'>
+        <img src='/images/wind.jpeg'>
+      </a>
+    </div>
+    
+    <h2 class='title site-title '>
+      <a href='/'>
+      extendswind
+      </a>
+    </h2>
+    <div class='desc'>
+    
+    </div>
+  </header>
+
+</section>
+<section class='widget widget-sidebar_menu sep-after'><nav id='sidebar-menu' class='menu sidebar-menu' aria-label='Sidebar Menu'>
+    <div class='container'>
+      <ul><li class='item'>
+  <a href='/'>Home</a></li><li class='item'>
+  <a href='/posts'>Posts</a></li><li class='item'>
+  <a href='/categories'>Categories</a></li><li class='item'>
+  <a href='https://github.com/extendswind'>GitHub</a></li><li class='item'>
+  <a href='http://www.cnblogs.com/fly2wind/'>Cnblog</a></li></ul>
+    </div>
+  </nav>
+
+</section><section class='widget widget-taxonomy_cloud sep-after'>
+  <header>
+    <h4 class='title widget-title'>Tags</h4>
+  </header>
+
+  <div class='container list-container'>
+  <ul class='list taxonomy-cloud'><li>
+        <a href='/tags/blog/' style='font-size:1em'>blog</a>
+      </li><li>
+        <a href='/tags/design-patterns/' style='font-size:1em'>design patterns</a>
+      </li><li>
+        <a href='/tags/gis/' style='font-size:1em'>GIS</a>
+      </li><li>
+        <a href='/tags/git/' style='font-size:1em'>git</a>
+      </li><li>
+        <a href='/tags/hadoop/' style='font-size:1em'>hadoop</a>
+      </li><li>
+        <a href='/tags/java/' style='font-size:1em'>java</a>
+      </li><li>
+        <a href='/tags/life/' style='font-size:1em'>life</a>
+      </li><li>
+        <a href='/tags/linux/' style='font-size:1em'>linux</a>
+      </li><li>
+        <a href='/tags/log4j/' style='font-size:1em'>log4j</a>
+      </li><li>
+        <a href='/tags/raspberry/' style='font-size:1em'>raspberry</a>
+      </li><li>
+        <a href='/tags/reading/' style='font-size:1em'>reading</a>
+      </li><li>
+        <a href='/tags/software/' style='font-size:1em'>software</a>
+      </li><li>
+        <a href='/tags/spark/' style='font-size:1em'>spark</a>
+      </li></ul>
+</div>
+
+
+</section>
+</div>
+
+  <div class='sidebar-overlay'></div>
+</div><div class='main'><a class='screen-reader-text' href='#content'>Skip to Content</a>
+
+<button id='sidebar-toggler' class='sidebar-toggler' aria-controls='sidebar'>
+  <span class='screen-reader-text'>Toggle Sidebar</span>
+  <span class='open'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="3" y1="12" x2="21" y2="12" />
+  <line x1="3" y1="6" x2="21" y2="6" />
+  <line x1="3" y1="18" x2="21" y2="18" />
+  
+</svg>
+</span>
+  <span class='close'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="18" y1="6" x2="6" y2="18" />
+  <line x1="6" y1="6" x2="18" y2="18" />
+  
+</svg>
+</span>
+</button><div class='header-widgets'>
+        <div class='container'></div>
+      </div>
+
+      <header id='header' class='header site-header'>
+        <div class='container sep-after'>
+          <div class='header-info'><p class='site-title title'>A Notebook of Extendswind</p><p class='desc site-desc'>a simple blog site</p>
+          </div>
+        </div>
+      </header>
+
+      <main id='content'>
+
+
+<article lang='en' class='entry'>
+  <header class='header entry-header'>
+  <div class='container sep-after'>
+    <div class='header-info'>
+      <h1 class='title'>树莓派从烧录系统到通过wifi远程访问（新树莓派配置，无显示器、网线、键盘）</h1>
+      
+
+    </div>
+    <div class='entry-meta'>
+  <span class='posted-on'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+  <line x1="16" y1="2" x2="16" y2="6"/>
+  <line x1="8" y1="2" x2="8" y2="6"/>
+  <line x1="3" y1="10" x2="21" y2="10"/>
+  
+</svg>
+<span class='screen-reader-text'>Posted on </span>
+  <time class='entry-date' datetime='2019-03-04T21:59:49&#43;08:00'>2019, Mar 04</time>
+</span>
+
+  
+  
+
+</div>
+
+
+  </div>
+</header>
+
+  
+  
+
+  <div class='container entry-content'>
+  
+
+<p>网上教程很多，但是google和百度排在前面的博客操作起来各种问题，因此简单写写。</p>
+
+<h1 id="1-烧录系统">1. 烧录系统</h1>
+
+<p>官网有可以系统可以下载，通常建议<img src="https://www.raspberrypi.org/downloads/raspbian/" alt="raspberry" />，有特殊需求可以考虑其它的几个系统。</p>
+
+<p>官网推荐使用balenaEtcher烧录系统。（很多博客推荐先一个工具格式化sd卡，然后win32imagewriter不知道是不是以前的做法）</p>
+
+<h2 id="2-配置系统">2. 配置系统</h2>
+
+<p>上面的烧录后，sd卡会被分为多个分区，其中windows系统下能识别的只有一个名为boot的分区，存储启动相关的配置文件。</p>
+
+<h3 id="2-1-开启ssh">2.1 开启ssh</h3>
+
+<p>raspbian 系统默认不开启ssh远程访问，在boot分区下新建文件名为<code>SSH</code>的文件（内容为空无后缀），系统启动时检测到此文件会开启ssh进程。</p>
+
+<h3 id="2-2-配置wifi">2.2 配置wifi</h3>
+
+<p>在boot分区下新建文件名为<code>wpa_supplicant.conf</code>的文件，添加以下内容：</p>
+
+<pre><code>country=CN
+ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
+update_config=1
+
+network={
+    ssid=&quot;yourWifiName&quot;
+    psk=&quot;passwd&quot;
+    key_mgmt=WPA-PSK
+    priority=1
+}
+
+</code></pre>
+
+<p>修改其中的wifi名和密码（ssid与psk）</p>
+
+<p><em>如果想省事可以直接用网线连上路由器</em></p>
+
+<h1 id="3-远程访问">3. 远程访问</h1>
+
+<h2 id="3-1-查找树莓派ip">3.1 查找树莓派ip</h2>
+
+<p>此处需要将电脑和树莓派连接在同一路由器下。</p>
+
+<p>方法一：浏览器上输入192.168.1.1 （根据不同路由器网关不同），进入管理页面查看树莓派ip。</p>
+
+<p>方法二：使用软件<code>Advanced IP Scanner</code>扫描局域网中的树莓派。</p>
+
+<h2 id="3-2-ssh-远程登录">3.2 ssh 远程登录</h2>
+
+<p>ssh是linux上最常用的命令行远程访问工具。</p>
+
+<p>使用软件<code>putty</code>用于远程ssh登录，输入树莓ip，密码为raspberry。</p>
+
+<h2 id="3-3-开启vnc">3.3 开启vnc</h2>
+
+<p>vnc类似windows上的rdp远程登录，是linux上最常用的带界面远程访问协议。</p>
+
+<p><code>sudo raspi-config</code> 然后在<code>Interfacing Options</code> -&gt; <code>VNC</code>里enable VNC服务。（貌似是启动vnc的服务后设置了开机启动）</p>
+
+<p>然后使用<code>realVNC viewer</code>输入ip访问即可。</p>
+
+<p>vnc默认使用5900端口，当端口占用时会往后推使用5901等端口。多个vncserver运行时需要使用ip:590x的形式指定端口号。</p>
+
+<h3 id="此处小坑">此处小坑</h3>
+
+<p>树莓派自带的vnc server使用的加密方式和tigerVNC viewer不兼容，会显示以下错误：</p>
+
+<p><code>Unknown authentication scheme from VNC server: 13, 5, 6, 130, 192</code></p>
+
+<p>使用realVNC客户端正常访问。</p>
+
+<h1 id="4-最后">4. 最后</h1>
+
+<p>整体流程不复杂但又比较长。</p>
+
+</div>
+
+  
+<footer class='entry-footer'>
+  <div class='container sep-before'><div class='categories'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M22,19a2,2,0,0,1-2,2H4a2,2,0,0,1-2-2V5A2,2,0,0,1,4,3H9l2,3h9a2,2,0,0,1,2,2Z"/>
+  
+</svg>
+<span class='screen-reader-text'>Categories: </span><a class='category' href='/categories/linux-desktop/'>linux desktop</a></div>
+<div class='tags'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M20.59,13.41l-7.17,7.17a2,2,0,0,1-2.83,0L2,12V2H12l8.59,8.59A2,2,0,0,1,20.59,13.41Z"/>
+  <line x1="7" y1="7" x2="7" y2="7"/>
+  
+</svg>
+<span class='screen-reader-text'>Tags: </span><a class='tag' href='/tags/raspberry/'>raspberry</a></div>
+
+  </div>
+</footer>
+
+
+</article>
+
+<nav class='entry-nav'>
+  <div class='container'><div class='prev-entry sep-before'>
+      <a href='/posts/technical/mainboard_speaker_close/'>
+        <span aria-hidden='true'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="20" y1="12" x2="4" y2="12"/>
+  <polyline points="10 18 4 12 10 6"/>
+  
+</svg>
+ Previous</span>
+        <span class='screen-reader-text'>Previous post: </span>linux 关闭主板上的蜂鸣器声音</a>
+    </div><div class='next-entry sep-before'>
+      <a href='/posts/technical/anki_and_anki_server/'>
+        <span class='screen-reader-text'>Next post: </span>anki的使用以及anki server的配置<span aria-hidden='true'>Next <svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="4" y1="12" x2="20" y2="12"/>
+  <polyline points="14 6 20 12 14 18"/>
+  
+</svg>
+</span>
+      </a>
+    </div></div>
+</nav>
+
+
+
+
+      </main>
+
+      <footer id='footer' class='footer'>
+        <div class='container sep-before'><section class='widget widget-social_menu sep-after'><header>
+    <h4 class='title widget-title'>Contact</h4>
+  </header><nav aria-label='Social Menu'>
+    <ul><li>
+        <a href='https://github.com/extendswind' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Open Github account in new tab</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+  
+</svg>
+</a>
+      </li><li>
+        <a href='mailto:extendswind@foxmail.com' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Contact via Email</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+  <polyline points="22,6 12,13 2,6"/>
+  
+</svg>
+</a>
+      </li></ul>
+  </nav>
+</section><div class='copyright'>
+  <p> &copy; 2018-2019 extendswind </p>
+</div>
+
+        </div>
+      </footer>
+
+    </div>
+  </div><script>window.__assets_js_src="/assets/js/"</script>
+
+<script src='/assets/js/main.67d669ac.js'></script>
+
+</body>
+
+</html>
+
