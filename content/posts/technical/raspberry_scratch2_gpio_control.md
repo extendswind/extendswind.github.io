@@ -1,0 +1,1 @@
+../../../myNote/./technical/linux_desktop/raspberry_scratch2_gpio_control.md

@@ -1,6 +1,6 @@
 ---
 title: "树莓派从烧录系统到通过wifi远程访问（新树莓派配置，无显示器、网线、键盘）"
-date: 2019-03-04T21:59:49+08:00
+date: 2019-10-25T10:59:49+08:00
 
 categories:
 - "linux desktop"
@@ -72,7 +72,7 @@ ssh是linux上最常用的命令行远程访问工具。
 
 vnc类似windows上的rdp远程登录，是linux上最常用的带界面远程访问协议。
 
-`sudo raspi-config` 然后在`Interfacing Options` -> `VNC`里enable VNC服务。（貌似是启动vnc的服务后设置了开机启动）
+ssh远程登录后，`sudo raspi-config` 然后在`Interfacing Options` -> `VNC`里enable VNC服务。（貌似是启动vnc的服务后设置了开机启动）
 
 然后使用`realVNC viewer`输入ip访问即可。
 
@@ -88,13 +88,8 @@ vnc默认使用5900端口，当端口占用时会往后推使用5901等端口。
 
 还可以考虑在树莓派上安装tightvncserver。
 
-# 4. 最后
 
-整体流程不复杂但又比较长。
+# 4. 附软件源安装
 
-
-
-
-
-
+默认的软件源仓库的网速较慢，使用apt安装某些软件时过于龟速，可以考虑换国内的镜像源。如![清华源](https://mirror.tuna.tsinghua.edu.cn/help/raspbian/)等。
 

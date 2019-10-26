@@ -12,7 +12,13 @@ do
     rm -f $lnFile/*
     for file in $(find $path -name "*.md" -type f)
     do
-        toLnFile="../../../myNote/"$file
+        if [ ${file: 0-9:9} = "/index.md" ]; then
+                toLnFile="../../../myNote/"${file%/*} 
+        else
+                toLnFile="../../../myNote/"$file
+        fi
         ln -s $toLnFile $lnFile # 可以考虑用copy
     done
 done
+
+

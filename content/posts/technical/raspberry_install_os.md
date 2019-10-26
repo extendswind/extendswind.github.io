@@ -1,1 +1,0 @@
-../../../myNote/./technical/linux_desktop/raspberry_install_os.md
