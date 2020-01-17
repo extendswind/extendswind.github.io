@@ -53,3 +53,9 @@ sudo chmod 777 /var/ftp/pub   # 修改文件夹权限
 
 测试访问可以直接用浏览器 `ftp://ip_address`，linux下可以使用FileZilla。
 
+
+
+
+
+
+
