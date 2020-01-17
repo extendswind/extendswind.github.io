@@ -1,11 +1,11 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Categories on A Notebook of Extendswind</title>
     <link>https://extendswind.top/categories/</link>
     <description>Recent content in Categories on A Notebook of Extendswind</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Fri, 25 Oct 2019 14:59:49 +0800</lastBuildDate>
+    <lastBuildDate>Tue, 26 Nov 2019 20:59:49 +0800</lastBuildDate>
     
 	<atom:link href="https://extendswind.top/categories/index.xml" rel="self" type="application/rss+xml" />
     
@@ -13,7 +13,7 @@
     <item>
       <title>linux desktop</title>
       <link>https://extendswind.top/categories/linux-desktop/</link>
-      <pubDate>Fri, 25 Oct 2019 14:59:49 +0800</pubDate>
+      <pubDate>Tue, 26 Nov 2019 20:59:49 +0800</pubDate>
       
       <guid>https://extendswind.top/categories/linux-desktop/</guid>
       <description></description>
