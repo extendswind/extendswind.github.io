@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>programming basic on A Notebook of Extendswind</title>
@@ -22,7 +22,7 @@
  根据日志级别记录日志 (logger上设置） 运行时决定具体的记录位置（appender上设置）和日志格式（layout上设置）  一些概念 日志级别（priority，代码里为level） 日志级别从低到高为trace, debug, info, warn, error, fatal。默认级别为info，低于设置级别的日志不会被打印。
 常用组件 一般情况下常设置的组件有logger，appender， layout。
 用类的方式表达三个组件的关系为
-Logger{ name; level; // 控制日志级别 appenderList; // 可对应多个appender } Appender{ name; // 控制文件位置 如fileAppender layout; // 控制格式 filter; // 过滤部分日志 }  logger logger以一种树状关系管理日志的类型，log4j.rootCategory为根节点，如果没有标记 log4j.additivity.MyLogger = false ，则子logger会默认继承上一级的设置。
+Logger{ name; level; // 控制日志级别 appenderList; // 可对应多个appender } Appender{ name; // 控制文件位置 如fileAppender layout; // 控制格式 filter; // 过滤部分日志 } logger logger以一种树状关系管理日志的类型，log4j.rootCategory为根节点，如果没有标记 log4j.additivity.MyLogger = false ，则子logger会默认继承上一级的设置。
 通过树的组织形式，对不同的包中的不同的类，可以分别设置不同的日志方式。
 通过点表示层级，如com.foo为com.foo.Bar的上级
 关于category，早期的log4j使用category较多，但在log4j 1.2之后，建议使用logger代替category。
@@ -36,7 +36,7 @@ appender 主要用于
       <pubDate>Tue, 13 Nov 2018 10:30:00 +0800</pubDate>
       
       <guid>https://extendswind.top/posts/technical/leetcode4/</guid>
-      <description>题目  Median of Two Sorted Arrays There are two sorted arrays nums1 and nums2 of size m and n respectively. Find the median of the two sorted arrays. The overall run time complexity should be O(log (m+n)). You may assume nums1 and nums2 cannot be both empty. Example 1: nums1 = [1, 3] nums2 = [2] The median is 2.0 Example 2: nums1 = [1, 2] nums2 = [3, 4] The median is (2 + 3)/2 = 2.</description>
+      <description>题目   Median of Two Sorted Arrays There are two sorted arrays nums1 and nums2 of size m and n respectively. Find the median of the two sorted arrays. The overall run time complexity should be O(log (m+n)). You may assume nums1 and nums2 cannot be both empty. Example 1: nums1 = [1, 3] nums2 = [2] The median is 2.0 Example 2: nums1 = [1, 2] nums2 = [3, 4] The median is (2 + 3)/2 = 2.</description>
     </item>
     
     <item>
@@ -60,7 +60,7 @@ revert git revert &amp;lt;commit-id&amp;gt; 相当于取消一次commit ，会�
 使用revert不会破坏历史记录，只是提交一个新的修改使修改后代码和以前一致。
 实质上相当于用前的代码merge 后的代码，因此如果后面对代码文件做了修改需要解决冲突。
 revert一个merge commit 注意revert用在merge的commit上的情况有坑
-git revert &amp;lt;commit-id&amp;gt; -m 1 需要添加-m参数，指定是merge前的第几个分支（git log上的merge后）。
+git revert &amp;lt;commit-id&amp;gt; -m 1  需要添加-m参数，指定是merge前的第几个分支（git log上的merge后）。
 revert的主要麻烦：如果存在分支合并的情况，如下，从m1 revert到a2时会添加一个新的提交m2，当m2与b2 merge时会显示已经merge过。
 a1 -&amp;gt; a2 -&amp;gt; m1 -&amp;gt; m2 b1 -&amp;gt; b2 /</description>
     </item>

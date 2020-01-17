@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>software on A Notebook of Extendswind</title>
@@ -25,7 +25,8 @@ anonymous_enable=YES # 允许匿名访问 write_enable=YES # 允许写文件 ano
 通常会选择/var/ftp文件夹存放文件而不是用户默认的/home，因此可以修改用户的主目录位置（一般放在/var/ftp），不修改也能用。再次强调，注意主目录对ftp用户的权限必须为只读。
 sudo mkdir /var/ftp # 新建用户文件夹 sudo useradd -d /var/ftp ftp # 新建用户，并指定用户home目录 # 如果ftp用户已经存在，在/etc/passwd文件里改用户目录为/var/ftp sudo mkdir /var/ftp/pub # 新建一个用于写数据的文件夹 sudo chmod 777 /var/ftp/pub # 修改文件夹权限 4. 启动服务
 systemctl start vsftpd
-其它 防火墙和SELinux如果使用了需要添加响应的通过规则。</description>
+其它 防火墙和SELinux如果使用了需要添加响应的通过规则。
+测试访问可以直接用浏览器 ftp://ip_address，linux下可以使用FileZilla。</description>
     </item>
     
     <item>
@@ -44,7 +45,7 @@ anki server 的安装 官网的速度爆表，而且有数据安全问题，因�
 百度上的大多使用 https://github.com/dsnopek/anki-sync-server ，可以基于pip2和python2直接安装，个人在基于Arch的linux下感觉坑多，在linux上的anki 2.1.9连不上上面python2的服务器（bug解决一个又出一个），更建议使用基于python3的fork项目：https://github.com/tsudoko/anki-sync-server 。
 基于python3的仓库 github上的readme已经写得比较清楚，下面的搬运点大概。
 1、clone 仓库
-git clone https://github.com/tsudoko/anki-sync-server.git
+ git clone https://github.com/tsudoko/anki-sync-server.git
 2、安装anki或anki-bundled相关的库
 直接使用包管理器安装 sudo pacman -S anki
 如果包管理器里没有anki（如debian），也可以用pip安装anki-bundled相关的库

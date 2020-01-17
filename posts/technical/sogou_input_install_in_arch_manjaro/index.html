@@ -10,15 +10,14 @@ fcitx 为基础安装包，fcitx-im用于GTK/QT等界面上使用的包，fcitx-
 此处有坑，默认的安装方式会编译安装qtwebkit，速度非常的慢（一个小时午觉后还没好&hellip;)
 在库的官方说明中（来自 https://aur.archlinux.org/packages/fcitx-sogoupinyin/ ）依赖项为qtwebkit (qtwebkit-bin)
 其实只依赖qtwebkit-bin，因此先安装qtwebkit-bin可以解决依赖问题（不到一分钟&hellip;)
-yaourt -S qtwebkit-bin
+ yaourt -S qtwebkit-bin
 3. fcitx 设置中添加搜狗拼音 fcitx configuration中点加号添加sogou pinyin（默认语言为英语时需要勾选一个选项）
 4. fcitx环境变量的添加 gui应用的环境变量一般不通过profile和bashrc。
 arch wiki下的内容：
- KDM, GDM, LightDM 等显示管理器，请使用 ~/.xprofile arch wiki 警告: 上述用户不要在~/.xinitrc中加入下述脚本，否则会造成无法登陆。(但在里头加了也没挂) 如果您用 startx 或者 Slim 启动，请使用~/.xinitrc 中加入
-export GTK_IM_MODULE=fcitx export QT_IM_MODULE=fcitx export XMODIFIERS=@im=fcitx
-如果你使用的是较新版本的GNOME，使用 Wayland 显示管理器，则请在/etc/environment中加入
-GTK_IM_MODULE=fcitx QT_IM_MODULE=fcitx XMODIFIERS=@im=fcitx
- 参考链接中有更详细的说明，我用的manjaro&#43;xfce4以及后面改装的cinnamon和awesome都是在lightDM下该的.xinitrc，没有.xprofile文件，也能正常用。 （注意添加在最后exec $(&hellip;)的前面）'>
+  KDM, GDM, LightDM 等显示管理器，请使用 ~/.xprofile arch wiki 警告: 上述用户不要在~/.xinitrc中加入下述脚本，否则会造成无法登陆。(但在里头加了也没挂) 如果您用 startx 或者 Slim 启动，请使用~/.xinitrc 中加入
+  export GTK_IM_MODULE=fcitx export QT_IM_MODULE=fcitx export XMODIFIERS=@im=fcitx
+  如果你使用的是较新版本的GNOME，使用 Wayland 显示管理器，则请在/etc/environment中加入
+  GTK_IM_MODULE=fcitx QT_IM_MODULE=fcitx XMODIFIERS=@im=fcitx'>
 <meta name='theme-color' content='#cccccc'>
 
 <meta property='og:title' content='manjaro (arch) 安装搜狗输入法 • A Notebook of Extendswind'>
@@ -30,20 +29,19 @@ fcitx 为基础安装包，fcitx-im用于GTK/QT等界面上使用的包，fcitx-
 此处有坑，默认的安装方式会编译安装qtwebkit，速度非常的慢（一个小时午觉后还没好&hellip;)
 在库的官方说明中（来自 https://aur.archlinux.org/packages/fcitx-sogoupinyin/ ）依赖项为qtwebkit (qtwebkit-bin)
 其实只依赖qtwebkit-bin，因此先安装qtwebkit-bin可以解决依赖问题（不到一分钟&hellip;)
-yaourt -S qtwebkit-bin
+ yaourt -S qtwebkit-bin
 3. fcitx 设置中添加搜狗拼音 fcitx configuration中点加号添加sogou pinyin（默认语言为英语时需要勾选一个选项）
 4. fcitx环境变量的添加 gui应用的环境变量一般不通过profile和bashrc。
 arch wiki下的内容：
- KDM, GDM, LightDM 等显示管理器，请使用 ~/.xprofile arch wiki 警告: 上述用户不要在~/.xinitrc中加入下述脚本，否则会造成无法登陆。(但在里头加了也没挂) 如果您用 startx 或者 Slim 启动，请使用~/.xinitrc 中加入
-export GTK_IM_MODULE=fcitx export QT_IM_MODULE=fcitx export XMODIFIERS=@im=fcitx
-如果你使用的是较新版本的GNOME，使用 Wayland 显示管理器，则请在/etc/environment中加入
-GTK_IM_MODULE=fcitx QT_IM_MODULE=fcitx XMODIFIERS=@im=fcitx
- 参考链接中有更详细的说明，我用的manjaro&#43;xfce4以及后面改装的cinnamon和awesome都是在lightDM下该的.xinitrc，没有.xprofile文件，也能正常用。 （注意添加在最后exec $(&hellip;)的前面）'>
+  KDM, GDM, LightDM 等显示管理器，请使用 ~/.xprofile arch wiki 警告: 上述用户不要在~/.xinitrc中加入下述脚本，否则会造成无法登陆。(但在里头加了也没挂) 如果您用 startx 或者 Slim 启动，请使用~/.xinitrc 中加入
+  export GTK_IM_MODULE=fcitx export QT_IM_MODULE=fcitx export XMODIFIERS=@im=fcitx
+  如果你使用的是较新版本的GNOME，使用 Wayland 显示管理器，则请在/etc/environment中加入
+  GTK_IM_MODULE=fcitx QT_IM_MODULE=fcitx XMODIFIERS=@im=fcitx'>
 <meta property='og:url' content='https://extendswind.top/posts/technical/sogou_input_install_in_arch_manjaro/'>
 <meta property='og:site_name' content='A Notebook of Extendswind'>
 <meta property='og:type' content='article'><meta property='article:section' content='posts'><meta property='article:tag' content='linux'><meta property='article:published_time' content='2019-01-21T20:59:49&#43;08:00'/><meta property='article:modified_time' content='2019-01-21T20:59:49&#43;08:00'/><meta name='twitter:card' content='summary'>
 
-<meta name="generator" content="Hugo 0.58.3" />
+<meta name="generator" content="Hugo 0.62.0" />
 
   <title>manjaro (arch) 安装搜狗输入法 • A Notebook of Extendswind</title>
   <link rel='canonical' href='https://extendswind.top/posts/technical/sogou_input_install_in_arch_manjaro/'>
@@ -211,89 +209,60 @@ if (!doNotTrack) {
   
 
   <div class='container entry-content'>
-  
-
-<p>本来还很简单的事，被默认的选项弄出一堆坑</p>
-
-<h1 id="步骤">步骤</h1>
-
+  <p>本来还很简单的事，被默认的选项弄出一堆坑</p>
+<h1 id="heading">步骤</h1>
 <p>先安装fcitx用来管理输入法，然后安装搜狗输入法并配置，然后添加环境变量使相关的应用默认加载fcitx。</p>
-
-<h2 id="1-安装fcitx以及配置">1. 安装fcitx以及配置</h2>
-
+<h2 id="1-fcitx">1. 安装fcitx以及配置</h2>
 <p><code>sudo pacman -S fcitx fcitx-im fcitx-configtool</code></p>
-
 <p>fcitx 为基础安装包，fcitx-im用于GTK/QT等界面上使用的包，fcitx-configtool为配置界面（kde下还能安装一个kde版的configtool）。</p>
-
-<h2 id="2-安装搜狗输入法">2. 安装搜狗输入法</h2>
-
+<h2 id="2-">2. 安装搜狗输入法</h2>
 <p><code>yaourt fcitx-sogoupinyin</code></p>
-
 <p>此处有坑，默认的安装方式会编译安装qtwebkit，速度非常的慢（一个小时午觉后还没好&hellip;)</p>
-
-<p>在库的官方说明中（来自 <a href="https://aur.archlinux.org/packages/fcitx-sogoupinyin/" target="_blank">https://aur.archlinux.org/packages/fcitx-sogoupinyin/</a> ）依赖项为qtwebkit (qtwebkit-bin)</p>
-
+<p>在库的官方说明中（来自 <a href="https://aur.archlinux.org/packages/fcitx-sogoupinyin/">https://aur.archlinux.org/packages/fcitx-sogoupinyin/</a> ）依赖项为qtwebkit (qtwebkit-bin)</p>
 <p><strong>其实只依赖qtwebkit-bin，因此先安装qtwebkit-bin可以解决依赖问题（不到一分钟&hellip;)</strong></p>
-
-<p><code>yaourt -S qtwebkit-bin</code></p>
-
-<h2 id="3-fcitx-设置中添加搜狗拼音">3. fcitx 设置中添加搜狗拼音</h2>
-
+<p><code> yaourt -S qtwebkit-bin</code></p>
+<h2 id="3-fcitx-">3. fcitx 设置中添加搜狗拼音</h2>
 <p>fcitx configuration中点加号添加sogou pinyin（默认语言为英语时需要勾选一个选项）</p>
-
-<h2 id="4-fcitx环境变量的添加">4. fcitx环境变量的添加</h2>
-
+<h2 id="4-fcitx">4. fcitx环境变量的添加</h2>
 <p>gui应用的环境变量一般不通过profile和bashrc。</p>
-
 <p>arch wiki下的内容：</p>
-
 <blockquote>
+</blockquote>
 <p>KDM, GDM, LightDM 等显示管理器，请使用 ~/.xprofile
 arch wiki 警告: 上述用户不要在~/.xinitrc中加入下述脚本，否则会造成无法登陆。(但在里头加了也没挂)
 如果您用 startx 或者 Slim 启动，请使用~/.xinitrc 中加入</p>
-
+<blockquote>
+</blockquote>
 <p>export GTK_IM_MODULE=fcitx
 export QT_IM_MODULE=fcitx
 export XMODIFIERS=@im=fcitx</p>
-
+<blockquote>
+</blockquote>
 <p>如果你使用的是较新版本的GNOME，使用 Wayland 显示管理器，则请在/etc/environment中加入</p>
-
+<blockquote>
+</blockquote>
 <p>GTK_IM_MODULE=fcitx
 QT_IM_MODULE=fcitx
 XMODIFIERS=@im=fcitx</p>
-</blockquote>
-
 <p>参考链接中有更详细的说明，我用的manjaro+xfce4以及后面改装的cinnamon和awesome都是在lightDM下该的.xinitrc，没有.xprofile文件，也能正常用。
 （注意添加在最后exec $(&hellip;)的前面）</p>
-
 <p>使用manjaro+kde和awesomewm混用时，加在.xinitrc下莫名奇妙的失效，不知道和为了deepin-wine运行的cinnamon-xsettings有没有关系，加在/etc/environment文件中正常运行。</p>
-
-<h2 id="5-注销后重新登录">5. 注销后重新登录</h2>
-
-<h1 id="汇总">汇总</h1>
-
-<p><code>yaourt -S qtwebkit-bin</code>
-<code>sudo pacman -S fcitx fcitx-im fcitx-configtool</code>
+<h2 id="5-">5. 注销后重新登录</h2>
+<h1 id="heading-1">汇总</h1>
+<p><code> yaourt -S qtwebkit-bin</code>
+<code> sudo pacman -S fcitx fcitx-im fcitx-configtool</code>
 <code>yaourt fcitx-sogoupinyin</code></p>
-
 <p>fcitx configuration 配置搜狗输入法</p>
-
 <p>添加fcitx相关的环境变量</p>
-
 <p>注销重新登录</p>
-
-<h1 id="少量问题">少量问题</h1>
-
+<h1 id="heading-2">少量问题</h1>
 <ol>
 <li>fcitx的安装一般会自动启动（右下角会有输入法图标，top里可以看），如果在i3 awesomewm等窗口管理器中没有自动启动，则将<code>fcitx -r</code>加入到自动启动的脚本中。</li>
 <li>ibus输入法管理与fcitx冲突，如果已有安装需要禁用。</li>
 </ol>
-
-<h1 id="主要参考">主要参考</h1>
-
-<p><a href="https://wiki.archlinux.org/index.php/Fcitx_(简体中文" target="_blank">https://wiki.archlinux.org/index.php/Fcitx_(简体中文</a>)</p>
-
-<p><a href="https://www.yangshengliang.com/kaiyuan-shijie/linux-shijie/651.html" target="_blank">https://www.yangshengliang.com/kaiyuan-shijie/linux-shijie/651.html</a></p>
+<h1 id="heading-3">主要参考</h1>
+<p><a href="https://wiki.archlinux.org/index.php/Fcitx_(">https://wiki.archlinux.org/index.php/Fcitx_(</a>简体中文)</p>
+<p><a href="https://www.yangshengliang.com/kaiyuan-shijie/linux-shijie/651.html">https://www.yangshengliang.com/kaiyuan-shijie/linux-shijie/651.html</a></p>
 
 </div>
 
@@ -372,7 +341,7 @@ XMODIFIERS=@im=fcitx</p>
       </li></ul>
   </nav>
 </section><div class='copyright'>
-  <p> &copy; 2018-2019 extendswind </p>
+  <p> &copy; 2018-2020 extendswind </p>
 </div>
 
         </div>

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>cloud computing on A Notebook of Extendswind</title>
@@ -25,7 +25,7 @@ InputFormat的修改可以参考TextInputFormat，继承FileInputFormat后，重
 `./spark-shell &amp;ndash;jars newInputFormat.jar
 运行的代码和上面差不多，import相关的包后
 val hFile = sc.newAPIHadoopFile(&amp;#34;hdfs://hadoopmaster:9000/user/sparkl/README.md&amp;#34;, classOf[NewTextInputFormat], classOf[Text], classOf[Text]) 一些坑 序列化问题 在读取文件后使用first或者collect时，出现下面的错误
- ERROR scheduler.TaskSetManager: Task 0.0 in stage 2.0 (TID 18) had a not serializable result: org.apache.hadoop.io.IntWritable Serialization stack: - object not serializable (class: org.apache.hadoop.io.IntWritable, value: 35) - element of array (index: 0) - array (class [Lorg.</description>
+  ERROR scheduler.TaskSetManager: Task 0.0 in stage 2.0 (TID 18) had a not serializable result: org.apache.hadoop.io.IntWritable Serialization stack: - object not serializable (class: org.apache.hadoop.io.IntWritable, value: 35) - element of array (index: 0) - array (class [Lorg.</description>
     </item>
     
     <item>
@@ -39,8 +39,8 @@ val hFile = sc.newAPIHadoopFile(&amp;#34;hdfs://hadoopmaster:9000/user/sparkl/RE
 官网上给了集群拓扑的基本说明（!(Rack Awareness)[https://hadoop.apache.org/docs/current/hadoop-project-dist/hadoop-common/RackAwareness.html]），给出来的那两段脚本看得有点懵，就自己试了一下，写了个更简单的。
 其实只是Hadoop会调用脚本，将多个Datanode的ip作为输入，每次最多输入的ip数设置在net.topology.script.number.args，将输入的ip转换成/rack-num的形式(以/开头的字符串)，用标准输出流（如Python的print）输出结果。
 具体操作 编写脚本 下面的脚本在输入
-192.168.3.1 192.168.3.4  时，会输出
-/rack1 /rack4  #!/bin/python3 import sys # 第一个参数是脚本路径，直接pop掉 sys.argv.pop(0) # 0-3 rack0 # 4-7 rack1 # 8-11 rack2 # ... # 其它的参数里每个参数都是一个ip，此处直接取ip的最后一位除以4作为Racknum # 实践上可以读文件确定ip的对应关系 for ip in sys.argv: hostNum = int(ip.split(&amp;#34;.&amp;#34;)[3]) print(&amp;#34;/rack&amp;#34; + str(int(hostNum/4))) 设置配置参数 &amp;lt;property&amp;gt; &amp;lt;name&amp;gt;net.topology.script.file.name&amp;lt;/name&amp;gt; &amp;lt;value&amp;gt;/home/sparkl/hadoop/etc/hadoop/topology.py&amp;lt;/value&amp;gt; &amp;lt;/property&amp;gt; 重启集群即可
+192.168.3.1 192.168.3.4 时，会输出
+/rack1 /rack4 #!/bin/python3 import sys # 第一个参数是脚本路径，直接pop掉 sys.argv.pop(0) # 0-3 rack0 # 4-7 rack1 # 8-11 rack2 # ... # 其它的参数里每个参数都是一个ip，此处直接取ip的最后一位除以4作为Racknum # 实践上可以读文件确定ip的对应关系 for ip in sys.argv: hostNum = int(ip.split(&amp;#34;.&amp;#34;)[3]) print(&amp;#34;/rack&amp;#34; + str(int(hostNum/4))) 设置配置参数 &amp;lt;property&amp;gt; &amp;lt;name&amp;gt;net.topology.script.file.name&amp;lt;/name&amp;gt; &amp;lt;value&amp;gt;/home/sparkl/hadoop/etc/hadoop/topology.py&amp;lt;/value&amp;gt; &amp;lt;/property&amp;gt; 重启集群即可
 验证结果 以下命令能够直接获取某一个文件的分布状态，以及总的rack数量：
 hdfs fsck /readme.md -files -blocks -racks
 貌似没有直接以树状的形式输出集群拓扑的命令，namenode的日志中能看到datanode在连接时的拓扑位置。</description>
@@ -96,7 +96,7 @@ YARN默认使用CapacityScheduler，通过下面的属性配置：
 YARN上新运行的任务能够使用已运行任务回收的资源(如运行完Map task的container)，甚至还能够通过强行结束先前任务的container抢占资源。
 Capacity Scheduler CapacityScheduler重点解决多个组织共享集群资源，并保证每个组织自己的资源使用量。当自己的资源不足时能够使用其它组织的空闲资源。
 资源通过层级队列（hierarchical queues）的形式进行组织，配置在etc/hadoop/capacity-scheduler.xml.
-&amp;lt;!-- 队列结构设置 --&amp;gt; &amp;lt;property&amp;gt; &amp;lt;name&amp;gt;yarn.scheduler.capacity.root.queues&amp;lt;/name&amp;gt; &amp;lt;value&amp;gt;a,b&amp;lt;/value&amp;gt; &amp;lt;description&amp;gt;The queues at the this level (root is the root queue). &amp;lt;/description&amp;gt; &amp;lt;/property&amp;gt; &amp;lt;property&amp;gt; &amp;lt;name&amp;gt;yarn.scheduler.capacity.root.a.queues&amp;lt;/name&amp;gt; &amp;lt;value&amp;gt;a1,a2&amp;lt;/value&amp;gt; &amp;lt;description&amp;gt;The queues at the this level (root is the root queue).</description>
+&amp;lt;!--队列结构设置 --&amp;gt; &amp;lt;property&amp;gt; &amp;lt;name&amp;gt;yarn.scheduler.capacity.root.queues&amp;lt;/name&amp;gt; &amp;lt;value&amp;gt;a,b&amp;lt;/value&amp;gt; &amp;lt;description&amp;gt;The queues at the this level (root is the root queue). &amp;lt;/description&amp;gt; &amp;lt;/property&amp;gt; &amp;lt;property&amp;gt; &amp;lt;name&amp;gt;yarn.scheduler.capacity.root.a.queues&amp;lt;/name&amp;gt; &amp;lt;value&amp;gt;a1,a2&amp;lt;/value&amp;gt; &amp;lt;description&amp;gt;The queues at the this level (root is the root queue).</description>
     </item>
     
     <item>
@@ -109,11 +109,11 @@ Capacity Scheduler CapacityScheduler重点解决多个组织共享集群资源�
 Java 远程调试 不想了解的可以直接跳到下面Hadoop
 通过JPDA（Java Platform Debugger Architecture），调试时启动服务，通过socket端口与调试服务端通信。
 下面只用最常用的服务端启动调试服务监听端口，本地IDE（idea）连接服务端。
-具体操作 1、启动被调试程序时添加参数：  jdk9: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:8000
+具体操作 1、启动被调试程序时添加参数：   jdk9: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:8000
 jdk5-8: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8000
 jdk4: -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8000
 jdk3 及以前: -Xnoagent -Djava.compiler=NONE -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8000
- 此处有坑，网上大部分没有提到jdk版本不同导致的区别，很多博客使用jdk4的写法，可能导致问题（idea配置远程调试时有上面的选项）。
+此处有坑，网上大部分没有提到jdk版本不同导致的区别，很多博客使用jdk4的写法，可能导致问题（idea配置远程调试时有上面的选项）。
 另外一个小坑, 下面第一个命令正常执行，第二个命令会忽略调试选项：
  java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8000 test java test -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8000  主要参数。suspend=y时，程序启动会先挂起，IDE连接后才会运行；suspend=n时，程序启动会直接运行。address后面为端口号，不与其它端口重合即可。
 2、启动Idea连接调试 使用idea打开调试项目的源码工程
@@ -121,7 +121,7 @@ Run -&amp;gt; Edit Configurations , 点“加号” -&amp;gt; remote，然后填
 添加后debug运行，剩下的和本地调试相同。
 Hadoop 远程调试 思路和上面的操作一致。下面以调试HDFS中的namenode为例。
 具体操作 1、修改Hadoop启动参数为debug模式 如果需要调试namenode服务，在etc/hadoop/hadoop-env.sh文件后添加：
-export HDFS_NAMENODE_OPTS=&amp;quot;-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8000&amp;quot;
+export HDFS_NAMENODE_OPTS=&amp;quot;-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8000&amp;quot; 
 HDFS启动的jvm主要为namenode和datanode，jvm启动的参数设置在etc/hadoop/hadoop-env.sh中。其中namenode启动参数环境变量为 HDFS_NAMENODE_OPTS，datanode为 HDFS_DATANODE_OPTS（针对Hadoop3，hadoop2的设置为HADOOP_NAMENODE_OPTS HADOOP_NAMENODE_OPTS）。YARN等服务对应的环境变量需要另查。
 2、启动服务 sbin/start-dfs.sh 或者 bin/hdfs --daemon start namenode仅启动namenode</description>
     </item>

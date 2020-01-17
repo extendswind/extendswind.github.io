@@ -6,11 +6,11 @@
 Java 远程调试 不想了解的可以直接跳到下面Hadoop
 通过JPDA（Java Platform Debugger Architecture），调试时启动服务，通过socket端口与调试服务端通信。
 下面只用最常用的服务端启动调试服务监听端口，本地IDE（idea）连接服务端。
-具体操作 1、启动被调试程序时添加参数：  jdk9: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:8000
+具体操作 1、启动被调试程序时添加参数：   jdk9: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:8000
 jdk5-8: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8000
 jdk4: -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8000
 jdk3 及以前: -Xnoagent -Djava.compiler=NONE -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8000
- 此处有坑，网上大部分没有提到jdk版本不同导致的区别，很多博客使用jdk4的写法，可能导致问题（idea配置远程调试时有上面的选项）。
+此处有坑，网上大部分没有提到jdk版本不同导致的区别，很多博客使用jdk4的写法，可能导致问题（idea配置远程调试时有上面的选项）。
 另外一个小坑, 下面第一个命令正常执行，第二个命令会忽略调试选项：
  java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8000 test java test -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8000  主要参数。suspend=y时，程序启动会先挂起，IDE连接后才会运行；suspend=n时，程序启动会直接运行。address后面为端口号，不与其它端口重合即可。
 2、启动Idea连接调试 使用idea打开调试项目的源码工程
@@ -18,7 +18,7 @@ Run -&gt; Edit Configurations , 点“加号” -&gt; remote，然后填上被�
 添加后debug运行，剩下的和本地调试相同。
 Hadoop 远程调试 思路和上面的操作一致。下面以调试HDFS中的namenode为例。
 具体操作 1、修改Hadoop启动参数为debug模式 如果需要调试namenode服务，在etc/hadoop/hadoop-env.sh文件后添加：
-export HDFS_NAMENODE_OPTS=&quot;-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8000&quot;
+export HDFS_NAMENODE_OPTS=&quot;-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8000&quot; 
 HDFS启动的jvm主要为namenode和datanode，jvm启动的参数设置在etc/hadoop/hadoop-env.sh中。其中namenode启动参数环境变量为 HDFS_NAMENODE_OPTS，datanode为 HDFS_DATANODE_OPTS（针对Hadoop3，hadoop2的设置为HADOOP_NAMENODE_OPTS HADOOP_NAMENODE_OPTS）。YARN等服务对应的环境变量需要另查。
 2、启动服务 sbin/start-dfs.sh 或者 bin/hdfs --daemon start namenode仅启动namenode'>
 <meta name='theme-color' content='#cccccc'>
@@ -28,11 +28,11 @@ HDFS启动的jvm主要为namenode和datanode，jvm启动的参数设置在etc/ha
 Java 远程调试 不想了解的可以直接跳到下面Hadoop
 通过JPDA（Java Platform Debugger Architecture），调试时启动服务，通过socket端口与调试服务端通信。
 下面只用最常用的服务端启动调试服务监听端口，本地IDE（idea）连接服务端。
-具体操作 1、启动被调试程序时添加参数：  jdk9: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:8000
+具体操作 1、启动被调试程序时添加参数：   jdk9: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:8000
 jdk5-8: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8000
 jdk4: -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8000
 jdk3 及以前: -Xnoagent -Djava.compiler=NONE -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8000
- 此处有坑，网上大部分没有提到jdk版本不同导致的区别，很多博客使用jdk4的写法，可能导致问题（idea配置远程调试时有上面的选项）。
+此处有坑，网上大部分没有提到jdk版本不同导致的区别，很多博客使用jdk4的写法，可能导致问题（idea配置远程调试时有上面的选项）。
 另外一个小坑, 下面第一个命令正常执行，第二个命令会忽略调试选项：
  java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8000 test java test -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8000  主要参数。suspend=y时，程序启动会先挂起，IDE连接后才会运行；suspend=n时，程序启动会直接运行。address后面为端口号，不与其它端口重合即可。
 2、启动Idea连接调试 使用idea打开调试项目的源码工程
@@ -40,14 +40,14 @@ Run -&gt; Edit Configurations , 点“加号” -&gt; remote，然后填上被�
 添加后debug运行，剩下的和本地调试相同。
 Hadoop 远程调试 思路和上面的操作一致。下面以调试HDFS中的namenode为例。
 具体操作 1、修改Hadoop启动参数为debug模式 如果需要调试namenode服务，在etc/hadoop/hadoop-env.sh文件后添加：
-export HDFS_NAMENODE_OPTS=&quot;-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8000&quot;
+export HDFS_NAMENODE_OPTS=&quot;-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8000&quot; 
 HDFS启动的jvm主要为namenode和datanode，jvm启动的参数设置在etc/hadoop/hadoop-env.sh中。其中namenode启动参数环境变量为 HDFS_NAMENODE_OPTS，datanode为 HDFS_DATANODE_OPTS（针对Hadoop3，hadoop2的设置为HADOOP_NAMENODE_OPTS HADOOP_NAMENODE_OPTS）。YARN等服务对应的环境变量需要另查。
 2、启动服务 sbin/start-dfs.sh 或者 bin/hdfs --daemon start namenode仅启动namenode'>
 <meta property='og:url' content='https://extendswind.top/posts/technical/remote_debug_of_hadoop_in_docker/'>
 <meta property='og:site_name' content='A Notebook of Extendswind'>
 <meta property='og:type' content='article'><meta property='article:section' content='posts'><meta property='article:tag' content='hadoop'><meta property='article:published_time' content='2018-07-26T21:30:00&#43;08:00'/><meta property='article:modified_time' content='2018-07-26T21:30:00&#43;08:00'/><meta name='twitter:card' content='summary'>
 
-<meta name="generator" content="Hugo 0.58.3" />
+<meta name="generator" content="Hugo 0.62.0" />
 
   <title>Hadoop HDFS 远程调试（Docker环境下的Hadoop集群） • A Notebook of Extendswind</title>
   <link rel='canonical' href='https://extendswind.top/posts/technical/remote_debug_of_hadoop_in_docker/'>
@@ -218,119 +218,84 @@ if (!doNotTrack) {
     <span>Table of Contents</span>
   </summary>
   <nav id="TableOfContents">
-<ul>
-<li><a href="#java-远程调试">Java 远程调试</a>
-<ul>
-<li><a href="#具体操作">具体操作</a>
-<ul>
-<li><a href="#1-启动被调试程序时添加参数">1、启动被调试程序时添加参数：</a></li>
-<li><a href="#2-启动idea连接调试">2、启动Idea连接调试</a></li>
-</ul></li>
-</ul></li>
-<li><a href="#hadoop-远程调试">Hadoop 远程调试</a>
-<ul>
-<li><a href="#具体操作-1">具体操作</a>
-<ul>
-<li><a href="#1-修改hadoop启动参数为debug模式">1、修改Hadoop启动参数为debug模式</a></li>
-<li><a href="#2-启动服务">2、启动服务</a></li>
-<li><a href="#3-启动idea连接服务">3、启动idea连接服务</a></li>
-</ul></li>
-<li><a href="#踩坑">踩坑</a></li>
-<li><a href="#未解之坑">未解之坑</a></li>
-</ul></li>
-<li><a href="#总结">总结</a></li>
-</ul>
+  <ul>
+    <li><a href="#heading">具体操作</a>
+      <ul>
+        <li><a href="#1">1、启动被调试程序时添加参数：</a></li>
+        <li><a href="#2idea">2、启动Idea连接调试</a></li>
+      </ul>
+    </li>
+  </ul>
+
+  <ul>
+    <li><a href="#heading-1">具体操作</a>
+      <ul>
+        <li><a href="#1hadoopdebug">1、修改Hadoop启动参数为debug模式</a></li>
+        <li><a href="#2">2、启动服务</a></li>
+        <li><a href="#3idea">3、启动idea连接服务</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading-2">踩坑</a></li>
+    <li><a href="#heading-3">未解之坑</a></li>
+  </ul>
 </nav>
 </details>
 
 
   <div class='container entry-content'>
-  
-
-<p>Hadoop 典型的调试方式是通过log4j输出日志，基于日志的形式查看运行信息。在源码阅读中，经常有不容易猜的变量，通过大量日志输出调试没有远程调试方便。</p>
-
-<h1 id="java-远程调试">Java 远程调试</h1>
-
+  <p>Hadoop 典型的调试方式是通过log4j输出日志，基于日志的形式查看运行信息。在源码阅读中，经常有不容易猜的变量，通过大量日志输出调试没有远程调试方便。</p>
+<h1 id="java-">Java 远程调试</h1>
 <p><em>不想了解的可以直接跳到下面Hadoop</em></p>
-
 <p>通过JPDA（Java Platform Debugger Architecture），调试时启动服务，通过socket端口与调试服务端通信。</p>
-
 <p>下面只用最常用的服务端启动调试服务监听端口，本地IDE（idea）连接服务端。</p>
-
-<h2 id="具体操作">具体操作</h2>
-
-<h3 id="1-启动被调试程序时添加参数">1、启动被调试程序时添加参数：</h3>
-
+<h2 id="heading">具体操作</h2>
+<h3 id="1">1、启动被调试程序时添加参数：</h3>
 <blockquote>
-<p>jdk9: <code>-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:8000</code><br />
-jdk5-8: <code>-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8000</code><br />
-jdk4: <code>-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8000</code><br />
-jdk3 及以前: <code>-Xnoagent -Djava.compiler=NONE -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8000</code></p>
 </blockquote>
-
+<p>jdk9: <code>-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:8000</code><br>
+jdk5-8: <code>-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8000</code><br>
+jdk4: <code>-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8000</code><br>
+jdk3 及以前: <code>-Xnoagent -Djava.compiler=NONE -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8000</code></p>
 <p><strong>此处有坑，网上大部分没有提到jdk版本不同导致的区别，很多博客使用jdk4的写法，可能导致问题（idea配置远程调试时有上面的选项）。</strong></p>
-
 <p><strong>另外一个小坑</strong>, 下面第一个命令正常执行，第二个命令会忽略调试选项：</p>
-
 <ul>
 <li><code>java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8000 test</code></li>
 <li><code>java test -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8000</code></li>
 </ul>
-
 <p>主要参数。suspend=y时，程序启动会先挂起，IDE连接后才会运行；suspend=n时，程序启动会直接运行。address后面为端口号，不与其它端口重合即可。</p>
-
-<h3 id="2-启动idea连接调试">2、启动Idea连接调试</h3>
-
+<h3 id="2idea">2、启动Idea连接调试</h3>
 <p>使用idea打开调试项目的源码工程</p>
-
 <p>Run -&gt; Edit Configurations , 点“加号” -&gt; remote，然后填上被调试程序所在主机的ip以及上面的address对应端口号，并选择源码所在的module。</p>
-
 <p>添加后debug运行，剩下的和本地调试相同。</p>
-
-<h1 id="hadoop-远程调试">Hadoop 远程调试</h1>
-
+<h1 id="hadoop-">Hadoop 远程调试</h1>
 <p>思路和上面的操作一致。下面以调试HDFS中的namenode为例。</p>
-
-<h2 id="具体操作-1">具体操作</h2>
-
-<h3 id="1-修改hadoop启动参数为debug模式">1、修改Hadoop启动参数为debug模式</h3>
-
+<h2 id="heading-1">具体操作</h2>
+<h3 id="1hadoopdebug">1、修改Hadoop启动参数为debug模式</h3>
 <p>如果需要调试namenode服务，在<code>etc/hadoop/hadoop-env.sh</code>文件后添加：</p>
-
-<p><code>export HDFS_NAMENODE_OPTS=&quot;-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8000&quot;</code></p>
-
+<p><code>export HDFS_NAMENODE_OPTS=&quot;-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8000&quot; </code></p>
 <p>HDFS启动的jvm主要为namenode和datanode，jvm启动的参数设置在<code>etc/hadoop/hadoop-env.sh</code>中。其中namenode启动参数环境变量为 <code>HDFS_NAMENODE_OPTS</code>，datanode为 <code>HDFS_DATANODE_OPTS</code>（针对Hadoop3，hadoop2的设置为<code>HADOOP_NAMENODE_OPTS</code> <code>HADOOP_NAMENODE_OPTS</code>）。YARN等服务对应的环境变量需要另查。</p>
-
-<h3 id="2-启动服务">2、启动服务</h3>
-
+<h3 id="2">2、启动服务</h3>
 <p><code>sbin/start-dfs.sh</code>  或者 <code>bin/hdfs --daemon start namenode</code>仅启动namenode</p>
-
-<h3 id="3-启动idea连接服务">3、启动idea连接服务</h3>
-
+<h3 id="3idea">3、启动idea连接服务</h3>
 <p>下载源码并导入到工程（可以只导入需要调试的部分）</p>
-
 <p>Run -&gt; Edit Configurations , 点“加号” -&gt; remote，然后填上被调试程序所在主机的ip以及上面的address对应端口号，并选择需要调试的module。</p>
-
-<h2 id="踩坑">踩坑</h2>
-
+<h2 id="heading-2">踩坑</h2>
 <ul>
-<li><p>不建议像某些博客中写的直接修改<code>HADOOP_OPTS</code>变量，容易发生端口冲突等问题（在Hadoop 3.1.0上运行出错）</p></li>
-
-<li><p>注意指定的端口避免冲突，如一台主机上同时运行namenode和datanode服务时端口要分开。</p></li>
-
-<li><p>注意jdk版本的不同需要设置不同的调试参数。</p></li>
+<li>
+<p>不建议像某些博客中写的直接修改<code>HADOOP_OPTS</code>变量，容易发生端口冲突等问题（在Hadoop 3.1.0上运行出错）</p>
+</li>
+<li>
+<p>注意指定的端口避免冲突，如一台主机上同时运行namenode和datanode服务时端口要分开。</p>
+</li>
+<li>
+<p>注意jdk版本的不同需要设置不同的调试参数。</p>
+</li>
 </ul>
-
-<h2 id="未解之坑">未解之坑</h2>
-
+<h2 id="heading-3">未解之坑</h2>
 <p>使用一台服务器通过Docker运行4个容器组建Hadoop集群，主机能够直接通过端口访问Docker内容器的服务，当无法通过debug端口连接上容器内的调试程序，<strong>只能通过内部端口映射到外部主机后访问</strong>。</p>
-
 <p>google上有类似问题未解决。</p>
-
-<h1 id="总结">总结</h1>
-
+<h1 id="heading-4">总结</h1>
 <p>实质上比较简单，主要是踩坑，特别是docker内部一直连不上的坑，以及某些博客比较早已经不适用于Hadoop 3.1.0。</p>
-
 <p>在hadoope-env.sh文件中设置需要调试服务的jvm启动参数，然后启动idea导入源码后连接即可。</p>
 
 </div>
@@ -410,7 +375,7 @@ jdk3 及以前: <code>-Xnoagent -Djava.compiler=NONE -Xdebug -Xrunjdwp:transport
       </li></ul>
   </nav>
 </section><div class='copyright'>
-  <p> &copy; 2018-2019 extendswind </p>
+  <p> &copy; 2018-2020 extendswind </p>
 </div>
 
         </div>

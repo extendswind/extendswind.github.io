@@ -7,7 +7,7 @@ manjaro的xfce版也是如此，不知道是不是linux下xfce的通病。
 主要是搜索的时候百度的结果很奇葩&hellip;
 用关键字 beep of xfce4 搜到了arch wiki下的内容，原来这玩意叫pc speaker，针对不同的情况有不同的解决方案。
 最简单粗暴的方式 内核中加载了pcspkr模块导致的主板声音，rmmod移除此模块，然后/etc/modprobe.d文件夹下加入黑名单，使开机过程不加载。
- rmmod pcspkr echo &ldquo;blacklist pcspkr&rdquo; &gt; /etc/modprobe.d/nobeep.conf  具体参考 https://wiki.archlinux.org/index.php/PC_speaker'>
+  rmmod pcspkr echo &ldquo;blacklist pcspkr&rdquo; &gt; /etc/modprobe.d/nobeep.conf 具体参考 https://wiki.archlinux.org/index.php/PC_speaker'>
 <meta name='theme-color' content='#cccccc'>
 
 <meta property='og:title' content='linux 关闭主板上的蜂鸣器声音 • A Notebook of Extendswind'>
@@ -16,12 +16,12 @@ manjaro的xfce版也是如此，不知道是不是linux下xfce的通病。
 主要是搜索的时候百度的结果很奇葩&hellip;
 用关键字 beep of xfce4 搜到了arch wiki下的内容，原来这玩意叫pc speaker，针对不同的情况有不同的解决方案。
 最简单粗暴的方式 内核中加载了pcspkr模块导致的主板声音，rmmod移除此模块，然后/etc/modprobe.d文件夹下加入黑名单，使开机过程不加载。
- rmmod pcspkr echo &ldquo;blacklist pcspkr&rdquo; &gt; /etc/modprobe.d/nobeep.conf  具体参考 https://wiki.archlinux.org/index.php/PC_speaker'>
+  rmmod pcspkr echo &ldquo;blacklist pcspkr&rdquo; &gt; /etc/modprobe.d/nobeep.conf 具体参考 https://wiki.archlinux.org/index.php/PC_speaker'>
 <meta property='og:url' content='https://extendswind.top/posts/technical/mainboard_speaker_close/'>
 <meta property='og:site_name' content='A Notebook of Extendswind'>
 <meta property='og:type' content='article'><meta property='article:section' content='posts'><meta property='article:tag' content='linux'><meta property='article:published_time' content='2019-01-25T10:59:49&#43;08:00'/><meta property='article:modified_time' content='2019-01-25T10:59:49&#43;08:00'/><meta name='twitter:card' content='summary'>
 
-<meta name="generator" content="Hugo 0.58.3" />
+<meta name="generator" content="Hugo 0.62.0" />
 
   <title>linux 关闭主板上的蜂鸣器声音 • A Notebook of Extendswind</title>
   <link rel='canonical' href='https://extendswind.top/posts/technical/mainboard_speaker_close/'>
@@ -189,29 +189,18 @@ if (!doNotTrack) {
   
 
   <div class='container entry-content'>
-  
-
-<p>在从deepin的kdd桌面换到xfce桌面后，命令行和界面操作上动不动会让主机响一声。</p>
-
+  <p>在从deepin的kdd桌面换到xfce桌面后，命令行和界面操作上动不动会让主机响一声。</p>
 <p>manjaro的xfce版也是如此，不知道是不是linux下xfce的通病。</p>
-
 <p>主要是搜索的时候百度的结果很奇葩&hellip;</p>
-
 <p>用关键字 beep of xfce4 搜到了arch wiki下的内容，原来这玩意叫pc speaker，针对不同的情况有不同的解决方案。</p>
-
-<h3 id="最简单粗暴的方式">最简单粗暴的方式</h3>
-
+<h3 id="heading">最简单粗暴的方式</h3>
 <p>内核中加载了pcspkr模块导致的主板声音，rmmod移除此模块，然后/etc/modprobe.d文件夹下加入黑名单，使开机过程不加载。</p>
-
 <blockquote>
-<h1 id="rmmod-pcspkr">rmmod pcspkr</h1>
-
-<h1 id="echo-blacklist-pcspkr-etc-modprobe-d-nobeep-conf">echo &ldquo;blacklist pcspkr&rdquo; &gt; /etc/modprobe.d/nobeep.conf</h1>
 </blockquote>
-
-<h3 id="具体参考">具体参考</h3>
-
-<p><a href="https://wiki.archlinux.org/index.php/PC_speaker" target="_blank">https://wiki.archlinux.org/index.php/PC_speaker</a></p>
+<h1 id="rmmod-pcspkr">rmmod pcspkr</h1>
+<h1 id="echo-blacklist-pcspkr--etcmodprobednobeepconf">echo &ldquo;blacklist pcspkr&rdquo; &gt; /etc/modprobe.d/nobeep.conf</h1>
+<h3 id="heading-1">具体参考</h3>
+<p><a href="https://wiki.archlinux.org/index.php/PC_speaker">https://wiki.archlinux.org/index.php/PC_speaker</a></p>
 
 </div>
 
@@ -249,8 +238,8 @@ if (!doNotTrack) {
  Previous</span>
         <span class='screen-reader-text'>Previous post: </span>manjaro AwesomeWM 上使用双显示器</a>
     </div><div class='next-entry sep-before'>
-      <a href='/posts/technical/raspberry_install_os/'>
-        <span class='screen-reader-text'>Next post: </span>树莓派从烧录系统到通过wifi远程访问（新树莓派配置，无显示器、网线、键盘）<span aria-hidden='true'>Next <svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+      <a href='/posts/technical/anki_and_anki_server/'>
+        <span class='screen-reader-text'>Next post: </span>anki的使用以及anki server的配置<span aria-hidden='true'>Next <svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
   
   <line x1="4" y1="12" x2="20" y2="12"/>
   <polyline points="14 6 20 12 14 18"/>
@@ -290,7 +279,7 @@ if (!doNotTrack) {
       </li></ul>
   </nav>
 </section><div class='copyright'>
-  <p> &copy; 2018-2019 extendswind </p>
+  <p> &copy; 2018-2020 extendswind </p>
 </div>
 
         </div>

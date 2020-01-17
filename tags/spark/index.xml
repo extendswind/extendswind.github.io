@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>spark on A Notebook of Extendswind</title>
@@ -25,7 +25,7 @@ InputFormat的修改可以参考TextInputFormat，继承FileInputFormat后，重
 `./spark-shell &amp;ndash;jars newInputFormat.jar
 运行的代码和上面差不多，import相关的包后
 val hFile = sc.newAPIHadoopFile(&amp;#34;hdfs://hadoopmaster:9000/user/sparkl/README.md&amp;#34;, classOf[NewTextInputFormat], classOf[Text], classOf[Text]) 一些坑 序列化问题 在读取文件后使用first或者collect时，出现下面的错误
- ERROR scheduler.TaskSetManager: Task 0.0 in stage 2.0 (TID 18) had a not serializable result: org.apache.hadoop.io.IntWritable Serialization stack: - object not serializable (class: org.apache.hadoop.io.IntWritable, value: 35) - element of array (index: 0) - array (class [Lorg.</description>
+  ERROR scheduler.TaskSetManager: Task 0.0 in stage 2.0 (TID 18) had a not serializable result: org.apache.hadoop.io.IntWritable Serialization stack: - object not serializable (class: org.apache.hadoop.io.IntWritable, value: 35) - element of array (index: 0) - array (class [Lorg.</description>
     </item>
     
   </channel>

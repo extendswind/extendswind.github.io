@@ -7,8 +7,8 @@
 官网上给了集群拓扑的基本说明（!(Rack Awareness)[https://hadoop.apache.org/docs/current/hadoop-project-dist/hadoop-common/RackAwareness.html]），给出来的那两段脚本看得有点懵，就自己试了一下，写了个更简单的。
 其实只是Hadoop会调用脚本，将多个Datanode的ip作为输入，每次最多输入的ip数设置在net.topology.script.number.args，将输入的ip转换成/rack-num的形式(以/开头的字符串)，用标准输出流（如Python的print）输出结果。
 具体操作 编写脚本 下面的脚本在输入
-192.168.3.1 192.168.3.4  时，会输出
-/rack1 /rack4  #!/bin/python3 import sys # 第一个参数是脚本路径，直接pop掉 sys.argv.pop(0) # 0-3 rack0 # 4-7 rack1 # 8-11 rack2 # ... # 其它的参数里每个参数都是一个ip，此处直接取ip的最后一位除以4作为Racknum # 实践上可以读文件确定ip的对应关系 for ip in sys.argv: hostNum = int(ip.split(&#34;.&#34;)[3]) print(&#34;/rack&#34; &#43; str(int(hostNum/4))) 设置配置参数 &lt;property&gt; &lt;name&gt;net.topology.script.file.name&lt;/name&gt; &lt;value&gt;/home/sparkl/hadoop/etc/hadoop/topology.py&lt;/value&gt; &lt;/property&gt; 重启集群即可
+192.168.3.1 192.168.3.4 时，会输出
+/rack1 /rack4 #!/bin/python3 import sys # 第一个参数是脚本路径，直接pop掉 sys.argv.pop(0) # 0-3 rack0 # 4-7 rack1 # 8-11 rack2 # ... # 其它的参数里每个参数都是一个ip，此处直接取ip的最后一位除以4作为Racknum # 实践上可以读文件确定ip的对应关系 for ip in sys.argv: hostNum = int(ip.split(&#34;.&#34;)[3]) print(&#34;/rack&#34; &#43; str(int(hostNum/4))) 设置配置参数 &lt;property&gt; &lt;name&gt;net.topology.script.file.name&lt;/name&gt; &lt;value&gt;/home/sparkl/hadoop/etc/hadoop/topology.py&lt;/value&gt; &lt;/property&gt; 重启集群即可
 验证结果 以下命令能够直接获取某一个文件的分布状态，以及总的rack数量：
 hdfs fsck /readme.md -files -blocks -racks
 貌似没有直接以树状的形式输出集群拓扑的命令，namenode的日志中能看到datanode在连接时的拓扑位置。'>
@@ -20,8 +20,8 @@ hdfs fsck /readme.md -files -blocks -racks
 官网上给了集群拓扑的基本说明（!(Rack Awareness)[https://hadoop.apache.org/docs/current/hadoop-project-dist/hadoop-common/RackAwareness.html]），给出来的那两段脚本看得有点懵，就自己试了一下，写了个更简单的。
 其实只是Hadoop会调用脚本，将多个Datanode的ip作为输入，每次最多输入的ip数设置在net.topology.script.number.args，将输入的ip转换成/rack-num的形式(以/开头的字符串)，用标准输出流（如Python的print）输出结果。
 具体操作 编写脚本 下面的脚本在输入
-192.168.3.1 192.168.3.4  时，会输出
-/rack1 /rack4  #!/bin/python3 import sys # 第一个参数是脚本路径，直接pop掉 sys.argv.pop(0) # 0-3 rack0 # 4-7 rack1 # 8-11 rack2 # ... # 其它的参数里每个参数都是一个ip，此处直接取ip的最后一位除以4作为Racknum # 实践上可以读文件确定ip的对应关系 for ip in sys.argv: hostNum = int(ip.split(&#34;.&#34;)[3]) print(&#34;/rack&#34; &#43; str(int(hostNum/4))) 设置配置参数 &lt;property&gt; &lt;name&gt;net.topology.script.file.name&lt;/name&gt; &lt;value&gt;/home/sparkl/hadoop/etc/hadoop/topology.py&lt;/value&gt; &lt;/property&gt; 重启集群即可
+192.168.3.1 192.168.3.4 时，会输出
+/rack1 /rack4 #!/bin/python3 import sys # 第一个参数是脚本路径，直接pop掉 sys.argv.pop(0) # 0-3 rack0 # 4-7 rack1 # 8-11 rack2 # ... # 其它的参数里每个参数都是一个ip，此处直接取ip的最后一位除以4作为Racknum # 实践上可以读文件确定ip的对应关系 for ip in sys.argv: hostNum = int(ip.split(&#34;.&#34;)[3]) print(&#34;/rack&#34; &#43; str(int(hostNum/4))) 设置配置参数 &lt;property&gt; &lt;name&gt;net.topology.script.file.name&lt;/name&gt; &lt;value&gt;/home/sparkl/hadoop/etc/hadoop/topology.py&lt;/value&gt; &lt;/property&gt; 重启集群即可
 验证结果 以下命令能够直接获取某一个文件的分布状态，以及总的rack数量：
 hdfs fsck /readme.md -files -blocks -racks
 貌似没有直接以树状的形式输出集群拓扑的命令，namenode的日志中能看到datanode在连接时的拓扑位置。'>
@@ -29,7 +29,7 @@ hdfs fsck /readme.md -files -blocks -racks
 <meta property='og:site_name' content='A Notebook of Extendswind'>
 <meta property='og:type' content='article'><meta property='article:section' content='posts'><meta property='article:tag' content='hadoop'><meta property='article:published_time' content='2018-12-12T11:20:00&#43;08:00'/><meta property='article:modified_time' content='2018-12-12T11:20:00&#43;08:00'/><meta name='twitter:card' content='summary'>
 
-<meta name="generator" content="Hugo 0.58.3" />
+<meta name="generator" content="Hugo 0.62.0" />
 
   <title>Hadoop 机架（集群拓扑）设置 • A Notebook of Extendswind</title>
   <link rel='canonical' href='https://extendswind.top/posts/technical/hadoop_rack_awareness/'>
@@ -200,45 +200,29 @@ if (!doNotTrack) {
     <span>Table of Contents</span>
   </summary>
   <nav id="TableOfContents">
-<ul>
-<li><a href="#具体操作">具体操作</a>
-<ul>
-<li><a href="#编写脚本">编写脚本</a></li>
-<li><a href="#设置配置参数">设置配置参数</a></li>
-</ul></li>
-<li><a href="#验证结果">验证结果</a></li>
-</ul>
+  <ul>
+    <li><a href="#heading-1">编写脚本</a></li>
+    <li><a href="#heading-2">设置配置参数</a></li>
+  </ul>
 </nav>
 </details>
 
 
   <div class='container entry-content'>
-  
-
-<p>Hadoop会通过集群的拓扑（节点在交换机的连接形式）优化文件的存储，降低跨交换机的数据通信，使副本跨交换机以保证数据安全。</p>
-
+  <p>Hadoop会通过集群的拓扑（节点在交换机的连接形式）优化文件的存储，降低跨交换机的数据通信，使副本跨交换机以保证数据安全。</p>
 <p>但Hadoop没有默认的集群拓扑识别机制，需要使用额外的java类或脚本两种形式设置。</p>
-
-<p>官网上给了集群拓扑的基本说明（!(Rack Awareness)[<a href="https://hadoop.apache.org/docs/current/hadoop-project-dist/hadoop-common/RackAwareness.html]），给出来的那两段脚本看得有点懵，就自己试了一下，写了个更简单的。" target="_blank">https://hadoop.apache.org/docs/current/hadoop-project-dist/hadoop-common/RackAwareness.html]），给出来的那两段脚本看得有点懵，就自己试了一下，写了个更简单的。</a></p>
-
+<p>官网上给了集群拓扑的基本说明（!(Rack Awareness)[https://hadoop.apache.org/docs/current/hadoop-project-dist/hadoop-common/RackAwareness.html]），给出来的那两段脚本看得有点懵，就自己试了一下，写了个更简单的。</p>
 <p>其实只是Hadoop会调用脚本，将多个Datanode的ip作为输入，每次最多输入的ip数设置在<code>net.topology.script.number.args</code>，将输入的ip转换成<code>/rack-num</code>的形式(以/开头的字符串)，用标准输出流（如Python的print）输出结果。</p>
-
-<h1 id="具体操作">具体操作</h1>
-
-<h2 id="编写脚本">编写脚本</h2>
-
+<h1 id="heading">具体操作</h1>
+<h2 id="heading-1">编写脚本</h2>
 <p>下面的脚本在输入</p>
-
 <pre><code>192.168.3.1
 192.168.3.4
-</code></pre>
-
-<p>时，会输出</p>
-
+</code></pre><p>时，会输出</p>
 <pre><code>/rack1
 /rack4
-</code></pre>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e">#!/bin/python3</span>
+</code></pre><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">
+<span style="color:#75715e">#!/bin/python3</span>
 <span style="color:#f92672">import</span> sys
 
 <span style="color:#75715e"># 第一个参数是脚本路径，直接pop掉</span>
@@ -252,21 +236,18 @@ sys<span style="color:#f92672">.</span>argv<span style="color:#f92672">.</span>p
 <span style="color:#75715e"># 其它的参数里每个参数都是一个ip，此处直接取ip的最后一位除以4作为Racknum</span>
 <span style="color:#75715e"># 实践上可以读文件确定ip的对应关系</span>
 <span style="color:#66d9ef">for</span> ip <span style="color:#f92672">in</span> sys<span style="color:#f92672">.</span>argv:      
-    hostNum <span style="color:#f92672">=</span> int(ip<span style="color:#f92672">.</span>split(<span style="color:#e6db74">&#34;.&#34;</span>)[<span style="color:#ae81ff">3</span>])
-    <span style="color:#66d9ef">print</span>(<span style="color:#e6db74">&#34;/rack&#34;</span> <span style="color:#f92672">+</span> str(int(hostNum<span style="color:#f92672">/</span><span style="color:#ae81ff">4</span>)))</code></pre></div>
-<h2 id="设置配置参数">设置配置参数</h2>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#f92672">&lt;property&gt;</span>
-  <span style="color:#f92672">&lt;name&gt;</span>net.topology.script.file.name<span style="color:#f92672">&lt;/name&gt;</span>
-  <span style="color:#f92672">&lt;value&gt;</span>/home/sparkl/hadoop/etc/hadoop/topology.py<span style="color:#f92672">&lt;/value&gt;</span>
-<span style="color:#f92672">&lt;/property&gt;</span></code></pre></div>
-<p>重启集群即可</p>
+    hostNum <span style="color:#f92672">=</span> int(ip<span style="color:#f92672">.</span>split(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">.</span><span style="color:#e6db74">&#34;</span>)[<span style="color:#ae81ff">3</span>])
+    <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">/rack</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">+</span> str(int(hostNum<span style="color:#f92672">/</span><span style="color:#ae81ff">4</span>)))
 
-<h1 id="验证结果">验证结果</h1>
-
+</code></pre></div><h2 id="heading-2">设置配置参数</h2>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#f92672">&lt;property</span><span style="color:#f92672">&gt;</span>
+  <span style="color:#f92672">&lt;name</span><span style="color:#f92672">&gt;</span>net.topology.script.file.name<span style="color:#f92672">&lt;/name&gt;</span>
+  <span style="color:#f92672">&lt;value</span><span style="color:#f92672">&gt;</span>/home/sparkl/hadoop/etc/hadoop/topology.py<span style="color:#f92672">&lt;/value&gt;</span>
+<span style="color:#f92672">&lt;/property&gt;</span>
+</code></pre></div><p>重启集群即可</p>
+<h1 id="heading-3">验证结果</h1>
 <p>以下命令能够直接获取某一个文件的分布状态，以及总的rack数量：</p>
-
 <p><code>hdfs fsck /readme.md -files -blocks -racks</code></p>
-
 <p>貌似没有直接以树状的形式输出集群拓扑的命令，namenode的日志中能看到datanode在连接时的拓扑位置。</p>
 
 </div>
@@ -346,7 +327,7 @@ sys<span style="color:#f92672">.</span>argv<span style="color:#f92672">.</span>p
       </li></ul>
   </nav>
 </section><div class='copyright'>
-  <p> &copy; 2018-2019 extendswind </p>
+  <p> &copy; 2018-2020 extendswind </p>
 </div>
 
         </div>

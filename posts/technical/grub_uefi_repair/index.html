@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang='en'><head>
+  <meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<meta name='description' content='起因：EFI分区被删除导致引导问题。
+症状：
+  通过安装其它系统的方式。正好想试试其它的linux发行版，就在另一个分区装了deepin，完成后硬盘没有发现UEFI引导；然后又尝试装了openSUSE，仍没在硬盘发现UEFI引导。（失败）
+  通过live cd重新在efi分区安装grub。（wiki推荐的一般方式，仍失败）
+  通过live cd安装refind。（仍不行）
+  安装的系统可以通过manjaro live cd直接boot。
+  安装win10可以发现UEFI的引导方式（只启动win10，安装grub也只启动win10）
+  引导的问题网上的解决方案很多，对于一些新的电脑UEFI的方式应该很好修复，但一些比较老的电脑可能出现各种坑问题，用legacy的引导还是稳定一点。
+UEFI的引导通过grub的各种安装尝试都无法被主板识别，一直检测不到硬盘UEFI的启动项。怀疑主板并不支持linux grub2写入的UEFI引导信息，只支持windows的。最后通过安装win10，用refind覆盖win10的efi启动条目解决问题。
+最常规的修复方式 通过live cd 将系统烧入U盘，启动U盘进入系统后修复。涉及两种方式：
+ 通过boot-repair grub-install 命令安装  还有通过grub命令行的方式，不常用没折腾。
+建议烧入的系统为ubuntu和manjaro。deepin的live cd在我的电脑上有显示的bug，而且添加ppa有一点坑。openSUSE上的grub命令和debian系arch系不怎么一样。ubuntu的主要优点在于可以通过安装boot-repair进行一键修复，manjaro和arch的live cd提供了直接的manjaro-chroot以及arch-chroot，进入后直接安装grub就行，而且manjaro的live cd支持直接引导启动efi分区中的系统。
+在下面的两种操作之前，最好通过gparted等软件新建一个efi分区（fat32,一般几十兆，openSUSE建议不小于500M，带efi标签）。
+基于ubuntu的boot-repair 网上的资料多操作也不复杂，主要注意U盘从UEFI模式启动。
+sudo add-apt-repository ppa:yannubuntu/boot-repair -y sudo apt-get update sudo apt-get install boot-repair -y sudo boot-repair grub-install 命令安装 使用manjaro live cd，其它的系统可能需要安装grub2、efibootmgr、grub-efi-amd64、os-prober等包。
+以下需要root权限，sudo -i或命令前加sudo
+1、 查看要引导系统的分区和efi分区的编号（fdisk -l） 2、 挂载引导系统的分区（一般 mount /dev/sda4 /mnt） 3、 挂载efi分区到系统分区的/boot/efi目录（`mount /dev/sda2 /mnt/boot/efi） 4、 chroot到硬盘系统分区'>
+<meta name='theme-color' content='#cccccc'>
+
+<meta property='og:title' content='一次修复linux的efi引导的集中方法总结记录 • A Notebook of Extendswind'>
+<meta property='og:description' content='起因：EFI分区被删除导致引导问题。
+症状：
+  通过安装其它系统的方式。正好想试试其它的linux发行版，就在另一个分区装了deepin，完成后硬盘没有发现UEFI引导；然后又尝试装了openSUSE，仍没在硬盘发现UEFI引导。（失败）
+  通过live cd重新在efi分区安装grub。（wiki推荐的一般方式，仍失败）
+  通过live cd安装refind。（仍不行）
+  安装的系统可以通过manjaro live cd直接boot。
+  安装win10可以发现UEFI的引导方式（只启动win10，安装grub也只启动win10）
+  引导的问题网上的解决方案很多，对于一些新的电脑UEFI的方式应该很好修复，但一些比较老的电脑可能出现各种坑问题，用legacy的引导还是稳定一点。
+UEFI的引导通过grub的各种安装尝试都无法被主板识别，一直检测不到硬盘UEFI的启动项。怀疑主板并不支持linux grub2写入的UEFI引导信息，只支持windows的。最后通过安装win10，用refind覆盖win10的efi启动条目解决问题。
+最常规的修复方式 通过live cd 将系统烧入U盘，启动U盘进入系统后修复。涉及两种方式：
+ 通过boot-repair grub-install 命令安装  还有通过grub命令行的方式，不常用没折腾。
+建议烧入的系统为ubuntu和manjaro。deepin的live cd在我的电脑上有显示的bug，而且添加ppa有一点坑。openSUSE上的grub命令和debian系arch系不怎么一样。ubuntu的主要优点在于可以通过安装boot-repair进行一键修复，manjaro和arch的live cd提供了直接的manjaro-chroot以及arch-chroot，进入后直接安装grub就行，而且manjaro的live cd支持直接引导启动efi分区中的系统。
+在下面的两种操作之前，最好通过gparted等软件新建一个efi分区（fat32,一般几十兆，openSUSE建议不小于500M，带efi标签）。
+基于ubuntu的boot-repair 网上的资料多操作也不复杂，主要注意U盘从UEFI模式启动。
+sudo add-apt-repository ppa:yannubuntu/boot-repair -y sudo apt-get update sudo apt-get install boot-repair -y sudo boot-repair grub-install 命令安装 使用manjaro live cd，其它的系统可能需要安装grub2、efibootmgr、grub-efi-amd64、os-prober等包。
+以下需要root权限，sudo -i或命令前加sudo
+1、 查看要引导系统的分区和efi分区的编号（fdisk -l） 2、 挂载引导系统的分区（一般 mount /dev/sda4 /mnt） 3、 挂载efi分区到系统分区的/boot/efi目录（`mount /dev/sda2 /mnt/boot/efi） 4、 chroot到硬盘系统分区'>
+<meta property='og:url' content='https://extendswind.top/posts/technical/grub_uefi_repair/'>
+<meta property='og:site_name' content='A Notebook of Extendswind'>
+<meta property='og:type' content='article'><meta property='article:section' content='posts'><meta property='article:tag' content='linux'><meta property='article:published_time' content='2019-11-26T20:59:49&#43;08:00'/><meta property='article:modified_time' content='2019-11-26T20:59:49&#43;08:00'/><meta name='twitter:card' content='summary'>
+
+<meta name="generator" content="Hugo 0.62.0" />
+
+  <title>一次修复linux的efi引导的集中方法总结记录 • A Notebook of Extendswind</title>
+  <link rel='canonical' href='https://extendswind.top/posts/technical/grub_uefi_repair/'>
+  
+  
+  <link rel='icon' href='/images/wind.jpeg'>
+<link rel='stylesheet' href='/assets/css/main.6a060eb7.css'><link rel='stylesheet' href='/css/custom.css'><style>
+:root{--color-accent:#cccccc;}
+</style>
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-125329544-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+  
+
+</head>
+<body class='page type-posts has-sidebar'>
+
+  <div class='site'><div id='sidebar' class='sidebar'>
+  <a class='screen-reader-text' href='#main-menu'>Skip to Main Menu</a>
+
+  <div class='container'><section class='widget widget-about sep-after'>
+  <header>
+    
+    <div class='logo'>
+      <a href='/'>
+        <img src='/images/wind.jpeg'>
+      </a>
+    </div>
+    
+    <h2 class='title site-title '>
+      <a href='/'>
+      extendswind
+      </a>
+    </h2>
+    <div class='desc'>
+    
+    </div>
+  </header>
+
+</section>
+<section class='widget widget-sidebar_menu sep-after'><nav id='sidebar-menu' class='menu sidebar-menu' aria-label='Sidebar Menu'>
+    <div class='container'>
+      <ul><li class='item'>
+  <a href='/'>Home</a></li><li class='item'>
+  <a href='/posts'>Posts</a></li><li class='item'>
+  <a href='/categories'>Categories</a></li><li class='item'>
+  <a href='https://github.com/extendswind'>GitHub</a></li><li class='item'>
+  <a href='http://www.cnblogs.com/fly2wind/'>Cnblog</a></li></ul>
+    </div>
+  </nav>
+
+</section><section class='widget widget-taxonomy_cloud sep-after'>
+  <header>
+    <h4 class='title widget-title'>Tags</h4>
+  </header>
+
+  <div class='container list-container'>
+  <ul class='list taxonomy-cloud'><li>
+        <a href='/tags/blog/' style='font-size:1em'>blog</a>
+      </li><li>
+        <a href='/tags/design-patterns/' style='font-size:1em'>design patterns</a>
+      </li><li>
+        <a href='/tags/gis/' style='font-size:1em'>GIS</a>
+      </li><li>
+        <a href='/tags/git/' style='font-size:1em'>git</a>
+      </li><li>
+        <a href='/tags/hadoop/' style='font-size:1em'>hadoop</a>
+      </li><li>
+        <a href='/tags/java/' style='font-size:1em'>java</a>
+      </li><li>
+        <a href='/tags/life/' style='font-size:1em'>life</a>
+      </li><li>
+        <a href='/tags/linux/' style='font-size:1em'>linux</a>
+      </li><li>
+        <a href='/tags/log4j/' style='font-size:1em'>log4j</a>
+      </li><li>
+        <a href='/tags/raspberry/' style='font-size:1em'>raspberry</a>
+      </li><li>
+        <a href='/tags/reading/' style='font-size:1em'>reading</a>
+      </li><li>
+        <a href='/tags/software/' style='font-size:1em'>software</a>
+      </li><li>
+        <a href='/tags/spark/' style='font-size:1em'>spark</a>
+      </li></ul>
+</div>
+
+
+</section>
+</div>
+
+  <div class='sidebar-overlay'></div>
+</div><div class='main'><a class='screen-reader-text' href='#content'>Skip to Content</a>
+
+<button id='sidebar-toggler' class='sidebar-toggler' aria-controls='sidebar'>
+  <span class='screen-reader-text'>Toggle Sidebar</span>
+  <span class='open'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="3" y1="12" x2="21" y2="12" />
+  <line x1="3" y1="6" x2="21" y2="6" />
+  <line x1="3" y1="18" x2="21" y2="18" />
+  
+</svg>
+</span>
+  <span class='close'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="18" y1="6" x2="6" y2="18" />
+  <line x1="6" y1="6" x2="18" y2="18" />
+  
+</svg>
+</span>
+</button><div class='header-widgets'>
+        <div class='container'></div>
+      </div>
+
+      <header id='header' class='header site-header'>
+        <div class='container sep-after'>
+          <div class='header-info'><p class='site-title title'>A Notebook of Extendswind</p><p class='desc site-desc'>a simple blog site</p>
+          </div>
+        </div>
+      </header>
+
+      <main id='content'>
+
+
+<article lang='en' class='entry'>
+  <header class='header entry-header'>
+  <div class='container sep-after'>
+    <div class='header-info'>
+      <h1 class='title'>一次修复linux的efi引导的集中方法总结记录</h1>
+      
+
+    </div>
+    <div class='entry-meta'>
+  <span class='posted-on'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+  <line x1="16" y1="2" x2="16" y2="6"/>
+  <line x1="8" y1="2" x2="8" y2="6"/>
+  <line x1="3" y1="10" x2="21" y2="10"/>
+  
+</svg>
+<span class='screen-reader-text'>Posted on </span>
+  <time class='entry-date' datetime='2019-11-26T20:59:49&#43;08:00'>2019, Nov 26</time>
+</span>
+
+  
+  
+
+</div>
+
+
+  </div>
+</header>
+
+  
+  
+<details class='container entry-toc' open>
+  <summary class='title'>
+    <span>Table of Contents</span>
+  </summary>
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#ubuntuboot-repair">基于ubuntu的boot-repair</a></li>
+    <li><a href="#grub-install-">grub-install 命令安装</a></li>
+  </ul>
+
+  <ul>
+    <li><a href="#refind-">refind 引导程序</a></li>
+    <li><a href="#win10">安装完仍默认启动win10</a></li>
+    <li><a href="#win10grub">win10启动几次就让grub引导消失的问题</a></li>
+    <li><a href="#uefi">启动时仍没有UEFI引导选项的问题</a></li>
+  </ul>
+</nav>
+</details>
+
+
+  <div class='container entry-content'>
+  <p>起因：EFI分区被删除导致引导问题。</p>
+<p>症状：</p>
+<ol>
+<li>
+<p>通过安装其它系统的方式。正好想试试其它的linux发行版，就在另一个分区装了deepin，完成后硬盘没有发现UEFI引导；然后又尝试装了openSUSE，仍没在硬盘发现UEFI引导。（失败）</p>
+</li>
+<li>
+<p>通过live cd重新在efi分区安装grub。（wiki推荐的一般方式，仍失败）</p>
+</li>
+<li>
+<p>通过live cd安装refind。（仍不行）</p>
+</li>
+<li>
+<p>安装的系统可以通过manjaro live cd直接boot。</p>
+</li>
+<li>
+<p>安装win10可以发现UEFI的引导方式（只启动win10，安装grub也只启动win10）</p>
+</li>
+</ol>
+<p>引导的问题网上的解决方案很多，对于一些新的电脑UEFI的方式应该很好修复，但一些比较老的电脑可能出现各种坑问题，用legacy的引导还是稳定一点。</p>
+<p>UEFI的引导通过grub的各种安装尝试都无法被主板识别，一直检测不到硬盘UEFI的启动项。怀疑主板并不支持linux grub2写入的UEFI引导信息，只支持windows的。最后通过安装win10，用refind覆盖win10的efi启动条目解决问题。</p>
+<h1 id="-live-cd">最常规的修复方式 通过live cd</h1>
+<p>将系统烧入U盘，启动U盘进入系统后修复。涉及两种方式：</p>
+<ol>
+<li>通过boot-repair</li>
+<li>grub-install 命令安装</li>
+</ol>
+<p>还有通过grub命令行的方式，不常用没折腾。</p>
+<p>建议烧入的系统为ubuntu和manjaro。deepin的live cd在我的电脑上有显示的bug，而且添加ppa有一点坑。openSUSE上的grub命令和debian系arch系不怎么一样。ubuntu的主要优点在于可以通过安装boot-repair进行一键修复，manjaro和arch的live cd提供了直接的manjaro-chroot以及arch-chroot，进入后直接安装grub就行，而且manjaro的live cd支持直接引导启动efi分区中的系统。</p>
+<p>在下面的两种操作之前，最好通过gparted等软件新建一个efi分区（fat32,一般几十兆，openSUSE建议不小于500M，带efi标签）。</p>
+<h2 id="ubuntuboot-repair">基于ubuntu的boot-repair</h2>
+<p>网上的资料多操作也不复杂，主要注意U盘从UEFI模式启动。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sudo add-apt-repository ppa:yannubuntu/boot-repair -y
+sudo apt-get update
+sudo apt-get install boot-repair -y
+sudo boot-repair
+</code></pre></div><h2 id="grub-install-">grub-install 命令安装</h2>
+<p>使用manjaro live cd，其它的系统可能需要安装grub2、efibootmgr、grub-efi-amd64、os-prober等包。</p>
+<p>以下需要root权限，<code>sudo -i</code>或命令前加<code>sudo</code></p>
+<p>1、 查看要引导系统的分区和efi分区的编号（<code>fdisk -l</code>）
+2、 挂载引导系统的分区（一般 <code>mount /dev/sda4 /mnt</code>）
+3、 挂载efi分区到系统分区的<code>/boot/efi</code>目录（`mount /dev/sda2 /mnt/boot/efi）
+4、 chroot到硬盘系统分区</p>
+<p>对于ubuntu</p>
+<pre><code>mount --bind /dev/ /mnt/dev
+mount --bind /proc /mnt/proc
+mount --bind /sys /mnt/sys
+chroot /mnt
+</code></pre><p>对于manjaro直接</p>
+<pre><code>manjaro-chroot /mnt
+</code></pre><p>5、 安装grub</p>
+<pre><code>grub-install --target=x86_64-efi /dev/sda2  # target默认是x86_64-efi
+grub-grub-mkconfig -o /boot/grub/grub.cfg
+update-grub
+</code></pre><h1 id="heading">各种操作和问题</h1>
+<p>上面的操作在一般较新的电脑上就能启动了。</p>
+<h2 id="refind-">refind 引导程序</h2>
+<p>可以在启动时动态检查和引导所有硬盘里efi分区里的配置，还可以设置各种主题。grub每次只能识别efi分区EFI目录下的某一个写好的配置。</p>
+<p>安装后直接运行<code>refind-install</code>脚本即可，也可以指定efi分区。</p>
+<h2 id="win10">安装完仍默认启动win10</h2>
+<p>UEFI支持一种安全模式，win10会独占UEFI，双系统时需要在win10中关闭安全启动。（没碰到，具体资料可搜）。</p>
+<p>其次，修改efi的引导顺序，进入win10后，使用bcdedit命令</p>
+<pre><code>bcdedit /enum  # 查看引导
+bcdedit /default {12277df3-07da-11e8-a54c-9f200771404e}  # 设置默认项
+
+# 如果上面的设置默认没有用，可以暴力修改windows的引导文件到其它的引导文件
+# refind可以改为其它的系统
+bcdedit /set {bootmgr} path \EFI\refind\refind_x64.efi   
+</code></pre><h2 id="win10grub">win10启动几次就让grub引导消失的问题</h2>
+<p>win10会默认修改UEFI的引导顺序。</p>
+<p>好像是win10 系统配置-&gt;常规 里的最后一个勾，用了上面的方式后，没怎么遇到这个问题。</p>
+<h2 id="uefi">启动时仍没有UEFI引导选项的问题</h2>
+<p>一般上面的操作能解决绝大多数电脑的，我的2代i3电脑开机f12的启动菜单中，怎么安装linux都出现不了UEFI菜单，但安装windows能，于是一般先装windows再改默认引导&hellip;</p>
+<p>一次windows的UEFI在装完系统第一次启动后也不显示无法选择，在BIOS里设置只允许UEFI启动，竟然启动了&hellip;.</p>
+<p>更坑爹的是，双硬盘时启动不了，通过换sata线的接口就启动了&hellip;</p>
+
+</div>
+
+  
+<footer class='entry-footer'>
+  <div class='container sep-before'><div class='categories'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M22,19a2,2,0,0,1-2,2H4a2,2,0,0,1-2-2V5A2,2,0,0,1,4,3H9l2,3h9a2,2,0,0,1,2,2Z"/>
+  
+</svg>
+<span class='screen-reader-text'>Categories: </span><a class='category' href='/categories/linux-desktop/'>linux desktop</a></div>
+<div class='tags'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M20.59,13.41l-7.17,7.17a2,2,0,0,1-2.83,0L2,12V2H12l8.59,8.59A2,2,0,0,1,20.59,13.41Z"/>
+  <line x1="7" y1="7" x2="7" y2="7"/>
+  
+</svg>
+<span class='screen-reader-text'>Tags: </span><a class='tag' href='/tags/linux/'>linux</a></div>
+
+  </div>
+</footer>
+
+
+</article>
+
+<nav class='entry-nav'>
+  <div class='container'><div class='prev-entry sep-before'>
+      <a href='/posts/technical/raspberry_scratch2_gpio_control.md/'>
+        <span aria-hidden='true'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="20" y1="12" x2="4" y2="12"/>
+  <polyline points="10 18 4 12 10 6"/>
+  
+</svg>
+ Previous</span>
+        <span class='screen-reader-text'>Previous post: </span>树莓派基于scratch2控制GPIO</a>
+    </div></div>
+</nav>
+
+
+
+
+      </main>
+
+      <footer id='footer' class='footer'>
+        <div class='container sep-before'><section class='widget widget-social_menu sep-after'><header>
+    <h4 class='title widget-title'>Contact</h4>
+  </header><nav aria-label='Social Menu'>
+    <ul><li>
+        <a href='https://github.com/extendswind' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Open Github account in new tab</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+  
+</svg>
+</a>
+      </li><li>
+        <a href='mailto:extendswind@foxmail.com' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Contact via Email</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+  <polyline points="22,6 12,13 2,6"/>
+  
+</svg>
+</a>
+      </li></ul>
+  </nav>
+</section><div class='copyright'>
+  <p> &copy; 2018-2020 extendswind </p>
+</div>
+
+        </div>
+      </footer>
+
+    </div>
+  </div><script>window.__assets_js_src="/assets/js/"</script>
+
+<script src='/assets/js/main.67d669ac.js'></script>
+
+</body>
+
+</html>
+

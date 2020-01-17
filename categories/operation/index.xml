@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Operation on A Notebook of Extendswind</title>
@@ -29,7 +29,7 @@ python2 需要将后面的xmlrpc.client改为xmlrpclib，并且import xmlrpclib
       <pubDate>Tue, 04 Sep 2018 10:30:00 +0800</pubDate>
       
       <guid>https://extendswind.top/posts/technical/hugo_blog_host_and_seo/</guid>
-      <description> 给博客加个域名准备长用，Hugo生成后一直放在github page上，为了让百度能搜到费了一堆事。
+      <description>给博客加个域名准备长用，Hugo生成后一直放在github page上，为了让百度能搜到费了一堆事。
 问题 如果只是在github page上弄个自己域名的网站，只需要在结果文件中添加一个CNAME文件，写入网站域名，然后在域名运营商提交解析。等待域名解析生效后即可通过域名访问。
 然后为了让搜索引擎能够检索，通过baidu、bing、google的站长工具提交链接。
 此时发生一个大bug，github因为某种原因限制了百度爬虫的进入，也就是百度上很少搜到github内网页的原因。

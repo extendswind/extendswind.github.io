@@ -1,28 +1,46 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>raspberry on A Notebook of Extendswind</title>
     <link>https://extendswind.top/tags/raspberry/</link>
     <description>Recent content in raspberry on A Notebook of Extendswind</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Mon, 04 Mar 2019 21:59:49 +0800</lastBuildDate>
+    <lastBuildDate>Fri, 25 Oct 2019 14:59:49 +0800</lastBuildDate>
     
 	<atom:link href="https://extendswind.top/tags/raspberry/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
-      <title>树莓派从烧录系统到通过wifi远程访问（新树莓派配置，无显示器、网线、键盘）</title>
-      <link>https://extendswind.top/posts/technical/raspberry_install_os/</link>
-      <pubDate>Mon, 04 Mar 2019 21:59:49 +0800</pubDate>
+      <title>树莓派基于scratch2控制GPIO</title>
+      <link>https://extendswind.top/posts/technical/raspberry_scratch2_gpio_control.md/</link>
+      <pubDate>Fri, 25 Oct 2019 14:59:49 +0800</pubDate>
       
-      <guid>https://extendswind.top/posts/technical/raspberry_install_os/</guid>
+      <guid>https://extendswind.top/posts/technical/raspberry_scratch2_gpio_control.md/</guid>
+      <description>感觉这方面的资料最好优先google英文的，中文博客上竟然连scratch2用的哪套GPIO的编号都找半天&amp;hellip;
+树莓派的apt仓库里有三个scratch版本，其中scratch为稳定版，scratch2和scratch3还在测试仓库，改成了基于跨平台技术electron的开发。我在树莓派3b上scratch3打开没反应，scratch2虽然是测试版，但使用没发现问题，打开速度上明显比scratch慢。
+scratch2相比scratch在GPIO上简化了大量的操作，不用通过广播的形式发送各种GPIO server的消息，将GPIO的操作简化成了两个函数。
+1. 安装Scratch2 sudo apt install scratch2
+2. 控制相关的GPIO口 更多模块 -&amp;gt; 添加扩展 选择Pi GPIO
+下面会多出两个控制GPIO的函数。
+set gpio *id* to *output high* 此函数用于设置gpio口，第一个指定GPIO的id，第二个指定功能，如输出高电平、输入低电平、输入模式。
+gpio *id* is high? 此函数用于控制语句中作为条件，判断当前gpio口是否为高电平，通常用在输入模式下检测传感器一类的输入。
+就这么简单，剩下的当成简单单片机用就行了。
+GPIO 针脚图 树莓派有多种GPIO的编号方式，使用python等调用需要指定具体的编码，scratch用的是下图这种（图源自树莓派官网）。</description>
+    </item>
+    
+    <item>
+      <title>树莓派从烧录系统到通过wifi远程访问（新树莓派配置，无显示器、网线、键盘）</title>
+      <link>https://extendswind.top/posts/technical/raspberry_from_install_to_remote_access/</link>
+      <pubDate>Fri, 25 Oct 2019 10:59:49 +0800</pubDate>
+      
+      <guid>https://extendswind.top/posts/technical/raspberry_from_install_to_remote_access/</guid>
       <description>网上教程很多，但是google和百度排在前面的博客操作起来各种问题，因此简单写写。
 1. 烧录系统 官网有可以系统可以下载，通常建议，有特殊需求可以考虑其它的几个系统。
 官网推荐使用balenaEtcher烧录系统。（很多博客推荐先一个工具格式化sd卡，然后win32imagewriter不知道是不是以前的做法）
 2. 配置系统 上面的烧录后，sd卡会被分为多个分区，其中windows系统下能识别的只有一个名为boot的分区，存储启动相关的配置文件。
 2.1 开启ssh raspbian 系统默认不开启ssh远程访问，在boot分区下新建文件名为SSH的文件（内容为空无后缀），系统启动时检测到此文件会开启ssh进程。
 2.2 配置wifi 在boot分区下新建文件名为wpa_supplicant.conf的文件，添加以下内容：
-country=CN ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev update_config=1 network={ ssid=&amp;quot;yourWifiName&amp;quot; psk=&amp;quot;passwd&amp;quot; key_mgmt=WPA-PSK priority=1 }  修改其中的wifi名和密码（ssid与psk）
+country=CN ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev update_config=1 network={ ssid=&amp;quot;yourWifiName&amp;quot; psk=&amp;quot;passwd&amp;quot; key_mgmt=WPA-PSK priority=1 } 修改其中的wifi名和密码（ssid与psk）
 如果想省事可以直接用网线连上路由器
 3. 远程访问 3.1 查找树莓派ip 此处需要将电脑和树莓派连接在同一路由器下。
 方法一：浏览器上输入192.168.1.1 （根据不同路由器网关不同），进入管理页面查看树莓派ip。
@@ -30,7 +48,7 @@ country=CN ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev update_config
 3.2 ssh 远程登录 ssh是linux上最常用的命令行远程访问工具。
 使用软件putty用于远程ssh登录，输入树莓ip，密码为raspberry。
 3.3 开启vnc vnc类似windows上的rdp远程登录，是linux上最常用的带界面远程访问协议。
-sudo raspi-config 然后在Interfacing Options -&amp;gt; VNC里enable VNC服务。（貌似是启动vnc的服务后设置了开机启动）
+ssh远程登录后，sudo raspi-config 然后在Interfacing Options -&amp;gt; VNC里enable VNC服务。（貌似是启动vnc的服务后设置了开机启动）
 然后使用realVNC viewer输入ip访问即可。
 vnc默认使用5900端口，当端口占用时会往后推使用5901等端口。多个vncserver运行时需要使用ip:590x的形式指定端口号。
 此处小坑 树莓派自带的vnc server使用的加密方式和tigerVNC viewer不兼容，会显示以下错误：

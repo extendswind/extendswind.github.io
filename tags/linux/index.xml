@@ -1,14 +1,39 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>linux on A Notebook of Extendswind</title>
     <link>https://extendswind.top/tags/linux/</link>
     <description>Recent content in linux on A Notebook of Extendswind</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Fri, 25 Jan 2019 10:59:49 +0800</lastBuildDate>
+    <lastBuildDate>Tue, 26 Nov 2019 20:59:49 +0800</lastBuildDate>
     
 	<atom:link href="https://extendswind.top/tags/linux/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>一次修复linux的efi引导的集中方法总结记录</title>
+      <link>https://extendswind.top/posts/technical/grub_uefi_repair/</link>
+      <pubDate>Tue, 26 Nov 2019 20:59:49 +0800</pubDate>
+      
+      <guid>https://extendswind.top/posts/technical/grub_uefi_repair/</guid>
+      <description>起因：EFI分区被删除导致引导问题。
+症状：
+  通过安装其它系统的方式。正好想试试其它的linux发行版，就在另一个分区装了deepin，完成后硬盘没有发现UEFI引导；然后又尝试装了openSUSE，仍没在硬盘发现UEFI引导。（失败）
+  通过live cd重新在efi分区安装grub。（wiki推荐的一般方式，仍失败）
+  通过live cd安装refind。（仍不行）
+  安装的系统可以通过manjaro live cd直接boot。
+  安装win10可以发现UEFI的引导方式（只启动win10，安装grub也只启动win10）
+  引导的问题网上的解决方案很多，对于一些新的电脑UEFI的方式应该很好修复，但一些比较老的电脑可能出现各种坑问题，用legacy的引导还是稳定一点。
+UEFI的引导通过grub的各种安装尝试都无法被主板识别，一直检测不到硬盘UEFI的启动项。怀疑主板并不支持linux grub2写入的UEFI引导信息，只支持windows的。最后通过安装win10，用refind覆盖win10的efi启动条目解决问题。
+最常规的修复方式 通过live cd 将系统烧入U盘，启动U盘进入系统后修复。涉及两种方式：
+ 通过boot-repair grub-install 命令安装  还有通过grub命令行的方式，不常用没折腾。
+建议烧入的系统为ubuntu和manjaro。deepin的live cd在我的电脑上有显示的bug，而且添加ppa有一点坑。openSUSE上的grub命令和debian系arch系不怎么一样。ubuntu的主要优点在于可以通过安装boot-repair进行一键修复，manjaro和arch的live cd提供了直接的manjaro-chroot以及arch-chroot，进入后直接安装grub就行，而且manjaro的live cd支持直接引导启动efi分区中的系统。
+在下面的两种操作之前，最好通过gparted等软件新建一个efi分区（fat32,一般几十兆，openSUSE建议不小于500M，带efi标签）。
+基于ubuntu的boot-repair 网上的资料多操作也不复杂，主要注意U盘从UEFI模式启动。
+sudo add-apt-repository ppa:yannubuntu/boot-repair -y sudo apt-get update sudo apt-get install boot-repair -y sudo boot-repair grub-install 命令安装 使用manjaro live cd，其它的系统可能需要安装grub2、efibootmgr、grub-efi-amd64、os-prober等包。
+以下需要root权限，sudo -i或命令前加sudo
+1、 查看要引导系统的分区和efi分区的编号（fdisk -l） 2、 挂载引导系统的分区（一般 mount /dev/sda4 /mnt） 3、 挂载efi分区到系统分区的/boot/efi目录（`mount /dev/sda2 /mnt/boot/efi） 4、 chroot到硬盘系统分区</description>
+    </item>
     
     <item>
       <title>linux 关闭主板上的蜂鸣器声音</title>
@@ -21,7 +46,7 @@ manjaro的xfce版也是如此，不知道是不是linux下xfce的通病。
 主要是搜索的时候百度的结果很奇葩&amp;hellip;
 用关键字 beep of xfce4 搜到了arch wiki下的内容，原来这玩意叫pc speaker，针对不同的情况有不同的解决方案。
 最简单粗暴的方式 内核中加载了pcspkr模块导致的主板声音，rmmod移除此模块，然后/etc/modprobe.d文件夹下加入黑名单，使开机过程不加载。
- rmmod pcspkr echo &amp;ldquo;blacklist pcspkr&amp;rdquo; &amp;gt; /etc/modprobe.d/nobeep.conf  具体参考 https://wiki.archlinux.org/index.php/PC_speaker</description>
+  rmmod pcspkr echo &amp;ldquo;blacklist pcspkr&amp;rdquo; &amp;gt; /etc/modprobe.d/nobeep.conf 具体参考 https://wiki.archlinux.org/index.php/PC_speaker</description>
     </item>
     
     <item>
@@ -43,9 +68,10 @@ xrandr &amp;ndash;setprovideroutputsource 0 1 将上面的设备设置为输入�
 如果xrandr &amp;ndash;listproviders 没有得到所有的输入源，则需要折腾驱动。
 驱动问题 一般建议将两个显示器都接在独显上，出问题的概率更低（独显一般口不够或者需要转换略尴尬）。
 我将显示器分别接在独显和主板接口上，在manjaro和deepin两个系统下都发现NVIDIA驱动有问题，primary显示器会显示两个显示器的内容。而将显卡驱动切换到开源驱动（nouveau）时正常(据说开源驱动性能略低）。
-mhwd -li --pci 查看已经安装的驱动 mhwd -l --pci 查看能用的驱动 sudo mhwd -r pci video-nvidia 移除驱动video-nvidia sudo mhwd -a pci videa-linux 安装开源显卡驱动（nouveau）  manjaro上通过mhwd简化了各种配置，详见：
+mhwd -li --pci 查看已经安装的驱动 mhwd -l --pci 查看能用的驱动 sudo mhwd -r pci video-nvidia 移除驱动video-nvidia sudo mhwd -a pci videa-linux 安装开源显卡驱动（nouveau） manjaro上通过mhwd简化了各种配置，详见：
 https://wiki.manjaro.org/index.php/Configure_Graphics_Cards
-AwesomeWM 默认快捷键：</description>
+AwesomeWM 默认快捷键：
+ctrl+super+j/k 屏幕之间焦点移动 super+o 当前窗口移动到另一个屏幕</description>
     </item>
     
     <item>
@@ -62,15 +88,14 @@ fcitx 为基础安装包，fcitx-im用于GTK/QT等界面上使用的包，fcitx-
 此处有坑，默认的安装方式会编译安装qtwebkit，速度非常的慢（一个小时午觉后还没好&amp;hellip;)
 在库的官方说明中（来自 https://aur.archlinux.org/packages/fcitx-sogoupinyin/ ）依赖项为qtwebkit (qtwebkit-bin)
 其实只依赖qtwebkit-bin，因此先安装qtwebkit-bin可以解决依赖问题（不到一分钟&amp;hellip;)
-yaourt -S qtwebkit-bin
+ yaourt -S qtwebkit-bin
 3. fcitx 设置中添加搜狗拼音 fcitx configuration中点加号添加sogou pinyin（默认语言为英语时需要勾选一个选项）
 4. fcitx环境变量的添加 gui应用的环境变量一般不通过profile和bashrc。
 arch wiki下的内容：
- KDM, GDM, LightDM 等显示管理器，请使用 ~/.xprofile arch wiki 警告: 上述用户不要在~/.xinitrc中加入下述脚本，否则会造成无法登陆。(但在里头加了也没挂) 如果您用 startx 或者 Slim 启动，请使用~/.xinitrc 中加入
-export GTK_IM_MODULE=fcitx export QT_IM_MODULE=fcitx export XMODIFIERS=@im=fcitx
-如果你使用的是较新版本的GNOME，使用 Wayland 显示管理器，则请在/etc/environment中加入
-GTK_IM_MODULE=fcitx QT_IM_MODULE=fcitx XMODIFIERS=@im=fcitx
- 参考链接中有更详细的说明，我用的manjaro+xfce4以及后面改装的cinnamon和awesome都是在lightDM下该的.xinitrc，没有.xprofile文件，也能正常用。 （注意添加在最后exec $(&amp;hellip;)的前面）</description>
+  KDM, GDM, LightDM 等显示管理器，请使用 ~/.xprofile arch wiki 警告: 上述用户不要在~/.xinitrc中加入下述脚本，否则会造成无法登陆。(但在里头加了也没挂) 如果您用 startx 或者 Slim 启动，请使用~/.xinitrc 中加入
+  export GTK_IM_MODULE=fcitx export QT_IM_MODULE=fcitx export XMODIFIERS=@im=fcitx
+  如果你使用的是较新版本的GNOME，使用 Wayland 显示管理器，则请在/etc/environment中加入
+  GTK_IM_MODULE=fcitx QT_IM_MODULE=fcitx XMODIFIERS=@im=fcitx</description>
     </item>
     
     <item>
@@ -82,7 +107,7 @@ GTK_IM_MODULE=fcitx QT_IM_MODULE=fcitx XMODIFIERS=@im=fcitx
       <description>基于AUR的安装是没什么难度了，主要安装后会出各种问题，还有选不同的包的影响。
 官方的wiki上推荐安装deepin-wine-tim，基于wine和最新版的tim。安装后存在qq密码每次都要输入的问题（201804测试没有此问题，但还是不太稳定，2018年因为wine的更新导致挂了两次只能回退）。
 更推荐使用的deepin.com.qq.office，基于deepin-wine，配置好了比较稳定。
-安装步骤 安装 yaourt -S deepin.com.qq.office
+安装步骤 安装  yaourt -S deepin.com.qq.office
 ps：吐槽，安装deepin-wine的各个确认略多。 d
 qq提取消息、截图等快捷键设置 在/opt/deepinwine/tools/sendkeys.sh脚本能够传递快捷键，如直接运行./sendkeys.sh a 则会向qq或tim进程发送 ctrl+alt+a。
 不同桌面环境添加快捷键的方法差不多，主要步骤：
@@ -90,12 +115,12 @@ qq提取消息、截图等快捷键设置 在/opt/deepinwine/tools/sendkeys.sh�
 同理可以设置qq其它快捷键
 一般问题 大多出现在基于wine的tim上，基于deepin的tim问题很少。
 deepin-wine在非gnome系的桌面上的运行问题 3wm, kde, awesome等桌面管理器或桌面环境里运行基于deepin-wine的qq和tim时，会出现下面的错误
- X Error of failed request: BadWindow (invalid Window parameter) Major opcode of failed request: 20 (X_GetProperty)
- 由于deepin-wine依赖了gnome系（mate,cinnamon,gnome）的setting-daemon，需要安装后运行（一般加入开机启动）
+  X Error of failed request: BadWindow (invalid Window parameter) Major opcode of failed request: 20 (X_GetProperty)
+由于deepin-wine依赖了gnome系（mate,cinnamon,gnome）的setting-daemon，需要安装后运行（一般加入开机启动）
 sudo pacman -S cinnamon-settings-daemon /usr/lib/cinnamon-settings-daemon/csd-xsettings 无法输入中文 如果其它地方可以使用输入法，一般为环境变量的问题，fcitx没有配置好。
 粗暴解决方式: 下面的文件夹中加入环境变量
 /opt/deepinwine/apps/Deepin-TIM/run.sh
- export XMODIFIERS=&amp;ldquo;@im=fcitx&amp;rdquo; export GTK_IM_MODULE=&amp;ldquo;fcitx&amp;rdquo; export QT_IM_MODULE=&amp;ldquo;fcitx&amp;rdquo;</description>
+  export XMODIFIERS=&amp;rdquo;@im=fcitx&amp;rdquo; export GTK_IM_MODULE=&amp;quot;fcitx&amp;rdquo; export QT_IM_MODULE=&amp;quot;fcitx&amp;rdquo;</description>
     </item>
     
     <item>
@@ -105,8 +130,8 @@ sudo pacman -S cinnamon-settings-daemon /usr/lib/cinnamon-settings-daemon/csd-xs
       
       <guid>https://extendswind.top/posts/technical/deepin_wine_run_in_not_gnome_desktop_environment/</guid>
       <description>i3wm, kde, awesome等桌面管理器或桌面环境里运行基于deepin-wine的qq和tim时，会出现下面的错误
- X Error of failed request: BadWindow (invalid Window parameter) Major opcode of failed request: 20 (X_GetProperty)
- 在gnome、mate、cinnamon三个桌面上运行较好，xfce4上运行有少许焦点上的bug，其它桌面环境和管理器下直接出上面的错误。
+  X Error of failed request: BadWindow (invalid Window parameter) Major opcode of failed request: 20 (X_GetProperty)
+在gnome、mate、cinnamon三个桌面上运行较好，xfce4上运行有少许焦点上的bug，其它桌面环境和管理器下直接出上面的错误。
 最近终于在aur上看到是因为deepin-wine依赖了gnome-settings-daemon（gnome系的cinnamon和mate的对应组件也能用），启动后就能正常运行，但AwesomeWM会使用xsettings对应的主题，KDE基本正常运行，其它非gnome系的桌面环境未测试。
 解决方案 1. 安装gnome-settings-daemon (arch 系） sudo pacman -S gnome-settings-daemon ubuntu 下的包和运行的程序名略不一样，参考：
 https://github.com/wszqkzqk/deepin-wine-ubuntu/issues/12#issuecomment-443656358
@@ -119,7 +144,7 @@ csd-xsettings 主要影响两个地方：1. 启动过程； 2. 在tim内调用�
 /usr/lib/cinnamon-settings-daemon/csd-xsettings --exit-time 5 &amp;amp;
 附：使用cinnamon的xsettings的设置 主题的问题在awesome这种环境下略坑，懒得去试gnome上的主题设置需要哪些包，安装整个gnome的包需要800多M，直接安装了cinnamon的基础包（90M左右）。和gnome只是些名字上的区别：
 sudo pacman -S cinnamon # awesome的autorun里加入下面程序使开机运行 /usr/lib/cinnamon-settings-daemon/csd-xsettings 在系统设置里可以下载和更改主题
-小坑  tim和qq会在点击好友图像时卡死的情况。原因之一可能是pulseaudio进程，kill掉就行，会影响声音的调整。（千里之外的两个程序不知道为什么会卡一起）</description>
+小坑   tim和qq会在点击好友图像时卡死的情况。原因之一可能是pulseaudio进程，kill掉就行，会影响声音的调整。（千里之外的两个程序不知道为什么会卡一起）</description>
     </item>
     
     <item>
@@ -132,12 +157,12 @@ sudo pacman -S cinnamon # awesome的autorun里加入下面程序使开机运行 
 使用sqllite的浏览器看了一眼zotero的存储数据库(zotero.sqlite)，在表itemAttachments中存储了所有附件的类型地址等信息，发现里头的地址全都使用的绝对路径！！
 重点在于设置zotero和zotfile的附件路径和转移文件。
 使用网盘同步的不用折腾这些。
-方法一：设置为相对路径并修改文件 设置  zotero preferences -&amp;gt; Files and Folders -&amp;gt; Linked Attachment Base Directory 设置存储路径 （注意不是 data directory） 把zotfile里的路径也改到这（不知道具体什么机制，zotfile有个相对路径的pull request不知道读的是不是这个，懒得多折腾）  已有的文件移动  如果由于换硬盘换系统一类的问题，先使用软连接指向原来的目录，让zotero能够找到原来的文件。（源目录可以使用sqllite的浏览器看到）
- 在library下全选所有的items，然后右键 Manage Attachments -&amp;gt; Rename Attachments。（看起来是重命名，实质上会移动所有的文件）
+方法一：设置为相对路径并修改文件 设置  zotero preferences -&amp;gt; Files and Folders -&amp;gt; Linked Attachment Base Directory 设置存储路径 （注意不是 data directory） 把zotfile里的路径也改到这（不知道具体什么机制，zotfile有个相对路径的pull request不知道读的是不是这个，懒得多折腾）  已有的文件移动   如果由于换硬盘换系统一类的问题，先使用软连接指向原来的目录，让zotero能够找到原来的文件。（源目录可以使用sqllite的浏览器看到）
+  在library下全选所有的items，然后右键 Manage Attachments -&amp;gt; Rename Attachments。（看起来是重命名，实质上会移动所有的文件）
   此时此前附件中的绝对路径/mnt/data/...会变成attachments：catagory1/test1.pdf 类似的相对路径。
 方法二：直接操作sqllite数据库来改 下面的语句供参考，建议稍了解后操作，使用update导致数据丢失会很麻烦。
 把下面路径中的/home/fly/public_download/改成自己数据库里的路径即可。
-update itemAttachments set path=replace(path, &#39;/home/fly/public_download/&#39;, &#39;attachments:&#39;) where path like &#39;/home/fly/public_download%&#39;  最后 跨操作系统或者跨目录直接设置到相同的目录即可。</description>
+update itemAttachments set path=replace(path, &#39;/home/fly/public_download/&#39;, &#39;attachments:&#39;) where path like &#39;/home/fly/public_download%&#39; 最后 跨操作系统或者跨目录直接设置到相同的目录即可。</description>
     </item>
     
     <item>
@@ -153,8 +178,8 @@ http://s1.music.126.net/download/pc/netease-cloud-music_1.0.0-2_amd64_ubuntu16.0
 debian系就直接dpkg -i吧
 arch系通过AUR安装稍麻烦:
  卸载原版本 yaourt -S netease-cloud-music 按y Edit PKGBUILD 将1.1.3的安装包地址替换为1.1.0的安装包地址，并且将对应hash值改为skip，具体如下  改之前：
-source=( &amp;quot;http://packages.deepin.com/deepin/pool/main/n/netease-cloud-music/netease-cloud-music_${pkgver}-${_pkgrel}_amd64.deb&amp;quot; &amp;quot;http://music.163.com/html/web2/service.html&amp;quot; ) md5sums=(&#39;53c47c1bf6797b2a0e455bc59833ab2d&#39; &#39;SKIP&#39;)  改之后
-source=( &amp;quot;http://s1.music.126.net/download/pc/netease-cloud-music_1.0.0-2_amd64_ubuntu16.04.deb&amp;quot; &amp;quot;http://music.163.com/html/web2/service.html&amp;quot; ) md5sums=(&#39;SKIP&#39; &#39;SKIP&#39;)  然后正常安装即可</description>
+source=( &amp;quot;http://packages.deepin.com/deepin/pool/main/n/netease-cloud-music/netease-cloud-music_${pkgver}-${_pkgrel}_amd64.deb&amp;quot; &amp;quot;http://music.163.com/html/web2/service.html&amp;quot; ) md5sums=(&#39;53c47c1bf6797b2a0e455bc59833ab2d&#39; &#39;SKIP&#39;) 改之后
+source=( &amp;quot;http://s1.music.126.net/download/pc/netease-cloud-music_1.0.0-2_amd64_ubuntu16.04.deb&amp;quot; &amp;quot;http://music.163.com/html/web2/service.html&amp;quot; ) md5sums=(&#39;SKIP&#39; &#39;SKIP&#39;) 然后正常安装即可</description>
     </item>
     
     <item>
@@ -163,16 +188,16 @@ source=( &amp;quot;http://s1.music.126.net/download/pc/netease-cloud-music_1.0.0
       <pubDate>Sat, 20 Oct 2018 20:59:49 +0800</pubDate>
       
       <guid>https://extendswind.top/posts/technical/using_awesomewm_as_wm_of_mate_desktop/</guid>
-      <description> 20190118更新:
+      <description>20190118更新:
 最近发现有在非gnome系的DE下运行deepin-wine的解决方案，没必要专门跑一个mate。
 安装gnome-setttings-daemon，然后运行/usr/lib/gsd-xsettings。（不同系统会不一样）
 具体记录在另一篇博客
-AwesomeWM这种平铺的窗口管理器用得很爽，只是基于wine的qq最近又莫名其妙抽风，感觉还是切到deepin-wine上比较靠谱。而deepin-wine在awesome下运行qq会报错X Error of failed request: BadWindow (invalid Window parameter) Major opcode of failed request: 20 (X_GetProperty)，而在Gnome系下运行正常。看到Gnome和Mate能够运行awesomewm，就折腾了一下试试。
+ AwesomeWM这种平铺的窗口管理器用得很爽，只是基于wine的qq最近又莫名其妙抽风，感觉还是切到deepin-wine上比较靠谱。而deepin-wine在awesome下运行qq会报错X Error of failed request: BadWindow (invalid Window parameter) Major opcode of failed request: 20 (X_GetProperty)，而在Gnome系下运行正常。看到Gnome和Mate能够运行awesomewm，就折腾了一下试试。
 Awesome只是Gnome等桌面管理器的组件之一，gnome系的Mate可以修改默认的窗口管理器。
-具体折腾  安装AwesomeWM、Mate桌面环境与dconf-editor（arch下使用pacman -S）。
- 进入Mate桌面环境后，修改org.mate.session.required-components windowmanager的值为&amp;rsquo;awesome&amp;rsquo;，如果不需要桌面上的图标，可以将org.mate.session.required-components的值只留下windowmanager。
- 上面的设置无法通过命令行打开awesome，需要添加awesome的图标。在/usr/share/applications目录下新建awesome.desktop，内容如下（网上直接粘的，估计有些可以不要，懒得试了）：
-[Desktop Entry] Type=Application Name=awesome Exec=awesome NoDisplay=true # name of loadable control center module X-MATE-WMSettingsModule=awesome # name we put on the WM spec check window X-MATE-WMName=awesome # back compat only X-MateWMSettingsLibrary=awesome X-MATE-Bugzilla-Bugzilla=MATE X-MATE-Bugzilla-Product=awesome X-MATE-Bugzilla-Component=general X-MATE-Autostart-Phase=WindowManager X-MATE-Provides=windowmanager X-MATE-Autostart-Notify=true   </description>
+具体折腾   安装AwesomeWM、Mate桌面环境与dconf-editor（arch下使用pacman -S）。
+  进入Mate桌面环境后，修改org.mate.session.required-components windowmanager 的值为&#39;awesome&amp;rsquo;，如果不需要桌面上的图标，可以将org.mate.session.required-components的值只留下windowmanager。
+  上面的设置无法通过命令行打开awesome，需要添加awesome的图标。在/usr/share/applications目录下新建awesome.desktop，内容如下（网上直接粘的，估计有些可以不要，懒得试了）：
+  [Desktop Entry] Type=Application Name=awesome Exec=awesome NoDisplay=true # name of loadable control center module X-MATE-WMSettingsModule=awesome # name we put on the WM spec check window X-MATE-WMName=awesome # back compat only X-MateWMSettingsLibrary=awesome X-MATE-Bugzilla-Bugzilla=MATE X-MATE-Bugzilla-Product=awesome X-MATE-Bugzilla-Component=general X-MATE-Autostart-Phase=WindowManager X-MATE-Provides=windowmanager X-MATE-Autostart-Notify=true </description>
     </item>
     
     <item>
@@ -181,8 +206,8 @@ Awesome只是Gnome等桌面管理器的组件之一，gnome系的Mate可以修�
       <pubDate>Tue, 17 Jul 2018 20:59:49 +0800</pubDate>
       
       <guid>https://extendswind.top/posts/technical/manjaro_install_problem_grub/</guid>
-      <description>错误  error: invalid arch-independent ELF magic. Entering rescue mode&amp;hellip; grub rescue&amp;gt;
- 使用Rufu ISO模式烧录的U盘，lagency 模式能够启动，但点安装后出上面错误；UEFI模式直接出上面错误。
+      <description>错误   error: invalid arch-independent ELF magic. Entering rescue mode&amp;hellip; grub rescue&amp;gt;
+使用Rufu ISO模式烧录的U盘，lagency 模式能够启动，但点安装后出上面错误；UEFI模式直接出上面错误。
 解决方案 不多说，百度背锅，google答案的前几个就是正解。
 U盘烧录问题，使用rufu烧录U盘时，最好使用DD模式而非ISO模式。（去年安装manjaro-xfce4时用ISO模式没出过）
 https://forum.manjaro.org/t/grub-error-computer-with-no-os-installed-invalid-arch-independent-elf-magic/21805
@@ -220,7 +245,8 @@ linux系统的主要缺点：
 linux发行版 一般的linux发行版包括：Linux内核，一些GNU程序库和工具，命令行shell，图形界面的X Window系统和相应的桌面环境，以及一系列其他的软件包（浏览器、阅读器、文本编辑器等）。由各种组织和个人维护。
 主要用过的几个桌面发行版：  也许桌面用户最多的Ubuntu 不折腾的Arch系Manjaro （当前主力） 和Manjaro在distrowatch上争第一的Ubuntu进化版Mint 号称最美linux的Elementary 超稳定适合服务器的版本Centos （只在服务器上用） 最强国产化linux的Deepin和一般国产化的优麒麟  下面叙述中不包含在内的主要道听途说
 主流的发行版 debian系：Debian -&amp;gt; Ubuntu -&amp;gt; Mint | Elementary | Deepin | 优麒麟 fedora : Fedora -&amp;gt; RHEL -&amp;gt; Centos | Oracle linux SUSE : SUSE -&amp;gt; SLES -&amp;gt; openSUSE (没有用过，大多对其评价较为中立，暂不讨论) arch : Arch -&amp;gt; Manjaro gantoo
-其中箭头后的系统基于前面的系统发展，但并不影响前面系统的优势。如Ubuntu基于Debian系统成为较好的桌面系统，但Debian由于其轻量级和可定制仍有广泛使用。</description>
+其中箭头后的系统基于前面的系统发展，但并不影响前面系统的优势。如Ubuntu基于Debian系统成为较好的桌面系统，但Debian由于其轻量级和可定制仍有广泛使用。
+发行版之间主要区别 不同发行版的主要区别在于桌面环境、软件包管理器、软件包以及软件包版本的不同。</description>
     </item>
     
   </channel>

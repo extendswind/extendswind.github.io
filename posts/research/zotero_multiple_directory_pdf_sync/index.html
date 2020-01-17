@@ -6,12 +6,12 @@
 使用sqllite的浏览器看了一眼zotero的存储数据库(zotero.sqlite)，在表itemAttachments中存储了所有附件的类型地址等信息，发现里头的地址全都使用的绝对路径！！
 重点在于设置zotero和zotfile的附件路径和转移文件。
 使用网盘同步的不用折腾这些。
-方法一：设置为相对路径并修改文件 设置  zotero preferences -&gt; Files and Folders -&gt; Linked Attachment Base Directory 设置存储路径 （注意不是 data directory） 把zotfile里的路径也改到这（不知道具体什么机制，zotfile有个相对路径的pull request不知道读的是不是这个，懒得多折腾）  已有的文件移动  如果由于换硬盘换系统一类的问题，先使用软连接指向原来的目录，让zotero能够找到原来的文件。（源目录可以使用sqllite的浏览器看到）
- 在library下全选所有的items，然后右键 Manage Attachments -&gt; Rename Attachments。（看起来是重命名，实质上会移动所有的文件）
+方法一：设置为相对路径并修改文件 设置  zotero preferences -&gt; Files and Folders -&gt; Linked Attachment Base Directory 设置存储路径 （注意不是 data directory） 把zotfile里的路径也改到这（不知道具体什么机制，zotfile有个相对路径的pull request不知道读的是不是这个，懒得多折腾）  已有的文件移动   如果由于换硬盘换系统一类的问题，先使用软连接指向原来的目录，让zotero能够找到原来的文件。（源目录可以使用sqllite的浏览器看到）
+  在library下全选所有的items，然后右键 Manage Attachments -&gt; Rename Attachments。（看起来是重命名，实质上会移动所有的文件）
   此时此前附件中的绝对路径/mnt/data/...会变成attachments：catagory1/test1.pdf 类似的相对路径。
 方法二：直接操作sqllite数据库来改 下面的语句供参考，建议稍了解后操作，使用update导致数据丢失会很麻烦。
 把下面路径中的/home/fly/public_download/改成自己数据库里的路径即可。
-update itemAttachments set path=replace(path, &#39;/home/fly/public_download/&#39;, &#39;attachments:&#39;) where path like &#39;/home/fly/public_download%&#39;  最后 跨操作系统或者跨目录直接设置到相同的目录即可。'>
+update itemAttachments set path=replace(path, &#39;/home/fly/public_download/&#39;, &#39;attachments:&#39;) where path like &#39;/home/fly/public_download%&#39; 最后 跨操作系统或者跨目录直接设置到相同的目录即可。'>
 <meta name='theme-color' content='#cccccc'>
 
 <meta property='og:title' content='zotero zotfile插件 pdf附件文件夹在多系统下的同步设置 • A Notebook of Extendswind'>
@@ -19,17 +19,17 @@ update itemAttachments set path=replace(path, &#39;/home/fly/public_download/&#3
 使用sqllite的浏览器看了一眼zotero的存储数据库(zotero.sqlite)，在表itemAttachments中存储了所有附件的类型地址等信息，发现里头的地址全都使用的绝对路径！！
 重点在于设置zotero和zotfile的附件路径和转移文件。
 使用网盘同步的不用折腾这些。
-方法一：设置为相对路径并修改文件 设置  zotero preferences -&gt; Files and Folders -&gt; Linked Attachment Base Directory 设置存储路径 （注意不是 data directory） 把zotfile里的路径也改到这（不知道具体什么机制，zotfile有个相对路径的pull request不知道读的是不是这个，懒得多折腾）  已有的文件移动  如果由于换硬盘换系统一类的问题，先使用软连接指向原来的目录，让zotero能够找到原来的文件。（源目录可以使用sqllite的浏览器看到）
- 在library下全选所有的items，然后右键 Manage Attachments -&gt; Rename Attachments。（看起来是重命名，实质上会移动所有的文件）
+方法一：设置为相对路径并修改文件 设置  zotero preferences -&gt; Files and Folders -&gt; Linked Attachment Base Directory 设置存储路径 （注意不是 data directory） 把zotfile里的路径也改到这（不知道具体什么机制，zotfile有个相对路径的pull request不知道读的是不是这个，懒得多折腾）  已有的文件移动   如果由于换硬盘换系统一类的问题，先使用软连接指向原来的目录，让zotero能够找到原来的文件。（源目录可以使用sqllite的浏览器看到）
+  在library下全选所有的items，然后右键 Manage Attachments -&gt; Rename Attachments。（看起来是重命名，实质上会移动所有的文件）
   此时此前附件中的绝对路径/mnt/data/...会变成attachments：catagory1/test1.pdf 类似的相对路径。
 方法二：直接操作sqllite数据库来改 下面的语句供参考，建议稍了解后操作，使用update导致数据丢失会很麻烦。
 把下面路径中的/home/fly/public_download/改成自己数据库里的路径即可。
-update itemAttachments set path=replace(path, &#39;/home/fly/public_download/&#39;, &#39;attachments:&#39;) where path like &#39;/home/fly/public_download%&#39;  最后 跨操作系统或者跨目录直接设置到相同的目录即可。'>
+update itemAttachments set path=replace(path, &#39;/home/fly/public_download/&#39;, &#39;attachments:&#39;) where path like &#39;/home/fly/public_download%&#39; 最后 跨操作系统或者跨目录直接设置到相同的目录即可。'>
 <meta property='og:url' content='https://extendswind.top/posts/research/zotero_multiple_directory_pdf_sync/'>
 <meta property='og:site_name' content='A Notebook of Extendswind'>
 <meta property='og:type' content='article'><meta property='article:section' content='posts'><meta property='article:tag' content='linux'><meta property='article:published_time' content='2019-01-09T09:59:49&#43;08:00'/><meta property='article:modified_time' content='2019-01-09T09:59:49&#43;08:00'/><meta name='twitter:card' content='summary'>
 
-<meta name="generator" content="Hugo 0.58.3" />
+<meta name="generator" content="Hugo 0.62.0" />
 
   <title>zotero zotfile插件 pdf附件文件夹在多系统下的同步设置 • A Notebook of Extendswind</title>
   <link rel='canonical' href='https://extendswind.top/posts/research/zotero_multiple_directory_pdf_sync/'>
@@ -200,60 +200,40 @@ if (!doNotTrack) {
     <span>Table of Contents</span>
   </summary>
   <nav id="TableOfContents">
-<ul>
-<li><a href="#方法一-设置为相对路径并修改文件">方法一：设置为相对路径并修改文件</a>
-<ul>
-<li><a href="#设置">设置</a></li>
-<li><a href="#已有的文件移动">已有的文件移动</a></li>
-</ul></li>
-<li><a href="#方法二-直接操作sqllite数据库来改">方法二：直接操作sqllite数据库来改</a></li>
-<li><a href="#最后">最后</a></li>
-</ul>
+  <ul>
+    <li><a href="#heading-1">设置</a></li>
+    <li><a href="#heading-2">已有的文件移动</a></li>
+  </ul>
 </nav>
 </details>
 
 
   <div class='container entry-content'>
-  
-
-<p>之前的附件使用zotfile单独的文件夹管理，换了一块硬盘，挂载目录发生变化后zotero里所有的附件都打不开，在zotero的目录设置和zotfile的目录设置里改了都没用。</p>
-
+  <p>之前的附件使用zotfile单独的文件夹管理，换了一块硬盘，挂载目录发生变化后zotero里所有的附件都打不开，在zotero的目录设置和zotfile的目录设置里改了都没用。</p>
 <p>使用sqllite的浏览器看了一眼zotero的存储数据库(zotero.sqlite)，在表itemAttachments中存储了所有附件的类型地址等信息，发现里头的地址全都使用的绝对路径！！</p>
-
 <p>重点在于设置zotero和zotfile的附件路径和转移文件。</p>
-
 <p><strong>使用网盘同步的不用折腾这些。</strong></p>
-
-<h1 id="方法一-设置为相对路径并修改文件">方法一：设置为相对路径并修改文件</h1>
-
-<h2 id="设置">设置</h2>
-
+<h1 id="heading">方法一：设置为相对路径并修改文件</h1>
+<h2 id="heading-1">设置</h2>
 <ol>
 <li>zotero preferences -&gt; Files and Folders -&gt; Linked Attachment Base Directory 设置存储路径 （注意不是 data directory）</li>
 <li>把zotfile里的路径也改到这（不知道具体什么机制，zotfile有个相对路径的pull request不知道读的是不是这个，懒得多折腾）</li>
 </ol>
-
-<h2 id="已有的文件移动">已有的文件移动</h2>
-
+<h2 id="heading-2">已有的文件移动</h2>
 <ol>
-<li><p>如果由于换硬盘换系统一类的问题，先使用软连接指向原来的目录，让zotero能够找到原来的文件。（源目录可以使用sqllite的浏览器看到）</p></li>
-
-<li><p>在library下全选所有的items，然后右键 Manage Attachments -&gt; Rename Attachments。（看起来是重命名，实质上会移动所有的文件）</p></li>
+<li>
+<p>如果由于换硬盘换系统一类的问题，先使用软连接指向原来的目录，让zotero能够找到原来的文件。（源目录可以使用sqllite的浏览器看到）</p>
+</li>
+<li>
+<p>在library下全选所有的items，然后右键 Manage Attachments -&gt; Rename Attachments。（看起来是重命名，实质上会移动所有的文件）</p>
+</li>
 </ol>
-
 <p>此时此前附件中的绝对路径<code>/mnt/data/...</code>会变成<code>attachments：catagory1/test1.pdf</code> 类似的相对路径。</p>
-
-<h1 id="方法二-直接操作sqllite数据库来改">方法二：直接操作sqllite数据库来改</h1>
-
+<h1 id="sqllite">方法二：直接操作sqllite数据库来改</h1>
 <p>下面的语句供参考，建议稍了解后操作，使用update导致数据丢失会很麻烦。</p>
-
 <p>把下面路径中的<code>/home/fly/public_download/</code>改成自己数据库里的路径即可。</p>
-
 <pre><code>update itemAttachments set path=replace(path, '/home/fly/public_download/', 'attachments:') where path like '/home/fly/public_download%'
-</code></pre>
-
-<h1 id="最后">最后</h1>
-
+</code></pre><h1 id="heading-3">最后</h1>
 <p>跨操作系统或者跨目录直接设置到相同的目录即可。</p>
 
 </div>
@@ -333,7 +313,7 @@ if (!doNotTrack) {
       </li></ul>
   </nav>
 </section><div class='copyright'>
-  <p> &copy; 2018-2019 extendswind </p>
+  <p> &copy; 2018-2020 extendswind </p>
 </div>
 
         </div>
