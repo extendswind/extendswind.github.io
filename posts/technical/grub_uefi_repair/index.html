@@ -298,7 +298,8 @@ bcdedit /default {12277df3-07da-11e8-a54c-9f200771404e}  # 设置默认项
 # 如果上面的设置默认没有用，可以暴力修改windows的引导文件到其它的引导文件
 # refind可以改为其它的系统
 bcdedit /set {bootmgr} path \EFI\refind\refind_x64.efi   
-</code></pre><h2 id="win10grub">win10启动几次就让grub引导消失的问题</h2>
+</code></pre><p>上面的命令在cmd里没问题，最近在powershell里跑挂了，可能是命令解析规则不同，简单的操作还是cmd吧。</p>
+<h2 id="win10grub">win10启动几次就让grub引导消失的问题</h2>
 <p>win10会默认修改UEFI的引导顺序。</p>
 <p>好像是win10 系统配置-&gt;常规 里的最后一个勾，用了上面的方式后，没怎么遇到这个问题。</p>
 <h2 id="uefi">启动时仍没有UEFI引导选项的问题</h2>
