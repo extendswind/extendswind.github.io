@@ -119,6 +119,8 @@ bcdedit /default {12277df3-07da-11e8-a54c-9f200771404e}  # 设置默认项
 bcdedit /set {bootmgr} path \EFI\refind\refind_x64.efi   
 ```
 
+上面的命令在cmd里没问题，最近在powershell里跑挂了，可能是命令解析规则不同，简单的操作还是cmd吧。
+
 
 ## win10启动几次就让grub引导消失的问题
 
