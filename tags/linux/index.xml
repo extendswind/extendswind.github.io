@@ -195,7 +195,7 @@ source=( &amp;quot;http://s1.music.126.net/download/pc/netease-cloud-music_1.0.0
  AwesomeWM这种平铺的窗口管理器用得很爽，只是基于wine的qq最近又莫名其妙抽风，感觉还是切到deepin-wine上比较靠谱。而deepin-wine在awesome下运行qq会报错X Error of failed request: BadWindow (invalid Window parameter) Major opcode of failed request: 20 (X_GetProperty)，而在Gnome系下运行正常。看到Gnome和Mate能够运行awesomewm，就折腾了一下试试。
 Awesome只是Gnome等桌面管理器的组件之一，gnome系的Mate可以修改默认的窗口管理器。
 具体折腾   安装AwesomeWM、Mate桌面环境与dconf-editor（arch下使用pacman -S）。
-  进入Mate桌面环境后，修改org.mate.session.required-components windowmanager 的值为&#39;awesome&amp;rsquo;，如果不需要桌面上的图标，可以将org.mate.session.required-components的值只留下windowmanager。
+  进入Mate桌面环境后，修改org.mate.session.required-components windowmanager 的值为&amp;rsquo;awesome&amp;rsquo;，如果不需要桌面上的图标，可以将org.mate.session.required-components的值只留下windowmanager。
   上面的设置无法通过命令行打开awesome，需要添加awesome的图标。在/usr/share/applications目录下新建awesome.desktop，内容如下（网上直接粘的，估计有些可以不要，懒得试了）：
   [Desktop Entry] Type=Application Name=awesome Exec=awesome NoDisplay=true # name of loadable control center module X-MATE-WMSettingsModule=awesome # name we put on the WM spec check window X-MATE-WMName=awesome # back compat only X-MateWMSettingsLibrary=awesome X-MATE-Bugzilla-Bugzilla=MATE X-MATE-Bugzilla-Product=awesome X-MATE-Bugzilla-Component=general X-MATE-Autostart-Phase=WindowManager X-MATE-Provides=windowmanager X-MATE-Autostart-Notify=true </description>
     </item>

@@ -23,7 +23,7 @@ https://forum.manjaro.org/t/grub-error-computer-with-no-os-installed-invalid-arc
 <meta property='og:site_name' content='A Notebook of Extendswind'>
 <meta property='og:type' content='article'><meta property='article:section' content='posts'><meta property='article:tag' content='linux'><meta property='article:published_time' content='2018-07-17T20:59:49&#43;08:00'/><meta property='article:modified_time' content='2018-07-17T20:59:49&#43;08:00'/><meta name='twitter:card' content='summary'>
 
-<meta name="generator" content="Hugo 0.62.0" />
+<meta name="generator" content="Hugo 0.70.0" />
 
   <title>使用u盘安装linux(manjaro)时Grub报错 • A Notebook of Extendswind</title>
   <link rel='canonical' href='https://extendswind.top/posts/technical/manjaro_install_problem_grub/'>
@@ -33,17 +33,6 @@ https://forum.manjaro.org/t/grub-error-computer-with-no-os-installed-invalid-arc
 <link rel='stylesheet' href='/assets/css/main.6a060eb7.css'><link rel='stylesheet' href='/css/custom.css'><style>
 :root{--color-accent:#cccccc;}
 </style>
-
-<script type="application/javascript">
-var doNotTrack = false;
-if (!doNotTrack) {
-	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-	ga('create', 'UA-125329544-1', 'auto');
-	
-	ga('send', 'pageview');
-}
-</script>
-<script async src='https://www.google-analytics.com/analytics.js'></script>
 
   
 
@@ -193,19 +182,24 @@ if (!doNotTrack) {
   <summary class='title'>
     <span>Table of Contents</span>
   </summary>
-  <nav id="TableOfContents"></nav>
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#错误">错误</a></li>
+    <li><a href="#解决方案">解决方案</a></li>
+  </ul>
+</nav>
 </details>
 
 
   <div class='container entry-content'>
-  <h1 id="heading">错误</h1>
+  <h1 id="错误">错误</h1>
 <blockquote>
 </blockquote>
 <p>error: invalid arch-independent ELF magic.
 Entering rescue mode&hellip;
 grub rescue&gt;</p>
 <p>使用Rufu ISO模式烧录的U盘，lagency 模式能够启动，但点安装后出上面错误；UEFI模式直接出上面错误。</p>
-<h1 id="heading-1">解决方案</h1>
+<h1 id="解决方案">解决方案</h1>
 <p>不多说，百度背锅，google答案的前几个就是正解。</p>
 <p>U盘烧录问题，使用rufu烧录U盘时，最好使用DD模式而非ISO模式。（去年安装manjaro-xfce4时用ISO模式没出过）</p>
 <p><a href="https://forum.manjaro.org/t/grub-error-computer-with-no-os-installed-invalid-arch-independent-elf-magic/21805">https://forum.manjaro.org/t/grub-error-computer-with-no-os-installed-invalid-arch-independent-elf-magic/21805</a></p>

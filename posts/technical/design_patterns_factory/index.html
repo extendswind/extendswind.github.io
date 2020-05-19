@@ -27,7 +27,7 @@ abstract class Logger { public void writeLog(){ System.out.println(&#34;writeLog
 <meta property='og:site_name' content='A Notebook of Extendswind'>
 <meta property='og:type' content='article'><meta property='article:section' content='posts'><meta property='article:tag' content='design patterns'><meta property='article:published_time' content='2018-06-15T17:25:25&#43;08:00'/><meta property='article:modified_time' content='2018-06-15T17:25:25&#43;08:00'/><meta name='twitter:card' content='summary'>
 
-<meta name="generator" content="Hugo 0.62.0" />
+<meta name="generator" content="Hugo 0.70.0" />
 
   <title>设计模式 之 工厂模式 • A Notebook of Extendswind</title>
   <link rel='canonical' href='https://extendswind.top/posts/technical/design_patterns_factory/'>
@@ -37,17 +37,6 @@ abstract class Logger { public void writeLog(){ System.out.println(&#34;writeLog
 <link rel='stylesheet' href='/assets/css/main.6a060eb7.css'><link rel='stylesheet' href='/css/custom.css'><style>
 :root{--color-accent:#cccccc;}
 </style>
-
-<script type="application/javascript">
-var doNotTrack = false;
-if (!doNotTrack) {
-	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-	ga('create', 'UA-125329544-1', 'auto');
-	
-	ga('send', 'pageview');
-}
-</script>
-<script async src='https://www.google-analytics.com/analytics.js'></script>
 
   
 
@@ -199,19 +188,28 @@ if (!doNotTrack) {
   </summary>
   <nav id="TableOfContents">
   <ul>
-    <li><a href="#--">简单工厂模式 和 工厂方法模式</a></li>
-    <li><a href="#heading-1">抽象工厂模式</a></li>
-  </ul>
-
-  <ul>
-    <li><a href="#heading-3">问题一：根据字符串生成对象会产生大量的判断</a></li>
-    <li><a href="#heading-4">问题二：添加新的对象需要修改源码的问题</a></li>
-    <li><a href="#logger">问题三：不同logger的初始化需要各自不同的设置</a></li>
-  </ul>
-
-  <ul>
-    <li><a href="#heading-7">吐槽</a></li>
-    <li><a href="#heading-8">网上其他的看法</a></li>
+    <li><a href="#几种工厂模式factory-pattern简介">几种工厂模式(Factory Pattern)简介</a></li>
+    <li><a href="#需求示例">需求示例</a>
+      <ul>
+        <li><a href="#简单工厂模式-和-工厂方法模式">简单工厂模式 和 工厂方法模式</a></li>
+        <li><a href="#抽象工厂模式">抽象工厂模式</a></li>
+      </ul>
+    </li>
+    <li><a href="#不应用工厂模式的一般实现--factoryproblemjava">不应用工厂模式的一般实现  （FactoryProblem.java）</a></li>
+    <li><a href="#从一般实现到工厂方法模式">从一般实现到工厂方法模式</a>
+      <ul>
+        <li><a href="#问题一根据字符串生成对象会产生大量的判断">问题一：根据字符串生成对象会产生大量的判断</a></li>
+        <li><a href="#问题二添加新的对象需要修改源码的问题">问题二：添加新的对象需要修改源码的问题</a></li>
+        <li><a href="#问题三不同logger的初始化需要各自不同的设置">问题三：不同logger的初始化需要各自不同的设置</a></li>
+      </ul>
+    </li>
+    <li><a href="#再到抽象工厂模式">再到抽象工厂模式</a></li>
+    <li><a href="#个人看法">个人看法</a>
+      <ul>
+        <li><a href="#吐槽">吐槽</a></li>
+        <li><a href="#网上其他的看法">网上其他的看法</a></li>
+      </ul>
+    </li>
   </ul>
 </nav>
 </details>
@@ -219,7 +217,7 @@ if (!doNotTrack) {
 
   <div class='container entry-content'>
   <p>TODO 某些思想感觉没写清楚和有重复</p>
-<h1 id="factory-pattern">几种工厂模式(Factory Pattern)简介</h1>
+<h1 id="几种工厂模式factory-pattern简介">几种工厂模式(Factory Pattern)简介</h1>
 <p>工厂模式主要分为：</p>
 <ul>
 <li>简单工厂模式（Simple Factory Pattern）</li>
@@ -232,70 +230,70 @@ if (!doNotTrack) {
 <li>将产品的创建逻辑(如读取本地文件、连接数据库）放入工厂类，简化使用逻辑。</li>
 <li>隐藏具体创建的对象，提高代码的通用性 （网上博客很多地方没提这点，只有结合java反射机制才行）</li>
 </ul>
-<h1 id="heading">需求示例</h1>
-<h2 id="--">简单工厂模式 和 工厂方法模式</h2>
+<h1 id="需求示例">需求示例</h1>
+<h2 id="简单工厂模式-和-工厂方法模式">简单工厂模式 和 工厂方法模式</h2>
 <ul>
 <li>实现多个日志记录器logger(文件logger，数据库logger等)</li>
 <li>通过配置文件确定使用的具体logger类</li>
 <li>添加新的logger类不修改源码（添加新的java包并修改配置文件）</li>
 </ul>
-<h2 id="heading-1">抽象工厂模式</h2>
+<h2 id="抽象工厂模式">抽象工厂模式</h2>
 <p>抽象工厂模式应用场景略有不同。</p>
 <p>存在多种不同的主题，每个主题都有不同的Button和Text的实现逻辑，因此每个主题都有Button和Text控件的派生类，导致类的初始化较多。</p>
 <p>容易添加新的主题</p>
-<h1 id="--factoryproblemjava">不应用工厂模式的一般实现  （FactoryProblem.java）</h1>
+<h1 id="不应用工厂模式的一般实现--factoryproblemjava">不应用工厂模式的一般实现  （FactoryProblem.java）</h1>
 <ul>
 <li>logger 基类实现通用的日志记录功能，子类实现各自的特有功能</li>
 <li>使用时根据配置文件中的类型，new相应的子类</li>
 </ul>
 <p>类的实现：</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">abstract</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Logger</span> <span style="color:#f92672">{</span>
-   <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">writeLog</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">{</span>
-       System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;writeLog by Logger&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+   <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">writeLog</span><span style="color:#f92672">(){</span>
+       System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;writeLog by Logger&#34;</span><span style="color:#f92672">);</span>
    <span style="color:#f92672">}</span>
    <span style="color:#75715e">// 可添加公共实现
 </span><span style="color:#75715e"></span><span style="color:#f92672">}</span>
 
 <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">FileLogger</span> <span style="color:#66d9ef">extends</span> Logger <span style="color:#f92672">{</span>
     <span style="color:#a6e22e">@Override</span>
-    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">writeLog</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">{</span>
-        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;writeLog by the FileLogger&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">writeLog</span><span style="color:#f92672">(){</span>
+        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;writeLog by the FileLogger&#34;</span><span style="color:#f92672">);</span>
     <span style="color:#f92672">}</span>
 <span style="color:#f92672">}</span>
 
 <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">DataBaseLogger</span> <span style="color:#66d9ef">extends</span> Logger <span style="color:#f92672">{</span>
     <span style="color:#a6e22e">@Override</span>
-    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">writeLog</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">{</span>
-        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;writeLog by the DataBaseLogger&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">writeLog</span><span style="color:#f92672">(){</span>
+        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;writeLog by the DataBaseLogger&#34;</span><span style="color:#f92672">);</span>
     <span style="color:#f92672">}</span>
 <span style="color:#f92672">}</span>
 </code></pre></div><p>使用时:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>loggerType<span style="color:#f92672">.</span><span style="color:#a6e22e">equals</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;database&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">{</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>loggerType<span style="color:#f92672">.</span><span style="color:#a6e22e">equals</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;database&#34;</span><span style="color:#f92672">)){</span>
     <span style="color:#75715e">// 此处一般会添加相应的初始化
-</span><span style="color:#75715e"></span>    logger <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> FileLogger<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+</span><span style="color:#75715e"></span>    logger <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> FileLogger<span style="color:#f92672">();</span>
 <span style="color:#f92672">}</span>
-<span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span><span style="color:#f92672">(</span>loggerType<span style="color:#f92672">.</span><span style="color:#a6e22e">equals</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;file&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">{</span>
+<span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span><span style="color:#f92672">(</span>loggerType<span style="color:#f92672">.</span><span style="color:#a6e22e">equals</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;file&#34;</span><span style="color:#f92672">)){</span>
     <span style="color:#75715e">// 此处一般会添加相应的初始化
-</span><span style="color:#75715e"></span>    logger <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> DataBaseLogger<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+</span><span style="color:#75715e"></span>    logger <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> DataBaseLogger<span style="color:#f92672">();</span>
 <span style="color:#f92672">}</span>
 <span style="color:#66d9ef">else</span>
     logger <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
-</code></pre></div><h1 id="heading-2">从一般实现到工厂方法模式</h1>
+</code></pre></div><h1 id="从一般实现到工厂方法模式">从一般实现到工厂方法模式</h1>
 <p>一般实现存在下面的两个问题。</p>
-<h2 id="heading-3">问题一：根据字符串生成对象会产生大量的判断</h2>
+<h2 id="问题一根据字符串生成对象会产生大量的判断">问题一：根据字符串生成对象会产生大量的判断</h2>
 <p>简单工厂模式将对象的初始化放入工厂类中，以简化调用类的逻辑。（还可以使用后面的反射机制）</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">// simple factoryPatten
 </span><span style="color:#75715e"></span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">SimpleFact</span> <span style="color:#f92672">{</span>
-    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> Logger <span style="color:#a6e22e">produceLogger</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> Logger <span style="color:#a6e22e">produceLogger</span><span style="color:#f92672">(){</span>
         String loggerType<span style="color:#f92672">;</span><span style="color:#75715e">// 从配置文件中读取 也可放在函数的参数中
 </span><span style="color:#75715e"></span>        Logger logger<span style="color:#f92672">;</span>
-        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>loggerType <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;file&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>loggerType <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;file&#34;</span><span style="color:#f92672">){</span>
             <span style="color:#75715e">// 此处一般会添加相应的初始化（连接数据库等）
-</span><span style="color:#75715e"></span>            logger <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> FileLogger<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+</span><span style="color:#75715e"></span>            logger <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> FileLogger<span style="color:#f92672">();</span>
         <span style="color:#f92672">}</span>
-        <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span><span style="color:#f92672">(</span>loggerType <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;database&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span><span style="color:#f92672">(</span>loggerType <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;database&#34;</span><span style="color:#f92672">){</span>
             <span style="color:#75715e">// 此处一般会添加相应的初始化 （创建日志文件等）
-</span><span style="color:#75715e"></span>            logger <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> DataBaseLogger<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+</span><span style="color:#75715e"></span>            logger <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> DataBaseLogger<span style="color:#f92672">();</span>
         <span style="color:#f92672">}</span>
         <span style="color:#66d9ef">else</span>
             logger <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
@@ -303,134 +301,134 @@ if (!doNotTrack) {
     <span style="color:#f92672">}</span>
 <span style="color:#f92672">}</span>
 </code></pre></div><p>使用时直接通过工厂类得到对象</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">Logger logger <span style="color:#f92672">=</span> SimpleFact<span style="color:#f92672">.</span><span style="color:#a6e22e">produceLogger</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">Logger logger <span style="color:#f92672">=</span> SimpleFact<span style="color:#f92672">.</span><span style="color:#a6e22e">produceLogger</span><span style="color:#f92672">();</span>
 </code></pre></div><p>实质上主要提高了代码的可读性，将logger的具体类型和初始化过程用单独的简单工厂类处理，主要为逻辑清晰上的优点。</p>
 <p>仍存在添加新的对象需要修改简单工厂类的问题。</p>
-<h2 id="heading-4">问题二：添加新的对象需要修改源码的问题</h2>
+<h2 id="问题二添加新的对象需要修改源码的问题">问题二：添加新的对象需要修改源码的问题</h2>
 <p>利用java的反射机制，直接通过字符串直接创建对象（一般loggerName来自配置文件）</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">// simple factoryPatten
 </span><span style="color:#75715e"></span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">SimpleFact</span> <span style="color:#f92672">{</span>
     <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> Logger <span style="color:#a6e22e">produceLogger2</span><span style="color:#f92672">(</span>String loggerName<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
          Logger logger <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
-         Class c <span style="color:#f92672">=</span> Class<span style="color:#f92672">.</span><span style="color:#a6e22e">forName</span><span style="color:#f92672">(</span>loggerName<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
-         logger <span style="color:#f92672">=</span> <span style="color:#f92672">(</span>Logger<span style="color:#f92672">)</span>c<span style="color:#f92672">.</span><span style="color:#a6e22e">newInstance</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+         Class c <span style="color:#f92672">=</span> Class<span style="color:#f92672">.</span><span style="color:#a6e22e">forName</span><span style="color:#f92672">(</span>loggerName<span style="color:#f92672">);</span>
+         logger <span style="color:#f92672">=</span> <span style="color:#f92672">(</span>Logger<span style="color:#f92672">)</span>c<span style="color:#f92672">.</span><span style="color:#a6e22e">newInstance</span><span style="color:#f92672">();</span>
          <span style="color:#75715e">// 省略 try catch  ......
 </span><span style="color:#75715e"></span>         <span style="color:#66d9ef">return</span> logger<span style="color:#f92672">;</span>
     <span style="color:#f92672">}</span>
 <span style="color:#f92672">}</span>
 </code></pre></div><p>添加新类时，直接添加新类的jar包，将类名添加到配置文件即可。</p>
 <p>无法解决不同类的初始化逻辑不同的问题。</p>
-<h2 id="logger">问题三：不同logger的初始化需要各自不同的设置</h2>
+<h2 id="问题三不同logger的初始化需要各自不同的设置">问题三：不同logger的初始化需要各自不同的设置</h2>
 <p>前面的反射使客户端无法对各个具体的logger派生类实现不同的初始化。<strong>当初始化过程复杂时，放在另一个类（工厂类）中会让逻辑更为清晰。（工厂模式）</strong></p>
 <p><strong>而且通过工厂类的封装后有了相同的初始化逻辑，能够直接上用上面的反射创建工厂</strong></p>
 <p>对每个logger构建一个工厂类，使用工厂类初始化logger后得到最后的对象。</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">abstract</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Logger</span> <span style="color:#f92672">{</span>
-   <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">writeLog</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">{</span>
-       System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;writeLog by Logger&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+   <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">writeLog</span><span style="color:#f92672">(){</span>
+       System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;writeLog by Logger&#34;</span><span style="color:#f92672">);</span>
    <span style="color:#f92672">}</span>
    <span style="color:#75715e">// 可添加公共实现
 </span><span style="color:#75715e"></span><span style="color:#f92672">}</span>
 <span style="color:#66d9ef">abstract</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">SuperFactory</span><span style="color:#f92672">{</span>
-    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">abstract</span> Logger <span style="color:#a6e22e">produceLogger</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">abstract</span> Logger <span style="color:#a6e22e">produceLogger</span><span style="color:#f92672">();</span>
 <span style="color:#f92672">}</span>
 
 <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">FileLogger</span> <span style="color:#66d9ef">extends</span> Logger <span style="color:#f92672">{</span>
     <span style="color:#a6e22e">@Override</span>
-    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">writeLog</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">{</span>
-        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;writeLog by the FileLogger&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">writeLog</span><span style="color:#f92672">(){</span>
+        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;writeLog by the FileLogger&#34;</span><span style="color:#f92672">);</span>
     <span style="color:#f92672">}</span>
 <span style="color:#f92672">}</span>
 <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">FileLoggerFactory</span> <span style="color:#66d9ef">extends</span> SuperFactory<span style="color:#f92672">{</span>
     <span style="color:#a6e22e">@Override</span>
-    <span style="color:#66d9ef">public</span> Logger <span style="color:#a6e22e">produceLogger</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">public</span> Logger <span style="color:#a6e22e">produceLogger</span><span style="color:#f92672">(){</span>
         <span style="color:#75715e">// 初始化忽略
-</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">new</span> FileLogger<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">new</span> FileLogger<span style="color:#f92672">();</span>
     <span style="color:#f92672">}</span>
 <span style="color:#f92672">}</span>
 
 <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">DataBaseLogger</span> <span style="color:#66d9ef">extends</span> Logger <span style="color:#f92672">{</span>
     <span style="color:#a6e22e">@Override</span>
-    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">writeLog</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">{</span>
-        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;writeLog by the DataBaseLogger&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">writeLog</span><span style="color:#f92672">(){</span>
+        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;writeLog by the DataBaseLogger&#34;</span><span style="color:#f92672">);</span>
     <span style="color:#f92672">}</span>
 <span style="color:#f92672">}</span>
 <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">DataBaseLoggerFactory</span> <span style="color:#66d9ef">extends</span> SuperFactory<span style="color:#f92672">{</span>
     <span style="color:#a6e22e">@Override</span>
-    <span style="color:#66d9ef">public</span> Logger <span style="color:#a6e22e">produceLogger</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">public</span> Logger <span style="color:#a6e22e">produceLogger</span><span style="color:#f92672">(){</span>
         <span style="color:#75715e">// 初始化忽略
-</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">new</span> DataBaseLogger<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">new</span> DataBaseLogger<span style="color:#f92672">();</span>
     <span style="color:#f92672">}</span>
 <span style="color:#f92672">}</span>
 </code></pre></div><p>添加新的产品时添加logger和对应的工厂类，然后通过配置文件创建对应的工厂即可。</p>
 <p>ps: 感觉此处如果初始化较为简单，构建工厂类的行为有点多余。</p>
-<h1 id="heading-5">再到抽象工厂模式</h1>
+<h1 id="再到抽象工厂模式">再到抽象工厂模式</h1>
 <p>工厂方法模式的思想主要是每个产品类使用一个工厂类初始化。</p>
 <p>类似提供多套主题的情况，每套主题有多个控件，此时可以使用一个工厂初始化同一主题下的多个产品对象。</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">// ---- button
 </span><span style="color:#75715e"></span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">ButtonUI</span><span style="color:#f92672">{</span>
-    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">print</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span> System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;ButtonUI&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span><span style="color:#f92672">}</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">print</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span> System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;ButtonUI&#34;</span><span style="color:#f92672">);}</span>
 <span style="color:#f92672">}</span>
 <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">ButtonUI_theme1</span> <span style="color:#66d9ef">extends</span> ButtonUI<span style="color:#f92672">{</span>
     <span style="color:#a6e22e">@Override</span>
-    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">print</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span> System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;ButtonUI_theme1&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span><span style="color:#f92672">}</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">print</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span> System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;ButtonUI_theme1&#34;</span><span style="color:#f92672">);}</span>
 <span style="color:#f92672">}</span>
 <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">ButtonUI_theme2</span> <span style="color:#66d9ef">extends</span> ButtonUI<span style="color:#f92672">{</span>
     <span style="color:#a6e22e">@Override</span>
-    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">print</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span> System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;ButtonUI_theme2&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span><span style="color:#f92672">}</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">print</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span> System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;ButtonUI_theme2&#34;</span><span style="color:#f92672">);}</span>
 <span style="color:#f92672">}</span>
 
 <span style="color:#75715e">// ---- text
 </span><span style="color:#75715e"></span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">TextUI</span><span style="color:#f92672">{</span>
-    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">print</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span> System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;TextUI&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span><span style="color:#f92672">}</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">print</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span> System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;TextUI&#34;</span><span style="color:#f92672">);}</span>
 <span style="color:#f92672">}</span>
 <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">TextUI_theme1</span> <span style="color:#66d9ef">extends</span> TextUI<span style="color:#f92672">{</span>
     <span style="color:#a6e22e">@Override</span>
-    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">print</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span> System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;TextUI_theme1&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span><span style="color:#f92672">}</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">print</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span> System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;TextUI_theme1&#34;</span><span style="color:#f92672">);}</span>
 <span style="color:#f92672">}</span>
 <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">TextUI_theme2</span> <span style="color:#66d9ef">extends</span> TextUI<span style="color:#f92672">{</span>
     <span style="color:#a6e22e">@Override</span>
-    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">print</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span> System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;TextUI_theme2&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span><span style="color:#f92672">}</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">print</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span> System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;TextUI_theme2&#34;</span><span style="color:#f92672">);}</span>
 <span style="color:#f92672">}</span>
 
 <span style="color:#75715e">// ---- factory
 </span><span style="color:#75715e"></span><span style="color:#66d9ef">abstract</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">AbstractThemeFactory</span><span style="color:#f92672">{</span>
-    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">printCommon</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">{</span>
-        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;common factory method&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">printCommon</span><span style="color:#f92672">(){</span>
+        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;common factory method&#34;</span><span style="color:#f92672">);</span>
     <span style="color:#f92672">}</span>
-    <span style="color:#66d9ef">abstract</span> <span style="color:#66d9ef">public</span> ButtonUI <span style="color:#a6e22e">createButton</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
-    <span style="color:#66d9ef">abstract</span> <span style="color:#66d9ef">public</span> TextUI <span style="color:#a6e22e">createText</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">abstract</span> <span style="color:#66d9ef">public</span> ButtonUI <span style="color:#a6e22e">createButton</span><span style="color:#f92672">();</span>
+    <span style="color:#66d9ef">abstract</span> <span style="color:#66d9ef">public</span> TextUI <span style="color:#a6e22e">createText</span><span style="color:#f92672">();</span>
 <span style="color:#f92672">}</span>
 <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Theme1Factory</span> <span style="color:#66d9ef">extends</span> AbstractThemeFactory<span style="color:#f92672">{</span>
     <span style="color:#a6e22e">@Override</span>
-    <span style="color:#66d9ef">public</span> ButtonUI <span style="color:#a6e22e">createButton</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">{</span> <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">new</span> ButtonUI_theme1<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span> <span style="color:#f92672">}</span>
+    <span style="color:#66d9ef">public</span> ButtonUI <span style="color:#a6e22e">createButton</span><span style="color:#f92672">(){</span> <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">new</span> ButtonUI_theme1<span style="color:#f92672">();</span> <span style="color:#f92672">}</span>
 
     <span style="color:#a6e22e">@Override</span>
-    <span style="color:#66d9ef">public</span> TextUI <span style="color:#a6e22e">createText</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">new</span> TextUI_theme1<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">public</span> TextUI <span style="color:#a6e22e">createText</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">new</span> TextUI_theme1<span style="color:#f92672">();</span>
     <span style="color:#f92672">}</span>
 <span style="color:#f92672">}</span>
 <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Theme2Factory</span> <span style="color:#66d9ef">extends</span> AbstractThemeFactory<span style="color:#f92672">{</span>
 
     <span style="color:#a6e22e">@Override</span>
-    <span style="color:#66d9ef">public</span> ButtonUI <span style="color:#a6e22e">createButton</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">new</span> ButtonUI_theme2<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">public</span> ButtonUI <span style="color:#a6e22e">createButton</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">new</span> ButtonUI_theme2<span style="color:#f92672">();</span>
     <span style="color:#f92672">}</span>
     <span style="color:#a6e22e">@Override</span>
-    <span style="color:#66d9ef">public</span> TextUI <span style="color:#a6e22e">createText</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">new</span> TextUI_theme2<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">public</span> TextUI <span style="color:#a6e22e">createText</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">new</span> TextUI_theme2<span style="color:#f92672">();</span>
     <span style="color:#f92672">}</span>
 <span style="color:#f92672">}</span>
 
 <span style="color:#75715e">// ------------ Test
 </span><span style="color:#75715e"></span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">AbstractFactory</span> <span style="color:#f92672">{</span>
 
-    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span><span style="color:#f92672">(</span>String args<span style="color:#f92672">[</span><span style="color:#f92672">]</span><span style="color:#f92672">)</span><span style="color:#f92672">{</span>
-        AbstractThemeFactory factory <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Theme1Factory<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
-        ButtonUI buttonUI <span style="color:#f92672">=</span> factory<span style="color:#f92672">.</span><span style="color:#a6e22e">createButton</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
-        TextUI textUI <span style="color:#f92672">=</span> factory<span style="color:#f92672">.</span><span style="color:#a6e22e">createText</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span><span style="color:#f92672">(</span>String args<span style="color:#f92672">[]){</span>
+        AbstractThemeFactory factory <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Theme1Factory<span style="color:#f92672">();</span>
+        ButtonUI buttonUI <span style="color:#f92672">=</span> factory<span style="color:#f92672">.</span><span style="color:#a6e22e">createButton</span><span style="color:#f92672">();</span>
+        TextUI textUI <span style="color:#f92672">=</span> factory<span style="color:#f92672">.</span><span style="color:#a6e22e">createText</span><span style="color:#f92672">();</span>
     <span style="color:#f92672">}</span>
 <span style="color:#f92672">}</span>
-</code></pre></div><h1 id="heading-6">个人看法</h1>
+</code></pre></div><h1 id="个人看法">个人看法</h1>
 <p>new具体对象的主要问题不只是使用不同的类，而是不同类有不同的初始化流程需要处理。</p>
 <p>个人认为工厂模式的主要作用为：</p>
 <ul>
@@ -446,10 +444,10 @@ if (!doNotTrack) {
 <li>在产品类有较为复杂的初始化和其他逻辑时，使用工厂方法模式构建工厂类包装简化使用。</li>
 <li>在产品类较多且有明显的分类时，使用抽象工厂模式对每个分类的产品构建一个工厂类。</li>
 </ul>
-<h2 id="heading-7">吐槽</h2>
+<h2 id="吐槽">吐槽</h2>
 <p>很多人的工厂方法模式，将new具体的对象变成了new具体的工厂，然后工厂类就变成了一对一的产品初始化类，正常人都能想到的吧&hellip;</p>
 <p>某些书上讲的各种问题感觉就是根据已有的模式写法强套的问题，如很多提到简单工厂模式的缺点在于不适合管理多个产品，添加新产品需要修改源码。前者只在于产品类需要复杂的初始化逻辑，后者和工厂方法模式一样使用反射就能解决了。</p>
-<h2 id="heading-8">网上其他的看法</h2>
+<h2 id="网上其他的看法">网上其他的看法</h2>
 <p>使用new对类实例化可能破坏类的可扩展性，由于new跟随的是具体的对象，很可能会被修改，因此给其他人使用的类要尽可能少用new。感觉工厂方法模式虽然对加入新的产品能够降低修改，但反射同样可以解决此问题。</p>
 
 </div>

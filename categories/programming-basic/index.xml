@@ -5,10 +5,25 @@
     <link>https://extendswind.top/categories/programming-basic/</link>
     <description>Recent content in programming basic on A Notebook of Extendswind</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Wed, 29 May 2019 20:30:00 +0800</lastBuildDate>
+    <lastBuildDate>Tue, 19 May 2020 11:30:00 +0800</lastBuildDate>
     
 	<atom:link href="https://extendswind.top/categories/programming-basic/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>java从toArray返回Object[]到泛型的类型擦除</title>
+      <link>https://extendswind.top/posts/technical/java_toarray_return_and_generic_type_erase/</link>
+      <pubDate>Tue, 19 May 2020 11:30:00 +0800</pubDate>
+      
+      <guid>https://extendswind.top/posts/technical/java_toarray_return_and_generic_type_erase/</guid>
+      <description>在将ArrayList等Collection转为数组时，函数的返回值并不是泛型类型的数组，而是Object[]。刚好最近翻了一遍《java核心技术》，以及参考《Think in Java》，写写为什么没有直接返回对应类型的数组，以及Java泛型中类型擦除的处理方式。
+主要涉及：
+ ArrayList的toArray函数使用 为什么不直接定义函数 T[] toArray() 泛型数组的创建的两种常用方法 在泛型中创建具体的类实例  (部分代码没有运行过）
+ArrayList的toArray函数使用 将ArrayList转为数组，提供了两个函数
+Object[] toArray(); &amp;lt;T&amp;gt; T[] toArray(T[] a); // 后面考虑一个Integer类型的ArrayList ArrayList&amp;lt;Integer&amp;gt; aa = new ArrayList&amp;lt;&amp;gt;(); aa.add(1); aa.add(3); Object[] toArray(); 第一个函数是直接将ArrayList转换成Object的数组，可以用Object[] bb = aa.toArray()，在具体使用时对每个对象进行强制类型转换，如System.out.println((Integer)bb[1])。（java不支持数组之间的强制类型转换）
+T[] toArray(T[] a); 第二个函数能够直接得到T类型的数组，当传入的T[] a能放下ArrayList时，会将ArrayList中的内容复制到a中（a的size较大时会a[size]=null）。否则，将构建一个新的数组并返回。具体实现如下:
+public &amp;lt;T&amp;gt; T[] toArray(T[] a) { if (a.length &amp;lt; size) // Make a new array of a&amp;#39;s runtime type, but my contents:  return (T[]) Arrays.copyOf(elementData, size, a.getClass()); System.arraycopy(elementData, 0, a, 0, size); if (a.</description>
+    </item>
     
     <item>
       <title>log4j 1.2 配置和使用简述</title>

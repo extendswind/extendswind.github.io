@@ -43,7 +43,7 @@ sudo add-apt-repository ppa:yannubuntu/boot-repair -y sudo apt-get update sudo a
 <meta property='og:site_name' content='A Notebook of Extendswind'>
 <meta property='og:type' content='article'><meta property='article:section' content='posts'><meta property='article:tag' content='linux'><meta property='article:published_time' content='2019-11-26T20:59:49&#43;08:00'/><meta property='article:modified_time' content='2019-11-26T20:59:49&#43;08:00'/><meta name='twitter:card' content='summary'>
 
-<meta name="generator" content="Hugo 0.62.0" />
+<meta name="generator" content="Hugo 0.70.0" />
 
   <title>一次修复linux的efi引导的集中方法总结记录 • A Notebook of Extendswind</title>
   <link rel='canonical' href='https://extendswind.top/posts/technical/grub_uefi_repair/'>
@@ -53,17 +53,6 @@ sudo add-apt-repository ppa:yannubuntu/boot-repair -y sudo apt-get update sudo a
 <link rel='stylesheet' href='/assets/css/main.6a060eb7.css'><link rel='stylesheet' href='/css/custom.css'><style>
 :root{--color-accent:#cccccc;}
 </style>
-
-<script type="application/javascript">
-var doNotTrack = false;
-if (!doNotTrack) {
-	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-	ga('create', 'UA-125329544-1', 'auto');
-	
-	ga('send', 'pageview');
-}
-</script>
-<script async src='https://www.google-analytics.com/analytics.js'></script>
 
   
 
@@ -215,15 +204,20 @@ if (!doNotTrack) {
   </summary>
   <nav id="TableOfContents">
   <ul>
-    <li><a href="#ubuntuboot-repair">基于ubuntu的boot-repair</a></li>
-    <li><a href="#grub-install-">grub-install 命令安装</a></li>
-  </ul>
-
-  <ul>
-    <li><a href="#refind-">refind 引导程序</a></li>
-    <li><a href="#win10">安装完仍默认启动win10</a></li>
-    <li><a href="#win10grub">win10启动几次就让grub引导消失的问题</a></li>
-    <li><a href="#uefi">启动时仍没有UEFI引导选项的问题</a></li>
+    <li><a href="#最常规的修复方式-通过live-cd">最常规的修复方式 通过live cd</a>
+      <ul>
+        <li><a href="#基于ubuntu的boot-repair">基于ubuntu的boot-repair</a></li>
+        <li><a href="#grub-install-命令安装">grub-install 命令安装</a></li>
+      </ul>
+    </li>
+    <li><a href="#各种操作和问题">各种操作和问题</a>
+      <ul>
+        <li><a href="#refind-引导程序">refind 引导程序</a></li>
+        <li><a href="#安装完仍默认启动win10">安装完仍默认启动win10</a></li>
+        <li><a href="#win10启动几次就让grub引导消失的问题">win10启动几次就让grub引导消失的问题</a></li>
+        <li><a href="#启动时仍没有uefi引导选项的问题">启动时仍没有UEFI引导选项的问题</a></li>
+      </ul>
+    </li>
   </ul>
 </nav>
 </details>
@@ -251,7 +245,7 @@ if (!doNotTrack) {
 </ol>
 <p>引导的问题网上的解决方案很多，对于一些新的电脑UEFI的方式应该很好修复，但一些比较老的电脑可能出现各种坑问题，用legacy的引导还是稳定一点。</p>
 <p>UEFI的引导通过grub的各种安装尝试都无法被主板识别，一直检测不到硬盘UEFI的启动项。怀疑主板并不支持linux grub2写入的UEFI引导信息，只支持windows的。最后通过安装win10，用refind覆盖win10的efi启动条目解决问题。</p>
-<h1 id="-live-cd">最常规的修复方式 通过live cd</h1>
+<h1 id="最常规的修复方式-通过live-cd">最常规的修复方式 通过live cd</h1>
 <p>将系统烧入U盘，启动U盘进入系统后修复。涉及两种方式：</p>
 <ol>
 <li>通过boot-repair</li>
@@ -260,13 +254,13 @@ if (!doNotTrack) {
 <p>还有通过grub命令行的方式，不常用没折腾。</p>
 <p>建议烧入的系统为ubuntu和manjaro。deepin的live cd在我的电脑上有显示的bug，而且添加ppa有一点坑。openSUSE上的grub命令和debian系arch系不怎么一样。ubuntu的主要优点在于可以通过安装boot-repair进行一键修复，manjaro和arch的live cd提供了直接的manjaro-chroot以及arch-chroot，进入后直接安装grub就行，而且manjaro的live cd支持直接引导启动efi分区中的系统。</p>
 <p>在下面的两种操作之前，最好通过gparted等软件新建一个efi分区（fat32,一般几十兆，openSUSE建议不小于500M，带efi标签）。</p>
-<h2 id="ubuntuboot-repair">基于ubuntu的boot-repair</h2>
+<h2 id="基于ubuntu的boot-repair">基于ubuntu的boot-repair</h2>
 <p>网上的资料多操作也不复杂，主要注意U盘从UEFI模式启动。</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sudo add-apt-repository ppa:yannubuntu/boot-repair -y
 sudo apt-get update
 sudo apt-get install boot-repair -y
 sudo boot-repair
-</code></pre></div><h2 id="grub-install-">grub-install 命令安装</h2>
+</code></pre></div><h2 id="grub-install-命令安装">grub-install 命令安装</h2>
 <p>使用manjaro live cd，其它的系统可能需要安装grub2、efibootmgr、grub-efi-amd64、os-prober等包。</p>
 <p>以下需要root权限，<code>sudo -i</code>或命令前加<code>sudo</code></p>
 <p>1、 查看要引导系统的分区和efi分区的编号（<code>fdisk -l</code>）
@@ -284,12 +278,12 @@ chroot /mnt
 <pre><code>grub-install --target=x86_64-efi /dev/sda2  # target默认是x86_64-efi
 grub-grub-mkconfig -o /boot/grub/grub.cfg
 update-grub
-</code></pre><h1 id="heading">各种操作和问题</h1>
+</code></pre><h1 id="各种操作和问题">各种操作和问题</h1>
 <p>上面的操作在一般较新的电脑上就能启动了。</p>
-<h2 id="refind-">refind 引导程序</h2>
+<h2 id="refind-引导程序">refind 引导程序</h2>
 <p>可以在启动时动态检查和引导所有硬盘里efi分区里的配置，还可以设置各种主题。grub每次只能识别efi分区EFI目录下的某一个写好的配置。</p>
 <p>安装后直接运行<code>refind-install</code>脚本即可，也可以指定efi分区。</p>
-<h2 id="win10">安装完仍默认启动win10</h2>
+<h2 id="安装完仍默认启动win10">安装完仍默认启动win10</h2>
 <p>UEFI支持一种安全模式，win10会独占UEFI，双系统时需要在win10中关闭安全启动。（没碰到，具体资料可搜）。</p>
 <p>其次，修改efi的引导顺序，进入win10后，使用bcdedit命令</p>
 <pre><code>bcdedit /enum  # 查看引导
@@ -299,10 +293,10 @@ bcdedit /default {12277df3-07da-11e8-a54c-9f200771404e}  # 设置默认项
 # refind可以改为其它的系统
 bcdedit /set {bootmgr} path \EFI\refind\refind_x64.efi   
 </code></pre><p>上面的命令在cmd里没问题，最近在powershell里跑挂了，可能是命令解析规则不同，简单的操作还是cmd吧。</p>
-<h2 id="win10grub">win10启动几次就让grub引导消失的问题</h2>
+<h2 id="win10启动几次就让grub引导消失的问题">win10启动几次就让grub引导消失的问题</h2>
 <p>win10会默认修改UEFI的引导顺序。</p>
 <p>好像是win10 系统配置-&gt;常规 里的最后一个勾，用了上面的方式后，没怎么遇到这个问题。</p>
-<h2 id="uefi">启动时仍没有UEFI引导选项的问题</h2>
+<h2 id="启动时仍没有uefi引导选项的问题">启动时仍没有UEFI引导选项的问题</h2>
 <p>一般上面的操作能解决绝大多数电脑的，我的2代i3电脑开机f12的启动菜单中，怎么安装linux都出现不了UEFI菜单，但安装windows能，于是一般先装windows再改默认引导&hellip;</p>
 <p>一次windows的UEFI在装完系统第一次启动后也不显示无法选择，在BIOS里设置只允许UEFI启动，竟然启动了&hellip;.</p>
 <p>更坑爹的是，双硬盘时启动不了，通过换sata线的接口就启动了&hellip;</p>
@@ -342,6 +336,16 @@ bcdedit /set {bootmgr} path \EFI\refind\refind_x64.efi
 </svg>
  Previous</span>
         <span class='screen-reader-text'>Previous post: </span>树莓派基于scratch2控制GPIO</a>
+    </div><div class='next-entry sep-before'>
+      <a href='/posts/technical/java_toarray_return_and_generic_type_erase/'>
+        <span class='screen-reader-text'>Next post: </span>java从toArray返回Object[]到泛型的类型擦除<span aria-hidden='true'>Next <svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="4" y1="12" x2="20" y2="12"/>
+  <polyline points="14 6 20 12 14 18"/>
+  
+</svg>
+</span>
+      </a>
     </div></div>
 </nav>
 

@@ -47,7 +47,7 @@ Unknown authentication scheme from VNC server: 13, 5, 6, 130, 192'>
 <meta property='og:site_name' content='A Notebook of Extendswind'>
 <meta property='og:type' content='article'><meta property='article:section' content='posts'><meta property='article:tag' content='raspberry'><meta property='article:published_time' content='2019-10-25T10:59:49&#43;08:00'/><meta property='article:modified_time' content='2019-10-25T10:59:49&#43;08:00'/><meta name='twitter:card' content='summary'>
 
-<meta name="generator" content="Hugo 0.62.0" />
+<meta name="generator" content="Hugo 0.70.0" />
 
   <title>树莓派从烧录系统到通过wifi远程访问（新树莓派配置，无显示器、网线、键盘） • A Notebook of Extendswind</title>
   <link rel='canonical' href='https://extendswind.top/posts/technical/raspberry_from_install_to_remote_access/'>
@@ -57,17 +57,6 @@ Unknown authentication scheme from VNC server: 13, 5, 6, 130, 192'>
 <link rel='stylesheet' href='/assets/css/main.6a060eb7.css'><link rel='stylesheet' href='/css/custom.css'><style>
 :root{--color-accent:#cccccc;}
 </style>
-
-<script type="application/javascript">
-var doNotTrack = false;
-if (!doNotTrack) {
-	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-	ga('create', 'UA-125329544-1', 'auto');
-	
-	ga('send', 'pageview');
-}
-</script>
-<script async src='https://www.google-analytics.com/analytics.js'></script>
 
   
 
@@ -216,14 +205,14 @@ if (!doNotTrack) {
 
   <div class='container entry-content'>
   <p>网上教程很多，但是google和百度排在前面的博客操作起来各种问题，因此简单写写。</p>
-<h1 id="1-">1. 烧录系统</h1>
+<h1 id="1-烧录系统">1. 烧录系统</h1>
 <p>官网有可以系统可以下载，通常建议<img src="https://www.raspberrypi.org/downloads/raspbian/" alt="raspberry">，有特殊需求可以考虑其它的几个系统。</p>
 <p>官网推荐使用balenaEtcher烧录系统。（很多博客推荐先一个工具格式化sd卡，然后win32imagewriter不知道是不是以前的做法）</p>
-<h2 id="2-">2. 配置系统</h2>
+<h2 id="2-配置系统">2. 配置系统</h2>
 <p>上面的烧录后，sd卡会被分为多个分区，其中windows系统下能识别的只有一个名为boot的分区，存储启动相关的配置文件。</p>
-<h3 id="21-ssh">2.1 开启ssh</h3>
+<h3 id="21-开启ssh">2.1 开启ssh</h3>
 <p>raspbian 系统默认不开启ssh远程访问，在boot分区下新建文件名为<code>SSH</code>的文件（内容为空无后缀），系统启动时检测到此文件会开启ssh进程。</p>
-<h3 id="22-wifi">2.2 配置wifi</h3>
+<h3 id="22-配置wifi">2.2 配置wifi</h3>
 <p>在boot分区下新建文件名为<code>wpa_supplicant.conf</code>的文件，添加以下内容：</p>
 <pre><code>country=CN
 ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
@@ -238,25 +227,25 @@ network={
 
 </code></pre><p>修改其中的wifi名和密码（ssid与psk）</p>
 <p><em>如果想省事可以直接用网线连上路由器</em></p>
-<h1 id="3-">3. 远程访问</h1>
-<h2 id="31-ip">3.1 查找树莓派ip</h2>
+<h1 id="3-远程访问">3. 远程访问</h1>
+<h2 id="31-查找树莓派ip">3.1 查找树莓派ip</h2>
 <p>此处需要将电脑和树莓派连接在同一路由器下。</p>
 <p>方法一：浏览器上输入192.168.1.1 （根据不同路由器网关不同），进入管理页面查看树莓派ip。</p>
 <p>方法二：使用软件<code>Advanced IP Scanner</code>扫描局域网中的树莓派。</p>
-<h2 id="32-ssh-">3.2 ssh 远程登录</h2>
+<h2 id="32-ssh-远程登录">3.2 ssh 远程登录</h2>
 <p>ssh是linux上最常用的命令行远程访问工具。</p>
 <p>使用软件<code>putty</code>用于远程ssh登录，输入树莓ip，密码为raspberry。</p>
-<h2 id="33-vnc">3.3 开启vnc</h2>
+<h2 id="33-开启vnc">3.3 开启vnc</h2>
 <p>vnc类似windows上的rdp远程登录，是linux上最常用的带界面远程访问协议。</p>
 <p>ssh远程登录后，<code>sudo raspi-config</code> 然后在<code>Interfacing Options</code> -&gt; <code>VNC</code>里enable VNC服务。（貌似是启动vnc的服务后设置了开机启动）</p>
 <p>然后使用<code>realVNC viewer</code>输入ip访问即可。</p>
 <p>vnc默认使用5900端口，当端口占用时会往后推使用5901等端口。多个vncserver运行时需要使用ip:590x的形式指定端口号。</p>
-<h3 id="heading">此处小坑</h3>
+<h3 id="此处小坑">此处小坑</h3>
 <p>树莓派自带的vnc server使用的加密方式和tigerVNC viewer不兼容，会显示以下错误：</p>
 <p><code>Unknown authentication scheme from VNC server: 13, 5, 6, 130, 192</code></p>
 <p>使用realVNC客户端正常访问。</p>
 <p>还可以考虑在树莓派上安装tightvncserver。</p>
-<h1 id="4-">4. 附软件源安装</h1>
+<h1 id="4-附软件源安装">4. 附软件源安装</h1>
 <p>默认的软件源仓库的网速较慢，使用apt安装某些软件时过于龟速，可以考虑换国内的镜像源。如<img src="https://mirror.tuna.tsinghua.edu.cn/help/raspbian/" alt="清华源">等。</p>
 
 </div>

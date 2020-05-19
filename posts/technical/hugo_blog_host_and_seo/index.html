@@ -41,7 +41,7 @@ CDN略麻烦，还需要其它的服务。 在各种折腾之后选择了托管�
 <meta property='og:site_name' content='A Notebook of Extendswind'>
 <meta property='og:type' content='article'><meta property='article:section' content='posts'><meta property='article:tag' content='blog'><meta property='article:published_time' content='2018-09-04T10:30:00&#43;08:00'/><meta property='article:modified_time' content='2018-09-04T10:30:00&#43;08:00'/><meta name='twitter:card' content='summary'>
 
-<meta name="generator" content="Hugo 0.62.0" />
+<meta name="generator" content="Hugo 0.70.0" />
 
   <title>静态blog的免费托管部署、加域名与搜索优化（SEO） • A Notebook of Extendswind</title>
   <link rel='canonical' href='https://extendswind.top/posts/technical/hugo_blog_host_and_seo/'>
@@ -51,17 +51,6 @@ CDN略麻烦，还需要其它的服务。 在各种折腾之后选择了托管�
 <link rel='stylesheet' href='/assets/css/main.6a060eb7.css'><link rel='stylesheet' href='/css/custom.css'><style>
 :root{--color-accent:#cccccc;}
 </style>
-
-<script type="application/javascript">
-var doNotTrack = false;
-if (!doNotTrack) {
-	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-	ga('create', 'UA-125329544-1', 'auto');
-	
-	ga('send', 'pageview');
-}
-</script>
-<script async src='https://www.google-analytics.com/analytics.js'></script>
 
   
 
@@ -213,8 +202,15 @@ if (!doNotTrack) {
   </summary>
   <nav id="TableOfContents">
   <ul>
-    <li><a href="#hugositemap">Hugo的sitemap百度无法识别</a></li>
-    <li><a href="#1">百度长时间只收录主页（收录链接数为1）</a></li>
+    <li><a href="#问题">问题</a></li>
+    <li><a href="#解决方案">解决方案</a></li>
+    <li><a href="#还没完">还没完</a>
+      <ul>
+        <li><a href="#hugo的sitemap百度无法识别">Hugo的sitemap百度无法识别</a></li>
+        <li><a href="#百度长时间只收录主页收录链接数为1">百度长时间只收录主页（收录链接数为1）</a></li>
+      </ul>
+    </li>
+    <li><a href="#附国内外的免费静态网站托管">附：国内外的免费静态网站托管</a></li>
   </ul>
 </nav>
 </details>
@@ -222,25 +218,25 @@ if (!doNotTrack) {
 
   <div class='container entry-content'>
   <p>给博客加个域名准备长用，Hugo生成后一直放在github page上，为了让百度能搜到费了一堆事。</p>
-<h1 id="heading">问题</h1>
+<h1 id="问题">问题</h1>
 <p>如果只是在github page上弄个自己域名的网站，只需要在结果文件中添加一个CNAME文件，写入网站域名，然后在域名运营商提交解析。等待域名解析生效后即可通过域名访问。</p>
 <p>然后为了让搜索引擎能够检索，通过baidu、bing、google的站长工具提交链接。</p>
 <p>此时发生一个大bug，github因为某种原因限制了百度爬虫的进入，也就是百度上很少搜到github内网页的原因。</p>
 <p>重点解决的问题为：github page上的内容无法被百度检索。</p>
-<h1 id="heading-1">解决方案</h1>
+<h1 id="解决方案">解决方案</h1>
 <p>相关解决github page被检索的方案较多，重点都是通过CDN缓存网站和将网站托管在其它地方两个方案。</p>
 <p>CDN略麻烦，还需要其它的服务。
 <strong>在各种折腾之后选择了托管在netlify上，然后在百度站长工具中提交网站</strong>。</p>
-<h1 id="heading-2">还没完</h1>
-<h2 id="hugositemap">Hugo的sitemap百度无法识别</h2>
+<h1 id="还没完">还没完</h1>
+<h2 id="hugo的sitemap百度无法识别">Hugo的sitemap百度无法识别</h2>
 <p>Hugo默认可以使用多语言，当设置了中文和英文时，默认路径下的sitemap会指向两种语言的sitemap路径而非直接的网页，百度无法识别&hellip;.</p>
 <p>解决方案，只设置一种语言。</p>
-<h2 id="1">百度长时间只收录主页（收录链接数为1）</h2>
+<h2 id="百度长时间只收录主页收录链接数为1">百度长时间只收录主页（收录链接数为1）</h2>
 <p>百度能看到一堆人碰到类似的问题。</p>
 <p>有解决方案建议放在CSDN一类的普通博客上，并附上链接，百度时间长了会自动收录。（google就没这问题&hellip;）</p>
 <p>还有稳定更新，提高博客的质量。</p>
 <p>然后静静的等待&hellip;.</p>
-<h1 id="heading-3">附：国内外的免费静态网站托管</h1>
+<h1 id="附国内外的免费静态网站托管">附：国内外的免费静态网站托管</h1>
 <p>国外代码托管系列</p>
 <ul>
 <li>netlify，最好最方便，没有之一，添加域名和github仓库的地址就能解决问题，github上的提交还会自动同步。</li>

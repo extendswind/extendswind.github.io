@@ -33,7 +33,7 @@ appender 主要用于
 <meta property='og:site_name' content='A Notebook of Extendswind'>
 <meta property='og:type' content='article'><meta property='article:section' content='posts'><meta property='article:tag' content='java'><meta property='article:tag' content='log4j'><meta property='article:published_time' content='2019-05-29T20:30:00&#43;08:00'/><meta property='article:modified_time' content='2019-05-29T20:30:00&#43;08:00'/><meta name='twitter:card' content='summary'>
 
-<meta name="generator" content="Hugo 0.62.0" />
+<meta name="generator" content="Hugo 0.70.0" />
 
   <title>log4j 1.2 配置和使用简述 • A Notebook of Extendswind</title>
   <link rel='canonical' href='https://extendswind.top/posts/technical/log4j_properties_simple_introduction/'>
@@ -43,17 +43,6 @@ appender 主要用于
 <link rel='stylesheet' href='/assets/css/main.6a060eb7.css'><link rel='stylesheet' href='/css/custom.css'><style>
 :root{--color-accent:#cccccc;}
 </style>
-
-<script type="application/javascript">
-var doNotTrack = false;
-if (!doNotTrack) {
-	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-	ga('create', 'UA-125329544-1', 'auto');
-	
-	ga('send', 'pageview');
-}
-</script>
-<script async src='https://www.google-analytics.com/analytics.js'></script>
 
   
 
@@ -205,22 +194,29 @@ if (!doNotTrack) {
   </summary>
   <nav id="TableOfContents">
   <ul>
-    <li><a href="#prioritylevel">日志级别（priority，代码里为level）</a></li>
-    <li><a href="#heading-2">常用组件</a></li>
-    <li><a href="#logger">logger</a></li>
-    <li><a href="#appender">appender</a></li>
-    <li><a href="#layout">layout</a></li>
-  </ul>
-
-  <ul>
-    <li><a href="#heading-3">示例</a></li>
+    <li><a href="#简述">简述</a></li>
+    <li><a href="#一些概念">一些概念</a>
+      <ul>
+        <li><a href="#日志级别priority代码里为level">日志级别（priority，代码里为level）</a></li>
+        <li><a href="#常用组件">常用组件</a></li>
+        <li><a href="#logger">logger</a></li>
+        <li><a href="#appender">appender</a></li>
+        <li><a href="#layout">layout</a></li>
+      </ul>
+    </li>
+    <li><a href="#log4jproperties-配置">log4j.properties 配置</a>
+      <ul>
+        <li><a href="#示例">示例</a></li>
+      </ul>
+    </li>
+    <li><a href="#java代码调用">java代码调用</a></li>
   </ul>
 </nav>
 </details>
 
 
   <div class='container entry-content'>
-  <h1 id="heading">简述</h1>
+  <h1 id="简述">简述</h1>
 <p>使用log4j可以根据配置文件控制输出日志的级别，记录到文件、命令行等的位置，不需要代码上的更改。</p>
 <p>日志在一定程度上会影响性能，特别是高并发环境。<strong>一般更建议使用log4j 2.x，在性能上有较大的提高，由于hadoop 2.7使用的log4j 1.2，下面主要写这一版本。</strong></p>
 <p>本文主要介绍log4j：</p>
@@ -228,10 +224,10 @@ if (!doNotTrack) {
 <li>根据日志级别记录日志 (logger上设置）</li>
 <li>运行时决定具体的记录位置（appender上设置）和日志格式（layout上设置）</li>
 </ul>
-<h1 id="heading-1">一些概念</h1>
-<h2 id="prioritylevel">日志级别（priority，代码里为level）</h2>
+<h1 id="一些概念">一些概念</h1>
+<h2 id="日志级别priority代码里为level">日志级别（priority，代码里为level）</h2>
 <p>日志级别从低到高为trace, debug, info, warn, error, fatal。默认级别为info，低于设置级别的日志不会被打印。</p>
-<h2 id="heading-2">常用组件</h2>
+<h2 id="常用组件">常用组件</h2>
 <p>一般情况下常设置的组件有logger，appender， layout。</p>
 <p>用类的方式表达三个组件的关系为</p>
 <pre><code>Logger{
@@ -264,7 +260,7 @@ Appender{
 <p>%r [%t]%-5p %c - %m%n   会得到：
 176 [main] INFO  org.foo.Bar - Located nearest gas station.</p>
 <p>上面的日志分别对应：程序运行时间  线程  优先级  category的名称  日志信息</p>
-<h1 id="log4jproperties-">log4j.properties 配置</h1>
+<h1 id="log4jproperties-配置">log4j.properties 配置</h1>
 <p>提供了两种动态的配置方式，一种使用配置文件log4j.properties（更建议），另一种使用java代码直接配置。</p>
 <p>一般涉及：</p>
 <ul>
@@ -273,7 +269,7 @@ Appender{
 <li>配置appender （配置日志记录的位置等属性）</li>
 <li>配置layout  （配置日志输出的格式）</li>
 </ul>
-<h2 id="heading-3">示例</h2>
+<h2 id="示例">示例</h2>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># root logger 的level和对应的appender (fileAppender在后面定义）</span>
 log4j.rootLogger<span style="color:#f92672">=</span>info, fileAppender
 
@@ -298,9 +294,9 @@ log4j.appender.myConsole.layout<span style="color:#f92672">=</span>org.apache.lo
 log4j.appender.myConsole.layout.ConversionPattern<span style="color:#f92672">=</span>%d<span style="color:#f92672">{</span>yy/MM/dd HH:mm:ss<span style="color:#f92672">}</span> %p %c<span style="color:#f92672">{</span>2<span style="color:#f92672">}</span>: %m%n  myConsole
 
 </code></pre></div><p>分层的语法略奇葩，而且前面可以用到后面定义的变量。</p>
-<h1 id="java">java代码调用</h1>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">Log log <span style="color:#f92672">=</span> LogFactory<span style="color:#f92672">.</span><span style="color:#a6e22e">getLog</span><span style="color:#f92672">(</span>Test4log<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
-log<span style="color:#f92672">.</span><span style="color:#a6e22e">info</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;test&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+<h1 id="java代码调用">java代码调用</h1>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">Log log <span style="color:#f92672">=</span> LogFactory<span style="color:#f92672">.</span><span style="color:#a6e22e">getLog</span><span style="color:#f92672">(</span>Test4log<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">);</span>
+log<span style="color:#f92672">.</span><span style="color:#a6e22e">info</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;test&#34;</span><span style="color:#f92672">);</span>
 </code></pre></div><p>程序会在classpath下查找log4j.properties，因此一般放在src/main/resources文件夹下</p>
 
 </div>
