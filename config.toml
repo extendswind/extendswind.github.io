@@ -8,6 +8,14 @@ copyright = ""
 theme = "minimo"
 #theme = "hugo-icarus-theme"
 # 某些设置在data/config 目录下
+#
+
+# TOC (tableOfContents)
+[markup]
+  [markup.tableOfContents]
+    endLevel = 3
+    ordered = false
+    startLevel = 1
 
 #disqusShortname = "extendswind"
 disqusShortname = "extendswind"
