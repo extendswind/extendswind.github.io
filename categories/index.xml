@@ -5,10 +5,28 @@
     <link>https://extendswind.top/categories/</link>
     <description>Recent content in Categories on A Notebook of Extendswind</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Tue, 19 May 2020 11:30:00 +0800</lastBuildDate>
+    <lastBuildDate>Wed, 20 May 2020 22:30:00 +0800</lastBuildDate>
     
 	<atom:link href="https://extendswind.top/categories/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>linux</title>
+      <link>https://extendswind.top/categories/linux/</link>
+      <pubDate>Wed, 20 May 2020 22:30:00 +0800</pubDate>
+      
+      <guid>https://extendswind.top/categories/linux/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>linux desktop</title>
+      <link>https://extendswind.top/categories/linux-desktop/</link>
+      <pubDate>Wed, 20 May 2020 22:30:00 +0800</pubDate>
+      
+      <guid>https://extendswind.top/categories/linux-desktop/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>programming</title>
@@ -25,24 +43,6 @@
       <pubDate>Tue, 19 May 2020 11:30:00 +0800</pubDate>
       
       <guid>https://extendswind.top/categories/programming-basic/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>linux</title>
-      <link>https://extendswind.top/categories/linux/</link>
-      <pubDate>Tue, 26 Nov 2019 20:59:49 +0800</pubDate>
-      
-      <guid>https://extendswind.top/categories/linux/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>linux desktop</title>
-      <link>https://extendswind.top/categories/linux-desktop/</link>
-      <pubDate>Tue, 26 Nov 2019 20:59:49 +0800</pubDate>
-      
-      <guid>https://extendswind.top/categories/linux-desktop/</guid>
       <description></description>
     </item>
     

@@ -5,10 +5,23 @@
     <link>https://extendswind.top/categories/linux/</link>
     <description>Recent content in linux on A Notebook of Extendswind</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Tue, 26 Nov 2019 20:59:49 +0800</lastBuildDate>
+    <lastBuildDate>Wed, 20 May 2020 22:30:00 +0800</lastBuildDate>
     
 	<atom:link href="https://extendswind.top/categories/linux/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Manjaro内核编译</title>
+      <link>https://extendswind.top/posts/technical/manjaro_kernel_compile/</link>
+      <pubDate>Tue, 19 May 2020 22:30:00 +0800</pubDate>
+      
+      <guid>https://extendswind.top/posts/technical/manjaro_kernel_compile/</guid>
+      <description>重新编译内核可以修改编译时的参数，使内核在运行时更高效的支持本地硬件。Manjaro团队在gitlab上放了Manjaro内核的编译文件，稍加修改即可使用自己的选项编译。
+主要参考论坛中Manjaro团队的philm的回答 https://forum.manjaro.org/t/how-to-compile-the-mainline-kernel-the-manjaro-way/51700/35
+Gitlab 仓库 philm提到了manjaro在gitlab上编译内核的仓库。https://gitlab.manjaro.org/packages/core/linux56.git 后面使用不同的linux版本号。
+仓库文件介绍 仓库中不同后缀文件的作用
+  files ending with .patch should be clear. These are adjustments we think will fit for our distro best. files starting with config are our modified settings on how we configure the kernel on our end. files starting with linux are specific files to post configure the system. They are used either by pacman or mkinitcpio, which configures the initramfs image.</description>
+    </item>
     
     <item>
       <title>vsftp 匿名访问设置设置</title>

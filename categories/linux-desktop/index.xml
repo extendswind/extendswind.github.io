@@ -5,10 +5,54 @@
     <link>https://extendswind.top/categories/linux-desktop/</link>
     <description>Recent content in linux desktop on A Notebook of Extendswind</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Tue, 26 Nov 2019 20:59:49 +0800</lastBuildDate>
+    <lastBuildDate>Wed, 20 May 2020 22:30:00 +0800</lastBuildDate>
     
 	<atom:link href="https://extendswind.top/categories/linux-desktop/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>REFInd默认启动上次的启动项</title>
+      <link>https://extendswind.top/posts/technical/refind_set_default_to_last_start_item/</link>
+      <pubDate>Wed, 20 May 2020 22:30:00 +0800</pubDate>
+      
+      <guid>https://extendswind.top/posts/technical/refind_set_default_to_last_start_item/</guid>
+      <description>windows和linux的双系统偶尔需要切换，设置一个默认启动项没看到直接的资料。
+修改配置文件 /boot/efi/EFI/refind/refind.conf（linux下），相关的项都有说明，但是这个和常规差距略大。
+默认启动项的设置在default_selection 项，可以设置为如下：
+default_selection &amp;quot;+,Microsoft,vmlinuz&amp;quot;
+Microsoft表示windows系统，vmlinuz表示linux系统，+号表示选择上一次打开的选项。</description>
+    </item>
+    
+    <item>
+      <title>系统启动时卡在 &#39;TLP System startup/shutdown&#39; </title>
+      <link>https://extendswind.top/posts/technical/startup_stuck_in_tlp_service/</link>
+      <pubDate>Wed, 20 May 2020 22:30:00 +0800</pubDate>
+      
+      <guid>https://extendswind.top/posts/technical/startup_stuck_in_tlp_service/</guid>
+      <description>问题 manjaro 在笔记本上启动时卡住（manjaro-awesome + refind引导），停在
+TLP System startup/shutdown
+TLP 提供优秀的 Linux 高级电源管理功能（详见arch wiki），不知道为什么在启动后卡主。
+解决 没有太研究，一般启动卡住的问题和内核参数、驱动等关系比较大，具体的不太好找，可以试试下面的三种方案。
+方案一：换内核（可能是硬件的驱动问题导致，对新一点的设备换新内核可能会有效）。
+方案二：关闭TLP服务的开机启动， systemctl disable tlp.service 。
+方案三：将refind引导改为grub引导（难道启动的时候两者的内核参数不一致？）</description>
+    </item>
+    
+    <item>
+      <title>华为笔记本magicbook14 AMD安装Manjaro Linux的一些踩坑配置</title>
+      <link>https://extendswind.top/posts/technical/manjaro_magicbook_install_and_configuration/</link>
+      <pubDate>Wed, 20 May 2020 16:30:00 +0800</pubDate>
+      
+      <guid>https://extendswind.top/posts/technical/manjaro_magicbook_install_and_configuration/</guid>
+      <description>虽然是linux版出厂自带deepin专业版，但是随后发的一键win10装机U盘一声不坑的把deepin格式化了，售后还只在线下才提供安装包&amp;hellip;
+笔记本参数 Magicbook 14 (2019)
+ AMD R5 3500U 8G + 512G  内核 不同的内核在这个笔记本的表现差距略大。当前（2020年-4月）测试过的内核里，只有linux56运行比较平稳。LTS的414/419直接开机黑屏，好像有一个是由于TLP服务的问题，systemctl disable tlp可以解决，TLP提供了电源管理功能，禁止了不知道影响有多大。LTS的linux54在睡眠时仍能听到风扇转动，无法正常睡眠。
+当前的linux56的主要问题（其它内核也存在）：
+ 指纹识别不能用 麦克风禁音键不能用 风扇无法控制 (好像没有现成的驱动）  Huawei-WMI 相当于华为为自己的笔记本添加的驱动程序，具体介绍可以参考下面的链接。
+https://github.com/aymanbagabas/Huawei-WMI
+主要的Features：
+  Function hotkeys, implemented in v1.0 Micmute LED, implemented in v2.0. Updated in v3.0 to work with newer laptops. Battery protection, implemented in v3.0. Updated in v3.3 to use battery charge API. Fn-lock, implemented v3.0.   NOTE: Version v2.0 is the one in mainline kernel &amp;gt;= 5.</description>
+    </item>
     
     <item>
       <title>一次修复linux的efi引导的集中方法总结记录</title>
