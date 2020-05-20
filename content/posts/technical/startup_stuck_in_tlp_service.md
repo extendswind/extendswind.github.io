@@ -1,0 +1,1 @@
+../../../myNote/./technical/linux_desktop/startup_stuck_in_tlp_service.md

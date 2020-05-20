@@ -1,0 +1,1 @@
+../../../myNote/./technical/linux/manjaro_kernel_compile.md

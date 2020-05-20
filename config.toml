@@ -66,9 +66,12 @@ hideMainMenu = true
 [params.sidebar]
 enable = true
 
+[params.search]
+client = "fuse"
+
 [params.widgets]
 homepage = ["recent_posts"]
-sidebar = ["about", "sidebar_menu", "taxonomy_cloud"]
+sidebar = ["about", "sidebar_menu", "taxonomy_cloud","search"]
 # sidebar = ["about","sidebar_menu","taxonomy_cloud"]
 footer = ["social_menu"]
 
@@ -155,7 +158,7 @@ url = "https://github.com/extendswind"
 name = "Cnblog"
 weight = 11
 identifier = "cnblog"
-url = "http://www.cnblogs.com/fly2wind/"
+url = "https://www.cnblogs.com/fly2wind/"
 
 [about]
 title = "test"
