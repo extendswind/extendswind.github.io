@@ -465,12 +465,6 @@
   </url>
   
   <url>
-    <loc>https://extendswind.top/</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
     <loc>https://extendswind.top/authors/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
@@ -478,6 +472,12 @@
   
   <url>
     <loc>https://extendswind.top/page/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://extendswind.top/search/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
