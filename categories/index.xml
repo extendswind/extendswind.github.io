@@ -11,15 +11,6 @@
     
     
     <item>
-      <title>linux</title>
-      <link>https://extendswind.top/categories/linux/</link>
-      <pubDate>Wed, 20 May 2020 22:30:00 +0800</pubDate>
-      
-      <guid>https://extendswind.top/categories/linux/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>linux desktop</title>
       <link>https://extendswind.top/categories/linux-desktop/</link>
       <pubDate>Wed, 20 May 2020 22:30:00 +0800</pubDate>
@@ -29,11 +20,11 @@
     </item>
     
     <item>
-      <title>programming</title>
-      <link>https://extendswind.top/categories/programming/</link>
-      <pubDate>Tue, 19 May 2020 11:30:00 +0800</pubDate>
+      <title>linux</title>
+      <link>https://extendswind.top/categories/linux/</link>
+      <pubDate>Tue, 19 May 2020 22:30:00 +0800</pubDate>
       
-      <guid>https://extendswind.top/categories/programming/</guid>
+      <guid>https://extendswind.top/categories/linux/</guid>
       <description></description>
     </item>
     
@@ -79,6 +70,15 @@
       <pubDate>Tue, 04 Sep 2018 10:30:00 +0800</pubDate>
       
       <guid>https://extendswind.top/categories/operation/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>programming</title>
+      <link>https://extendswind.top/categories/programming/</link>
+      <pubDate>Tue, 03 Jul 2018 21:25:25 +0800</pubDate>
+      
+      <guid>https://extendswind.top/categories/programming/</guid>
       <description></description>
     </item>
     

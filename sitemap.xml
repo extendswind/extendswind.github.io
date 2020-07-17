@@ -24,13 +24,6 @@
   </url>
   
   <url>
-    <loc>https://extendswind.top/categories/linux/</loc>
-    <lastmod>2020-05-20T22:30:00+08:00</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
     <loc>https://extendswind.top/categories/linux-desktop/</loc>
     <lastmod>2020-05-20T22:30:00+08:00</lastmod>
     <changefreq>monthly</changefreq>
@@ -73,6 +66,13 @@
   </url>
   
   <url>
+    <loc>https://extendswind.top/categories/linux/</loc>
+    <lastmod>2020-05-19T22:30:00+08:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
     <loc>https://extendswind.top/posts/technical/manjaro_kernel_compile/</loc>
     <lastmod>2020-05-19T22:30:00+08:00</lastmod>
     <changefreq>monthly</changefreq>
@@ -88,13 +88,6 @@
   
   <url>
     <loc>https://extendswind.top/posts/technical/java_toarray_return_and_generic_type_erase/</loc>
-    <lastmod>2020-05-19T11:30:00+08:00</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>https://extendswind.top/categories/programming/</loc>
     <lastmod>2020-05-19T11:30:00+08:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
@@ -403,6 +396,13 @@
   
   <url>
     <loc>https://extendswind.top/tags/design-patterns/</loc>
+    <lastmod>2018-07-03T21:25:25+08:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://extendswind.top/categories/programming/</loc>
     <lastmod>2018-07-03T21:25:25+08:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
