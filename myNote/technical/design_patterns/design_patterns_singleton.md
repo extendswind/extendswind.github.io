@@ -13,7 +13,7 @@ tags:
 
 singleton pattern
 
-主要目标：对象只创建一次，每次都获得先前第一次创建的对象而不创建新的对象。
+主要目标：对象只创建一次，每次都获得先前第一次创建的对象而不创建新的对象。（最好在使用时创建对象）
 
 实现思想：使用静态方法getInstance得到对象，为了保证对象只能通过getInstance创建，使构造函数私有。
 
@@ -22,7 +22,7 @@ singleton pattern
 - 多线程环境下getInstance方法的调用可能产生多个对象
 - 使用synchronized关键字可能降低高并发效率
 
-单例模式有很多种，大多用于解决多线程环境下的效率问题，高并发场景可以具体搜索相关方案，一般情况下思想比较简单感觉不必深究。
+单例模式有很多种，大多用于解决多线程环境下的效率问题，高并发场景通常使用某些固定方案（java常用内部类机制），一般情况下思想比较简单，从应用的角度感觉不必深究。
 
 （后面懒得用实际例子命名了，Log4j中获取的logger对象就使用了单例模式）
 
@@ -70,7 +70,7 @@ class Singleton_eager{
  * 解决方案二： lazy initialization
  *
  * 在进行高并发操作时可能造成系统性能降低，由于调用getInstance函数每次只能一个线程使用
- * （此处质疑，会慢多少？？）
+ * 在后面的测试代码里时间不明显，通过线程池等方式可能会不一样
  */
 class Singleton_lazy{
     private static Singleton_lazy m_singleton = null;
@@ -86,7 +86,7 @@ class Singleton_lazy{
 /**
  * 解决方案三： lazy initialization + 双重加锁
  *
- * 降低方案二中的等待用时，但还是存在效率问题，不建议折腾
+ * 降低方案二中的等待用时，当对象创建后就不用通过锁判断，创建后没有效率问题。
  */
 class Singleton_lazy_double_lock{
     private static Singleton_lazy_double_lock m_singleton = null;
@@ -106,6 +106,8 @@ class Singleton_lazy_double_lock{
 
 /** Initialization on Demand Holder，通过java内部类机制
  * 貌似是java的最优实现方式，依赖具体语言
+ * 由于内部类对象依赖外部类对象，因此内部类中的静态成员会在外部类对象创建后得到，
+ * 此时相当于在使用时才进行初始化。
  */
 class Singleton_holder{
     private Singleton_holder() {

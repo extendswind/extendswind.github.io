@@ -57,7 +57,7 @@ https://github.com/nekr0z/matebook-applet
 
 使用起来略麻烦，这个applet使用之前需要修改目录`/sys/devices/platform/huawei-wmi/`的权限，`sudo chmod -R 777 /sys/devices/platform/huawei-wmi`，然后命令行运行`matebook-applet`，通知栏里会出现能够改变这两项的图标。如果此目录没有执行命令的用户的权限，则可以查看当前状态而不能修改。
 
-但是，这个目录是动态创建的，重新开机之后权限会还原为root权限。`https://github.com/nekr0z/matebook-applet#huawei-wmi-driver`里有个现成的脚本如下，大概是新建了两个service，动态修改`huawei-wmi`文件夹的用户组，并将当前用户添加到修改的用户组中以获得权限。这个applet设置一次后重启会保留之前的设置，用得不多感觉折腾的必要不大，要调整的时候改一下权限就行。
+但是，这个目录是动态创建的，重新开机之后权限会还原为root权限。`https://github.com/nekr0z/matebook-applet#huawei-wmi-driver`里有个现成的脚本，使用如下。大概是新建了两个service，动态修改`huawei-wmi`文件夹的用户组，并将当前用户添加到修改的用户组中以获得权限。这个applet设置一次后重启会保留之前的设置，用得不多感觉折腾的必要不大，要调整的时候改一下权限就行。
 
 ```bash
 $ git clone https://github.com/qu1x/huawei-wmi.git
@@ -65,9 +65,19 @@ $ cd huawei-wmi/generic
 $ sudo make install
 ```
 
-貌似主要是改变了`huawei-wmi`里的`fn_lock_state`和`charge_control_thresholds` 两个文件，但是这两个文件无法直接修改，不知道matebook-applet是调用的api还是其它的修改方式。
+貌似主要是改变了`huawei-wmi`里的`fn_lock_state`和`charge_control_thresholds` 两个文件的访问权限，但是这两个文件无法直接修改，不知道matebook-applet是调用的api还是其它的修改方式。
 
 不知道这些是不是华为官方写的，实现的几种语言里都没有中文，这种权限的问题也略不优雅。
+
+# 开机时 Failed to start Load/Save Screen Backlight Brightness of backlight:acpi_video0
+
+启动显示错误信息Failed to start Load/Save Screen Backlight Brightness of backlight:acpi_video0，虽然不影响（其实系统使用了systemd-backlight@backlight:amdgpu_b10来补充了)。
+
+`sudo systemctl mask systemd-backlight@backlight:acpi_video0`
+
+这个服务反正也启动不了，可以直接屏蔽了
+
+此处参照 https://blog.csdn.net/grsharp/article/details/105735792
 
 # 一些其它的参考链接
 

@@ -83,7 +83,7 @@ for line in sitemapfile:
             if(isPublishWaiting == True):
                 # 博客园30s内只能发布一篇博客
                 print("waiting 30s for previous publishing")
-                time.sleep(33)
+                time.sleep(40)
                 isPublishWaiting = False
             blogProxy.metaWeblog.newPost('', username, passwd, dict(title=title, description=blogContent, mt_keywords=tags), True)
             isPublishWaiting = True
