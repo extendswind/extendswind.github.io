@@ -45,7 +45,7 @@ a1 -&gt; a2 -&gt; m1 -&gt; m2 b1 -&gt; b2 /'>
 <meta property='og:site_name' content='A Notebook of Extendswind'>
 <meta property='og:type' content='article'><meta property='article:section' content='posts'><meta property='article:tag' content='git'><meta property='article:published_time' content='2018-09-11T10:30:00&#43;08:00'/><meta property='article:modified_time' content='2018-09-11T10:30:00&#43;08:00'/><meta name='twitter:card' content='summary'>
 
-<meta name="generator" content="Hugo 0.62.0" />
+<meta name="generator" content="Hugo 0.72.0" />
 
   <title>git 代码回滚与爬坑 -- reset and revert • A Notebook of Extendswind</title>
   <link rel='canonical' href='https://extendswind.top/posts/technical/git_code_roll_back_revert_and_reset/'>
@@ -55,17 +55,6 @@ a1 -&gt; a2 -&gt; m1 -&gt; m2 b1 -&gt; b2 /'>
 <link rel='stylesheet' href='/assets/css/main.6a060eb7.css'><link rel='stylesheet' href='/css/custom.css'><style>
 :root{--color-accent:#cccccc;}
 </style>
-
-<script type="application/javascript">
-var doNotTrack = false;
-if (!doNotTrack) {
-	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-	ga('create', 'UA-125329544-1', 'auto');
-	
-	ga('send', 'pageview');
-}
-</script>
-<script async src='https://www.google-analytics.com/analytics.js'></script>
 
   
 
@@ -102,7 +91,7 @@ if (!doNotTrack) {
   <a href='/posts'>Posts</a></li><li class='item'>
   <a href='/categories'>Categories</a></li><li class='item'>
   <a href='https://github.com/extendswind'>GitHub</a></li><li class='item'>
-  <a href='http://www.cnblogs.com/fly2wind/'>Cnblog</a></li></ul>
+  <a href='https://www.cnblogs.com/fly2wind/'>Cnblog</a></li></ul>
     </div>
   </nav>
 
@@ -141,6 +130,18 @@ if (!doNotTrack) {
       </li></ul>
 </div>
 
+
+</section>
+<section class='widget widget-search sep-after'>
+  <header>
+    <h4 class='title widget-title'>Search</h4>
+  </header>
+
+  <form action='/search' id='search-form' class='search-form'>
+    <label>
+      <span class='screen-reader-text'>Search</span>
+      <input id='search-term' class='search-term' type='search' name='q' placeholder='Search&hellip;'>
+    </label></form>
 
 </section>
 </div>
@@ -215,7 +216,16 @@ if (!doNotTrack) {
   <summary class='title'>
     <span>Table of Contents</span>
   </summary>
-  <nav id="TableOfContents"></nav>
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#reset">reset</a></li>
+    <li><a href="#git-reset---soft---mixed---hard">git reset &ndash;soft &ndash;mixed &ndash;hard</a></li>
+    <li><a href="#git的文件组织">git的文件组织</a></li>
+    <li><a href="#revert">revert</a></li>
+    <li><a href="#revert一个merge-commit">revert一个merge commit</a></li>
+    <li><a href="#不常用的回退">不常用的回退</a></li>
+  </ul>
+</nav>
 </details>
 
 
@@ -232,7 +242,7 @@ if (!doNotTrack) {
 <code>git reset --mixed HEAD~</code>  会回到前一次提交的add执行之前的状态
 <code>git reset --hard HEAD~</code>  会回到前一次提交的add执行之前的状态，并且将目录里的所有文件调整为前一次的提交状态</p>
 <p>通常回退时需要将文件也回退需要加 <code>--hard</code> 标签。</p>
-<h1 id="git">git的文件组织</h1>
+<h1 id="git的文件组织">git的文件组织</h1>
 <p>git将所有的文件以hash码命名放在仓库中存储。</p>
 <p>HEAD指针，一般可以理解为当前commit状态的一个快照（指向仓库中当前commit的所有的文件）。每次commit或者merge等会创建新的commit节点时，会让HEAD指向新的位置。</p>
 <p>reset会改变HEAD指针的位置与HEAD对应的分支指针的位置，checkout只会改变HEAD指针指向的分支。</p>
@@ -240,7 +250,7 @@ if (!doNotTrack) {
 <p><code>git revert &lt;commit-id&gt;</code> <strong>相当于取消一次commit ，会让结果和没有<!-- raw HTML omitted -->这一次提交一样，并非像reset那样直接回到某一次commit的代码。</strong></p>
 <p>使用revert不会破坏历史记录，只是提交一个新的修改使修改后代码和以前一致。</p>
 <p>实质上相当于用<!-- raw HTML omitted -->前的代码merge <!-- raw HTML omitted -->后的代码，因此如果后面对代码文件做了修改需要解决冲突。</p>
-<h1 id="revertmerge-commit">revert一个merge commit</h1>
+<h1 id="revert一个merge-commit">revert一个merge commit</h1>
 <p><strong>注意revert用在merge的commit上的情况有坑</strong></p>
 <p><code>git revert &lt;commit-id&gt; -m 1 </code> 需要添加-m参数，指定是merge前的第几个分支（git log上的merge后）。</p>
 <p>revert的主要麻烦：如果存在分支合并的情况，如下，从m1 revert到a2时会添加一个新的提交m2，<strong>当m2与b2 merge时会显示已经merge过</strong>。</p>
@@ -248,7 +258,7 @@ if (!doNotTrack) {
 b1 -&gt; b2 /</p>
 <p><strong>因此在两个分支还需要合并时，不能直接使用merge，而要先revert上一次的revert，让两次revert抵消，也就是 <code> git revert &lt;m2 commit id&gt;</code> 。</strong></p>
 <p>为了少折腾，碰到两个分支以后注定还是要合并的情况，还是不要revert了吧，或者revert之后改完相应的代码就revert回来，貌似没人提到更好的解决方案&hellip;.</p>
-<h1 id="heading">不常用的回退</h1>
+<h1 id="不常用的回退">不常用的回退</h1>
 <p>以下命令存在危险性不建议使用，而且一般也没有使用必要。注意某些操作针对未提交前的处理，可能导致对文件修改的丢失。git对已提交的文件几乎总是可以恢复的，因此建议尽量在提交后处理。</p>
 <p><code> git checkout &lt;file&gt;</code> 撤销文件修改（到上一次提交）。
 <code> git commit --amend</code> 重新提交，提交后删除上一次提交。</p>

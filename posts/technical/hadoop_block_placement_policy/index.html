@@ -17,7 +17,7 @@ BlockPlacementPolicy BlockPlacementPolicy 作为虚基类提供了基本的接�
 <meta property='og:site_name' content='A Notebook of Extendswind'>
 <meta property='og:type' content='article'><meta property='article:section' content='posts'><meta property='article:tag' content='hadoop'><meta property='article:published_time' content='2018-12-11T21:30:00&#43;08:00'/><meta property='article:modified_time' content='2018-12-11T21:30:00&#43;08:00'/><meta name='twitter:card' content='summary'>
 
-<meta name="generator" content="Hugo 0.62.0" />
+<meta name="generator" content="Hugo 0.72.0" />
 
   <title>Hadoop 副本放置策略的源码阅读和设置 • A Notebook of Extendswind</title>
   <link rel='canonical' href='https://extendswind.top/posts/technical/hadoop_block_placement_policy/'>
@@ -27,17 +27,6 @@ BlockPlacementPolicy BlockPlacementPolicy 作为虚基类提供了基本的接�
 <link rel='stylesheet' href='/assets/css/main.6a060eb7.css'><link rel='stylesheet' href='/css/custom.css'><style>
 :root{--color-accent:#cccccc;}
 </style>
-
-<script type="application/javascript">
-var doNotTrack = false;
-if (!doNotTrack) {
-	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-	ga('create', 'UA-125329544-1', 'auto');
-	
-	ga('send', 'pageview');
-}
-</script>
-<script async src='https://www.google-analytics.com/analytics.js'></script>
 
   
 
@@ -74,7 +63,7 @@ if (!doNotTrack) {
   <a href='/posts'>Posts</a></li><li class='item'>
   <a href='/categories'>Categories</a></li><li class='item'>
   <a href='https://github.com/extendswind'>GitHub</a></li><li class='item'>
-  <a href='http://www.cnblogs.com/fly2wind/'>Cnblog</a></li></ul>
+  <a href='https://www.cnblogs.com/fly2wind/'>Cnblog</a></li></ul>
     </div>
   </nav>
 
@@ -113,6 +102,18 @@ if (!doNotTrack) {
       </li></ul>
 </div>
 
+
+</section>
+<section class='widget widget-search sep-after'>
+  <header>
+    <h4 class='title widget-title'>Search</h4>
+  </header>
+
+  <form action='/search' id='search-form' class='search-form'>
+    <label>
+      <span class='screen-reader-text'>Search</span>
+      <input id='search-term' class='search-term' type='search' name='q' placeholder='Search&hellip;'>
+    </label></form>
 
 </section>
 </div>
@@ -189,10 +190,19 @@ if (!doNotTrack) {
   </summary>
   <nav id="TableOfContents">
   <ul>
-    <li><a href="#heading">首先</a></li>
-    <li><a href="#favorednodes">处理favoredNodes</a></li>
-    <li><a href="#heading-1">三副本选择</a></li>
-    <li><a href="#heading-2">再到具体的选择</a></li>
+    <li><a href="#blockplacementpolicy">BlockPlacementPolicy</a></li>
+    <li><a href="#hadoop-提供的-blockplacementpolicy-实现">Hadoop 提供的 BlockPlacementPolicy 实现</a></li>
+    <li><a href="#blockplacementpolicydefault-源码阅读">BlockPlacementPolicyDefault 源码阅读</a>
+      <ul>
+        <li><a href="#首先">首先</a></li>
+        <li><a href="#处理favorednodes">处理favoredNodes</a></li>
+        <li><a href="#三副本选择">三副本选择</a></li>
+        <li><a href="#再到具体的选择">再到具体的选择</a></li>
+      </ul>
+    </li>
+    <li><a href="#源码阅读的几个注意">源码阅读的几个注意</a></li>
+    <li><a href="#修改hdfs默认的副本放置机制">修改HDFS默认的副本放置机制</a></li>
+    <li><a href="#rackawareness-机架感知">RackAwareness 机架感知</a></li>
   </ul>
 </nav>
 </details>
@@ -216,21 +226,21 @@ if (!doNotTrack) {
 </span><span style="color:#75715e">   * @param blocksize 块大小
 </span><span style="color:#75715e">   * @return 排序好的选择结果
 </span><span style="color:#75715e">   */</span>
-  <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">abstract</span> DatanodeStorageInfo<span style="color:#f92672">[</span><span style="color:#f92672">]</span> <span style="color:#a6e22e">chooseTarget</span><span style="color:#f92672">(</span>String srcPath<span style="color:#f92672">,</span>
+  <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">abstract</span> DatanodeStorageInfo<span style="color:#f92672">[]</span> <span style="color:#a6e22e">chooseTarget</span><span style="color:#f92672">(</span>String srcPath<span style="color:#f92672">,</span>
                                              <span style="color:#66d9ef">int</span> numOfReplicas<span style="color:#f92672">,</span>
                                              Node writer<span style="color:#f92672">,</span>
                                              List<span style="color:#f92672">&lt;</span>DatanodeStorageInfo<span style="color:#f92672">&gt;</span> chosen<span style="color:#f92672">,</span>
                                              <span style="color:#66d9ef">boolean</span> returnChosenNodes<span style="color:#f92672">,</span>
                                              Set<span style="color:#f92672">&lt;</span>Node<span style="color:#f92672">&gt;</span> excludedNodes<span style="color:#f92672">,</span>
                                              <span style="color:#66d9ef">long</span> blocksize<span style="color:#f92672">,</span>
-                                             BlockStoragePolicy storagePolicy<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                                             BlockStoragePolicy storagePolicy<span style="color:#f92672">);</span>
 
 
   <span style="color:#75715e">/**
 </span><span style="color:#75715e">   * 判断传入的放置方式是否符合要求
 </span><span style="color:#75715e">   */</span>
   <span style="color:#66d9ef">abstract</span> <span style="color:#66d9ef">public</span> BlockPlacementStatus <span style="color:#a6e22e">verifyBlockPlacement</span><span style="color:#f92672">(</span>
-      DatanodeInfo<span style="color:#f92672">[</span><span style="color:#f92672">]</span> locs<span style="color:#f92672">,</span> <span style="color:#66d9ef">int</span> numOfReplicas<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+      DatanodeInfo<span style="color:#f92672">[]</span> locs<span style="color:#f92672">,</span> <span style="color:#66d9ef">int</span> numOfReplicas<span style="color:#f92672">);</span>
   
 
     <span style="color:#75715e">/**
@@ -239,20 +249,20 @@ if (!doNotTrack) {
   <span style="color:#66d9ef">abstract</span> <span style="color:#66d9ef">public</span> List<span style="color:#f92672">&lt;</span>DatanodeStorageInfo<span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">chooseReplicasToDelete</span><span style="color:#f92672">(</span>
       Collection<span style="color:#f92672">&lt;</span>DatanodeStorageInfo<span style="color:#f92672">&gt;</span> candidates<span style="color:#f92672">,</span> <span style="color:#66d9ef">int</span> expectedNumOfReplicas<span style="color:#f92672">,</span>
       List<span style="color:#f92672">&lt;</span>StorageType<span style="color:#f92672">&gt;</span> excessTypes<span style="color:#f92672">,</span> DatanodeDescriptor addedNode<span style="color:#f92672">,</span>
-      DatanodeDescriptor delNodeHint<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
-</code></pre></div><h1 id="hadoop--blockplacementpolicy-">Hadoop 提供的 BlockPlacementPolicy 实现</h1>
+      DatanodeDescriptor delNodeHint<span style="color:#f92672">);</span>
+</code></pre></div><h1 id="hadoop-提供的-blockplacementpolicy-实现">Hadoop 提供的 BlockPlacementPolicy 实现</h1>
 <p>Hadoop提供了BlockPlacementPolicyDefault、BlockPlacementPolicyWithNodeGroup、AvailableSpaceBlockPlacementPolicy三种实现（hadoop 2.7.7）。</p>
 <p>其中BlockPlacementPolicyDefault是经典三副本策略的实现：第一个副本尽可能放在写入数据的节点，第二个副本放在与第一个副本不在同一机架下的节点，第三个副本与第二副本放在同一个机架。</p>
 <p>通过改变<code>dfs.block.replicator.classname</code> 能够选择具体的实现类，默认值为<code>org.apache.hadoop.hdfs.server.blockmanagement.BlockPlacementPolicyDefault</code>。（Hadoop 2.7.7下，貌似不同版本的Hadoop的命名还不一样，而且2.7.7默认的配置文件里还没有，需要在源码中查）</p>
-<h1 id="blockplacementpolicydefault-">BlockPlacementPolicyDefault 源码阅读</h1>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">  <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">abstract</span> DatanodeStorageInfo<span style="color:#f92672">[</span><span style="color:#f92672">]</span> <span style="color:#a6e22e">chooseTarget</span><span style="color:#f92672">(</span>String srcPath<span style="color:#f92672">,</span>
+<h1 id="blockplacementpolicydefault-源码阅读">BlockPlacementPolicyDefault 源码阅读</h1>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">  <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">abstract</span> DatanodeStorageInfo<span style="color:#f92672">[]</span> <span style="color:#a6e22e">chooseTarget</span><span style="color:#f92672">(</span>String srcPath<span style="color:#f92672">,</span>
                                              <span style="color:#66d9ef">int</span> numOfReplicas<span style="color:#f92672">,</span>
                                              Node writer<span style="color:#f92672">,</span>
                                              List<span style="color:#f92672">&lt;</span>DatanodeStorageInfo<span style="color:#f92672">&gt;</span> chosen<span style="color:#f92672">,</span>
                                              <span style="color:#66d9ef">boolean</span> returnChosenNodes<span style="color:#f92672">,</span>
                                              Set<span style="color:#f92672">&lt;</span>Node<span style="color:#f92672">&gt;</span> excludedNodes<span style="color:#f92672">,</span>
                                              <span style="color:#66d9ef">long</span> blocksize<span style="color:#f92672">,</span>
-                                             BlockStoragePolicy storagePolicy<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                                             BlockStoragePolicy storagePolicy<span style="color:#f92672">);</span>
 
 
 </code></pre></div><p>chooseTarget函数实现了具体的三副本策略。各种特殊情况（如只有1个副本、datanode数量不够、集群拓扑不满足要求等）的考虑让代码看起来比较复杂，常规情况直接跟着调试代码走会跳过很多异常处理部分，便于裂解正常流程。</p>
@@ -264,96 +274,96 @@ if (!doNotTrack) {
 <li>除满足条件的favoredNodes后的副本放置策略（三副本）</li>
 <li>结果排序</li>
 </ol>
-<h2 id="heading">首先</h2>
+<h2 id="首先">首先</h2>
 <p>srcPath没有被考虑，被直接舍弃：</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">return</span> chooseTarget<span style="color:#f92672">(</span>numOfReplicas<span style="color:#f92672">,</span> writer<span style="color:#f92672">,</span> chosenNodes<span style="color:#f92672">,</span> returnChosenNodes<span style="color:#f92672">,</span>
-        excludedNodes<span style="color:#f92672">,</span> blocksize<span style="color:#f92672">,</span> storagePolicy<span style="color:#f92672">,</span> flags<span style="color:#f92672">)</span><span style="color:#f92672">;</span> <span style="color:#75715e">// ignore srcPath
+        excludedNodes<span style="color:#f92672">,</span> blocksize<span style="color:#f92672">,</span> storagePolicy<span style="color:#f92672">,</span> flags<span style="color:#f92672">);</span> <span style="color:#75715e">// ignore srcPath
 </span></code></pre></div><p>因此<strong>默认的副本放置策略，在同一文件包含多个block时，每个block的存储位置独立考虑，并非存储在同一datanode</strong>。</p>
-<h2 id="favorednodes">处理favoredNodes</h2>
+<h2 id="处理favorednodes">处理favoredNodes</h2>
 <p>上传文件时可以指定favoredNodes（默认为空），首先对favoredNodes所在的节点判断是否合适。如果满足条件的节点数还低于副本数，则添加新的副本。</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"> <span style="color:#75715e">// --------------Choose favored nodes ---------------
 </span><span style="color:#75715e"></span> <span style="color:#75715e">// 从favored nodes中选择，在上传文件时可以指定
-</span><span style="color:#75715e"></span> List<span style="color:#f92672">&lt;</span>DatanodeStorageInfo<span style="color:#f92672">&gt;</span> results <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ArrayList<span style="color:#f92672">&lt;</span><span style="color:#f92672">&gt;</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
- <span style="color:#66d9ef">boolean</span> avoidStaleNodes <span style="color:#f92672">=</span> stats <span style="color:#f92672">!</span><span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span>
-     <span style="color:#f92672">&amp;</span><span style="color:#f92672">&amp;</span> stats<span style="color:#f92672">.</span><span style="color:#a6e22e">isAvoidingStaleDataNodesForWrite</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+</span><span style="color:#75715e"></span> List<span style="color:#f92672">&lt;</span>DatanodeStorageInfo<span style="color:#f92672">&gt;</span> results <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ArrayList<span style="color:#f92672">&lt;&gt;();</span>
+ <span style="color:#66d9ef">boolean</span> avoidStaleNodes <span style="color:#f92672">=</span> stats <span style="color:#f92672">!=</span> <span style="color:#66d9ef">null</span>
+     <span style="color:#f92672">&amp;&amp;</span> stats<span style="color:#f92672">.</span><span style="color:#a6e22e">isAvoidingStaleDataNodesForWrite</span><span style="color:#f92672">();</span>
 
- <span style="color:#66d9ef">int</span> maxNodesAndReplicas<span style="color:#f92672">[</span><span style="color:#f92672">]</span> <span style="color:#f92672">=</span> getMaxNodesPerRack<span style="color:#f92672">(</span>0<span style="color:#f92672">,</span> numOfReplicas<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
- numOfReplicas <span style="color:#f92672">=</span> maxNodesAndReplicas<span style="color:#f92672">[</span>0<span style="color:#f92672">]</span><span style="color:#f92672">;</span>
- <span style="color:#66d9ef">int</span> maxNodesPerRack <span style="color:#f92672">=</span> maxNodesAndReplicas<span style="color:#f92672">[</span>1<span style="color:#f92672">]</span><span style="color:#f92672">;</span>
+ <span style="color:#66d9ef">int</span> maxNodesAndReplicas<span style="color:#f92672">[]</span> <span style="color:#f92672">=</span> getMaxNodesPerRack<span style="color:#f92672">(</span>0<span style="color:#f92672">,</span> numOfReplicas<span style="color:#f92672">);</span>
+ numOfReplicas <span style="color:#f92672">=</span> maxNodesAndReplicas<span style="color:#f92672">[</span>0<span style="color:#f92672">];</span>
+ <span style="color:#66d9ef">int</span> maxNodesPerRack <span style="color:#f92672">=</span> maxNodesAndReplicas<span style="color:#f92672">[</span>1<span style="color:#f92672">];</span>
 
  chooseFavouredNodes<span style="color:#f92672">(</span>src<span style="color:#f92672">,</span> numOfReplicas<span style="color:#f92672">,</span> favoredNodes<span style="color:#f92672">,</span>
      favoriteAndExcludedNodes<span style="color:#f92672">,</span> blocksize<span style="color:#f92672">,</span> maxNodesPerRack<span style="color:#f92672">,</span> results<span style="color:#f92672">,</span>
-     avoidStaleNodes<span style="color:#f92672">,</span> storageTypes<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+     avoidStaleNodes<span style="color:#f92672">,</span> storageTypes<span style="color:#f92672">);</span>
 
  <span style="color:#75715e">// ---------------如果满足要求的favored nodes数量不足-----------
-</span><span style="color:#75715e"></span> <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>results<span style="color:#f92672">.</span><span style="color:#a6e22e">size</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">&lt;</span> numOfReplicas<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span><span style="color:#75715e"></span> <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>results<span style="color:#f92672">.</span><span style="color:#a6e22e">size</span><span style="color:#f92672">()</span> <span style="color:#f92672">&lt;</span> numOfReplicas<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
    <span style="color:#75715e">// Not enough favored nodes, choose other nodes, based on block
 </span><span style="color:#75715e"></span>   <span style="color:#75715e">// placement policy (HDFS-9393).
-</span><span style="color:#75715e"></span>   numOfReplicas <span style="color:#f92672">-</span><span style="color:#f92672">=</span> results<span style="color:#f92672">.</span><span style="color:#a6e22e">size</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+</span><span style="color:#75715e"></span>   numOfReplicas <span style="color:#f92672">-=</span> results<span style="color:#f92672">.</span><span style="color:#a6e22e">size</span><span style="color:#f92672">();</span>
    <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span>DatanodeStorageInfo storage <span style="color:#f92672">:</span> results<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
      <span style="color:#75715e">// add localMachine and related nodes to favoriteAndExcludedNodes
-</span><span style="color:#75715e"></span>     addToExcludedNodes<span style="color:#f92672">(</span>storage<span style="color:#f92672">.</span><span style="color:#a6e22e">getDatanodeDescriptor</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">,</span>
-         favoriteAndExcludedNodes<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+</span><span style="color:#75715e"></span>     addToExcludedNodes<span style="color:#f92672">(</span>storage<span style="color:#f92672">.</span><span style="color:#a6e22e">getDatanodeDescriptor</span><span style="color:#f92672">(),</span>
+         favoriteAndExcludedNodes<span style="color:#f92672">);</span>
    <span style="color:#f92672">}</span>
-   DatanodeStorageInfo<span style="color:#f92672">[</span><span style="color:#f92672">]</span> remainingTargets <span style="color:#f92672">=</span>
+   DatanodeStorageInfo<span style="color:#f92672">[]</span> remainingTargets <span style="color:#f92672">=</span>
        chooseTarget<span style="color:#f92672">(</span>src<span style="color:#f92672">,</span> numOfReplicas<span style="color:#f92672">,</span> writer<span style="color:#f92672">,</span>
-           <span style="color:#66d9ef">new</span> ArrayList<span style="color:#f92672">&lt;</span>DatanodeStorageInfo<span style="color:#f92672">&gt;</span><span style="color:#f92672">(</span>numOfReplicas<span style="color:#f92672">)</span><span style="color:#f92672">,</span> <span style="color:#66d9ef">false</span><span style="color:#f92672">,</span>
-           favoriteAndExcludedNodes<span style="color:#f92672">,</span> blocksize<span style="color:#f92672">,</span> storagePolicy<span style="color:#f92672">,</span> flags<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
-   <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> 0<span style="color:#f92672">;</span> i <span style="color:#f92672">&lt;</span> remainingTargets<span style="color:#f92672">.</span><span style="color:#a6e22e">length</span><span style="color:#f92672">;</span> i<span style="color:#f92672">+</span><span style="color:#f92672">+</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-     results<span style="color:#f92672">.</span><span style="color:#a6e22e">add</span><span style="color:#f92672">(</span>remainingTargets<span style="color:#f92672">[</span>i<span style="color:#f92672">]</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+           <span style="color:#66d9ef">new</span> ArrayList<span style="color:#f92672">&lt;</span>DatanodeStorageInfo<span style="color:#f92672">&gt;(</span>numOfReplicas<span style="color:#f92672">),</span> <span style="color:#66d9ef">false</span><span style="color:#f92672">,</span>
+           favoriteAndExcludedNodes<span style="color:#f92672">,</span> blocksize<span style="color:#f92672">,</span> storagePolicy<span style="color:#f92672">,</span> flags<span style="color:#f92672">);</span>
+   <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> 0<span style="color:#f92672">;</span> i <span style="color:#f92672">&lt;</span> remainingTargets<span style="color:#f92672">.</span><span style="color:#a6e22e">length</span><span style="color:#f92672">;</span> i<span style="color:#f92672">++)</span> <span style="color:#f92672">{</span>
+     results<span style="color:#f92672">.</span><span style="color:#a6e22e">add</span><span style="color:#f92672">(</span>remainingTargets<span style="color:#f92672">[</span>i<span style="color:#f92672">]);</span>
    <span style="color:#f92672">}</span>
  <span style="color:#f92672">}</span>
-</code></pre></div><h2 id="heading-1">三副本选择</h2>
+</code></pre></div><h2 id="三副本选择">三副本选择</h2>
 <p>实现逻辑在 chooseTargetInOrder(&hellip;) 函数中</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">// 第一个副本的选择
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>numOfResults <span style="color:#f92672">=</span><span style="color:#f92672">=</span> 0<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>numOfResults <span style="color:#f92672">==</span> 0<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
   writer <span style="color:#f92672">=</span> chooseLocalStorage<span style="color:#f92672">(</span>writer<span style="color:#f92672">,</span> excludedNodes<span style="color:#f92672">,</span> blocksize<span style="color:#f92672">,</span>
       maxNodesPerRack<span style="color:#f92672">,</span> results<span style="color:#f92672">,</span> avoidStaleNodes<span style="color:#f92672">,</span> storageTypes<span style="color:#f92672">,</span> <span style="color:#66d9ef">true</span><span style="color:#f92672">)</span>
-      <span style="color:#f92672">.</span><span style="color:#a6e22e">getDatanodeDescriptor</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
-  <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span><span style="color:#f92672">-</span><span style="color:#f92672">-</span>numOfReplicas <span style="color:#f92672">=</span><span style="color:#f92672">=</span> 0<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+      <span style="color:#f92672">.</span><span style="color:#a6e22e">getDatanodeDescriptor</span><span style="color:#f92672">();</span>
+  <span style="color:#66d9ef">if</span> <span style="color:#f92672">(--</span>numOfReplicas <span style="color:#f92672">==</span> 0<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
     <span style="color:#66d9ef">return</span> writer<span style="color:#f92672">;</span>
   <span style="color:#f92672">}</span>
 <span style="color:#f92672">}</span>
 
 <span style="color:#75715e">// 选择与第一个副本不在同一Rack下的第二个副本
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">final</span> DatanodeDescriptor dn0 <span style="color:#f92672">=</span> results<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span>0<span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">getDatanodeDescriptor</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
-<span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>numOfResults <span style="color:#f92672">&lt;</span><span style="color:#f92672">=</span> 1<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">final</span> DatanodeDescriptor dn0 <span style="color:#f92672">=</span> results<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span>0<span style="color:#f92672">).</span><span style="color:#a6e22e">getDatanodeDescriptor</span><span style="color:#f92672">();</span>
+<span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>numOfResults <span style="color:#f92672">&lt;=</span> 1<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
   chooseRemoteRack<span style="color:#f92672">(</span>1<span style="color:#f92672">,</span> dn0<span style="color:#f92672">,</span> excludedNodes<span style="color:#f92672">,</span> blocksize<span style="color:#f92672">,</span> maxNodesPerRack<span style="color:#f92672">,</span>
-      results<span style="color:#f92672">,</span> avoidStaleNodes<span style="color:#f92672">,</span> storageTypes<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
-  <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span><span style="color:#f92672">-</span><span style="color:#f92672">-</span>numOfReplicas <span style="color:#f92672">=</span><span style="color:#f92672">=</span> 0<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+      results<span style="color:#f92672">,</span> avoidStaleNodes<span style="color:#f92672">,</span> storageTypes<span style="color:#f92672">);</span>
+  <span style="color:#66d9ef">if</span> <span style="color:#f92672">(--</span>numOfReplicas <span style="color:#f92672">==</span> 0<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
     <span style="color:#66d9ef">return</span> writer<span style="color:#f92672">;</span>
   <span style="color:#f92672">}</span>
 <span style="color:#f92672">}</span>
 
 <span style="color:#75715e">// 第三个副本
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>numOfResults <span style="color:#f92672">&lt;</span><span style="color:#f92672">=</span> 2<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-  <span style="color:#66d9ef">final</span> DatanodeDescriptor dn1 <span style="color:#f92672">=</span> results<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span>1<span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">getDatanodeDescriptor</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>numOfResults <span style="color:#f92672">&lt;=</span> 2<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+  <span style="color:#66d9ef">final</span> DatanodeDescriptor dn1 <span style="color:#f92672">=</span> results<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span>1<span style="color:#f92672">).</span><span style="color:#a6e22e">getDatanodeDescriptor</span><span style="color:#f92672">();</span>
   <span style="color:#75715e">// 第一、二副本在同一Rack下时选第三个副本 
 </span><span style="color:#75715e"></span>  <span style="color:#75715e">// （前面的favoredNodes以及集群条件可能造成这种情况）
-</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>clusterMap<span style="color:#f92672">.</span><span style="color:#a6e22e">isOnSameRack</span><span style="color:#f92672">(</span>dn0<span style="color:#f92672">,</span> dn1<span style="color:#f92672">)</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>clusterMap<span style="color:#f92672">.</span><span style="color:#a6e22e">isOnSameRack</span><span style="color:#f92672">(</span>dn0<span style="color:#f92672">,</span> dn1<span style="color:#f92672">))</span> <span style="color:#f92672">{</span>
     chooseRemoteRack<span style="color:#f92672">(</span>1<span style="color:#f92672">,</span> dn0<span style="color:#f92672">,</span> excludedNodes<span style="color:#f92672">,</span> blocksize<span style="color:#f92672">,</span> maxNodesPerRack<span style="color:#f92672">,</span>
-        results<span style="color:#f92672">,</span> avoidStaleNodes<span style="color:#f92672">,</span> storageTypes<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
-  <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>newBlock<span style="color:#f92672">)</span><span style="color:#f92672">{</span> <span style="color:#75715e">// 正常情况，第二副本的localRack下选第三副本
+        results<span style="color:#f92672">,</span> avoidStaleNodes<span style="color:#f92672">,</span> storageTypes<span style="color:#f92672">);</span>
+  <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>newBlock<span style="color:#f92672">){</span> <span style="color:#75715e">// 正常情况，第二副本的localRack下选第三副本
 </span><span style="color:#75715e"></span>    chooseLocalRack<span style="color:#f92672">(</span>dn1<span style="color:#f92672">,</span> excludedNodes<span style="color:#f92672">,</span> blocksize<span style="color:#f92672">,</span> maxNodesPerRack<span style="color:#f92672">,</span>
-        results<span style="color:#f92672">,</span> avoidStaleNodes<span style="color:#f92672">,</span> storageTypes<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        results<span style="color:#f92672">,</span> avoidStaleNodes<span style="color:#f92672">,</span> storageTypes<span style="color:#f92672">);</span>
   <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#f92672">{</span>  <span style="color:#75715e">// 其它的以外
 </span><span style="color:#75715e"></span>    chooseLocalRack<span style="color:#f92672">(</span>writer<span style="color:#f92672">,</span> excludedNodes<span style="color:#f92672">,</span> blocksize<span style="color:#f92672">,</span> maxNodesPerRack<span style="color:#f92672">,</span>
-        results<span style="color:#f92672">,</span> avoidStaleNodes<span style="color:#f92672">,</span> storageTypes<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        results<span style="color:#f92672">,</span> avoidStaleNodes<span style="color:#f92672">,</span> storageTypes<span style="color:#f92672">);</span>
   <span style="color:#f92672">}</span>
-  <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span><span style="color:#f92672">-</span><span style="color:#f92672">-</span>numOfReplicas <span style="color:#f92672">=</span><span style="color:#f92672">=</span> 0<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+  <span style="color:#66d9ef">if</span> <span style="color:#f92672">(--</span>numOfReplicas <span style="color:#f92672">==</span> 0<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
     <span style="color:#66d9ef">return</span> writer<span style="color:#f92672">;</span>
   <span style="color:#f92672">}</span>
 <span style="color:#f92672">}</span>
 
 <span style="color:#75715e">// 如果副本数量还没到0，剩下的副本随机选择
 </span><span style="color:#75715e"></span>chooseRandom<span style="color:#f92672">(</span>numOfReplicas<span style="color:#f92672">,</span> NodeBase<span style="color:#f92672">.</span><span style="color:#a6e22e">ROOT</span><span style="color:#f92672">,</span> excludedNodes<span style="color:#f92672">,</span> blocksize<span style="color:#f92672">,</span>
-    maxNodesPerRack<span style="color:#f92672">,</span> results<span style="color:#f92672">,</span> avoidStaleNodes<span style="color:#f92672">,</span> storageTypes<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    maxNodesPerRack<span style="color:#f92672">,</span> results<span style="color:#f92672">,</span> avoidStaleNodes<span style="color:#f92672">,</span> storageTypes<span style="color:#f92672">);</span>
 <span style="color:#66d9ef">return</span> writer<span style="color:#f92672">;</span>
 
-</code></pre></div><h2 id="heading-2">再到具体的选择</h2>
+</code></pre></div><h2 id="再到具体的选择">再到具体的选择</h2>
 <p>选择具体的存储位置被上面包装到了 chooseRemoteRack 和 chooseLocalRack 两个函数。</p>
 <p>实际调用时只是 chooseRandom 函数，在限定的rack下选择一个随机的节点。</p>
-<h1 id="heading-3">源码阅读的几个注意</h1>
+<h1 id="源码阅读的几个注意">源码阅读的几个注意</h1>
 <p>代码在直接阅读时各种跳，但主线思路比较明确。主要带来阅读困难的位置：</p>
 <ol>
 <li>很多函数调用不是通过返回值传出结果，而是通过参数。</li>
@@ -361,11 +371,11 @@ if (!doNotTrack) {
 <li>递归的形式多次调用同一个函数以选择多个副本。</li>
 <li>很多代码为了避免一些特殊情况，可以暂时略过（如catch里的异常处理）。</li>
 </ol>
-<h1 id="hdfs">修改HDFS默认的副本放置机制</h1>
+<h1 id="修改hdfs默认的副本放置机制">修改HDFS默认的副本放置机制</h1>
 <p>可以选择直接复制或继承BlockPlacementPolicyDefault的实现，或者直接继承BlockPlacementPolicy类编写对应的接口具体实现。</p>
 <p>将编译好的jar包放入<code>$HADOOP_PREFIX/share/hadoop/common</code>下（或者其它的Hadoop jar包路径）。</p>
 <p>改变<code>dfs.block.replicator.classname</code> 为上面的实现类，要带包的名称。</p>
-<h1 id="rackawareness-">RackAwareness 机架感知</h1>
+<h1 id="rackawareness-机架感知">RackAwareness 机架感知</h1>
 <p>Hadoop 并不能自动检测集群的机架状态，而是要预先设置机架的状态，通过脚本或java类将datanode的ip转换成具体的机架上的位置。</p>
 <p>官方文档介绍了基本思路，虽然实现上介绍得不是太清楚，只要将输入的ip转换成&rdquo;/rackNum&quot;的形式即可。</p>
 <p><code>https://hadoop.apache.org/docs/current/hadoop-project-dist/hadoop-common/RackAwareness.html</code></p>

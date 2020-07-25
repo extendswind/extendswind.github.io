@@ -35,10 +35,10 @@ class Prototype implements Cloneable{ int attr; public Prototype clone(){ Protot
       
       <guid>https://extendswind.top/posts/technical/design_patterns_singleton/</guid>
       <description>singleton pattern
-主要目标：对象只创建一次，每次都获得先前第一次创建的对象而不创建新的对象。
+主要目标：对象只创建一次，每次都获得先前第一次创建的对象而不创建新的对象。（最好在使用时创建对象）
 实现思想：使用静态方法getInstance得到对象，为了保证对象只能通过getInstance创建，使构造函数私有。
 主要麻烦在于：
- 多线程环境下getInstance方法的调用可能产生多个对象 使用synchronized关键字可能降低高并发效率  单例模式有很多种，大多用于解决多线程环境下的效率问题，高并发场景可以具体搜索相关方案，一般情况下思想比较简单感觉不必深究。
+ 多线程环境下getInstance方法的调用可能产生多个对象 使用synchronized关键字可能降低高并发效率  单例模式有很多种，大多用于解决多线程环境下的效率问题，高并发场景通常使用某些固定方案（java常用内部类机制），一般情况下思想比较简单，从应用的角度感觉不必深究。
 （后面懒得用实际例子命名了，Log4j中获取的logger对象就使用了单例模式）
 /** * 简单实现 * * 存在的问题： * * 当创建过程需要时间时，连续调用getInstance方法会导致创建多个对象，特别是涉及多线程时容易出问题。 */ class Singleton_problem { private static Singleton_problem m_singletonProblem = null; private Singleton_problem(){ // ...  } public static Singleton_problem getInstance(){ if (m_singletonProblem == null) m_singletonProblem = new Singleton_problem(); return m_singletonProblem; } } /** * 解决方案一： eager initialization * * 缺点在于没有lazy loading机制 */ class Singleton_eager{ private static final Singleton_eager m_singleton = new Singleton_eager(); private Singleton_eager(){ // .</description>
     </item>

@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang='en'><head>
+  <meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<meta name='description' content='重新编译内核可以修改编译时的参数，使内核在运行时更高效的支持本地硬件。Manjaro团队在gitlab上放了Manjaro内核的编译文件，稍加修改即可使用自己的选项编译。
+主要参考论坛中Manjaro团队的philm的回答 https://forum.manjaro.org/t/how-to-compile-the-mainline-kernel-the-manjaro-way/51700/35
+Gitlab 仓库 philm提到了manjaro在gitlab上编译内核的仓库。https://gitlab.manjaro.org/packages/core/linux56.git 后面使用不同的linux版本号。
+仓库文件介绍 仓库中不同后缀文件的作用
+  files ending with .patch should be clear. These are adjustments we think will fit for our distro best. files starting with config are our modified settings on how we configure the kernel on our end. files starting with linux are specific files to post configure the system. They are used either by pacman or mkinitcpio, which configures the initramfs image.'>
+<meta name='theme-color' content='#cccccc'>
+
+<meta property='og:title' content='Manjaro内核编译 • A Notebook of Extendswind'>
+<meta property='og:description' content='重新编译内核可以修改编译时的参数，使内核在运行时更高效的支持本地硬件。Manjaro团队在gitlab上放了Manjaro内核的编译文件，稍加修改即可使用自己的选项编译。
+主要参考论坛中Manjaro团队的philm的回答 https://forum.manjaro.org/t/how-to-compile-the-mainline-kernel-the-manjaro-way/51700/35
+Gitlab 仓库 philm提到了manjaro在gitlab上编译内核的仓库。https://gitlab.manjaro.org/packages/core/linux56.git 后面使用不同的linux版本号。
+仓库文件介绍 仓库中不同后缀文件的作用
+  files ending with .patch should be clear. These are adjustments we think will fit for our distro best. files starting with config are our modified settings on how we configure the kernel on our end. files starting with linux are specific files to post configure the system. They are used either by pacman or mkinitcpio, which configures the initramfs image.'>
+<meta property='og:url' content='https://extendswind.top/posts/technical/manjaro_kernel_compile/'>
+<meta property='og:site_name' content='A Notebook of Extendswind'>
+<meta property='og:type' content='article'><meta property='article:section' content='posts'><meta property='article:tag' content='linux'><meta property='article:published_time' content='2020-05-19T22:30:00&#43;08:00'/><meta property='article:modified_time' content='2020-05-19T22:30:00&#43;08:00'/><meta name='twitter:card' content='summary'>
+
+<meta name="generator" content="Hugo 0.72.0" />
+
+  <title>Manjaro内核编译 • A Notebook of Extendswind</title>
+  <link rel='canonical' href='https://extendswind.top/posts/technical/manjaro_kernel_compile/'>
+  
+  
+  <link rel='icon' href='/images/wind.jpeg'>
+<link rel='stylesheet' href='/assets/css/main.6a060eb7.css'><link rel='stylesheet' href='/css/custom.css'><style>
+:root{--color-accent:#cccccc;}
+</style>
+
+  
+
+</head>
+<body class='page type-posts has-sidebar'>
+
+  <div class='site'><div id='sidebar' class='sidebar'>
+  <a class='screen-reader-text' href='#main-menu'>Skip to Main Menu</a>
+
+  <div class='container'><section class='widget widget-about sep-after'>
+  <header>
+    
+    <div class='logo'>
+      <a href='/'>
+        <img src='/images/wind.jpeg'>
+      </a>
+    </div>
+    
+    <h2 class='title site-title '>
+      <a href='/'>
+      extendswind
+      </a>
+    </h2>
+    <div class='desc'>
+    
+    </div>
+  </header>
+
+</section>
+<section class='widget widget-sidebar_menu sep-after'><nav id='sidebar-menu' class='menu sidebar-menu' aria-label='Sidebar Menu'>
+    <div class='container'>
+      <ul><li class='item'>
+  <a href='/'>Home</a></li><li class='item'>
+  <a href='/posts'>Posts</a></li><li class='item'>
+  <a href='/categories'>Categories</a></li><li class='item'>
+  <a href='https://github.com/extendswind'>GitHub</a></li><li class='item'>
+  <a href='https://www.cnblogs.com/fly2wind/'>Cnblog</a></li></ul>
+    </div>
+  </nav>
+
+</section><section class='widget widget-taxonomy_cloud sep-after'>
+  <header>
+    <h4 class='title widget-title'>Tags</h4>
+  </header>
+
+  <div class='container list-container'>
+  <ul class='list taxonomy-cloud'><li>
+        <a href='/tags/blog/' style='font-size:1em'>blog</a>
+      </li><li>
+        <a href='/tags/design-patterns/' style='font-size:1em'>design patterns</a>
+      </li><li>
+        <a href='/tags/gis/' style='font-size:1em'>GIS</a>
+      </li><li>
+        <a href='/tags/git/' style='font-size:1em'>git</a>
+      </li><li>
+        <a href='/tags/hadoop/' style='font-size:1em'>hadoop</a>
+      </li><li>
+        <a href='/tags/java/' style='font-size:1em'>java</a>
+      </li><li>
+        <a href='/tags/life/' style='font-size:1em'>life</a>
+      </li><li>
+        <a href='/tags/linux/' style='font-size:1em'>linux</a>
+      </li><li>
+        <a href='/tags/log4j/' style='font-size:1em'>log4j</a>
+      </li><li>
+        <a href='/tags/raspberry/' style='font-size:1em'>raspberry</a>
+      </li><li>
+        <a href='/tags/reading/' style='font-size:1em'>reading</a>
+      </li><li>
+        <a href='/tags/software/' style='font-size:1em'>software</a>
+      </li><li>
+        <a href='/tags/spark/' style='font-size:1em'>spark</a>
+      </li></ul>
+</div>
+
+
+</section>
+<section class='widget widget-search sep-after'>
+  <header>
+    <h4 class='title widget-title'>Search</h4>
+  </header>
+
+  <form action='/search' id='search-form' class='search-form'>
+    <label>
+      <span class='screen-reader-text'>Search</span>
+      <input id='search-term' class='search-term' type='search' name='q' placeholder='Search&hellip;'>
+    </label></form>
+
+</section>
+</div>
+
+  <div class='sidebar-overlay'></div>
+</div><div class='main'><a class='screen-reader-text' href='#content'>Skip to Content</a>
+
+<button id='sidebar-toggler' class='sidebar-toggler' aria-controls='sidebar'>
+  <span class='screen-reader-text'>Toggle Sidebar</span>
+  <span class='open'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="3" y1="12" x2="21" y2="12" />
+  <line x1="3" y1="6" x2="21" y2="6" />
+  <line x1="3" y1="18" x2="21" y2="18" />
+  
+</svg>
+</span>
+  <span class='close'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="18" y1="6" x2="6" y2="18" />
+  <line x1="6" y1="6" x2="18" y2="18" />
+  
+</svg>
+</span>
+</button><div class='header-widgets'>
+        <div class='container'></div>
+      </div>
+
+      <header id='header' class='header site-header'>
+        <div class='container sep-after'>
+          <div class='header-info'><p class='site-title title'>A Notebook of Extendswind</p><p class='desc site-desc'>a simple blog site</p>
+          </div>
+        </div>
+      </header>
+
+      <main id='content'>
+
+
+<article lang='en' class='entry'>
+  <header class='header entry-header'>
+  <div class='container sep-after'>
+    <div class='header-info'>
+      <h1 class='title'>Manjaro内核编译</h1>
+      
+
+    </div>
+    <div class='entry-meta'>
+  <span class='posted-on'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+  <line x1="16" y1="2" x2="16" y2="6"/>
+  <line x1="8" y1="2" x2="8" y2="6"/>
+  <line x1="3" y1="10" x2="21" y2="10"/>
+  
+</svg>
+<span class='screen-reader-text'>Posted on </span>
+  <time class='entry-date' datetime='2020-05-19T22:30:00&#43;08:00'>2020, May 19</time>
+</span>
+
+  
+  
+
+</div>
+
+
+  </div>
+</header>
+
+  
+  
+<details class='container entry-toc' open>
+  <summary class='title'>
+    <span>Table of Contents</span>
+  </summary>
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#gitlab-仓库">Gitlab 仓库</a></li>
+    <li><a href="#仓库文件介绍">仓库文件介绍</a></li>
+    <li><a href="#主要编译过程">主要编译过程</a></li>
+    <li><a href="#修改内核参数">修改内核参数</a></li>
+  </ul>
+</nav>
+</details>
+
+
+  <div class='container entry-content'>
+  <p>重新编译内核可以修改编译时的参数，使内核在运行时更高效的支持本地硬件。Manjaro团队在gitlab上放了Manjaro内核的编译文件，稍加修改即可使用自己的选项编译。</p>
+<p>主要参考论坛中Manjaro团队的philm的回答 <a href="https://forum.manjaro.org/t/how-to-compile-the-mainline-kernel-the-manjaro-way/51700/35">https://forum.manjaro.org/t/how-to-compile-the-mainline-kernel-the-manjaro-way/51700/35</a></p>
+<h1 id="gitlab-仓库">Gitlab 仓库</h1>
+<p>philm提到了manjaro在gitlab上编译内核的仓库。https://gitlab.manjaro.org/packages/core/linux56.git  后面使用不同的linux版本号。</p>
+<h1 id="仓库文件介绍">仓库文件介绍</h1>
+<p>仓库中不同后缀文件的作用</p>
+<blockquote>
+<ul>
+<li>files ending with .patch should be clear. These are adjustments we think will fit for our distro best.</li>
+<li>files starting with config are our modified settings on how we configure the kernel on our end.</li>
+<li>files starting with linux are specific files to post configure the system. They are used either by pacman or mkinitcpio, which configures the initramfs image.</li>
+<li>files ending with .hook are used by pacman to pre- or post-configure the kernel.</li>
+</ul>
+</blockquote>
+<p>主要的脚本文件为PKGBUILD，指定了包中包含的文件，需要执行的操作等。</p>
+<p>内核编译参数的设置在config.x86_64文件中，需要改变的参数可以在这里修改。（PKGBUILD中新建了.config文件并将config.x86_64文件的内如cat进入）</p>
+<h1 id="主要编译过程">主要编译过程</h1>
+<blockquote>
+<p>So here is a quick tutorial to compile your own kernel on Manjaro:</p>
+<p>first you have to clone our package repo for linux417 via git clone <a href="https://gitlab.manjaro.org/packages/core/linux417.git">https://gitlab.manjaro.org/packages/core/linux417.git</a></p>
+<p>then change into that directory and execute makepkg -s. This will compile the kernel as I had configured it. You may want to stop the time.</p>
+<p>If you however want to use our tools, you may install manjaro-tools-pkg and only change into the directory where you cloned the git-repo. No need to change into the linux417 folder. You simply may use then buildpkg -p linux417. This will create a new chroot on which the package gets compiled in a separate system to avoid any issues with other systems. Only used if you want to redistribute your package to somebody else.</p>
+</blockquote>
+<p>大概流程为：</p>
+<ol>
+<li>git clone对应的仓库</li>
+<li>修改编译参数config.x86_64</li>
+<li>makepkg编译内核</li>
+</ol>
+<p>国内可能存在git下载代码非常慢的问题，可以通过网页端或其它镜像站下载代码文件到指定目录，然后修改PKGBUILD文件，将<code>source=(</code>后的链接替换成下载后的文件名。如果内核代码或其它文件（config.x86_64）修改过，还需要将<code>sha256sums=(</code>后的对应位置改为<code>'SKIP'</code>或者计算后的值。</p>
+<p>为了避免编译器版本等造成的环境问题，manjaro还提供了manjaro-tool-pkg，在仓库所在的目录运行<code>buildpkg -p linux56</code>会新安装一个新的环境然后chroot使用独立的环境构建。</p>
+<p>最好给新编译的内核一个重新的命名，否则在安装时会覆盖同名称的官方内核。需要改命令的地方不止在PKGBUILD，具体在哪也懒得找了&hellip;</p>
+<blockquote>
+<p>[optional] give your kernel a different name so it can be easily installed alongside existing ones.
+For that, you have to replace every instance of -MANJARO with a name of your choice, this in every file, not only in PKGBUILD!
+You could use a simple ‘find and replace’ in your text editor, or use the sed command, e.g. sed -i -e &ldquo;s|-MANJARO|-CUSTOM|&rdquo; PKGBUILD.
+You also have to edit various other names, like</p>
+</blockquote>
+<h1 id="修改内核参数">修改内核参数</h1>
+<p><code>zcat /proc/config.gz &gt; .config </code> 导出当前内核的配置。</p>
+<p>在linux内核代码目录通过make可以得到内核的设置参数或设置界面：</p>
+<ul>
+<li><code>make localmodconfig</code>  获取当前的内核参数，这种方法能够得到一个非常精简的内核，但没有加载过的内核模块都不会被编译。（在我的笔记本上内核大小成了之前的25%，但是睡眠出问题）</li>
+<li><code>make nconfig</code>: 新的命令行 ncurses 界面</li>
+<li><code>make xconfig</code>: 用户友好的图形界面，需要安装 packagekit-qt4[断开的链接：package not found]。建议没有经验的用户使用此方法。</li>
+<li><code>make gconfig</code>: 和 xconfig 类似的图形界面，使用 gtk.</li>
+</ul>
+<p>运行后会生成一个新的.config文件，将文件覆盖config.x86_64后，直接makepkg即可。</p>
+<p>一些内核参数可以参考gentoo的wiki：</p>
+<p><a href="https://wiki.gentoo.org/wiki/Handbook:X86/Installation/Kernel">https://wiki.gentoo.org/wiki/Handbook:X86/Installation/Kernel</a></p>
+
+</div>
+
+  
+<footer class='entry-footer'>
+  <div class='container sep-before'><div class='categories'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M22,19a2,2,0,0,1-2,2H4a2,2,0,0,1-2-2V5A2,2,0,0,1,4,3H9l2,3h9a2,2,0,0,1,2,2Z"/>
+  
+</svg>
+<span class='screen-reader-text'>Categories: </span><a class='category' href='/categories/linux/'>linux</a></div>
+<div class='tags'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M20.59,13.41l-7.17,7.17a2,2,0,0,1-2.83,0L2,12V2H12l8.59,8.59A2,2,0,0,1,20.59,13.41Z"/>
+  <line x1="7" y1="7" x2="7" y2="7"/>
+  
+</svg>
+<span class='screen-reader-text'>Tags: </span><a class='tag' href='/tags/linux/'>linux</a></div>
+
+  </div>
+</footer>
+
+
+</article>
+
+<nav class='entry-nav'>
+  <div class='container'><div class='prev-entry sep-before'>
+      <a href='/posts/technical/java_toarray_return_and_generic_type_erase/'>
+        <span aria-hidden='true'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="20" y1="12" x2="4" y2="12"/>
+  <polyline points="10 18 4 12 10 6"/>
+  
+</svg>
+ Previous</span>
+        <span class='screen-reader-text'>Previous post: </span>java从toArray返回Object[]到泛型的类型擦除</a>
+    </div><div class='next-entry sep-before'>
+      <a href='/posts/technical/manjaro_magicbook_install_and_configuration/'>
+        <span class='screen-reader-text'>Next post: </span>华为笔记本magicbook14 AMD安装Manjaro Linux的一些踩坑配置<span aria-hidden='true'>Next <svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="4" y1="12" x2="20" y2="12"/>
+  <polyline points="14 6 20 12 14 18"/>
+  
+</svg>
+</span>
+      </a>
+    </div></div>
+</nav>
+
+
+
+
+      </main>
+
+      <footer id='footer' class='footer'>
+        <div class='container sep-before'><section class='widget widget-social_menu sep-after'><header>
+    <h4 class='title widget-title'>Contact</h4>
+  </header><nav aria-label='Social Menu'>
+    <ul><li>
+        <a href='https://github.com/extendswind' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Open Github account in new tab</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+  
+</svg>
+</a>
+      </li><li>
+        <a href='mailto:extendswind@foxmail.com' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Contact via Email</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+  <polyline points="22,6 12,13 2,6"/>
+  
+</svg>
+</a>
+      </li></ul>
+  </nav>
+</section><div class='copyright'>
+  <p> &copy; 2018-2020 extendswind </p>
+</div>
+
+        </div>
+      </footer>
+
+    </div>
+  </div><script>window.__assets_js_src="/assets/js/"</script>
+
+<script src='/assets/js/main.67d669ac.js'></script>
+
+</body>
+
+</html>
+

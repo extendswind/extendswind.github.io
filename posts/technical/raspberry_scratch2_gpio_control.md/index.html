@@ -29,7 +29,7 @@ GPIO 针脚图 树莓派有多种GPIO的编号方式，使用python等调用需�
 <meta property='og:site_name' content='A Notebook of Extendswind'>
 <meta property='og:type' content='article'><meta property='article:section' content='posts'><meta property='article:tag' content='raspberry'><meta property='article:published_time' content='2019-10-25T14:59:49&#43;08:00'/><meta property='article:modified_time' content='2019-10-25T14:59:49&#43;08:00'/><meta name='twitter:card' content='summary'>
 
-<meta name="generator" content="Hugo 0.62.0" />
+<meta name="generator" content="Hugo 0.72.0" />
 
   <title>树莓派基于scratch2控制GPIO • A Notebook of Extendswind</title>
   <link rel='canonical' href='https://extendswind.top/posts/technical/raspberry_scratch2_gpio_control.md/'>
@@ -39,17 +39,6 @@ GPIO 针脚图 树莓派有多种GPIO的编号方式，使用python等调用需�
 <link rel='stylesheet' href='/assets/css/main.6a060eb7.css'><link rel='stylesheet' href='/css/custom.css'><style>
 :root{--color-accent:#cccccc;}
 </style>
-
-<script type="application/javascript">
-var doNotTrack = false;
-if (!doNotTrack) {
-	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-	ga('create', 'UA-125329544-1', 'auto');
-	
-	ga('send', 'pageview');
-}
-</script>
-<script async src='https://www.google-analytics.com/analytics.js'></script>
 
   
 
@@ -86,7 +75,7 @@ if (!doNotTrack) {
   <a href='/posts'>Posts</a></li><li class='item'>
   <a href='/categories'>Categories</a></li><li class='item'>
   <a href='https://github.com/extendswind'>GitHub</a></li><li class='item'>
-  <a href='http://www.cnblogs.com/fly2wind/'>Cnblog</a></li></ul>
+  <a href='https://www.cnblogs.com/fly2wind/'>Cnblog</a></li></ul>
     </div>
   </nav>
 
@@ -125,6 +114,18 @@ if (!doNotTrack) {
       </li></ul>
 </div>
 
+
+</section>
+<section class='widget widget-search sep-after'>
+  <header>
+    <h4 class='title widget-title'>Search</h4>
+  </header>
+
+  <form action='/search' id='search-form' class='search-form'>
+    <label>
+      <span class='screen-reader-text'>Search</span>
+      <input id='search-term' class='search-term' type='search' name='q' placeholder='Search&hellip;'>
+    </label></form>
 
 </section>
 </div>
@@ -200,15 +201,15 @@ if (!doNotTrack) {
   <p>感觉这方面的资料最好优先google英文的，中文博客上竟然连scratch2用的哪套GPIO的编号都找半天&hellip;</p>
 <p>树莓派的apt仓库里有三个scratch版本，其中scratch为稳定版，scratch2和scratch3还在测试仓库，改成了基于跨平台技术electron的开发。我在树莓派3b上scratch3打开没反应，scratch2虽然是测试版，但使用没发现问题，打开速度上明显比scratch慢。</p>
 <p>scratch2相比scratch在GPIO上简化了大量的操作，不用通过广播的形式发送各种GPIO server的消息，将GPIO的操作简化成了两个函数。</p>
-<h1 id="1-scratch2">1. 安装Scratch2</h1>
+<h1 id="1-安装scratch2">1. 安装Scratch2</h1>
 <p><code>sudo apt install scratch2</code></p>
-<h1 id="2-gpio">2. 控制相关的GPIO口</h1>
+<h1 id="2-控制相关的gpio口">2. 控制相关的GPIO口</h1>
 <p><code>更多模块</code> -&gt; <code>添加扩展</code>   选择<code>Pi GPIO</code></p>
 <p>下面会多出两个控制GPIO的函数。</p>
 <p><code>set gpio *id* to *output high*</code>  此函数用于设置gpio口，第一个指定GPIO的id，第二个指定功能，如输出高电平、输入低电平、输入模式。</p>
 <p><code>gpio *id* is high?</code>  此函数用于控制语句中作为条件，判断当前gpio口是否为高电平，通常用在输入模式下检测传感器一类的输入。</p>
 <p>就这么简单，剩下的当成简单单片机用就行了。</p>
-<h1 id="gpio-">GPIO 针脚图</h1>
+<h1 id="gpio-针脚图">GPIO 针脚图</h1>
 <p>树莓派有多种GPIO的编号方式，使用python等调用需要指定具体的编码，scratch用的是下图这种（图源自树莓派官网）。</p>
 <p><img src="gpio_pins.png" alt=""></p>
 

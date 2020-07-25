@@ -43,7 +43,7 @@ sudo pacman -S cinnamon-settings-daemon /usr/lib/cinnamon-settings-daemon/csd-xs
 <meta property='og:site_name' content='A Notebook of Extendswind'>
 <meta property='og:type' content='article'><meta property='article:section' content='posts'><meta property='article:tag' content='linux'><meta property='article:published_time' content='2019-01-20T21:59:49&#43;08:00'/><meta property='article:modified_time' content='2019-01-20T21:59:49&#43;08:00'/><meta name='twitter:card' content='summary'>
 
-<meta name="generator" content="Hugo 0.62.0" />
+<meta name="generator" content="Hugo 0.72.0" />
 
   <title>arch linux (manjaro) 下运行tim和qq • A Notebook of Extendswind</title>
   <link rel='canonical' href='https://extendswind.top/posts/technical/tim_install_wine/'>
@@ -53,17 +53,6 @@ sudo pacman -S cinnamon-settings-daemon /usr/lib/cinnamon-settings-daemon/csd-xs
 <link rel='stylesheet' href='/assets/css/main.6a060eb7.css'><link rel='stylesheet' href='/css/custom.css'><style>
 :root{--color-accent:#cccccc;}
 </style>
-
-<script type="application/javascript">
-var doNotTrack = false;
-if (!doNotTrack) {
-	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-	ga('create', 'UA-125329544-1', 'auto');
-	
-	ga('send', 'pageview');
-}
-</script>
-<script async src='https://www.google-analytics.com/analytics.js'></script>
 
   
 
@@ -100,7 +89,7 @@ if (!doNotTrack) {
   <a href='/posts'>Posts</a></li><li class='item'>
   <a href='/categories'>Categories</a></li><li class='item'>
   <a href='https://github.com/extendswind'>GitHub</a></li><li class='item'>
-  <a href='http://www.cnblogs.com/fly2wind/'>Cnblog</a></li></ul>
+  <a href='https://www.cnblogs.com/fly2wind/'>Cnblog</a></li></ul>
     </div>
   </nav>
 
@@ -139,6 +128,18 @@ if (!doNotTrack) {
       </li></ul>
 </div>
 
+
+</section>
+<section class='widget widget-search sep-after'>
+  <header>
+    <h4 class='title widget-title'>Search</h4>
+  </header>
+
+  <form action='/search' id='search-form' class='search-form'>
+    <label>
+      <span class='screen-reader-text'>Search</span>
+      <input id='search-term' class='search-term' type='search' name='q' placeholder='Search&hellip;'>
+    </label></form>
 
 </section>
 </div>
@@ -214,12 +215,12 @@ if (!doNotTrack) {
   <p>基于AUR的安装是没什么难度了，主要安装后会出各种问题，还有选不同的包的影响。</p>
 <p>官方的wiki上推荐安装deepin-wine-tim，基于wine和最新版的tim。安装后存在qq密码每次都要输入的问题（201804测试没有此问题，但还是不太稳定，2018年因为wine的更新导致挂了两次只能回退）。</p>
 <p>更推荐使用的deepin.com.qq.office，基于deepin-wine，配置好了比较稳定。</p>
-<h1 id="heading">安装步骤</h1>
-<h2 id="heading-1">安装</h2>
+<h1 id="安装步骤">安装步骤</h1>
+<h2 id="安装">安装</h2>
 <p><code> yaourt -S deepin.com.qq.office</code></p>
 <p>ps：吐槽，安装deepin-wine的各个确认略多。
 d</p>
-<h2 id="qq">qq提取消息、截图等快捷键设置</h2>
+<h2 id="qq提取消息截图等快捷键设置">qq提取消息、截图等快捷键设置</h2>
 <p>在/opt/deepinwine/tools/sendkeys.sh脚本能够传递快捷键，如直接运行./sendkeys.sh a 则会向qq或tim进程发送 ctrl+alt+a。</p>
 <p>不同桌面环境添加快捷键的方法差不多，主要步骤：</p>
 <ol>
@@ -229,9 +230,9 @@ d</p>
 </ol>
 <p>此时按快捷键后相当于qq中按 ctrl+alt+a (截图)</p>
 <p>同理可以设置qq其它快捷键</p>
-<h1 id="heading-2">一般问题</h1>
+<h1 id="一般问题">一般问题</h1>
 <p>大多出现在基于wine的tim上，基于deepin的tim问题很少。</p>
-<h2 id="deepin-winegnome">deepin-wine在非gnome系的桌面上的运行问题</h2>
+<h2 id="deepin-wine在非gnome系的桌面上的运行问题">deepin-wine在非gnome系的桌面上的运行问题</h2>
 <p>3wm, kde, awesome等桌面管理器或桌面环境里运行基于deepin-wine的qq和tim时，会出现下面的错误</p>
 <blockquote>
 </blockquote>
@@ -239,7 +240,7 @@ d</p>
 <p>由于deepin-wine依赖了gnome系（mate,cinnamon,gnome）的setting-daemon，需要安装后运行（一般加入开机启动）</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sudo pacman -S cinnamon-settings-daemon
 /usr/lib/cinnamon-settings-daemon/csd-xsettings
-</code></pre></div><h2 id="heading-3">无法输入中文</h2>
+</code></pre></div><h2 id="无法输入中文">无法输入中文</h2>
 <p>如果其它地方可以使用输入法，一般为环境变量的问题，fcitx没有配置好。</p>
 <p>粗暴解决方式: 下面的文件夹中加入环境变量</p>
 <p>/opt/deepinwine/apps/Deepin-TIM/run.sh</p>
@@ -249,18 +250,18 @@ d</p>
 export GTK_IM_MODULE=&quot;fcitx&rdquo;
 export QT_IM_MODULE=&quot;fcitx&rdquo;</p>
 <p>正常的解决方式: 根据系统环境在.xinitrc、.xprofile、/etc/environment等文件中选择正确的文件加入环境变量。（具体参考fcitx的配置）</p>
-<h1 id="wine">基于wine的问题</h1>
-<h2 id="heading-4">文字过小问题</h2>
+<h1 id="基于wine的问题">基于wine的问题</h1>
+<h2 id="文字过小问题">文字过小问题</h2>
 <p>出现在基于wine的TIM上，deepin-wine下没问题。</p>
 <p>后面列出的官方wiki上有设置字体的方法，我只是在winecfg命令后加大了dpi，还可以具体改字体。（已经能忍，不想折腾）</p>
-<h2 id="heading-5">表情无法使用</h2>
+<h2 id="表情无法使用">表情无法使用</h2>
 <p>出现在xfce4上</p>
 <p>all settings -&gt; window Manager -&gt; Focus -&gt; 取消勾选 &ldquo;automatically give focus to newly created windows&rdquo;</p>
-<h2 id="heading-6">点右键的菜单都不能用的问题</h2>
+<h2 id="点右键的菜单都不能用的问题">点右键的菜单都不能用的问题</h2>
 <p>一个很烦的一点，特别是不能收藏表情，保存图片，还不能屏蔽群消息！</p>
 <p>从xfce4转到i3wm后就好了，不知道是不是xfce4的专属bug，现在不想折腾，以后再换KDE一类的试试。</p>
 <p>貌似xfce4对wine特别是wine qq不怎么友好。</p>
-<h2 id="heading-7">每次登录显示身份过期,必须重新输入密码</h2>
+<h2 id="每次登录显示身份过期必须重新输入密码">每次登录显示身份过期,必须重新输入密码</h2>
 <p>安装deepin后卸载xfce4,然后就出现了这一奇葩问题.</p>
 <p>安装xfce4后解决问题.（不知道怎么出的问题，也不知道怎么好的）</p>
 <h2 id="other">other</h2>
@@ -269,7 +270,7 @@ export QT_IM_MODULE=&quot;fcitx&rdquo;</p>
 <li>文件被占用</li>
 <li>字体设置</li>
 </ul>
-<h1 id="heading-8">参考</h1>
+<h1 id="参考">参考</h1>
 <p>从deepin系统转向arch的，deepin在国产软件的处理上确实相当不错，deepin-wine应该算是对开源社区做出的最大贡献之一，解决qq这一大刚需问题。</p>
 <p><a href="https://wiki.archlinux.org/index.php/Tencent_QQ_(">https://wiki.archlinux.org/index.php/Tencent_QQ_(</a>简体中文)</p>
 <p><a href="https://aur.archlinux.org/packages/deepin.com.qq.office/">https://aur.archlinux.org/packages/deepin.com.qq.office/</a></p>

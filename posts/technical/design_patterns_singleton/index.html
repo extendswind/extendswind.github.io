@@ -3,27 +3,27 @@
   <meta charset='utf-8'>
 <meta name='viewport' content='width=device-width, initial-scale=1'>
 <meta name='description' content='singleton pattern
-主要目标：对象只创建一次，每次都获得先前第一次创建的对象而不创建新的对象。
+主要目标：对象只创建一次，每次都获得先前第一次创建的对象而不创建新的对象。（最好在使用时创建对象）
 实现思想：使用静态方法getInstance得到对象，为了保证对象只能通过getInstance创建，使构造函数私有。
 主要麻烦在于：
- 多线程环境下getInstance方法的调用可能产生多个对象 使用synchronized关键字可能降低高并发效率  单例模式有很多种，大多用于解决多线程环境下的效率问题，高并发场景可以具体搜索相关方案，一般情况下思想比较简单感觉不必深究。
+ 多线程环境下getInstance方法的调用可能产生多个对象 使用synchronized关键字可能降低高并发效率  单例模式有很多种，大多用于解决多线程环境下的效率问题，高并发场景通常使用某些固定方案（java常用内部类机制），一般情况下思想比较简单，从应用的角度感觉不必深究。
 （后面懒得用实际例子命名了，Log4j中获取的logger对象就使用了单例模式）
 /** * 简单实现 * * 存在的问题： * * 当创建过程需要时间时，连续调用getInstance方法会导致创建多个对象，特别是涉及多线程时容易出问题。 */ class Singleton_problem { private static Singleton_problem m_singletonProblem = null; private Singleton_problem(){ // ...  } public static Singleton_problem getInstance(){ if (m_singletonProblem == null) m_singletonProblem = new Singleton_problem(); return m_singletonProblem; } } /** * 解决方案一： eager initialization * * 缺点在于没有lazy loading机制 */ class Singleton_eager{ private static final Singleton_eager m_singleton = new Singleton_eager(); private Singleton_eager(){ // .'>
 <meta name='theme-color' content='#cccccc'>
 
 <meta property='og:title' content='设计模式 之 单例模式 • A Notebook of Extendswind'>
 <meta property='og:description' content='singleton pattern
-主要目标：对象只创建一次，每次都获得先前第一次创建的对象而不创建新的对象。
+主要目标：对象只创建一次，每次都获得先前第一次创建的对象而不创建新的对象。（最好在使用时创建对象）
 实现思想：使用静态方法getInstance得到对象，为了保证对象只能通过getInstance创建，使构造函数私有。
 主要麻烦在于：
- 多线程环境下getInstance方法的调用可能产生多个对象 使用synchronized关键字可能降低高并发效率  单例模式有很多种，大多用于解决多线程环境下的效率问题，高并发场景可以具体搜索相关方案，一般情况下思想比较简单感觉不必深究。
+ 多线程环境下getInstance方法的调用可能产生多个对象 使用synchronized关键字可能降低高并发效率  单例模式有很多种，大多用于解决多线程环境下的效率问题，高并发场景通常使用某些固定方案（java常用内部类机制），一般情况下思想比较简单，从应用的角度感觉不必深究。
 （后面懒得用实际例子命名了，Log4j中获取的logger对象就使用了单例模式）
 /** * 简单实现 * * 存在的问题： * * 当创建过程需要时间时，连续调用getInstance方法会导致创建多个对象，特别是涉及多线程时容易出问题。 */ class Singleton_problem { private static Singleton_problem m_singletonProblem = null; private Singleton_problem(){ // ...  } public static Singleton_problem getInstance(){ if (m_singletonProblem == null) m_singletonProblem = new Singleton_problem(); return m_singletonProblem; } } /** * 解决方案一： eager initialization * * 缺点在于没有lazy loading机制 */ class Singleton_eager{ private static final Singleton_eager m_singleton = new Singleton_eager(); private Singleton_eager(){ // .'>
 <meta property='og:url' content='https://extendswind.top/posts/technical/design_patterns_singleton/'>
 <meta property='og:site_name' content='A Notebook of Extendswind'>
 <meta property='og:type' content='article'><meta property='article:section' content='posts'><meta property='article:tag' content='design patterns'><meta property='article:published_time' content='2018-07-02T11:25:25&#43;08:00'/><meta property='article:modified_time' content='2018-07-02T11:25:25&#43;08:00'/><meta name='twitter:card' content='summary'>
 
-<meta name="generator" content="Hugo 0.62.0" />
+<meta name="generator" content="Hugo 0.72.0" />
 
   <title>设计模式 之 单例模式 • A Notebook of Extendswind</title>
   <link rel='canonical' href='https://extendswind.top/posts/technical/design_patterns_singleton/'>
@@ -33,17 +33,6 @@
 <link rel='stylesheet' href='/assets/css/main.6a060eb7.css'><link rel='stylesheet' href='/css/custom.css'><style>
 :root{--color-accent:#cccccc;}
 </style>
-
-<script type="application/javascript">
-var doNotTrack = false;
-if (!doNotTrack) {
-	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-	ga('create', 'UA-125329544-1', 'auto');
-	
-	ga('send', 'pageview');
-}
-</script>
-<script async src='https://www.google-analytics.com/analytics.js'></script>
 
   
 
@@ -80,7 +69,7 @@ if (!doNotTrack) {
   <a href='/posts'>Posts</a></li><li class='item'>
   <a href='/categories'>Categories</a></li><li class='item'>
   <a href='https://github.com/extendswind'>GitHub</a></li><li class='item'>
-  <a href='http://www.cnblogs.com/fly2wind/'>Cnblog</a></li></ul>
+  <a href='https://www.cnblogs.com/fly2wind/'>Cnblog</a></li></ul>
     </div>
   </nav>
 
@@ -119,6 +108,18 @@ if (!doNotTrack) {
       </li></ul>
 </div>
 
+
+</section>
+<section class='widget widget-search sep-after'>
+  <header>
+    <h4 class='title widget-title'>Search</h4>
+  </header>
+
+  <form action='/search' id='search-form' class='search-form'>
+    <label>
+      <span class='screen-reader-text'>Search</span>
+      <input id='search-term' class='search-term' type='search' name='q' placeholder='Search&hellip;'>
+    </label></form>
 
 </section>
 </div>
@@ -199,14 +200,14 @@ if (!doNotTrack) {
 
   <div class='container entry-content'>
   <p>singleton pattern</p>
-<p>主要目标：对象只创建一次，每次都获得先前第一次创建的对象而不创建新的对象。</p>
+<p>主要目标：对象只创建一次，每次都获得先前第一次创建的对象而不创建新的对象。（最好在使用时创建对象）</p>
 <p>实现思想：使用静态方法getInstance得到对象，为了保证对象只能通过getInstance创建，使构造函数私有。</p>
 <p>主要麻烦在于：</p>
 <ul>
 <li>多线程环境下getInstance方法的调用可能产生多个对象</li>
 <li>使用synchronized关键字可能降低高并发效率</li>
 </ul>
-<p>单例模式有很多种，大多用于解决多线程环境下的效率问题，高并发场景可以具体搜索相关方案，一般情况下思想比较简单感觉不必深究。</p>
+<p>单例模式有很多种，大多用于解决多线程环境下的效率问题，高并发场景通常使用某些固定方案（java常用内部类机制），一般情况下思想比较简单，从应用的角度感觉不必深究。</p>
 <p>（后面懒得用实际例子命名了，Log4j中获取的logger对象就使用了单例模式）</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">
 <span style="color:#75715e">/**
@@ -218,12 +219,12 @@ if (!doNotTrack) {
 </span><span style="color:#75715e">*/</span>
 <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Singleton_problem</span> <span style="color:#f92672">{</span>
     <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> Singleton_problem m_singletonProblem <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
-    <span style="color:#66d9ef">private</span> <span style="color:#a6e22e">Singleton_problem</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">private</span> <span style="color:#a6e22e">Singleton_problem</span><span style="color:#f92672">(){</span>
         <span style="color:#75715e">// ...
 </span><span style="color:#75715e"></span>    <span style="color:#f92672">}</span>
-    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> Singleton_problem <span style="color:#a6e22e">getInstance</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">{</span>
-        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>m_singletonProblem <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span>
-            m_singletonProblem <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Singleton_problem<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> Singleton_problem <span style="color:#a6e22e">getInstance</span><span style="color:#f92672">(){</span>
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>m_singletonProblem <span style="color:#f92672">==</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span>
+            m_singletonProblem <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Singleton_problem<span style="color:#f92672">();</span>
         <span style="color:#66d9ef">return</span> m_singletonProblem<span style="color:#f92672">;</span>
     <span style="color:#f92672">}</span>
 <span style="color:#f92672">}</span>
@@ -235,11 +236,11 @@ if (!doNotTrack) {
 </span><span style="color:#75715e"> * 缺点在于没有lazy loading机制
 </span><span style="color:#75715e"> */</span>
 <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Singleton_eager</span><span style="color:#f92672">{</span>
-    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">final</span> Singleton_eager m_singleton <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Singleton_eager<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
-    <span style="color:#66d9ef">private</span> <span style="color:#a6e22e">Singleton_eager</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">final</span> Singleton_eager m_singleton <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Singleton_eager<span style="color:#f92672">();</span>
+    <span style="color:#66d9ef">private</span> <span style="color:#a6e22e">Singleton_eager</span><span style="color:#f92672">(){</span>
         <span style="color:#75715e">// ...
 </span><span style="color:#75715e"></span>    <span style="color:#f92672">}</span>
-    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> Singleton_eager <span style="color:#a6e22e">getInstance</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> Singleton_eager <span style="color:#a6e22e">getInstance</span><span style="color:#f92672">(){</span>
         <span style="color:#66d9ef">return</span> m_singleton<span style="color:#f92672">;</span>
     <span style="color:#f92672">}</span>
 <span style="color:#f92672">}</span>
@@ -249,14 +250,14 @@ if (!doNotTrack) {
 </span><span style="color:#75715e"> * 解决方案二： lazy initialization
 </span><span style="color:#75715e"> *
 </span><span style="color:#75715e"> * 在进行高并发操作时可能造成系统性能降低，由于调用getInstance函数每次只能一个线程使用
-</span><span style="color:#75715e"> * （此处质疑，会慢多少？？）
+</span><span style="color:#75715e"> * 在后面的测试代码里时间不明显，通过线程池等方式可能会不一样
 </span><span style="color:#75715e"> */</span>
 <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Singleton_lazy</span><span style="color:#f92672">{</span>
     <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> Singleton_lazy m_singleton <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
     <span style="color:#75715e">// 线程锁，加锁的位置每次只能运行一个线程
-</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">synchronized</span> Singleton_lazy <span style="color:#a6e22e">getInstance</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">{</span>
-        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>m_singleton <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span>
-            m_singleton <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Singleton_lazy<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">synchronized</span> Singleton_lazy <span style="color:#a6e22e">getInstance</span><span style="color:#f92672">(){</span>
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>m_singleton <span style="color:#f92672">==</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span>
+            m_singleton <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Singleton_lazy<span style="color:#f92672">();</span>
         <span style="color:#66d9ef">return</span> m_singleton<span style="color:#f92672">;</span>
     <span style="color:#f92672">}</span>
 <span style="color:#f92672">}</span>
@@ -265,17 +266,17 @@ if (!doNotTrack) {
 <span style="color:#75715e">/**
 </span><span style="color:#75715e"> * 解决方案三： lazy initialization + 双重加锁
 </span><span style="color:#75715e"> *
-</span><span style="color:#75715e"> * 降低方案二中的等待用时，但还是存在效率问题，不建议折腾
+</span><span style="color:#75715e"> * 降低方案二中的等待用时，当对象创建后就不用通过锁判断，创建后没有效率问题。
 </span><span style="color:#75715e"> */</span>
 <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Singleton_lazy_double_lock</span><span style="color:#f92672">{</span>
     <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> Singleton_lazy_double_lock m_singleton <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
     <span style="color:#75715e">// 线程锁，加锁的位置每次只能运行一个线程
-</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">synchronized</span> Singleton_lazy_double_lock <span style="color:#a6e22e">getInstance</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">{</span>
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">synchronized</span> Singleton_lazy_double_lock <span style="color:#a6e22e">getInstance</span><span style="color:#f92672">(){</span>
         <span style="color:#75715e">//第一重判断
-</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>m_singleton <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span> <span style="color:#75715e">//锁定代码块
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>m_singleton <span style="color:#f92672">==</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span> <span style="color:#75715e">//锁定代码块
 </span><span style="color:#75715e"></span>            <span style="color:#66d9ef">synchronized</span> <span style="color:#f92672">(</span>Singleton_lazy_double_lock<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span> <span style="color:#75715e">//第二重判断
-</span><span style="color:#75715e"></span>                <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>m_singleton <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-                    m_singleton <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Singleton_lazy_double_lock<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span> <span style="color:#75715e">//创建单例实例
+</span><span style="color:#75715e"></span>                <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>m_singleton <span style="color:#f92672">==</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                    m_singleton <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Singleton_lazy_double_lock<span style="color:#f92672">();</span> <span style="color:#75715e">//创建单例实例
 </span><span style="color:#75715e"></span>                <span style="color:#f92672">}</span>
             <span style="color:#f92672">}</span>
         <span style="color:#f92672">}</span>
@@ -285,21 +286,23 @@ if (!doNotTrack) {
 
 <span style="color:#75715e">/** Initialization on Demand Holder，通过java内部类机制
 </span><span style="color:#75715e"> * 貌似是java的最优实现方式，依赖具体语言
+</span><span style="color:#75715e"> * 由于内部类对象依赖外部类对象，因此内部类中的静态成员会在外部类对象创建后得到，
+</span><span style="color:#75715e"> * 此时相当于在使用时才进行初始化。
 </span><span style="color:#75715e"> */</span>
 <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Singleton_holder</span><span style="color:#f92672">{</span>
-    <span style="color:#66d9ef">private</span> <span style="color:#a6e22e">Singleton_holder</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">private</span> <span style="color:#a6e22e">Singleton_holder</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
     <span style="color:#f92672">}</span>
     <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">HolderClass</span> <span style="color:#f92672">{</span>
-        <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">static</span> Singleton_holder instance <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Singleton_holder<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">static</span> Singleton_holder instance <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Singleton_holder<span style="color:#f92672">();</span>
     <span style="color:#f92672">}</span>
-    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> Singleton_holder <span style="color:#a6e22e">getInstance</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> Singleton_holder <span style="color:#a6e22e">getInstance</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
         <span style="color:#66d9ef">return</span> HolderClass<span style="color:#f92672">.</span><span style="color:#a6e22e">instance</span><span style="color:#f92672">;</span>
     <span style="color:#f92672">}</span>
-    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span><span style="color:#f92672">(</span>String args<span style="color:#f92672">[</span><span style="color:#f92672">]</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span><span style="color:#f92672">(</span>String args<span style="color:#f92672">[])</span> <span style="color:#f92672">{</span>
         Singleton_holder s1<span style="color:#f92672">,</span> s2<span style="color:#f92672">;</span>
-        s1 <span style="color:#f92672">=</span> Singleton_holder<span style="color:#f92672">.</span><span style="color:#a6e22e">getInstance</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
-        s2 <span style="color:#f92672">=</span> Singleton_holder<span style="color:#f92672">.</span><span style="color:#a6e22e">getInstance</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
-        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span>s1<span style="color:#f92672">=</span><span style="color:#f92672">=</span>s2<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        s1 <span style="color:#f92672">=</span> Singleton_holder<span style="color:#f92672">.</span><span style="color:#a6e22e">getInstance</span><span style="color:#f92672">();</span>
+        s2 <span style="color:#f92672">=</span> Singleton_holder<span style="color:#f92672">.</span><span style="color:#a6e22e">getInstance</span><span style="color:#f92672">();</span>
+        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span>s1<span style="color:#f92672">==</span>s2<span style="color:#f92672">);</span>
     <span style="color:#f92672">}</span>
 <span style="color:#f92672">}</span>
 
@@ -312,40 +315,40 @@ if (!doNotTrack) {
     <span style="color:#75715e">// 下面两个函数测试的结果使用两种方式的速度基本一致？？？？
 </span><span style="color:#75715e"></span>    <span style="color:#75715e">// 线程创建和启动的时间过长，基本忽略了线程锁带来的时间差
 </span><span style="color:#75715e"></span>
-    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">time4singleton_lazy</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">{</span>
-        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;start&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
-        <span style="color:#66d9ef">for</span><span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> i<span style="color:#f92672">=</span>0<span style="color:#f92672">;</span> i<span style="color:#f92672">&lt;</span>10000<span style="color:#f92672">;</span> i<span style="color:#f92672">+</span><span style="color:#f92672">+</span><span style="color:#f92672">)</span><span style="color:#f92672">{</span>
-            Thread thread <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Thread<span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">time4singleton_lazy</span><span style="color:#f92672">(){</span>
+        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;start&#34;</span><span style="color:#f92672">);</span>
+        <span style="color:#66d9ef">for</span><span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> i<span style="color:#f92672">=</span>0<span style="color:#f92672">;</span> i<span style="color:#f92672">&lt;</span>10000<span style="color:#f92672">;</span> i<span style="color:#f92672">++){</span>
+            Thread thread <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Thread<span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
                 <span style="color:#a6e22e">@Override</span>
-                <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">run</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-                    Singleton_lazy<span style="color:#f92672">.</span><span style="color:#a6e22e">getInstance</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">run</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+                    Singleton_lazy<span style="color:#f92672">.</span><span style="color:#a6e22e">getInstance</span><span style="color:#f92672">();</span>
                 <span style="color:#f92672">}</span>
-            <span style="color:#f92672">}</span><span style="color:#f92672">;</span>
-            thread<span style="color:#f92672">.</span><span style="color:#a6e22e">start</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+            <span style="color:#f92672">};</span>
+            thread<span style="color:#f92672">.</span><span style="color:#a6e22e">start</span><span style="color:#f92672">();</span>
         <span style="color:#f92672">}</span>
-        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;end&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;end&#34;</span><span style="color:#f92672">);</span>
     <span style="color:#f92672">}</span>
 
-    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">time4singleton_eager</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">time4singleton_eager</span><span style="color:#f92672">(){</span>
         <span style="color:#66d9ef">int</span> threadNum <span style="color:#f92672">=</span> 10000<span style="color:#f92672">;</span>
-        Thread <span style="color:#f92672">[</span><span style="color:#f92672">]</span>threads <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Thread<span style="color:#f92672">[</span>threadNum<span style="color:#f92672">]</span><span style="color:#f92672">;</span>
-        <span style="color:#66d9ef">for</span><span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> i<span style="color:#f92672">=</span>0<span style="color:#f92672">;</span> i<span style="color:#f92672">&lt;</span>threadNum<span style="color:#f92672">;</span> i<span style="color:#f92672">+</span><span style="color:#f92672">+</span><span style="color:#f92672">)</span><span style="color:#f92672">{</span>
-            threads<span style="color:#f92672">[</span>i<span style="color:#f92672">]</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Thread<span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        Thread <span style="color:#f92672">[]</span>threads <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Thread<span style="color:#f92672">[</span>threadNum<span style="color:#f92672">];</span>
+        <span style="color:#66d9ef">for</span><span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> i<span style="color:#f92672">=</span>0<span style="color:#f92672">;</span> i<span style="color:#f92672">&lt;</span>threadNum<span style="color:#f92672">;</span> i<span style="color:#f92672">++){</span>
+            threads<span style="color:#f92672">[</span>i<span style="color:#f92672">]</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Thread<span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
                 <span style="color:#a6e22e">@Override</span>
-                <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">run</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-                    Singleton_eager<span style="color:#f92672">.</span><span style="color:#a6e22e">getInstance</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">run</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+                    Singleton_eager<span style="color:#f92672">.</span><span style="color:#a6e22e">getInstance</span><span style="color:#f92672">();</span>
                 <span style="color:#f92672">}</span>
-            <span style="color:#f92672">}</span><span style="color:#f92672">;</span>
+            <span style="color:#f92672">};</span>
         <span style="color:#f92672">}</span>
-        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;start&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
-        <span style="color:#66d9ef">for</span><span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> i<span style="color:#f92672">=</span>0<span style="color:#f92672">;</span> i<span style="color:#f92672">&lt;</span>threadNum<span style="color:#f92672">;</span> i<span style="color:#f92672">+</span><span style="color:#f92672">+</span><span style="color:#f92672">)</span>
-            threads<span style="color:#f92672">[</span>i<span style="color:#f92672">]</span><span style="color:#f92672">.</span><span style="color:#a6e22e">start</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
-        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;end&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;start&#34;</span><span style="color:#f92672">);</span>
+        <span style="color:#66d9ef">for</span><span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> i<span style="color:#f92672">=</span>0<span style="color:#f92672">;</span> i<span style="color:#f92672">&lt;</span>threadNum<span style="color:#f92672">;</span> i<span style="color:#f92672">++)</span>
+            threads<span style="color:#f92672">[</span>i<span style="color:#f92672">].</span><span style="color:#a6e22e">start</span><span style="color:#f92672">();</span>
+        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;end&#34;</span><span style="color:#f92672">);</span>
     <span style="color:#f92672">}</span>
 
-    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span><span style="color:#f92672">(</span>String <span style="color:#f92672">[</span><span style="color:#f92672">]</span>argvs<span style="color:#f92672">)</span><span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span><span style="color:#f92672">(</span>String <span style="color:#f92672">[]</span>argvs<span style="color:#f92672">){</span>
         <span style="color:#75715e">//time4singleton_lazy();
-</span><span style="color:#75715e"></span>        time4singleton_eager<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+</span><span style="color:#75715e"></span>        time4singleton_eager<span style="color:#f92672">();</span>
 
     <span style="color:#f92672">}</span>
 
