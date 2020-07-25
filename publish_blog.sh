@@ -1,5 +1,6 @@
 #!/bin/bash
 
+
 ./myNote/ln2posts.sh
 
 # compile markdown
