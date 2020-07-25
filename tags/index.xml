@@ -5,10 +5,19 @@
     <link>https://extendswind.top/tags/</link>
     <description>Recent content in Tags on A Notebook of Extendswind</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Wed, 20 May 2020 22:30:00 +0800</lastBuildDate>
+    <lastBuildDate>Sat, 25 Jul 2020 10:30:00 +0800</lastBuildDate>
     
 	<atom:link href="https://extendswind.top/tags/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>java</title>
+      <link>https://extendswind.top/tags/java/</link>
+      <pubDate>Sat, 25 Jul 2020 10:30:00 +0800</pubDate>
+      
+      <guid>https://extendswind.top/tags/java/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>linux</title>
@@ -16,15 +25,6 @@
       <pubDate>Wed, 20 May 2020 22:30:00 +0800</pubDate>
       
       <guid>https://extendswind.top/tags/linux/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>java</title>
-      <link>https://extendswind.top/tags/java/</link>
-      <pubDate>Tue, 19 May 2020 11:30:00 +0800</pubDate>
-      
-      <guid>https://extendswind.top/tags/java/</guid>
       <description></description>
     </item>
     
