@@ -5,10 +5,82 @@
     <link>https://extendswind.top/posts/</link>
     <description>Recent content in Posts on A Notebook of Extendswind</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Tue, 26 Nov 2019 20:59:49 +0800</lastBuildDate>
+    <lastBuildDate>Wed, 20 May 2020 22:30:00 +0800</lastBuildDate>
     
 	<atom:link href="https://extendswind.top/posts/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>REFInd默认启动上次的启动项</title>
+      <link>https://extendswind.top/posts/technical/refind_set_default_to_last_start_item/</link>
+      <pubDate>Wed, 20 May 2020 22:30:00 +0800</pubDate>
+      
+      <guid>https://extendswind.top/posts/technical/refind_set_default_to_last_start_item/</guid>
+      <description>windows和linux的双系统偶尔需要切换，设置一个默认启动项没看到直接的资料。
+修改配置文件 /boot/efi/EFI/refind/refind.conf（linux下），相关的项都有说明，但是这个和常规差距略大。
+默认启动项的设置在default_selection 项，可以设置为如下：
+default_selection &amp;quot;+,Microsoft,vmlinuz&amp;quot;
+Microsoft表示windows系统，vmlinuz表示linux系统，+号表示选择上一次打开的选项。</description>
+    </item>
+    
+    <item>
+      <title>系统启动时卡在 &#39;TLP System startup/shutdown&#39; </title>
+      <link>https://extendswind.top/posts/technical/startup_stuck_in_tlp_service/</link>
+      <pubDate>Wed, 20 May 2020 22:30:00 +0800</pubDate>
+      
+      <guid>https://extendswind.top/posts/technical/startup_stuck_in_tlp_service/</guid>
+      <description>问题 manjaro 在笔记本上启动时卡住（manjaro-awesome + refind引导），停在
+TLP System startup/shutdown
+TLP 提供优秀的 Linux 高级电源管理功能（详见arch wiki），不知道为什么在启动后卡主。
+解决 没有太研究，一般启动卡住的问题和内核参数、驱动等关系比较大，具体的不太好找，可以试试下面的三种方案。
+方案一：换内核（可能是硬件的驱动问题导致，对新一点的设备换新内核可能会有效）。
+方案二：关闭TLP服务的开机启动， systemctl disable tlp.service 。
+方案三：将refind引导改为grub引导（难道启动的时候两者的内核参数不一致？）</description>
+    </item>
+    
+    <item>
+      <title>华为笔记本magicbook14 AMD安装Manjaro Linux的一些踩坑配置</title>
+      <link>https://extendswind.top/posts/technical/manjaro_magicbook_install_and_configuration/</link>
+      <pubDate>Wed, 20 May 2020 16:30:00 +0800</pubDate>
+      
+      <guid>https://extendswind.top/posts/technical/manjaro_magicbook_install_and_configuration/</guid>
+      <description>虽然是linux版出厂自带deepin专业版，但是随后发的一键win10装机U盘一声不坑的把deepin格式化了，售后还只在线下才提供安装包&amp;hellip;
+笔记本参数 Magicbook 14 (2019)
+ AMD R5 3500U 8G + 512G  内核 不同的内核在这个笔记本的表现差距略大。当前（2020年-4月）测试过的内核里，只有linux56运行比较平稳。LTS的414/419直接开机黑屏，好像有一个是由于TLP服务的问题，systemctl disable tlp可以解决，TLP提供了电源管理功能，禁止了不知道影响有多大。LTS的linux54在睡眠时仍能听到风扇转动，无法正常睡眠。
+当前的linux56的主要问题（其它内核也存在）：
+ 指纹识别不能用 麦克风禁音键不能用 风扇无法控制 (好像没有现成的驱动）  Huawei-WMI 相当于华为为自己的笔记本添加的驱动程序，具体介绍可以参考下面的链接。
+https://github.com/aymanbagabas/Huawei-WMI
+主要的Features：
+  Function hotkeys, implemented in v1.0 Micmute LED, implemented in v2.0. Updated in v3.0 to work with newer laptops. Battery protection, implemented in v3.0. Updated in v3.3 to use battery charge API. Fn-lock, implemented v3.0.   NOTE: Version v2.0 is the one in mainline kernel &amp;gt;= 5.</description>
+    </item>
+    
+    <item>
+      <title>Manjaro内核编译</title>
+      <link>https://extendswind.top/posts/technical/manjaro_kernel_compile/</link>
+      <pubDate>Tue, 19 May 2020 22:30:00 +0800</pubDate>
+      
+      <guid>https://extendswind.top/posts/technical/manjaro_kernel_compile/</guid>
+      <description>重新编译内核可以修改编译时的参数，使内核在运行时更高效的支持本地硬件。Manjaro团队在gitlab上放了Manjaro内核的编译文件，稍加修改即可使用自己的选项编译。
+主要参考论坛中Manjaro团队的philm的回答 https://forum.manjaro.org/t/how-to-compile-the-mainline-kernel-the-manjaro-way/51700/35
+Gitlab 仓库 philm提到了manjaro在gitlab上编译内核的仓库。https://gitlab.manjaro.org/packages/core/linux56.git 后面使用不同的linux版本号。
+仓库文件介绍 仓库中不同后缀文件的作用
+  files ending with .patch should be clear. These are adjustments we think will fit for our distro best. files starting with config are our modified settings on how we configure the kernel on our end. files starting with linux are specific files to post configure the system. They are used either by pacman or mkinitcpio, which configures the initramfs image.</description>
+    </item>
+    
+    <item>
+      <title>java从toArray返回Object[]到泛型的类型擦除</title>
+      <link>https://extendswind.top/posts/technical/java_toarray_return_and_generic_type_erase/</link>
+      <pubDate>Tue, 19 May 2020 11:30:00 +0800</pubDate>
+      
+      <guid>https://extendswind.top/posts/technical/java_toarray_return_and_generic_type_erase/</guid>
+      <description>在将ArrayList等Collection转为数组时，函数的返回值并不是泛型类型的数组，而是Object[]。刚好最近翻了一遍《java核心技术》，以及参考《Think in Java》，写写为什么没有直接返回对应类型的数组，以及Java泛型中类型擦除的处理方式。
+主要涉及：
+ ArrayList的toArray函数使用 为什么不直接定义函数 T[] toArray() 泛型数组的创建的两种常用方法 在泛型中创建具体的类实例  (部分代码没有运行过）
+ArrayList的toArray函数使用 将ArrayList转为数组，提供了两个函数
+Object[] toArray(); &amp;lt;T&amp;gt; T[] toArray(T[] a); // 后面考虑一个Integer类型的ArrayList ArrayList&amp;lt;Integer&amp;gt; aa = new ArrayList&amp;lt;&amp;gt;(); aa.add(1); aa.add(3); Object[] toArray(); 第一个函数是直接将ArrayList转换成Object的数组，可以用Object[] bb = aa.toArray()，在具体使用时对每个对象进行强制类型转换，如System.out.println((Integer)bb[1])。（java不支持数组之间的强制类型转换）
+T[] toArray(T[] a); 第二个函数能够直接得到T类型的数组，当传入的T[] a能放下ArrayList时，会将ArrayList中的内容复制到a中（a的size较大时会a[size]=null）。否则，将构建一个新的数组并返回。具体实现如下:
+public &amp;lt;T&amp;gt; T[] toArray(T[] a) { if (a.length &amp;lt; size) // Make a new array of a&amp;#39;s runtime type, but my contents:  return (T[]) Arrays.copyOf(elementData, size, a.getClass()); System.arraycopy(elementData, 0, a, 0, size); if (a.</description>
+    </item>
     
     <item>
       <title>一次修复linux的efi引导的集中方法总结记录</title>
@@ -386,7 +458,7 @@ source=( &amp;quot;http://s1.music.126.net/download/pc/netease-cloud-music_1.0.0
  AwesomeWM这种平铺的窗口管理器用得很爽，只是基于wine的qq最近又莫名其妙抽风，感觉还是切到deepin-wine上比较靠谱。而deepin-wine在awesome下运行qq会报错X Error of failed request: BadWindow (invalid Window parameter) Major opcode of failed request: 20 (X_GetProperty)，而在Gnome系下运行正常。看到Gnome和Mate能够运行awesomewm，就折腾了一下试试。
 Awesome只是Gnome等桌面管理器的组件之一，gnome系的Mate可以修改默认的窗口管理器。
 具体折腾   安装AwesomeWM、Mate桌面环境与dconf-editor（arch下使用pacman -S）。
-  进入Mate桌面环境后，修改org.mate.session.required-components windowmanager 的值为&#39;awesome&amp;rsquo;，如果不需要桌面上的图标，可以将org.mate.session.required-components的值只留下windowmanager。
+  进入Mate桌面环境后，修改org.mate.session.required-components windowmanager 的值为&amp;rsquo;awesome&amp;rsquo;，如果不需要桌面上的图标，可以将org.mate.session.required-components的值只留下windowmanager。
   上面的设置无法通过命令行打开awesome，需要添加awesome的图标。在/usr/share/applications目录下新建awesome.desktop，内容如下（网上直接粘的，估计有些可以不要，懒得试了）：
   [Desktop Entry] Type=Application Name=awesome Exec=awesome NoDisplay=true # name of loadable control center module X-MATE-WMSettingsModule=awesome # name we put on the WM spec check window X-MATE-WMName=awesome # back compat only X-MateWMSettingsLibrary=awesome X-MATE-Bugzilla-Bugzilla=MATE X-MATE-Bugzilla-Product=awesome X-MATE-Bugzilla-Component=general X-MATE-Autostart-Phase=WindowManager X-MATE-Provides=windowmanager X-MATE-Autostart-Notify=true </description>
     </item>
@@ -479,7 +551,7 @@ YARN默认使用CapacityScheduler，通过下面的属性配置：
 YARN上新运行的任务能够使用已运行任务回收的资源(如运行完Map task的container)，甚至还能够通过强行结束先前任务的container抢占资源。
 Capacity Scheduler CapacityScheduler重点解决多个组织共享集群资源，并保证每个组织自己的资源使用量。当自己的资源不足时能够使用其它组织的空闲资源。
 资源通过层级队列（hierarchical queues）的形式进行组织，配置在etc/hadoop/capacity-scheduler.xml.
-&amp;lt;!--队列结构设置 --&amp;gt; &amp;lt;property&amp;gt; &amp;lt;name&amp;gt;yarn.scheduler.capacity.root.queues&amp;lt;/name&amp;gt; &amp;lt;value&amp;gt;a,b&amp;lt;/value&amp;gt; &amp;lt;description&amp;gt;The queues at the this level (root is the root queue). &amp;lt;/description&amp;gt; &amp;lt;/property&amp;gt; &amp;lt;property&amp;gt; &amp;lt;name&amp;gt;yarn.scheduler.capacity.root.a.queues&amp;lt;/name&amp;gt; &amp;lt;value&amp;gt;a1,a2&amp;lt;/value&amp;gt; &amp;lt;description&amp;gt;The queues at the this level (root is the root queue).</description>
+&amp;lt;!-- 队列结构设置 --&amp;gt; &amp;lt;property&amp;gt; &amp;lt;name&amp;gt;yarn.scheduler.capacity.root.queues&amp;lt;/name&amp;gt; &amp;lt;value&amp;gt;a,b&amp;lt;/value&amp;gt; &amp;lt;description&amp;gt;The queues at the this level (root is the root queue). &amp;lt;/description&amp;gt; &amp;lt;/property&amp;gt; &amp;lt;property&amp;gt; &amp;lt;name&amp;gt;yarn.scheduler.capacity.root.a.queues&amp;lt;/name&amp;gt; &amp;lt;value&amp;gt;a1,a2&amp;lt;/value&amp;gt; &amp;lt;description&amp;gt;The queues at the this level (root is the root queue).</description>
     </item>
     
     <item>
@@ -601,10 +673,10 @@ class Prototype implements Cloneable{ int attr; public Prototype clone(){ Protot
       
       <guid>https://extendswind.top/posts/technical/design_patterns_singleton/</guid>
       <description>singleton pattern
-主要目标：对象只创建一次，每次都获得先前第一次创建的对象而不创建新的对象。
+主要目标：对象只创建一次，每次都获得先前第一次创建的对象而不创建新的对象。（最好在使用时创建对象）
 实现思想：使用静态方法getInstance得到对象，为了保证对象只能通过getInstance创建，使构造函数私有。
 主要麻烦在于：
- 多线程环境下getInstance方法的调用可能产生多个对象 使用synchronized关键字可能降低高并发效率  单例模式有很多种，大多用于解决多线程环境下的效率问题，高并发场景可以具体搜索相关方案，一般情况下思想比较简单感觉不必深究。
+ 多线程环境下getInstance方法的调用可能产生多个对象 使用synchronized关键字可能降低高并发效率  单例模式有很多种，大多用于解决多线程环境下的效率问题，高并发场景通常使用某些固定方案（java常用内部类机制），一般情况下思想比较简单，从应用的角度感觉不必深究。
 （后面懒得用实际例子命名了，Log4j中获取的logger对象就使用了单例模式）
 /** * 简单实现 * * 存在的问题： * * 当创建过程需要时间时，连续调用getInstance方法会导致创建多个对象，特别是涉及多线程时容易出问题。 */ class Singleton_problem { private static Singleton_problem m_singletonProblem = null; private Singleton_problem(){ // ...  } public static Singleton_problem getInstance(){ if (m_singletonProblem == null) m_singletonProblem = new Singleton_problem(); return m_singletonProblem; } } /** * 解决方案一： eager initialization * * 缺点在于没有lazy loading机制 */ class Singleton_eager{ private static final Singleton_eager m_singleton = new Singleton_eager(); private Singleton_eager(){ // .</description>
     </item>
@@ -703,7 +775,7 @@ abstract class Logger { public void writeLog(){ System.out.println(&amp;#34;writ
 誓以更加残酷的训练面对所谓残酷的现实
 汗水只是玩笑，伤痛只是儿戏，真正的战斗永远才刚刚开始。
 不要等到命运让人必须成熟的时候
-life isn&#39;t about how to get through a storm, but how to dance in the rain.
+life isn&amp;rsquo;t about how to get through a storm, but how to dance in the rain.
 感不感到痛，由意志决定…
 梦，只要出发，就一定能到达…
 不经历地狱般的磨砺哪来变态般的能力
