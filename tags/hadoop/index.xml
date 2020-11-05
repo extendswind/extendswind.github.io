@@ -5,10 +5,23 @@
     <link>https://extendswind.top/tags/hadoop/</link>
     <description>Recent content in hadoop on A Notebook of Extendswind</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Sat, 15 Dec 2018 11:30:00 +0800</lastBuildDate>
-    
-	<atom:link href="https://extendswind.top/tags/hadoop/index.xml" rel="self" type="application/rss+xml" />
-    
+    <lastBuildDate>Thu, 05 Nov 2020 10:30:00 +0800</lastBuildDate><atom:link href="https://extendswind.top/tags/hadoop/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>GeoSpark范围查询源码分析</title>
+      <link>https://extendswind.top/posts/technical/geospark_range_query_code_analysis/</link>
+      <pubDate>Thu, 05 Nov 2020 10:30:00 +0800</pubDate>
+      
+      <guid>https://extendswind.top/posts/technical/geospark_range_query_code_analysis/</guid>
+      <description>GeoSpark GeoSpark是基于Spark的空间数据处理开源库，在RDD模型的基础上添加了空间数据操作，以底层的SpatialRDD为基础设计了空间分析、空间SQL、空间数据可视化等组件。详细信息可以参考作者博客 https://jiayuasu.github.io/ 以及项目主页 http://sedona.apache.org。GeoSpark一开始是Spark的一个第三方组件，之后改名为sedona提交到apache基金会，当前（2020.11）正处于孵化阶段。
+在空间数据的索引与并行访问上，没有像SpatialHadoop那样直接基于HDFS构建针对文件的索引，而是将数据读到RDD中在内存中后进行分区和索引构建操作，索引后的数据可以持久化到硬盘避免下一次的读取，内存的大小一定程度上限制了单次能够处理的数据总量。
+最近通过Spark提高SpatialHadoop在设计上的效率，看了一眼GeoSpark在常见的空间处理上的逻辑，针对空间数据读取、索引、划分几个方面的逻辑记个笔记。
+主要代码逻辑 GeoSpark的代码大多直接用的java编写，调用了Spark的java API，整体的逻辑比我想象的要简单。代码注释、缩进、命名等貌似都略有非主流的地方。
+示例代码主要参考官网教程 http://sedona.apache.org/tutorial/rdd/ 与github仓库源码。
+读取csv文件并创建PointRDD  官方示例 Suppose we have a checkin.csv CSV file at Path /Download/checkin.csv as follows:
+-88.331492,32.324142,hotel -88.175933,32.360763,gas -88.388954,32.357073,bar -88.221102,32.35078,restaurant
+This file has three columns and corresponding offsets(Column IDs) are 0, 1, 2. Use the following code to create a PointRDD
+  val pointRDDInputLocation = &amp;#34;/Download/checkin.csv&amp;#34; val pointRDDOffset = 0 // The point long/lat starts from Column 0 val pointRDDSplitter = FileDataSplitter.</description>
+    </item>
     
     <item>
       <title>Spark设置自定义的InputFormat读取HDFS文件</title>

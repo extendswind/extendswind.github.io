@@ -5,11 +5,7 @@
     <link>https://extendswind.top/tags/log4j/</link>
     <description>Recent content in log4j on A Notebook of Extendswind</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Wed, 29 May 2019 20:30:00 +0800</lastBuildDate>
-    
-	<atom:link href="https://extendswind.top/tags/log4j/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <lastBuildDate>Wed, 29 May 2019 20:30:00 +0800</lastBuildDate><atom:link href="https://extendswind.top/tags/log4j/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>log4j 1.2 配置和使用简述</title>
       <link>https://extendswind.top/posts/technical/log4j_properties_simple_introduction/</link>

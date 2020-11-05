@@ -5,11 +5,7 @@
     <link>https://extendswind.top/tags/raspberry/</link>
     <description>Recent content in raspberry on A Notebook of Extendswind</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Fri, 25 Oct 2019 14:59:49 +0800</lastBuildDate>
-    
-	<atom:link href="https://extendswind.top/tags/raspberry/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <lastBuildDate>Fri, 25 Oct 2019 14:59:49 +0800</lastBuildDate><atom:link href="https://extendswind.top/tags/raspberry/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>树莓派基于scratch2控制GPIO</title>
       <link>https://extendswind.top/posts/technical/raspberry_scratch2_gpio_control.md/</link>
