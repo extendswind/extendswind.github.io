@@ -5,10 +5,42 @@
     <link>https://extendswind.top/tags/</link>
     <description>Recent content in Tags on A Notebook of Extendswind</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Sat, 25 Jul 2020 10:30:00 +0800</lastBuildDate>
+    <lastBuildDate>Thu, 05 Nov 2020 10:30:00 +0800</lastBuildDate><atom:link href="https://extendswind.top/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>GeoSpark</title>
+      <link>https://extendswind.top/tags/geospark/</link>
+      <pubDate>Thu, 05 Nov 2020 10:30:00 +0800</pubDate>
+      
+      <guid>https://extendswind.top/tags/geospark/</guid>
+      <description></description>
+    </item>
     
-	<atom:link href="https://extendswind.top/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>GIS</title>
+      <link>https://extendswind.top/tags/gis/</link>
+      <pubDate>Thu, 05 Nov 2020 10:30:00 +0800</pubDate>
+      
+      <guid>https://extendswind.top/tags/gis/</guid>
+      <description></description>
+    </item>
     
+    <item>
+      <title>hadoop</title>
+      <link>https://extendswind.top/tags/hadoop/</link>
+      <pubDate>Thu, 05 Nov 2020 10:30:00 +0800</pubDate>
+      
+      <guid>https://extendswind.top/tags/hadoop/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Spark</title>
+      <link>https://extendswind.top/tags/spark/</link>
+      <pubDate>Thu, 05 Nov 2020 10:30:00 +0800</pubDate>
+      
+      <guid>https://extendswind.top/tags/spark/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>java</title>
@@ -65,24 +97,6 @@
     </item>
     
     <item>
-      <title>hadoop</title>
-      <link>https://extendswind.top/tags/hadoop/</link>
-      <pubDate>Sat, 15 Dec 2018 11:30:00 +0800</pubDate>
-      
-      <guid>https://extendswind.top/tags/hadoop/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>spark</title>
-      <link>https://extendswind.top/tags/spark/</link>
-      <pubDate>Sat, 15 Dec 2018 11:30:00 +0800</pubDate>
-      
-      <guid>https://extendswind.top/tags/spark/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>git</title>
       <link>https://extendswind.top/tags/git/</link>
       <pubDate>Tue, 13 Nov 2018 10:30:00 +0800</pubDate>
@@ -97,15 +111,6 @@
       <pubDate>Sun, 30 Sep 2018 22:40:48 +0800</pubDate>
       
       <guid>https://extendswind.top/tags/life/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>GIS</title>
-      <link>https://extendswind.top/tags/gis/</link>
-      <pubDate>Wed, 05 Sep 2018 10:30:00 +0800</pubDate>
-      
-      <guid>https://extendswind.top/tags/gis/</guid>
       <description></description>
     </item>
     

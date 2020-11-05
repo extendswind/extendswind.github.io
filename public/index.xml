@@ -5,10 +5,23 @@
     <link>https://extendswind.top/</link>
     <description>Recent content in Home on A Notebook of Extendswind</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Sat, 25 Jul 2020 10:30:00 +0800</lastBuildDate>
-    
-	<atom:link href="https://extendswind.top/index.xml" rel="self" type="application/rss+xml" />
-    
+    <lastBuildDate>Thu, 05 Nov 2020 10:30:00 +0800</lastBuildDate><atom:link href="https://extendswind.top/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>GeoSpark范围查询源码分析</title>
+      <link>https://extendswind.top/posts/technical/geospark_range_query_code_analysis/</link>
+      <pubDate>Thu, 05 Nov 2020 10:30:00 +0800</pubDate>
+      
+      <guid>https://extendswind.top/posts/technical/geospark_range_query_code_analysis/</guid>
+      <description>GeoSpark GeoSpark是基于Spark的空间数据处理开源库，在RDD模型的基础上添加了空间数据操作，以底层的SpatialRDD为基础设计了空间分析、空间SQL、空间数据可视化等组件。详细信息可以参考作者博客 https://jiayuasu.github.io/ 以及项目主页 http://sedona.apache.org。GeoSpark一开始是Spark的一个第三方组件，之后改名为sedona提交到apache基金会，当前（2020.11）正处于孵化阶段。
+在空间数据的索引与并行访问上，没有像SpatialHadoop那样直接基于HDFS构建针对文件的索引，而是将数据读到RDD中在内存中后进行分区和索引构建操作，索引后的数据可以持久化到硬盘避免下一次的读取，内存的大小一定程度上限制了单次能够处理的数据总量。
+最近通过Spark提高SpatialHadoop在设计上的效率，看了一眼GeoSpark在常见的空间处理上的逻辑，针对空间数据读取、索引、划分几个方面的逻辑记个笔记。
+主要代码逻辑 GeoSpark的代码大多直接用的java编写，调用了Spark的java API，整体的逻辑比我想象的要简单。代码注释、缩进、命名等貌似都略有非主流的地方。
+示例代码主要参考官网教程 http://sedona.apache.org/tutorial/rdd/ 与github仓库源码。
+读取csv文件并创建PointRDD  官方示例 Suppose we have a checkin.csv CSV file at Path /Download/checkin.csv as follows:
+-88.331492,32.324142,hotel -88.175933,32.360763,gas -88.388954,32.357073,bar -88.221102,32.35078,restaurant
+This file has three columns and corresponding offsets(Column IDs) are 0, 1, 2. Use the following code to create a PointRDD
+  val pointRDDInputLocation = &amp;#34;/Download/checkin.csv&amp;#34; val pointRDDOffset = 0 // The point long/lat starts from Column 0 val pointRDDSplitter = FileDataSplitter.</description>
+    </item>
     
     <item>
       <title>Java数据结构笔记</title>
@@ -194,10 +207,9 @@ anonymous_enable=YES # 允许匿名访问 write_enable=YES # 允许写文件 ano
 通过 local_enable 选项能够允许ftp通过本地用户访问，登录之后会访问用户的主目录。当使用匿名用户访问时，vsftpd会将用户名为ftp的用户作为登录用户，进入ftp用户的主目录。
 注意，考虑到安全问题，ftp匿名用户的主目录必须为只读，如果需要上传文件，需要在主目录下新建有写权限的文件夹。
 通常会选择/var/ftp文件夹存放文件而不是用户默认的/home，因此可以修改用户的主目录位置（一般放在/var/ftp），不修改也能用。再次强调，注意主目录对ftp用户的权限必须为只读。
-sudo mkdir /var/ftp # 新建用户文件夹 sudo useradd -d /var/ftp ftp # 新建用户，并指定用户home目录 # 如果ftp用户已经存在，在/etc/passwd文件里改用户目录为/var/ftp sudo mkdir /var/ftp/pub # 新建一个用于写数据的文件夹 sudo chmod 777 /var/ftp/pub # 修改文件夹权限 4. 启动服务
+sudo mkdir /var/ftp # 新建用户文件夹 sudo useradd -d /var/ftp ftp # 新建用户，并指定用户home目录  # 如果ftp用户已经存在，在/etc/passwd文件里改用户目录为/var/ftp sudo mkdir /var/ftp/pub # 新建一个用于写数据的文件夹 sudo chmod 777 /var/ftp/pub # 修改文件夹权限 4. 启动服务
 systemctl start vsftpd
-其它 防火墙和SELinux如果使用了需要添加响应的通过规则。
-测试访问可以直接用浏览器 ftp://ip_address，linux下可以使用FileZilla。</description>
+其它 防火墙和SELinux如果使用了需要添加响应的通过规则。</description>
     </item>
     
     <item>
@@ -355,7 +367,7 @@ deepin-wine在非gnome系的桌面上的运行问题 3wm, kde, awesome等桌面�
 sudo pacman -S cinnamon-settings-daemon /usr/lib/cinnamon-settings-daemon/csd-xsettings 无法输入中文 如果其它地方可以使用输入法，一般为环境变量的问题，fcitx没有配置好。
 粗暴解决方式: 下面的文件夹中加入环境变量
 /opt/deepinwine/apps/Deepin-TIM/run.sh
-  export XMODIFIERS=&amp;rdquo;@im=fcitx&amp;rdquo; export GTK_IM_MODULE=&amp;quot;fcitx&amp;rdquo; export QT_IM_MODULE=&amp;quot;fcitx&amp;rdquo;</description>
+  export XMODIFIERS=&amp;quot;@im=fcitx&amp;quot; export GTK_IM_MODULE=&amp;ldquo;fcitx&amp;rdquo; export QT_IM_MODULE=&amp;ldquo;fcitx&amp;rdquo;</description>
     </item>
     
     <item>
@@ -487,7 +499,7 @@ source=( &amp;quot;http://s1.music.126.net/download/pc/netease-cloud-music_1.0.0
  AwesomeWM这种平铺的窗口管理器用得很爽，只是基于wine的qq最近又莫名其妙抽风，感觉还是切到deepin-wine上比较靠谱。而deepin-wine在awesome下运行qq会报错X Error of failed request: BadWindow (invalid Window parameter) Major opcode of failed request: 20 (X_GetProperty)，而在Gnome系下运行正常。看到Gnome和Mate能够运行awesomewm，就折腾了一下试试。
 Awesome只是Gnome等桌面管理器的组件之一，gnome系的Mate可以修改默认的窗口管理器。
 具体折腾   安装AwesomeWM、Mate桌面环境与dconf-editor（arch下使用pacman -S）。
-  进入Mate桌面环境后，修改org.mate.session.required-components windowmanager 的值为&amp;rsquo;awesome&amp;rsquo;，如果不需要桌面上的图标，可以将org.mate.session.required-components的值只留下windowmanager。
+  进入Mate桌面环境后，修改org.mate.session.required-components windowmanager 的值为&amp;rsquo;awesome&#39;，如果不需要桌面上的图标，可以将org.mate.session.required-components的值只留下windowmanager。
   上面的设置无法通过命令行打开awesome，需要添加awesome的图标。在/usr/share/applications目录下新建awesome.desktop，内容如下（网上直接粘的，估计有些可以不要，懒得试了）：
   [Desktop Entry] Type=Application Name=awesome Exec=awesome NoDisplay=true # name of loadable control center module X-MATE-WMSettingsModule=awesome # name we put on the WM spec check window X-MATE-WMName=awesome # back compat only X-MateWMSettingsLibrary=awesome X-MATE-Bugzilla-Bugzilla=MATE X-MATE-Bugzilla-Product=awesome X-MATE-Bugzilla-Component=general X-MATE-Autostart-Phase=WindowManager X-MATE-Provides=windowmanager X-MATE-Autostart-Notify=true </description>
     </item>

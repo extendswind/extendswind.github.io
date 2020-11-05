@@ -21,7 +21,7 @@ theme = "minimo"
 disqusShortname = "extendswind"
 googleAnalytics = "UA-125329544-1"
 
-Paginate = 10
+Paginate = 20
 preserveTaxonomyNames = true
 
 enableRobotsTXT = false # generate robots.txt 用于限制搜索引擎的爬虫

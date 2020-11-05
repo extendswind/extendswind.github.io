@@ -4,14 +4,70 @@
   
   <url>
     <loc>https://extendswind.top/</loc>
-    <lastmod>2020-07-25T10:30:00+08:00</lastmod>
+    <lastmod>2020-11-05T10:30:00+08:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
     <loc>https://extendswind.top/categories/</loc>
-    <lastmod>2020-07-25T10:30:00+08:00</lastmod>
+    <lastmod>2020-11-05T10:30:00+08:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://extendswind.top/categories/cloud-computing/</loc>
+    <lastmod>2020-11-05T10:30:00+08:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://extendswind.top/tags/geospark/</loc>
+    <lastmod>2020-11-05T10:30:00+08:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://extendswind.top/posts/technical/geospark_range_query_code_analysis/</loc>
+    <lastmod>2020-11-05T10:30:00+08:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://extendswind.top/tags/gis/</loc>
+    <lastmod>2020-11-05T10:30:00+08:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://extendswind.top/tags/hadoop/</loc>
+    <lastmod>2020-11-05T10:30:00+08:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://extendswind.top/posts/</loc>
+    <lastmod>2020-11-05T10:30:00+08:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://extendswind.top/tags/spark/</loc>
+    <lastmod>2020-11-05T10:30:00+08:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://extendswind.top/tags/</loc>
+    <lastmod>2020-11-05T10:30:00+08:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
@@ -31,21 +87,7 @@
   </url>
   
   <url>
-    <loc>https://extendswind.top/posts/</loc>
-    <lastmod>2020-07-25T10:30:00+08:00</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
     <loc>https://extendswind.top/categories/programming-basic/</loc>
-    <lastmod>2020-07-25T10:30:00+08:00</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>https://extendswind.top/tags/</loc>
     <lastmod>2020-07-25T10:30:00+08:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
@@ -241,27 +283,6 @@
   </url>
   
   <url>
-    <loc>https://extendswind.top/categories/cloud-computing/</loc>
-    <lastmod>2018-12-15T11:30:00+08:00</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>https://extendswind.top/tags/hadoop/</loc>
-    <lastmod>2018-12-15T11:30:00+08:00</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>https://extendswind.top/tags/spark/</loc>
-    <lastmod>2018-12-15T11:30:00+08:00</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
     <loc>https://extendswind.top/posts/technical/problem_spark_reading_hdfs_serializable/</loc>
     <lastmod>2018-12-15T11:30:00+08:00</lastmod>
     <changefreq>monthly</changefreq>
@@ -327,13 +348,6 @@
   <url>
     <loc>https://extendswind.top/posts/technical/git_code_roll_back_revert_and_reset/</loc>
     <lastmod>2018-09-11T10:30:00+08:00</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>https://extendswind.top/tags/gis/</loc>
-    <lastmod>2018-09-05T10:30:00+08:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
