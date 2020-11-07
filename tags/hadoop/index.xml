@@ -5,7 +5,21 @@
     <link>https://extendswind.top/tags/hadoop/</link>
     <description>Recent content in hadoop on A Notebook of Extendswind</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Thu, 05 Nov 2020 10:30:00 +0800</lastBuildDate><atom:link href="https://extendswind.top/tags/hadoop/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 07 Nov 2020 10:30:00 +0800</lastBuildDate><atom:link href="https://extendswind.top/tags/hadoop/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>SpatialHadoop二级空间索引机制源码分析</title>
+      <link>https://extendswind.top/posts/technical/spatialhadoop_operation_code_analysis/</link>
+      <pubDate>Sat, 07 Nov 2020 10:30:00 +0800</pubDate>
+      
+      <guid>https://extendswind.top/posts/technical/spatialhadoop_operation_code_analysis/</guid>
+      <description>SpatialHadoop已经长期没有更新，MapReduce框架的效率也略低，虽然不太适合直接用，但代码的实现机制可以参考。最近准备重新了解一下HDFS上的空间索引问题，在两年前（没想到距离上次运行SpatialHadoop都两年了..）的基本使用的基础上（一个简单使用的记录），记录一下空间索引机制的处理方式。后面重点关注在Hadoop上的任务提交、并行索引构建、索引的存储与读取这几个方面。
+相比GeoSpark的代码，没有Spark现成的算子可以复用并且要处理文件方面的问题，逻辑上的处理稍复杂一点。
+空间分析任务的提交 SpatialHadoop提供了一个脚本，用于基本的空间处理，如下面的代码生成测试数据。
+sbin/shadoop generate test.rects size:1.gb shape:rect mbr:0,0,1000000,1000000 -overwrite shadoop脚本做的操作不多，直接通过Hadoop的运行命令运行了edu.umn.cs.spatialHadoop.operations.Main类，在类中的Main函数中处理输入参数。
+bin=`dirname &amp;#34;$0&amp;#34;` bin=`cd &amp;#34;$bin&amp;#34; &amp;gt; /dev/null; pwd` # Call Hadoop with the operations.Main as the main class . &amp;#34;$bin&amp;#34;/hadoop edu.umn.cs.spatialHadoop.operations.Main $@ 在Main函数中使用了Hadoop的ProgramDriver运行具体的类对象。首先从配置文件 spatial-operations.yaml 中读取支持的类，然后利用反射机制，读取对应类注释的shortName标签，通过shortName决定参数传递的具体的类。
+public static void main(String[] args) { int exitCode = -1; ProgramDriver pgd = new ProgramDriver(); try { // 这个位置加载配置文件，配置文件spatial-operations.yaml中包含了支持的完整类名  Yaml yaml = new Yaml(); List&amp;lt;String&amp;gt; ops = yaml.load(SpatialSite.class.getResourceAsStream(&amp;#34;/spatial-operations.yaml&amp;#34;)); // 通过反射的机制，提取类对应的源码中的annotation里的shortName，运行时会通过shortname执行对应的类 	// 用在上面的生成随机数据中就是通过generate执行edu.umn.cs.spatialHadoop.operations.RandomSpatialGenerator。  for (String op : ops) { Class&amp;lt;?</description>
+    </item>
+    
     <item>
       <title>GeoSpark范围查询源码分析</title>
       <link>https://extendswind.top/posts/technical/geospark_range_query_code_analysis/</link>
