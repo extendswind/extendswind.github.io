@@ -4,21 +4,56 @@
   
   <url>
     <loc>https://extendswind.top/</loc>
-    <lastmod>2020-11-05T10:30:00+08:00</lastmod>
+    <lastmod>2020-11-07T10:30:00+08:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
     <loc>https://extendswind.top/categories/</loc>
-    <lastmod>2020-11-05T10:30:00+08:00</lastmod>
+    <lastmod>2020-11-07T10:30:00+08:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
     <loc>https://extendswind.top/categories/cloud-computing/</loc>
-    <lastmod>2020-11-05T10:30:00+08:00</lastmod>
+    <lastmod>2020-11-07T10:30:00+08:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://extendswind.top/tags/gis/</loc>
+    <lastmod>2020-11-07T10:30:00+08:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://extendswind.top/tags/hadoop/</loc>
+    <lastmod>2020-11-07T10:30:00+08:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://extendswind.top/posts/</loc>
+    <lastmod>2020-11-07T10:30:00+08:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://extendswind.top/posts/technical/spatialhadoop_operation_code_analysis/</loc>
+    <lastmod>2020-11-07T10:30:00+08:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://extendswind.top/tags/</loc>
+    <lastmod>2020-11-07T10:30:00+08:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
@@ -38,35 +73,7 @@
   </url>
   
   <url>
-    <loc>https://extendswind.top/tags/gis/</loc>
-    <lastmod>2020-11-05T10:30:00+08:00</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>https://extendswind.top/tags/hadoop/</loc>
-    <lastmod>2020-11-05T10:30:00+08:00</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>https://extendswind.top/posts/</loc>
-    <lastmod>2020-11-05T10:30:00+08:00</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
     <loc>https://extendswind.top/tags/spark/</loc>
-    <lastmod>2020-11-05T10:30:00+08:00</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>https://extendswind.top/tags/</loc>
     <lastmod>2020-11-05T10:30:00+08:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
