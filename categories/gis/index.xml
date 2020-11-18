@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>GIS on A Notebook of Extendswind</title>
+    <link>https://extendswind.top/categories/gis/</link>
+    <description>Recent content in GIS on A Notebook of Extendswind</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <lastBuildDate>Wed, 18 Nov 2020 10:30:00 +0800</lastBuildDate><atom:link href="https://extendswind.top/categories/gis/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>STR树 —— R-tree的构建方案之一</title>
+      <link>https://extendswind.top/posts/technical/str_tree_rtree_construction/</link>
+      <pubDate>Wed, 18 Nov 2020 10:30:00 +0800</pubDate>
+      
+      <guid>https://extendswind.top/posts/technical/str_tree_rtree_construction/</guid>
+      <description>MathJax = { tex: { inlineMath: [[&#34;$&#34;, &#34;$&#34;]], }, displayMath: [ [&#34;$$&#34;, &#34;$$&#34;], [&#34;\[\[&#34;, &#34;\]\]&#34;], ], svg: { fontCache: &#34;global&#34;, }, };    最近需要使用R树做一下空间索引，在GeoSpark中使用了JTS库中实现的STR树，一开始以为是R-tree的一个变种，细看发现只是R树的构建（packing）方式之一。
+STR是Sort-Tile-Recursive的缩写，是一种R-tree的packing算法。具体的介绍可以看作者的论文 https://www.cs.odu.edu/%7Emln/ltrs-pdfs/icase-1997-14.pdf ，CSDN上有个主要内容的翻译 https://blog.csdn.net/qq_41775852/article/details/105405918。
+R树常见构建过程 通常R树是针对动态有增删的数据，因此构建过程可以将所有的数据逐个插入到R树中。这种情况可能会存在一些缺点：
+ (a) high load time (b) sub-optimal spac eutilization (c) poor R-tree structure requiring the retrieval of anunduly large number of nodes in order to satisfy a query.  因此，常用packing的方式自底向上的构建R树，主要流程如下：
+ 假设一共有r个矩形需要被索引，每个叶子结点中存储的矩形数量为n。首先将所有的矩形分成r/n（此处取上界）个组；（分组方式通过下面的packing算法） 将各个分组写入硬盘的pages，并计算每个分组内所有矩形的MBR以及分组对应的page-id； 对分组的MBR递归的执行上面的步骤，直到根节点。  在第1步中，将需要被索引的矩形分成r/n个组，论文中介绍了常见的Nearest-X(NX)、HilbertSort(HS)以及论文提出的Sort-Tile-Recursive(STR)。</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang='en' dir='auto'><head>
+  <meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<meta name='description' content='MathJax = { tex: { inlineMath: [[&#34;$&#34;, &#34;$&#34;]], }, displayMath: [ [&#34;$$&#34;, &#34;$$&#34;], [&#34;\[\[&#34;, &#34;\]\]&#34;], ], svg: { fontCache: &#34;global&#34;, }, };    最近需要使用R树做一下空间索引，在GeoSpark中使用了JTS库中实现的STR树，一开始以为是R-tree的一个变种，细看发现只是R树的构建（packing）方式之一。
+STR是Sort-Tile-Recursive的缩写，是一种R-tree的packing算法。具体的介绍可以看作者的论文 https://www.cs.odu.edu/%7Emln/ltrs-pdfs/icase-1997-14.pdf ，CSDN上有个主要内容的翻译 https://blog.csdn.net/qq_41775852/article/details/105405918。
+R树常见构建过程 通常R树是针对动态有增删的数据，因此构建过程可以将所有的数据逐个插入到R树中。这种情况可能会存在一些缺点：
+ (a) high load time (b) sub-optimal spac eutilization (c) poor R-tree structure requiring the retrieval of anunduly large number of nodes in order to satisfy a query.  因此，常用packing的方式自底向上的构建R树，主要流程如下：
+ 假设一共有r个矩形需要被索引，每个叶子结点中存储的矩形数量为n。首先将所有的矩形分成r/n（此处取上界）个组；（分组方式通过下面的packing算法） 将各个分组写入硬盘的pages，并计算每个分组内所有矩形的MBR以及分组对应的page-id； 对分组的MBR递归的执行上面的步骤，直到根节点。  在第1步中，将需要被索引的矩形分成r/n个组，论文中介绍了常见的Nearest-X(NX)、HilbertSort(HS)以及论文提出的Sort-Tile-Recursive(STR)。'>
+<meta name='theme-color' content='#cccccc'>
+
+<meta property='og:title' content='STR树 —— R-tree的构建方案之一 • A Notebook of Extendswind'>
+<meta property='og:description' content='MathJax = { tex: { inlineMath: [[&#34;$&#34;, &#34;$&#34;]], }, displayMath: [ [&#34;$$&#34;, &#34;$$&#34;], [&#34;\[\[&#34;, &#34;\]\]&#34;], ], svg: { fontCache: &#34;global&#34;, }, };    最近需要使用R树做一下空间索引，在GeoSpark中使用了JTS库中实现的STR树，一开始以为是R-tree的一个变种，细看发现只是R树的构建（packing）方式之一。
+STR是Sort-Tile-Recursive的缩写，是一种R-tree的packing算法。具体的介绍可以看作者的论文 https://www.cs.odu.edu/%7Emln/ltrs-pdfs/icase-1997-14.pdf ，CSDN上有个主要内容的翻译 https://blog.csdn.net/qq_41775852/article/details/105405918。
+R树常见构建过程 通常R树是针对动态有增删的数据，因此构建过程可以将所有的数据逐个插入到R树中。这种情况可能会存在一些缺点：
+ (a) high load time (b) sub-optimal spac eutilization (c) poor R-tree structure requiring the retrieval of anunduly large number of nodes in order to satisfy a query.  因此，常用packing的方式自底向上的构建R树，主要流程如下：
+ 假设一共有r个矩形需要被索引，每个叶子结点中存储的矩形数量为n。首先将所有的矩形分成r/n（此处取上界）个组；（分组方式通过下面的packing算法） 将各个分组写入硬盘的pages，并计算每个分组内所有矩形的MBR以及分组对应的page-id； 对分组的MBR递归的执行上面的步骤，直到根节点。  在第1步中，将需要被索引的矩形分成r/n个组，论文中介绍了常见的Nearest-X(NX)、HilbertSort(HS)以及论文提出的Sort-Tile-Recursive(STR)。'>
+<meta property='og:url' content='https://extendswind.top/posts/technical/str_tree_rtree_construction/'>
+<meta property='og:site_name' content='A Notebook of Extendswind'>
+<meta property='og:type' content='article'><meta property='article:section' content='posts'><meta property='article:tag' content='hadoop'><meta property='article:tag' content='GIS'><meta property='article:published_time' content='2020-11-18T10:30:00&#43;08:00'/><meta property='article:modified_time' content='2020-11-18T10:30:00&#43;08:00'/><meta name='twitter:card' content='summary'>
+
+<meta name="generator" content="Hugo 0.77.0" />
+
+  <title>STR树 —— R-tree的构建方案之一 • A Notebook of Extendswind</title>
+  <link rel='canonical' href='https://extendswind.top/posts/technical/str_tree_rtree_construction/'>
+  
+  
+  <link rel='icon' href='/images/wind.jpeg'>
+<link rel='stylesheet' href='/assets/css/main.ab98e12b.css'><link rel='stylesheet' href='/css/custom.css'><style>
+:root{--color-accent:#cccccc;}
+</style>
+
+  
+
+</head>
+<body class='page type-posts has-sidebar'>
+
+  <div class='site'><div id='sidebar' class='sidebar'>
+  <a class='screen-reader-text' href='#main-menu'>Skip to Main Menu</a>
+
+  <div class='container'><section class='widget widget-about sep-after'>
+  <header>
+    
+    <div class='logo'>
+      <a href='/'>
+        <img src='/images/wind.jpeg'>
+      </a>
+    </div>
+    
+    <h2 class='title site-title '>
+      <a href='/'>
+      extendswind
+      </a>
+    </h2>
+    <div class='desc'>
+    
+    </div>
+  </header>
+
+</section>
+<section class='widget widget-sidebar_menu sep-after'><nav id='sidebar-menu' class='menu sidebar-menu' aria-label='Sidebar Menu'>
+    <div class='container'>
+      <ul><li class='item'>
+  <a href='/'>Home</a></li><li class='item'>
+  <a href='/posts'>Posts</a></li><li class='item'>
+  <a href='/categories'>Categories</a></li><li class='item'>
+  <a href='https://github.com/extendswind'>GitHub</a></li><li class='item'>
+  <a href='https://www.cnblogs.com/fly2wind/'>Cnblog</a></li></ul>
+    </div>
+  </nav>
+
+</section><section class='widget widget-taxonomy_cloud sep-after'>
+  <header>
+    <h4 class='title widget-title'>Tags</h4>
+  </header>
+
+  <div class='container list-container'>
+  <ul class='list taxonomy-cloud'><li>
+        <a href='/tags/blog/' style='font-size:1em'>blog</a>
+      </li><li>
+        <a href='/tags/design-patterns/' style='font-size:1em'>design patterns</a>
+      </li><li>
+        <a href='/tags/geospark/' style='font-size:1em'>GeoSpark</a>
+      </li><li>
+        <a href='/tags/gis/' style='font-size:1em'>GIS</a>
+      </li><li>
+        <a href='/tags/git/' style='font-size:1em'>git</a>
+      </li><li>
+        <a href='/tags/hadoop/' style='font-size:1em'>hadoop</a>
+      </li><li>
+        <a href='/tags/java/' style='font-size:1em'>java</a>
+      </li><li>
+        <a href='/tags/life/' style='font-size:1em'>life</a>
+      </li><li>
+        <a href='/tags/linux/' style='font-size:1em'>linux</a>
+      </li><li>
+        <a href='/tags/log4j/' style='font-size:1em'>log4j</a>
+      </li><li>
+        <a href='/tags/raspberry/' style='font-size:1em'>raspberry</a>
+      </li><li>
+        <a href='/tags/reading/' style='font-size:1em'>reading</a>
+      </li><li>
+        <a href='/tags/software/' style='font-size:1em'>software</a>
+      </li><li>
+        <a href='/tags/spark/' style='font-size:1em'>Spark</a>
+      </li></ul>
+</div>
+
+
+</section>
+<section class='widget widget-search sep-after'>
+  <header>
+    <h4 class='title widget-title'>Search</h4>
+  </header>
+
+  <form action='/search' id='search-form' class='search-form'>
+    <label>
+      <span class='screen-reader-text'>Search</span>
+      <input id='search-term' class='search-term' type='search' name='q' placeholder='Search&hellip;'>
+    </label></form>
+
+</section>
+</div>
+
+  <div class='sidebar-overlay'></div>
+</div><div class='main'><a class='screen-reader-text' href='#content'>Skip to Content</a>
+
+<button id='sidebar-toggler' class='sidebar-toggler' aria-controls='sidebar'>
+  <span class='screen-reader-text'>Toggle Sidebar</span>
+  <span class='open'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="3" y1="12" x2="21" y2="12" />
+  <line x1="3" y1="6" x2="21" y2="6" />
+  <line x1="3" y1="18" x2="21" y2="18" />
+  
+</svg>
+</span>
+  <span class='close'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="18" y1="6" x2="6" y2="18" />
+  <line x1="6" y1="6" x2="18" y2="18" />
+  
+</svg>
+</span>
+</button><div class='header-widgets'>
+        <div class='container'></div>
+      </div>
+
+      <header id='header' class='header site-header'>
+        <div class='container sep-after'>
+          <div class='header-info'><p class='site-title title'>A Notebook of Extendswind</p><p class='desc site-desc'>a simple blog site</p>
+          </div>
+        </div>
+      </header>
+
+      <main id='content'>
+
+
+<article lang='en' class='entry'>
+  <header class='header entry-header'>
+  <div class='container sep-after'>
+    <div class='header-info'>
+      <h1 class='title'>STR树 —— R-tree的构建方案之一</h1>
+      
+
+    </div>
+    <div class='entry-meta'>
+  <span class='posted-on'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+  <line x1="16" y1="2" x2="16" y2="6"/>
+  <line x1="8" y1="2" x2="8" y2="6"/>
+  <line x1="3" y1="10" x2="21" y2="10"/>
+  
+</svg>
+<span class='screen-reader-text'>Posted on </span>
+  <time class='entry-date' datetime='2020-11-18T10:30:00&#43;08:00'>2020, Nov 18</time>
+</span>
+
+  
+  
+
+</div>
+
+
+  </div>
+</header>
+
+  
+  
+<details class='container entry-toc' open>
+  <summary class='title'>
+    <span>Table of Contents</span>
+  </summary>
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#r树常见构建过程">R树常见构建过程</a></li>
+    <li><a href="#str算法">STR算法</a></li>
+    <li><a href="#总结">总结</a></li>
+  </ul>
+</nav>
+</details>
+
+
+  <div class='container entry-content'>
+  
+<script>
+  MathJax = {
+    tex: {
+      inlineMath: [["$", "$"]],
+    },
+    displayMath: [
+      ["$$", "$$"],
+      ["\[\[", "\]\]"],
+    ],
+    svg: {
+      fontCache: "global",
+    },
+  };
+</script>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script
+  id="MathJax-script"
+  async
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+></script>
+
+<p>最近需要使用R树做一下空间索引，在GeoSpark中使用了JTS库中实现的STR树，一开始以为是R-tree的一个变种，细看发现只是R树的构建（packing）方式之一。</p>
+<p>STR是Sort-Tile-Recursive的缩写，是一种R-tree的packing算法。具体的介绍可以看作者的论文 <a href="https://www.cs.odu.edu/%7Emln/ltrs-pdfs/icase-1997-14.pdf">https://www.cs.odu.edu/%7Emln/ltrs-pdfs/icase-1997-14.pdf</a> ，CSDN上有个主要内容的翻译 <a href="https://blog.csdn.net/qq_41775852/article/details/105405918">https://blog.csdn.net/qq_41775852/article/details/105405918</a>。</p>
+<h1 id="r树常见构建过程">R树常见构建过程</h1>
+<p>通常R树是针对动态有增删的数据，因此构建过程可以将所有的数据逐个插入到R树中。这种情况可能会存在一些缺点：</p>
+<ul>
+<li>(a) high load time</li>
+<li>(b) sub-optimal spac eutilization</li>
+<li>(c) poor R-tree structure requiring the retrieval of anunduly large number of nodes in order to satisfy a query.</li>
+</ul>
+<p>因此，常用packing的方式自底向上的构建R树，主要流程如下：</p>
+<ol>
+<li>假设一共有r个矩形需要被索引，每个叶子结点中存储的矩形数量为n。首先将所有的矩形分成r/n（此处取上界）个组；（分组方式通过下面的packing算法）</li>
+<li>将各个分组写入硬盘的pages，并计算每个分组内所有矩形的MBR以及分组对应的page-id；</li>
+<li>对分组的MBR递归的执行上面的步骤，直到根节点。</li>
+</ol>
+<p>在第1步中，将需要被索引的矩形分成r/n个组，论文中介绍了常见的Nearest-X(NX)、HilbertSort(HS)以及论文提出的Sort-Tile-Recursive(STR)。</p>
+<h1 id="str算法">STR算法</h1>
+<p>STR的算法本身并不复杂，以2维空间为例。对矩形的分组只考虑每个矩形的中心点，STR的基本思想是将所有的矩形以“tile”的方式分配到r/n（取上界）个分组中，此处的tile和网格类似。</p>
+<p>首先，对矩形按x坐标排序，然后划分成 $\sqrt{r/n}$ 个slice。然后对slice内的矩形按y坐标排序，进一步划分成 $\sqrt{r/n}$ 份。</p>
+<p>对于更高维的空间，可以按这种方式接着划分。</p>
+<h1 id="总结">总结</h1>
+<p>这个算法就是这样做一个简单的划分，正如论文的标题 《STR: A Simple and Efficient Algorithm for R-Tree Packing》，有种方法对于一篇论文来讲太简单了的感觉。文章内还做了些对比实验，表明针对不同的空间数据分布情况最好选择对应合适的方法，STR的packing算法并不是适合所有的场景。</p>
+<p>简单点来看，也就是将空间中的矩形划分到了一个x、y方向相等的网格的分组中，当数据为长宽差距较大的矩形范围分布时，做一个xy方向的分组数量相同应该不是最好的方案。</p>
+
+</div>
+
+  
+<footer class='entry-footer'>
+  <div class='container sep-before'><div class='categories'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M22,19a2,2,0,0,1-2,2H4a2,2,0,0,1-2-2V5A2,2,0,0,1,4,3H9l2,3h9a2,2,0,0,1,2,2Z"/>
+  
+</svg>
+<span class='screen-reader-text'>Categories: </span><a class='category' href='/categories/gis/'>GIS</a></div>
+<div class='tags'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M20.59,13.41l-7.17,7.17a2,2,0,0,1-2.83,0L2,12V2H12l8.59,8.59A2,2,0,0,1,20.59,13.41Z"/>
+  <line x1="7" y1="7" x2="7" y2="7"/>
+  
+</svg>
+<span class='screen-reader-text'>Tags: </span><a class='tag' href='/tags/hadoop/'>hadoop</a>, <a class='tag' href='/tags/gis/'>GIS</a></div>
+
+  </div>
+</footer>
+
+
+</article>
+
+<nav class='entry-nav'>
+  <div class='container'><div class='prev-entry sep-before'>
+      <a href='/posts/technical/spatialhadoop_operation_code_analysis/'>
+        <span aria-hidden='true'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="20" y1="12" x2="4" y2="12"/>
+  <polyline points="10 18 4 12 10 6"/>
+  
+</svg>
+ Previous</span>
+        <span class='screen-reader-text'>Previous post: </span>SpatialHadoop二级空间索引机制源码分析</a>
+    </div></div>
+</nav>
+
+
+
+
+      </main>
+
+      <footer id='footer' class='footer'>
+        <div class='container sep-before'><section class='widget widget-social_menu sep-after'><header>
+    <h4 class='title widget-title'>Contact</h4>
+  </header><nav aria-label='Social Menu'>
+    <ul><li>
+        <a href='https://github.com/extendswind' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Open Github account in new tab</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+  
+</svg>
+</a>
+      </li><li>
+        <a href='mailto:extendswind@foxmail.com' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Contact via Email</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+  <polyline points="22,6 12,13 2,6"/>
+  
+</svg>
+</a>
+      </li></ul>
+  </nav>
+</section><div class='copyright'>
+  <p> &copy; 2018-2020 extendswind </p>
+</div>
+
+        </div>
+      </footer>
+
+    </div>
+  </div><script>window.__assets_js_src="/assets/js/"</script>
+
+<script src='/assets/js/main.c3bcf2df.js'></script><script type='text/x-mathjax-config'>
+  MathJax.Hub.Config({})
+</script>
+
+<script type='text/javascript' async src='//unpkg.com/mathjax@2.7.5/MathJax.js?config=TeX-MML-AM_CHTML'></script>
+
+</body>
+
+</html>
+
