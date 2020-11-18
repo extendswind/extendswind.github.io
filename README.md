@@ -1,37 +1,14 @@
-## Welcome to GitHub Pages
+用于Github Page网页的仓库
 
-You can use the [editor on GitHub](https://github.com/extendsWind/extendswind.github.io/edit/master/README.md) to maintain and preview the content for your website in Markdown files.
+此文档记录一下中间对Hugo的一些操作。
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+# 图片的处理
 
-### Markdown
+TODO 
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+# 公式的处理
 
-```markdown
-Syntax highlighted code block
+很多主题自带公式的输入功能，但是为了避免更换主题导致原来的markdown无法编译，直接利用Hugo提供的short code功能嵌入Mathjax的代码。
 
-# Header 1
-## Header 2
-### Header 3
+在使用时直接在文档中插入 `{{<mathjax>}}` ，此时会将 `/layouts/shortcodes/mathjax.html` 文件中的代码复制到当前文档。
 
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
-```
-
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/extendsWind/extendswind.github.io/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://help.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
