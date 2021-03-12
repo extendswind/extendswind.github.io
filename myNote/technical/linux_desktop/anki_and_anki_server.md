@@ -20,17 +20,30 @@ tags:
 
 - 淘制作好的卡片，导入
 - 卡片可以套模板更美观（添加时的Cards选项，支持html）
-- 插件里的`awesome TTS`很多人推荐但速度略慢
-- 添加单词可以用`Word Query`
+- 添加单词和读音用FastWQ（只支持新版本，查词速度快）
+- （已不支持新版本）插件里的`awesome TTS`很多人推荐但速度略慢
+- （已不支持新版本）添加单词可以用`Word Query`
 
 官方文档[https://apps.ankiweb.net/docs/manual.html](https://apps.ankiweb.net/docs/manual.html)
 
 插件编写文档[https://apps.ankiweb.net/docs/addons.html](https://apps.ankiweb.net/docs/addons.html)
 
+## 插件安装
+
+官网上找插件对应的id编号，然后打开anki的插件设置，添加插件中填入插件id号即可下载。
+
+## FastWQ插件
+
+首先在tools菜单下的FastWQ插件设置中，选择note type，然后第一列中选择单词所在位置，第三列选择想要用的在线字典，第四列的Fields中选择行对应的需要填入的内容。
+
+然后在add单词的目录中，先填入单次，然后点query--> all fields，会将查到的结果填入所有的框。
+
 
 # 一些坑
 
 删除卡片不会删除对应的媒体文件，需要点击 check media 后手动删除。
+
+anki有些历史遗留问题，大量的插件和资料都是在之前的anki 2.0.x上的，现在的2.1.x版本将pyqt4升级到pyqt5，很多插件没有跟着升级而无法使用。
 
 
 # anki server 的安装
