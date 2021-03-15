@@ -6,7 +6,7 @@
 个人感觉使用比较简单，对网络问题的处理也比较完善，但是某些方面的灵活性略微不足，而且中文资料相对较少。
 简单使用 服务端用mosquitto，客户端用python-paho-mqtt。
 服务端 安装mosquitto，然后systemctl start mosquitto启动对应的服务。
-公网环境下建议将配置文件中的默认端口1388改为其它端口，避免被直接扫描。
+公网环境下建议将配置文件中的默认端口1883改为其它端口，避免被直接扫描。
 一些安全方面的设置也建议加上。
 客户端 subscriber
 #!/bin/python import paho.mqtt.subscribe as subscribe # 当调用这个函数时，程序会堵塞在这里，直到有一条消息发送到 topics/topic1 主题 msg = subscribe.simple(&#34;topics/topic1&#34;, hostname=&#34;your ip&#34;, port=yourport, retained=False, client_id=&#34;youid&#34;, clean_session=False, qos=1) print(f&#34;{msg.topic} {msg.payload}&#34;) hostname和port需要改为正确的参数。
@@ -29,7 +29,7 @@ QoS0，At most once，至多一次； QoS1，At least once，至少一次； QoS
 个人感觉使用比较简单，对网络问题的处理也比较完善，但是某些方面的灵活性略微不足，而且中文资料相对较少。
 简单使用 服务端用mosquitto，客户端用python-paho-mqtt。
 服务端 安装mosquitto，然后systemctl start mosquitto启动对应的服务。
-公网环境下建议将配置文件中的默认端口1388改为其它端口，避免被直接扫描。
+公网环境下建议将配置文件中的默认端口1883改为其它端口，避免被直接扫描。
 一些安全方面的设置也建议加上。
 客户端 subscriber
 #!/bin/python import paho.mqtt.subscribe as subscribe # 当调用这个函数时，程序会堵塞在这里，直到有一条消息发送到 topics/topic1 主题 msg = subscribe.simple(&#34;topics/topic1&#34;, hostname=&#34;your ip&#34;, port=yourport, retained=False, client_id=&#34;youid&#34;, clean_session=False, qos=1) print(f&#34;{msg.topic} {msg.payload}&#34;) hostname和port需要改为正确的参数。
@@ -252,7 +252,7 @@ QoS0，At most once，至多一次； QoS1，At least once，至少一次； QoS
 <p>服务端用mosquitto，客户端用python-paho-mqtt。</p>
 <h2 id="服务端">服务端</h2>
 <p>安装mosquitto，然后systemctl start mosquitto启动对应的服务。</p>
-<p>公网环境下建议将配置文件中的默认端口1388改为其它端口，避免被直接扫描。</p>
+<p>公网环境下建议将配置文件中的默认端口1883改为其它端口，避免被直接扫描。</p>
 <p>一些安全方面的设置也建议加上。</p>
 <h2 id="客户端">客户端</h2>
 <p><strong>subscriber</strong></p>
