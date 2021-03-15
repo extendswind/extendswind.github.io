@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>IoT on A Notebook of Extendswind</title>
+    <link>https://extendswind.top/categories/iot/</link>
+    <description>Recent content in IoT on A Notebook of Extendswind</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <lastBuildDate>Mon, 15 Mar 2021 10:30:00 +0800</lastBuildDate><atom:link href="https://extendswind.top/categories/iot/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>MQTT服务搭建和简单使用</title>
+      <link>https://extendswind.top/posts/technical/mqtt_simple_use/</link>
+      <pubDate>Mon, 15 Mar 2021 10:30:00 +0800</pubDate>
+      
+      <guid>https://extendswind.top/posts/technical/mqtt_simple_use/</guid>
+      <description>MQTT为了物联网的消息传递而设计，业余时间弄了个报警器，之前用长轮询的实现感觉略麻烦，测试了一下MQTT的实现。
+个人感觉使用比较简单，对网络问题的处理也比较完善，但是某些方面的灵活性略微不足，而且中文资料相对较少。
+简单使用 服务端用mosquitto，客户端用python-paho-mqtt。
+服务端 安装mosquitto，然后systemctl start mosquitto启动对应的服务。
+公网环境下建议将配置文件中的默认端口1388改为其它端口，避免被直接扫描。
+一些安全方面的设置也建议加上。
+客户端 subscriber
+#!/bin/python import paho.mqtt.subscribe as subscribe # 当调用这个函数时，程序会堵塞在这里，直到有一条消息发送到 topics/topic1 主题 msg = subscribe.simple(&amp;#34;topics/topic1&amp;#34;, hostname=&amp;#34;your ip&amp;#34;, port=yourport, retained=False, client_id=&amp;#34;youid&amp;#34;, clean_session=False, qos=1) print(f&amp;#34;{msg.topic} {msg.payload}&amp;#34;) hostname和port需要改为正确的参数。
+其中，网络环境好并且不需要离线接收消息时，可以不设置clean_session、client_id、qos三个参数。
+publisher
+发送一条消息
+#!/bin/python import paho.mqtt.publish as publish publish.single(&amp;#34;topics/topic1&amp;#34;, &amp;#34;a message&amp;#34;, hostname=&amp;#34;your ip&amp;#34;, port=yourport, qos=1) 其它 MQTT 几个基本概念 通常由3部分构成：subscriber订阅客户端、publisher发布消息客户端、Server服务器。
+主题topic，类似一连串消息的标识符。
+Message，具体的消息，对应于每个topic。
+publisher向服务器指定主题发送消息。
+subscriber连接服务器并且指定主题，当publisher向订阅的主题推送消息后，服务器会推送到对应的subscriber。
+retained消息 MQTT使用了一个retained消息机制，用于保存主题的状态。publisher可以向主题发送retained消息，在subscriber获取retained消息时（获取参数中retained=True）服务端会返回最后一条retained消息，每一次都会返回而非普通消息的那种只读取一次。ratained消息更像是一种保存消息的状态，用在主题状态的设置，如开门的感应器，ratained消息用于标记门是否打开。
+在python的paho库中，publisher的retained参数默认是False，而subscriber的retained参数默认为True，这个有点小坑。
+QoS（Quality of Service）与离线消息 在subscriber和publisher中都可以指定，定义消息的可靠性级别，服务器会取两个客户端中较低的级别作为主题消息对应的处理级别。
+QoS0，At most once，至多一次； QoS1，At least once，至少一次； QoS2，Exactly once，确保只有一次。</description>
+    </item>
+    
+  </channel>
+</rss>

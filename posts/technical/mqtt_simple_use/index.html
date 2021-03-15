@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang='en' dir='auto'><head>
+  <meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<meta name='description' content='MQTT为了物联网的消息传递而设计，业余时间弄了个报警器，之前用长轮询的实现感觉略麻烦，测试了一下MQTT的实现。
+个人感觉使用比较简单，对网络问题的处理也比较完善，但是某些方面的灵活性略微不足，而且中文资料相对较少。
+简单使用 服务端用mosquitto，客户端用python-paho-mqtt。
+服务端 安装mosquitto，然后systemctl start mosquitto启动对应的服务。
+公网环境下建议将配置文件中的默认端口1388改为其它端口，避免被直接扫描。
+一些安全方面的设置也建议加上。
+客户端 subscriber
+#!/bin/python import paho.mqtt.subscribe as subscribe # 当调用这个函数时，程序会堵塞在这里，直到有一条消息发送到 topics/topic1 主题 msg = subscribe.simple(&#34;topics/topic1&#34;, hostname=&#34;your ip&#34;, port=yourport, retained=False, client_id=&#34;youid&#34;, clean_session=False, qos=1) print(f&#34;{msg.topic} {msg.payload}&#34;) hostname和port需要改为正确的参数。
+其中，网络环境好并且不需要离线接收消息时，可以不设置clean_session、client_id、qos三个参数。
+publisher
+发送一条消息
+#!/bin/python import paho.mqtt.publish as publish publish.single(&#34;topics/topic1&#34;, &#34;a message&#34;, hostname=&#34;your ip&#34;, port=yourport, qos=1) 其它 MQTT 几个基本概念 通常由3部分构成：subscriber订阅客户端、publisher发布消息客户端、Server服务器。
+主题topic，类似一连串消息的标识符。
+Message，具体的消息，对应于每个topic。
+publisher向服务器指定主题发送消息。
+subscriber连接服务器并且指定主题，当publisher向订阅的主题推送消息后，服务器会推送到对应的subscriber。
+retained消息 MQTT使用了一个retained消息机制，用于保存主题的状态。publisher可以向主题发送retained消息，在subscriber获取retained消息时（获取参数中retained=True）服务端会返回最后一条retained消息，每一次都会返回而非普通消息的那种只读取一次。ratained消息更像是一种保存消息的状态，用在主题状态的设置，如开门的感应器，ratained消息用于标记门是否打开。
+在python的paho库中，publisher的retained参数默认是False，而subscriber的retained参数默认为True，这个有点小坑。
+QoS（Quality of Service）与离线消息 在subscriber和publisher中都可以指定，定义消息的可靠性级别，服务器会取两个客户端中较低的级别作为主题消息对应的处理级别。
+QoS0，At most once，至多一次； QoS1，At least once，至少一次； QoS2，Exactly once，确保只有一次。'>
+<meta name='theme-color' content='#cccccc'>
+
+<meta property='og:title' content='MQTT服务搭建和简单使用 • A Notebook of Extendswind'>
+<meta property='og:description' content='MQTT为了物联网的消息传递而设计，业余时间弄了个报警器，之前用长轮询的实现感觉略麻烦，测试了一下MQTT的实现。
+个人感觉使用比较简单，对网络问题的处理也比较完善，但是某些方面的灵活性略微不足，而且中文资料相对较少。
+简单使用 服务端用mosquitto，客户端用python-paho-mqtt。
+服务端 安装mosquitto，然后systemctl start mosquitto启动对应的服务。
+公网环境下建议将配置文件中的默认端口1388改为其它端口，避免被直接扫描。
+一些安全方面的设置也建议加上。
+客户端 subscriber
+#!/bin/python import paho.mqtt.subscribe as subscribe # 当调用这个函数时，程序会堵塞在这里，直到有一条消息发送到 topics/topic1 主题 msg = subscribe.simple(&#34;topics/topic1&#34;, hostname=&#34;your ip&#34;, port=yourport, retained=False, client_id=&#34;youid&#34;, clean_session=False, qos=1) print(f&#34;{msg.topic} {msg.payload}&#34;) hostname和port需要改为正确的参数。
+其中，网络环境好并且不需要离线接收消息时，可以不设置clean_session、client_id、qos三个参数。
+publisher
+发送一条消息
+#!/bin/python import paho.mqtt.publish as publish publish.single(&#34;topics/topic1&#34;, &#34;a message&#34;, hostname=&#34;your ip&#34;, port=yourport, qos=1) 其它 MQTT 几个基本概念 通常由3部分构成：subscriber订阅客户端、publisher发布消息客户端、Server服务器。
+主题topic，类似一连串消息的标识符。
+Message，具体的消息，对应于每个topic。
+publisher向服务器指定主题发送消息。
+subscriber连接服务器并且指定主题，当publisher向订阅的主题推送消息后，服务器会推送到对应的subscriber。
+retained消息 MQTT使用了一个retained消息机制，用于保存主题的状态。publisher可以向主题发送retained消息，在subscriber获取retained消息时（获取参数中retained=True）服务端会返回最后一条retained消息，每一次都会返回而非普通消息的那种只读取一次。ratained消息更像是一种保存消息的状态，用在主题状态的设置，如开门的感应器，ratained消息用于标记门是否打开。
+在python的paho库中，publisher的retained参数默认是False，而subscriber的retained参数默认为True，这个有点小坑。
+QoS（Quality of Service）与离线消息 在subscriber和publisher中都可以指定，定义消息的可靠性级别，服务器会取两个客户端中较低的级别作为主题消息对应的处理级别。
+QoS0，At most once，至多一次； QoS1，At least once，至少一次； QoS2，Exactly once，确保只有一次。'>
+<meta property='og:url' content='https://extendswind.top/posts/technical/mqtt_simple_use/'>
+<meta property='og:site_name' content='A Notebook of Extendswind'>
+<meta property='og:type' content='article'><meta property='article:section' content='posts'><meta property='article:tag' content='IoT'><meta property='article:published_time' content='2021-03-15T10:30:00&#43;08:00'/><meta property='article:modified_time' content='2021-03-15T10:30:00&#43;08:00'/><meta name='twitter:card' content='summary'>
+
+<meta name="generator" content="Hugo 0.80.0" />
+
+  <title>MQTT服务搭建和简单使用 • A Notebook of Extendswind</title>
+  <link rel='canonical' href='https://extendswind.top/posts/technical/mqtt_simple_use/'>
+  
+  
+  <link rel='icon' href='/images/wind.jpeg'>
+<link rel='stylesheet' href='/assets/css/main.ab98e12b.css'><link rel='stylesheet' href='/css/custom.css'><style>
+:root{--color-accent:#cccccc;}
+</style>
+
+  
+
+</head>
+<body class='page type-posts has-sidebar'>
+
+  <div class='site'><div id='sidebar' class='sidebar'>
+  <a class='screen-reader-text' href='#main-menu'>Skip to Main Menu</a>
+
+  <div class='container'><section class='widget widget-about sep-after'>
+  <header>
+    
+    <div class='logo'>
+      <a href='/'>
+        <img src='/images/wind.jpeg'>
+      </a>
+    </div>
+    
+    <h2 class='title site-title '>
+      <a href='/'>
+      extendswind
+      </a>
+    </h2>
+    <div class='desc'>
+    
+    </div>
+  </header>
+
+</section>
+<section class='widget widget-sidebar_menu sep-after'><nav id='sidebar-menu' class='menu sidebar-menu' aria-label='Sidebar Menu'>
+    <div class='container'>
+      <ul><li class='item'>
+  <a href='/'>Home</a></li><li class='item'>
+  <a href='/posts'>Posts</a></li><li class='item'>
+  <a href='/categories'>Categories</a></li><li class='item'>
+  <a href='https://github.com/extendswind'>GitHub</a></li><li class='item'>
+  <a href='https://www.cnblogs.com/fly2wind/'>Cnblog</a></li></ul>
+    </div>
+  </nav>
+
+</section><section class='widget widget-taxonomy_cloud sep-after'>
+  <header>
+    <h4 class='title widget-title'>Tags</h4>
+  </header>
+
+  <div class='container list-container'>
+  <ul class='list taxonomy-cloud'><li>
+        <a href='/tags/blog/' style='font-size:1em'>blog</a>
+      </li><li>
+        <a href='/tags/design-patterns/' style='font-size:1em'>design patterns</a>
+      </li><li>
+        <a href='/tags/geospark/' style='font-size:1em'>GeoSpark</a>
+      </li><li>
+        <a href='/tags/gis/' style='font-size:1em'>GIS</a>
+      </li><li>
+        <a href='/tags/git/' style='font-size:1em'>git</a>
+      </li><li>
+        <a href='/tags/hadoop/' style='font-size:1em'>hadoop</a>
+      </li><li>
+        <a href='/tags/iot/' style='font-size:1em'>IoT</a>
+      </li><li>
+        <a href='/tags/java/' style='font-size:1em'>java</a>
+      </li><li>
+        <a href='/tags/life/' style='font-size:1em'>life</a>
+      </li><li>
+        <a href='/tags/linux/' style='font-size:1em'>linux</a>
+      </li><li>
+        <a href='/tags/log4j/' style='font-size:1em'>log4j</a>
+      </li><li>
+        <a href='/tags/raspberry/' style='font-size:1em'>raspberry</a>
+      </li><li>
+        <a href='/tags/reading/' style='font-size:1em'>reading</a>
+      </li><li>
+        <a href='/tags/software/' style='font-size:1em'>software</a>
+      </li><li>
+        <a href='/tags/spark/' style='font-size:1em'>Spark</a>
+      </li></ul>
+</div>
+
+
+</section>
+<section class='widget widget-search sep-after'>
+  <header>
+    <h4 class='title widget-title'>Search</h4>
+  </header>
+
+  <form action='/search' id='search-form' class='search-form'>
+    <label>
+      <span class='screen-reader-text'>Search</span>
+      <input id='search-term' class='search-term' type='search' name='q' placeholder='Search&hellip;'>
+    </label></form>
+
+</section>
+</div>
+
+  <div class='sidebar-overlay'></div>
+</div><div class='main'><a class='screen-reader-text' href='#content'>Skip to Content</a>
+
+<button id='sidebar-toggler' class='sidebar-toggler' aria-controls='sidebar'>
+  <span class='screen-reader-text'>Toggle Sidebar</span>
+  <span class='open'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="3" y1="12" x2="21" y2="12" />
+  <line x1="3" y1="6" x2="21" y2="6" />
+  <line x1="3" y1="18" x2="21" y2="18" />
+  
+</svg>
+</span>
+  <span class='close'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="18" y1="6" x2="6" y2="18" />
+  <line x1="6" y1="6" x2="18" y2="18" />
+  
+</svg>
+</span>
+</button><div class='header-widgets'>
+        <div class='container'></div>
+      </div>
+
+      <header id='header' class='header site-header'>
+        <div class='container sep-after'>
+          <div class='header-info'><p class='site-title title'>A Notebook of Extendswind</p><p class='desc site-desc'>a simple blog site</p>
+          </div>
+        </div>
+      </header>
+
+      <main id='content'>
+
+
+<article lang='en' class='entry'>
+  <header class='header entry-header'>
+  <div class='container sep-after'>
+    <div class='header-info'>
+      <h1 class='title'>MQTT服务搭建和简单使用</h1>
+      
+
+    </div>
+    <div class='entry-meta'>
+  <span class='posted-on'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+  <line x1="16" y1="2" x2="16" y2="6"/>
+  <line x1="8" y1="2" x2="8" y2="6"/>
+  <line x1="3" y1="10" x2="21" y2="10"/>
+  
+</svg>
+<span class='screen-reader-text'>Posted on </span>
+  <time class='entry-date' datetime='2021-03-15T10:30:00&#43;08:00'>2021, Mar 15</time>
+</span>
+
+  
+  
+
+</div>
+
+
+  </div>
+</header>
+
+  
+  
+<details class='container entry-toc' open>
+  <summary class='title'>
+    <span>Table of Contents</span>
+  </summary>
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#简单使用">简单使用</a>
+      <ul>
+        <li><a href="#服务端">服务端</a></li>
+        <li><a href="#客户端">客户端</a></li>
+      </ul>
+    </li>
+    <li><a href="#其它">其它</a>
+      <ul>
+        <li><a href="#mqtt-几个基本概念">MQTT 几个基本概念</a></li>
+        <li><a href="#retained消息">retained消息</a></li>
+        <li><a href="#qosquality-of-service与离线消息">QoS（Quality of Service）与离线消息</a></li>
+        <li><a href="#存储消息历史记录">存储消息历史记录</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+</details>
+
+
+  <div class='container entry-content'>
+  <p>MQTT为了物联网的消息传递而设计，业余时间弄了个报警器，之前用长轮询的实现感觉略麻烦，测试了一下MQTT的实现。</p>
+<p>个人感觉使用比较简单，对网络问题的处理也比较完善，但是某些方面的灵活性略微不足，而且中文资料相对较少。</p>
+<h1 id="简单使用">简单使用</h1>
+<p>服务端用mosquitto，客户端用python-paho-mqtt。</p>
+<h2 id="服务端">服务端</h2>
+<p>安装mosquitto，然后systemctl start mosquitto启动对应的服务。</p>
+<p>公网环境下建议将配置文件中的默认端口1388改为其它端口，避免被直接扫描。</p>
+<p>一些安全方面的设置也建议加上。</p>
+<h2 id="客户端">客户端</h2>
+<p><strong>subscriber</strong></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e">#!/bin/python</span>
+<span style="color:#f92672">import</span> paho.mqtt.subscribe <span style="color:#f92672">as</span> subscribe
+
+<span style="color:#75715e"># 当调用这个函数时，程序会堵塞在这里，直到有一条消息发送到 topics/topic1 主题</span>
+msg <span style="color:#f92672">=</span> subscribe<span style="color:#f92672">.</span>simple(<span style="color:#e6db74">&#34;topics/topic1&#34;</span>, hostname<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;your ip&#34;</span>, port<span style="color:#f92672">=</span>yourport,
+                       retained<span style="color:#f92672">=</span>False, client_id<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;youid&#34;</span>, clean_session<span style="color:#f92672">=</span>False, qos<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>)
+<span style="color:#66d9ef">print</span>(f<span style="color:#e6db74">&#34;{msg.topic} {msg.payload}&#34;</span>)
+</code></pre></div><p>hostname和port需要改为正确的参数。</p>
+<p>其中，网络环境好并且不需要离线接收消息时，可以不设置<code>clean_session</code>、<code>client_id</code>、<code>qos</code>三个参数。</p>
+<p><strong>publisher</strong></p>
+<p>发送一条消息</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e">#!/bin/python</span>
+
+<span style="color:#f92672">import</span> paho.mqtt.publish <span style="color:#f92672">as</span> publish
+
+publish<span style="color:#f92672">.</span>single(<span style="color:#e6db74">&#34;topics/topic1&#34;</span>, <span style="color:#e6db74">&#34;a message&#34;</span>, hostname<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;your ip&#34;</span>, port<span style="color:#f92672">=</span>yourport, qos<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>)
+</code></pre></div><h1 id="其它">其它</h1>
+<h2 id="mqtt-几个基本概念">MQTT 几个基本概念</h2>
+<p>通常由3部分构成：subscriber订阅客户端、publisher发布消息客户端、Server服务器。</p>
+<p>主题topic，类似一连串消息的标识符。</p>
+<p>Message，具体的消息，对应于每个topic。</p>
+<p>publisher向服务器指定主题发送消息。</p>
+<p>subscriber连接服务器并且指定主题，当publisher向订阅的主题推送消息后，服务器会推送到对应的subscriber。</p>
+<h2 id="retained消息">retained消息</h2>
+<p>MQTT使用了一个retained消息机制，用于保存主题的状态。publisher可以向主题发送retained消息，在subscriber获取retained消息时（获取参数中retained=True）服务端会返回<strong>最后一条</strong>retained消息，每一次都会返回而非普通消息的那种只读取一次。ratained消息更像是一种保存消息的状态，用在主题状态的设置，如开门的感应器，ratained消息用于标记门是否打开。</p>
+<p>在python的paho库中，publisher的retained参数默认是False，而subscriber的retained参数默认为True，这个有点小坑。</p>
+<h2 id="qosquality-of-service与离线消息">QoS（Quality of Service）与离线消息</h2>
+<p>在subscriber和publisher中都可以指定，定义消息的可靠性级别，服务器会取两个客户端中较低的级别作为主题消息对应的处理级别。</p>
+<p>QoS0，At most once，至多一次；
+QoS1，At least once，至少一次；
+QoS2，Exactly once，确保只有一次。</p>
+<p>使用默认参数时，如果subscriber掉线，publisher发送的消息会丢失。</p>
+<p>要想subscriber在离线后重新连接，还能收到publisher的消息，需要下面的设置：</p>
+<ol>
+<li>publisher与subscriber的QoS级别都设置为0以上；</li>
+<li>subscriber的<code>clean_session</code>设置为False；</li>
+<li>subscriber设置固定的<code>client_id</code>.</li>
+</ol>
+<h2 id="存储消息历史记录">存储消息历史记录</h2>
+<p>这个翻了一下网上的资料，感觉略不靠谱。MQTT的设计中没有考虑消息在服务端的存储，通常采用下面的几个方案：</p>
+<ol>
+<li>使用另一个subscriber获取消息并存储；</li>
+<li>使用EMQ等支持插件的服务端，通过插件处理消息。</li>
+<li>换kafka&hellip;</li>
+</ol>
+
+</div>
+
+  
+<footer class='entry-footer'>
+  <div class='container sep-before'><div class='categories'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M22,19a2,2,0,0,1-2,2H4a2,2,0,0,1-2-2V5A2,2,0,0,1,4,3H9l2,3h9a2,2,0,0,1,2,2Z"/>
+  
+</svg>
+<span class='screen-reader-text'>Categories: </span><a class='category' href='/categories/iot/'>IoT</a></div>
+<div class='tags'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M20.59,13.41l-7.17,7.17a2,2,0,0,1-2.83,0L2,12V2H12l8.59,8.59A2,2,0,0,1,20.59,13.41Z"/>
+  <line x1="7" y1="7" x2="7" y2="7"/>
+  
+</svg>
+<span class='screen-reader-text'>Tags: </span><a class='tag' href='/tags/iot/'>IoT</a></div>
+
+  </div>
+</footer>
+
+
+</article>
+
+<nav class='entry-nav'>
+  <div class='container'><div class='prev-entry sep-before'>
+      <a href='/posts/technical/str_tree_rtree_construction/'>
+        <span aria-hidden='true'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="20" y1="12" x2="4" y2="12"/>
+  <polyline points="10 18 4 12 10 6"/>
+  
+</svg>
+ Previous</span>
+        <span class='screen-reader-text'>Previous post: </span>STR树 —— R-tree的构建方案之一</a>
+    </div></div>
+</nav>
+
+
+
+
+      </main>
+
+      <footer id='footer' class='footer'>
+        <div class='container sep-before'><section class='widget widget-social_menu sep-after'><header>
+    <h4 class='title widget-title'>Contact</h4>
+  </header><nav aria-label='Social Menu'>
+    <ul><li>
+        <a href='https://github.com/extendswind' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Open Github account in new tab</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+  
+</svg>
+</a>
+      </li><li>
+        <a href='mailto:extendswind@foxmail.com' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Contact via Email</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+  <polyline points="22,6 12,13 2,6"/>
+  
+</svg>
+</a>
+      </li></ul>
+  </nav>
+</section><div class='copyright'>
+  <p> &copy; 2018-2021 extendswind </p>
+</div>
+
+        </div>
+      </footer>
+
+    </div>
+  </div><script>window.__assets_js_src="/assets/js/"</script>
+
+<script src='/assets/js/main.c3bcf2df.js'></script>
+
+</body>
+
+</html>
+
