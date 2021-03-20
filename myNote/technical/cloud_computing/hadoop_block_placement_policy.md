@@ -64,7 +64,9 @@ BlockPlacementPolicy 作为虚基类提供了基本的接口，具体的子类�
 
 Hadoop提供了BlockPlacementPolicyDefault、BlockPlacementPolicyWithNodeGroup、AvailableSpaceBlockPlacementPolicy三种实现（hadoop 2.7.7）。
 
-其中BlockPlacementPolicyDefault是经典三副本策略的实现：第一个副本尽可能放在写入数据的节点，第二个副本放在与第一个副本不在同一机架下的节点，第三个副本与第二副本放在同一个机架。
+其中BlockPlacementPolicyDefault是默认三副本策略的实现：第一个副本尽可能放在写入数据的节点，第二个副本放在与第一个副本不在同一机架（rack）下的节点，第三个副本与第二副本放在同一个机架。
+
+BlockPlacementPolicyWithNodeGroup中第一、二个副本和Default副本放置相同，第三个副本在第二个机架下选择不同node group的结点。AvailableSpaceBlockPlacementPolicy实现存储平衡。Hadoop3.1中还加入了BlockPlacementPolicyRackFaultTolerant将数据存储到更多的机架下，BlockPlacementPolicyWithUpgradeDomain使用默认的副本放置策略，但是3个副本选择的datanode都要有不同的upgrade domains（为了方便大集群中datanode的更新和重启、将结点分配给不同的upgrade domain）。 
 
 通过改变`dfs.block.replicator.classname` 能够选择具体的实现类，默认值为`org.apache.hadoop.hdfs.server.blockmanagement.BlockPlacementPolicyDefault`。（Hadoop 2.7.7下，貌似不同版本的Hadoop的命名还不一样，而且2.7.7默认的配置文件里还没有，需要在源码中查）
 
