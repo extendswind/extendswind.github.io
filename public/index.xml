@@ -5,7 +5,25 @@
     <link>https://extendswind.top/</link>
     <description>Recent content in Home on A Notebook of Extendswind</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Mon, 15 Mar 2021 10:30:00 +0800</lastBuildDate><atom:link href="https://extendswind.top/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 01 Sep 2021 08:30:00 +0800</lastBuildDate><atom:link href="https://extendswind.top/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>python脚本避免被多次执行</title>
+      <link>https://extendswind.top/posts/technical/python_prevent_python_script_running_more_than_once/</link>
+      <pubDate>Wed, 01 Sep 2021 08:30:00 +0800</pubDate>
+      
+      <guid>https://extendswind.top/posts/technical/python_prevent_python_script_running_more_than_once/</guid>
+      <description>写了一个脚本，想挂后台运行，又想避免重复运行，需要检测后台是否有已经运行的脚本。实现目标：python脚本只运行一次，第二次运行时直接退出。
+在linux上比较合适的做法是创建一个systemd控制的service，有时候就临时用一用，还有考虑跨设备运行的时候也有点麻烦。
+找了两个比较简单的方案。
+1. 使用tendo import tendo.singleton single = tendo.singleton.SingleInstance() # 测试代码 import time while(True): print(&amp;#34;test&amp;#34;) time.sleep(2) 2. 使用pidfile from pid import PidFile # 会对with中的代码块加锁 with PidFile(): import time while(True): print(&amp;#34;test&amp;#34;) time.sleep(2) 或者
+from pid.decorator import pidfile @pidfile def main(): # 被pidfile标签装饰的函数只能运行一次 # running code 基本原理 最常见的基本操作都差不多，在运行到需要只能执行一次的代码时，在某个路径下创建一个pidfile的文件，第二次执行时如果检测到路径下有pidfile就报错跳过执行。代码执行完成后删除pidfile。
+为了避免pidfile在某些特殊情况下退出未执行，通过atexit等库处理退出时的情况。
+类似的做法还有创建一个linux的socket，退出时删除。以及基于ps等linux脚本命令查看运行的进程名。
+参考链接 https://stackoverflow.com/questions/788411/check-to-see-if-python-script-is-running/7758075#7758075
+https://pythonhosted.org/tendo/
+https://pypi.org/project/pid/</description>
+    </item>
+    
     <item>
       <title>MQTT服务搭建和简单使用</title>
       <link>https://extendswind.top/posts/technical/mqtt_simple_use/</link>
@@ -19,7 +37,7 @@
 公网环境下建议将配置文件中的默认端口1883改为其它端口，避免被直接扫描。
 一些安全方面的设置也建议加上。
 客户端 subscriber
-#!/bin/python import paho.mqtt.subscribe as subscribe # 当调用这个函数时，程序会堵塞在这里，直到有一条消息发送到 topics/topic1 主题 msg = subscribe.simple(&amp;#34;topics/topic1&amp;#34;, hostname=&amp;#34;your ip&amp;#34;, port=yourport, retained=False, client_id=&amp;#34;youid&amp;#34;, clean_session=False, qos=1) print(f&amp;#34;{msg.topic} {msg.payload}&amp;#34;) hostname和port需要改为正确的参数。
+#!/bin/python import paho.mqtt.subscribe as subscribe # 当调用这个函数时，程序会堵塞在这里，直到有一条消息发送到 topics/topic1 主题 msg = subscribe.simple(&amp;#34;topics/topic1&amp;#34;, hostname=&amp;#34;your ip&amp;#34;, port=yourport, retained=False, client_id=&amp;#34;youid&amp;#34;, clean_session=False, qos=1) print(f&amp;#34;{msg.topic}{msg.payload}&amp;#34;) hostname和port需要改为正确的参数。
 其中，网络环境好并且不需要离线接收消息时，可以不设置clean_session、client_id、qos三个参数。
 publisher
 发送一条消息
