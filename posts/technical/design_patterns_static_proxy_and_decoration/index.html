@@ -23,7 +23,7 @@ interface Logger { void writeLog(); } // 被代理类 class LoggerSubject implem
 <meta property='og:site_name' content='A Notebook of Extendswind'>
 <meta property='og:type' content='article'><meta property='article:section' content='posts'><meta property='article:tag' content='design patterns'><meta property='article:published_time' content='2018-06-20T17:25:25&#43;08:00'/><meta property='article:modified_time' content='2018-06-20T17:25:25&#43;08:00'/><meta name='twitter:card' content='summary'>
 
-<meta name="generator" content="Hugo 0.81.0" />
+<meta name="generator" content="Hugo 0.86.0" />
 
   <title>设计模式 之 静态代理模式和装饰者模式 • A Notebook of Extendswind</title>
   <link rel='canonical' href='https://extendswind.top/posts/technical/design_patterns_static_proxy_and_decoration/'>
@@ -101,6 +101,8 @@ interface Logger { void writeLog(); } // 被代理类 class LoggerSubject implem
         <a href='/tags/linux/' style='font-size:1em'>linux</a>
       </li><li>
         <a href='/tags/log4j/' style='font-size:1em'>log4j</a>
+      </li><li>
+        <a href='/tags/python/' style='font-size:1em'>python</a>
       </li><li>
         <a href='/tags/raspberry/' style='font-size:1em'>raspberry</a>
       </li><li>
@@ -220,7 +222,7 @@ interface Logger { void writeLog(); } // 被代理类 class LoggerSubject implem
 <p>静态代理的思想：将被代理类作为代理类的成员，通过代理类调用被代理类的函数，并添加新的控制。包装类与被包装类实现同一接口，使得使用时的代码一致。</p>
 <p>应用：已经有一个日志记录器LoggerSubject，需要对writeLog()函数的前后进行某些操作（如初始化、异常处理等），使用Proxy类间接调用LoggerSubject.writeLog()实现新控制操作的添加。</p>
 <p>实现如下</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">interface</span> <span style="color:#a6e22e">Logger</span> <span style="color:#f92672">{</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">interface</span> <span style="color:#a6e22e">Logger</span> <span style="color:#f92672">{</span>
     <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">writeLog</span><span style="color:#f92672">();</span>
 <span style="color:#f92672">}</span>
 
@@ -263,7 +265,7 @@ interface Logger { void writeLog(); } // 被代理类 class LoggerSubject implem
 <p>主要用于给一个类添加新功能</p>
 <p>主要思想：被装饰类作为类成员被调用，为了使装饰类能和被装饰类一样的使用，两者实现相同的接口。</p>
 <p>通过构造函数传入被包装类，能够自由组合装饰，如下面的最后的使用。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">interface</span> <span style="color:#a6e22e">Logger</span> <span style="color:#f92672">{</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">interface</span> <span style="color:#a6e22e">Logger</span> <span style="color:#f92672">{</span>
     <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">writeLog</span><span style="color:#f92672">();</span>
 <span style="color:#f92672">}</span>
 

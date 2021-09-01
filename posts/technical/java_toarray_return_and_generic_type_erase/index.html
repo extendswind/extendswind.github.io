@@ -23,7 +23,7 @@ public &lt;T&gt; T[] toArray(T[] a) { if (a.length &lt; size) // Make a new arra
 <meta property='og:site_name' content='A Notebook of Extendswind'>
 <meta property='og:type' content='article'><meta property='article:section' content='posts'><meta property='article:tag' content='java'><meta property='article:published_time' content='2020-05-19T11:30:00&#43;08:00'/><meta property='article:modified_time' content='2020-05-19T11:30:00&#43;08:00'/><meta name='twitter:card' content='summary'>
 
-<meta name="generator" content="Hugo 0.81.0" />
+<meta name="generator" content="Hugo 0.86.0" />
 
   <title>java从toArray返回Object[]到泛型的类型擦除 • A Notebook of Extendswind</title>
   <link rel='canonical' href='https://extendswind.top/posts/technical/java_toarray_return_and_generic_type_erase/'>
@@ -101,6 +101,8 @@ public &lt;T&gt; T[] toArray(T[] a) { if (a.length &lt; size) // Make a new arra
         <a href='/tags/linux/' style='font-size:1em'>linux</a>
       </li><li>
         <a href='/tags/log4j/' style='font-size:1em'>log4j</a>
+      </li><li>
+        <a href='/tags/python/' style='font-size:1em'>python</a>
       </li><li>
         <a href='/tags/raspberry/' style='font-size:1em'>raspberry</a>
       </li><li>
@@ -236,7 +238,7 @@ public &lt;T&gt; T[] toArray(T[] a) { if (a.length &lt; size) // Make a new arra
 <p>(部分代码没有运行过）</p>
 <h1 id="arraylist的toarray函数使用">ArrayList的toArray函数使用</h1>
 <p>将ArrayList转为数组，提供了两个函数</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">Object<span style="color:#f92672">[]</span> <span style="color:#a6e22e">toArray</span><span style="color:#f92672">();</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">Object<span style="color:#f92672">[]</span> <span style="color:#a6e22e">toArray</span><span style="color:#f92672">();</span>
 <span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;</span> T<span style="color:#f92672">[]</span> <span style="color:#a6e22e">toArray</span><span style="color:#f92672">(</span>T<span style="color:#f92672">[]</span> a<span style="color:#f92672">);</span>
 
 <span style="color:#75715e">// 后面考虑一个Integer类型的ArrayList
@@ -247,7 +249,7 @@ aa<span style="color:#f92672">.</span><span style="color:#a6e22e">add</span><spa
 <p>第一个函数是直接将ArrayList转换成Object的数组，可以用<code>Object[] bb = aa.toArray()</code>，在具体使用时对每个对象进行强制类型转换，如<code>System.out.println((Integer)bb[1])</code>。（java不支持数组之间的强制类型转换）</p>
 <h2 id="t-t-toarrayt-a"><!-- raw HTML omitted --> T[] toArray(T[] a);</h2>
 <p>第二个函数能够直接得到T类型的数组，当传入的<code>T[] a</code>能放下ArrayList时，会将ArrayList中的内容复制到a中（a的size较大时会a[size]=null）。否则，将构建一个新的数组并返回。具体实现如下:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;</span> T<span style="color:#f92672">[]</span> <span style="color:#a6e22e">toArray</span><span style="color:#f92672">(</span>T<span style="color:#f92672">[]</span> a<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;</span> T<span style="color:#f92672">[]</span> <span style="color:#a6e22e">toArray</span><span style="color:#f92672">(</span>T<span style="color:#f92672">[]</span> a<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
     <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>a<span style="color:#f92672">.</span><span style="color:#a6e22e">length</span> <span style="color:#f92672">&lt;</span> size<span style="color:#f92672">)</span>
         <span style="color:#75715e">// Make a new array of a&#39;s runtime type, but my contents:
 </span><span style="color:#75715e"></span>        <span style="color:#66d9ef">return</span> <span style="color:#f92672">(</span>T<span style="color:#f92672">[])</span> Arrays<span style="color:#f92672">.</span><span style="color:#a6e22e">copyOf</span><span style="color:#f92672">(</span>elementData<span style="color:#f92672">,</span> size<span style="color:#f92672">,</span> a<span style="color:#f92672">.</span><span style="color:#a6e22e">getClass</span><span style="color:#f92672">());</span>
@@ -264,7 +266,7 @@ aa<span style="color:#f92672">.</span><span style="color:#a6e22e">add</span><spa
 <h2 id="泛型的类型擦除">泛型的类型擦除</h2>
 <p>泛型是从SE 5才开始引入，为了不破坏现有的类型机制，用了一种类型擦除的机制，相比C++使类型擦除时的考虑更为复杂。</p>
 <p>虚拟机并不支持泛型，而是将泛型类编译成了一个类型擦除（erased）的类，将类型变量转换成一个原始类型（raw type）。原始类型在默认类型变量时会被转换成Object，在类型变量有限定时（如 <!-- raw HTML omitted -->）会被转换成限定的类。在运行时获取到的T类型都是擦除后的类型。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Pair</span><span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;</span> <span style="color:#f92672">{</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Pair</span><span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;</span> <span style="color:#f92672">{</span>
   <span style="color:#66d9ef">private</span> T first<span style="color:#f92672">;</span>
   <span style="color:#66d9ef">private</span> T second<span style="color:#f92672">;</span>
   <span style="color:#66d9ef">public</span> <span style="color:#a6e22e">Pair</span><span style="color:#f92672">(</span>T first<span style="color:#f92672">,</span> T second<span style="color:#f92672">){</span> <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">first</span> <span style="color:#f92672">=</span> first<span style="color:#f92672">;</span> <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">second</span> <span style="color:#f92672">=</span> second<span style="color:#f92672">;</span> <span style="color:#f92672">}</span>
@@ -285,7 +287,7 @@ aa<span style="color:#f92672">.</span><span style="color:#a6e22e">add</span><spa
 </span></code></pre></div><p>这和C++的处理方式很不一样，C++中每个模板的实例化都会产生不同的具体类型，相当于对与每一种类型都会编译出一套独立的代码，会有“模板代码膨胀”。而在java中，使用了模板的类作为一个通用类进行了编译，传入不同的泛型参数也只会运行在同一个类上，模板的类型使用擦除后的类型进行编译。</p>
 <p>在使用到具体的对象时，编译器会添加一个强制类型的转换指定，将Object或限定的类型强转为具体的类型。如对于类成员函数 <code>public T getFirst()</code>，由于类型擦除后函数会变为<code>public Object getFirst()</code>，当泛型T为整型时，编译器调用 <code>Int a = pair1.getFirst()</code>会添加一个强制类型转换指令给虚拟机。而在没有具体类型时，一直使用擦除后的类型进行处理。</p>
 <h2 id="泛型方法不涉及类型擦除">泛型方法不涉及类型擦除</h2>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">f</span><span style="color:#f92672">(</span>T x<span style="color:#f92672">){</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">f</span><span style="color:#f92672">(</span>T x<span style="color:#f92672">){</span>
   System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span>x<span style="color:#f92672">.</span><span style="color:#a6e22e">getClass</span><span style="color:#f92672">().</span><span style="color:#a6e22e">getName</span><span style="color:#f92672">());</span>
 <span style="color:#f92672">}</span>
 
@@ -306,7 +308,7 @@ f<span style="color:#f92672">.(</span><span style="color:#e6db74">&#34;&#34;</sp
 <h1 id="泛型数组的创建的两种常用方法">泛型数组的创建的两种常用方法</h1>
 <p>虽然无法直接创建T类型的对象，但可以利用反射机制间接的创建T类型的对象。对于创建泛型数组，一般的方案是使用ArrayList。如果某些情况下需要自己实现，可以使用和ArrayList类似的方式。</p>
 <p>1、JDK通过创建Object[]的数组放对象，在取对象时进行类型转换，此时toArray函数通过泛型函数的参数获取类型。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">// 数组仍使用Object类型
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">// 数组仍使用Object类型
 </span><span style="color:#75715e"></span><span style="color:#66d9ef">private</span> Object<span style="color:#f92672">[]</span> array <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Object<span style="color:#f92672">[</span>size<span style="color:#f92672">];</span>
 
 <span style="color:#75715e">// 在get函数中强制类型转换
@@ -321,7 +323,7 @@ f<span style="color:#f92672">.(</span><span style="color:#e6db74">&#34;&#34;</sp
 </span><span style="color:#75715e"></span>  <span style="color:#66d9ef">return</span> <span style="color:#f92672">(</span>T<span style="color:#f92672">[])</span> Arrays<span style="color:#f92672">.</span><span style="color:#a6e22e">copyOf</span><span style="color:#f92672">(</span>elementData<span style="color:#f92672">,</span> size<span style="color:#f92672">,</span> a<span style="color:#f92672">.</span><span style="color:#a6e22e">getClass</span><span style="color:#f92672">());</span>
 <span style="color:#f92672">}</span>
 </code></pre></div><p>2、或者传入具体的类型，由于传入的具体类型可以创建具体类型数组，因此可以直接实现<code>T[] toArray()</code>。可能是传入类型的方式不太优雅，JDK并没有使用这种形式。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">GenericArray</span><span style="color:#f92672">{</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">GenericArray</span><span style="color:#f92672">{</span>
   <span style="color:#66d9ef">private</span> T<span style="color:#f92672">[]</span> array<span style="color:#f92672">;</span>
 
   <span style="color:#75715e">// 构造函数直接传入类型，数组的强制类型转换会产生编译警告，此处直接用标签忽略 
@@ -343,7 +345,7 @@ f<span style="color:#f92672">.(</span><span style="color:#e6db74">&#34;&#34;</sp
 <p>后面简单介绍构造函数包装后传入的方式。</p>
 <h2 id="通过构造函数传入类型后创建类实例">通过构造函数传入类型后创建类实例</h2>
 <p>对于<code>T a = new T();</code>，由于类型擦除无法创建，但可以通过在运行时传入类变量来实现创建，将类型通过构造函数传入。在有类型后，通过反射机制（newInstance）构建新的类。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">ClassAsFactory</span><span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;{</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">ClassAsFactory</span><span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;{</span>
   Class<span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;</span> kind<span style="color:#f92672">;</span>
   <span style="color:#66d9ef">public</span> <span style="color:#a6e22e">ClassAsFactory</span><span style="color:#f92672">(</span>Class<span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;</span> kind<span style="color:#f92672">){</span> <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">kind</span> <span style="color:#f92672">=</span> kind<span style="color:#f92672">;</span> <span style="color:#f92672">}</span>
   
@@ -353,7 +355,7 @@ f<span style="color:#f92672">.(</span><span style="color:#e6db74">&#34;&#34;</sp
   <span style="color:#f92672">}</span>
 <span style="color:#f92672">}</span>
 </code></pre></div><p>但是对于这段代码，编译器无法检查构造函数是否存在等问题，一般更建议使用显示类型工厂，在构造函数中传入new过具体类型的工厂类：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">Interface FactoryI<span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;{</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">Interface FactoryI<span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;{</span>
   T <span style="color:#a6e22e">create</span><span style="color:#f92672">();</span>
 <span style="color:#f92672">}</span>
 

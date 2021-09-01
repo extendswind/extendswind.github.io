@@ -33,7 +33,7 @@ appender 主要用于
 <meta property='og:site_name' content='A Notebook of Extendswind'>
 <meta property='og:type' content='article'><meta property='article:section' content='posts'><meta property='article:tag' content='java'><meta property='article:tag' content='log4j'><meta property='article:published_time' content='2019-05-29T20:30:00&#43;08:00'/><meta property='article:modified_time' content='2019-05-29T20:30:00&#43;08:00'/><meta name='twitter:card' content='summary'>
 
-<meta name="generator" content="Hugo 0.81.0" />
+<meta name="generator" content="Hugo 0.86.0" />
 
   <title>log4j 1.2 配置和使用简述 • A Notebook of Extendswind</title>
   <link rel='canonical' href='https://extendswind.top/posts/technical/log4j_properties_simple_introduction/'>
@@ -111,6 +111,8 @@ appender 主要用于
         <a href='/tags/linux/' style='font-size:1em'>linux</a>
       </li><li>
         <a href='/tags/log4j/' style='font-size:1em'>log4j</a>
+      </li><li>
+        <a href='/tags/python/' style='font-size:1em'>python</a>
       </li><li>
         <a href='/tags/raspberry/' style='font-size:1em'>raspberry</a>
       </li><li>
@@ -286,7 +288,7 @@ Appender{
 <li>配置layout  （配置日志输出的格式）</li>
 </ul>
 <h2 id="示例">示例</h2>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># root logger 的level和对应的appender (fileAppender在后面定义）</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># root logger 的level和对应的appender (fileAppender在后面定义）</span>
 log4j.rootLogger<span style="color:#f92672">=</span>info, fileAppender
 
 <span style="color:#75715e"># 定义fileAppender 为 File appender</span>
@@ -311,7 +313,7 @@ log4j.appender.myConsole.layout.ConversionPattern<span style="color:#f92672">=</
 
 </code></pre></div><p>分层的语法略奇葩，而且前面可以用到后面定义的变量。</p>
 <h1 id="java代码调用">java代码调用</h1>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">Log log <span style="color:#f92672">=</span> LogFactory<span style="color:#f92672">.</span><span style="color:#a6e22e">getLog</span><span style="color:#f92672">(</span>Test4log<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">);</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">Log log <span style="color:#f92672">=</span> LogFactory<span style="color:#f92672">.</span><span style="color:#a6e22e">getLog</span><span style="color:#f92672">(</span>Test4log<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">);</span>
 log<span style="color:#f92672">.</span><span style="color:#a6e22e">info</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;test&#34;</span><span style="color:#f92672">);</span>
 </code></pre></div><p>程序会在classpath下查找log4j.properties，因此一般放在src/main/resources文件夹下</p>
 

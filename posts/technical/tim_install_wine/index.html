@@ -43,7 +43,7 @@ sudo pacman -S cinnamon-settings-daemon /usr/lib/cinnamon-settings-daemon/csd-xs
 <meta property='og:site_name' content='A Notebook of Extendswind'>
 <meta property='og:type' content='article'><meta property='article:section' content='posts'><meta property='article:tag' content='linux'><meta property='article:published_time' content='2019-01-20T21:59:49&#43;08:00'/><meta property='article:modified_time' content='2019-01-20T21:59:49&#43;08:00'/><meta name='twitter:card' content='summary'>
 
-<meta name="generator" content="Hugo 0.81.0" />
+<meta name="generator" content="Hugo 0.86.0" />
 
   <title>arch linux (manjaro) 下运行tim和qq • A Notebook of Extendswind</title>
   <link rel='canonical' href='https://extendswind.top/posts/technical/tim_install_wine/'>
@@ -121,6 +121,8 @@ sudo pacman -S cinnamon-settings-daemon /usr/lib/cinnamon-settings-daemon/csd-xs
         <a href='/tags/linux/' style='font-size:1em'>linux</a>
       </li><li>
         <a href='/tags/log4j/' style='font-size:1em'>log4j</a>
+      </li><li>
+        <a href='/tags/python/' style='font-size:1em'>python</a>
       </li><li>
         <a href='/tags/raspberry/' style='font-size:1em'>raspberry</a>
       </li><li>
@@ -242,7 +244,7 @@ d</p>
 </blockquote>
 <p>X Error of failed request: BadWindow (invalid Window parameter) Major opcode of failed request: 20 (X_GetProperty)</p>
 <p>由于deepin-wine依赖了gnome系（mate,cinnamon,gnome）的setting-daemon，需要安装后运行（一般加入开机启动）</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sudo pacman -S cinnamon-settings-daemon
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sudo pacman -S cinnamon-settings-daemon
 /usr/lib/cinnamon-settings-daemon/csd-xsettings
 </code></pre></div><h2 id="无法输入中文">无法输入中文</h2>
 <p>如果其它地方可以使用输入法，一般为环境变量的问题，fcitx没有配置好。</p>

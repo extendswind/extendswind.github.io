@@ -37,7 +37,7 @@ bin=`dirname &#34;$0&#34;` bin=`cd &#34;$bin&#34; &gt; /dev/null; pwd` # Call Ha
 <meta property='og:site_name' content='A Notebook of Extendswind'>
 <meta property='og:type' content='article'><meta property='article:section' content='posts'><meta property='article:tag' content='hadoop'><meta property='article:tag' content='GIS'><meta property='article:published_time' content='2018-09-05T10:30:00&#43;08:00'/><meta property='article:modified_time' content='2018-09-05T10:30:00&#43;08:00'/><meta name='twitter:card' content='summary'>
 
-<meta name="generator" content="Hugo 0.81.0" />
+<meta name="generator" content="Hugo 0.86.0" />
 
   <title>SpatialHadoop的编译与运行 • A Notebook of Extendswind</title>
   <link rel='canonical' href='https://extendswind.top/posts/technical/spatialhadoop_compile_and_run/'>
@@ -115,6 +115,8 @@ bin=`dirname &#34;$0&#34;` bin=`cd &#34;$bin&#34; &gt; /dev/null; pwd` # Call Ha
         <a href='/tags/linux/' style='font-size:1em'>linux</a>
       </li><li>
         <a href='/tags/log4j/' style='font-size:1em'>log4j</a>
+      </li><li>
+        <a href='/tags/python/' style='font-size:1em'>python</a>
       </li><li>
         <a href='/tags/raspberry/' style='font-size:1em'>raspberry</a>
       </li><li>
@@ -253,7 +255,7 @@ bin=`dirname &#34;$0&#34;` bin=`cd &#34;$bin&#34; &gt; /dev/null; pwd` # Call Ha
 <h2 id="运行">运行</h2>
 <p>首先需要有一个Hadoop集群，能够提交yarn任务。</p>
 <p>将target目录下生成的tar.gz包（spatialhadoop-2.4.3-SNAPSHOT-bin.tar.gz）拷贝到Hadoop目录下并解压即可。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">cp target/spatialhadoop-2.4.3-SNAPSHOT-bin.tar.gz $HADOOP_HOME/
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">cp target/spatialhadoop-2.4.3-SNAPSHOT-bin.tar.gz $HADOOP_HOME/
 cd $HADOOP_HOME
 tar -zxvf spatialhadoop-2.4.3-SNAPSHOT-bin.tar.gz
 </code></pre></div><p>Hadoop目录下运行下面的测试代码，会向HDFS中写入一个随机生成的矩形文件。</p>
@@ -261,7 +263,7 @@ tar -zxvf spatialhadoop-2.4.3-SNAPSHOT-bin.tar.gz
 <h1 id="spatialhadoop运行机制">SpatialHadoop运行机制</h1>
 <h2 id="shadoop-脚本">shadoop 脚本</h2>
 <p>SpatialHadoop 通过脚本shadoop运行命令，脚本就只有几行代码</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">bin<span style="color:#f92672">=</span><span style="color:#e6db74">`</span>dirname <span style="color:#e6db74">&#34;</span>$0<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">`</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">bin<span style="color:#f92672">=</span><span style="color:#e6db74">`</span>dirname <span style="color:#e6db74">&#34;</span>$0<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">`</span>
 bin<span style="color:#f92672">=</span><span style="color:#e6db74">`</span>cd <span style="color:#e6db74">&#34;</span>$bin<span style="color:#e6db74">&#34;</span> &gt; /dev/null; pwd<span style="color:#e6db74">`</span>
 
 <span style="color:#75715e"># Call Hadoop with the operations.Main as the main class</span>
@@ -269,7 +271,7 @@ bin<span style="color:#f92672">=</span><span style="color:#e6db74">`</span>cd <s
 </code></pre></div><p>其实只是将spatialhadoop的jar包与相关依赖jar包放入Hadoop的包目录中，然后通过shadoop脚本调用Hadoop脚本调用包中的一个类，向YARN提交MapReduce任务。</p>
 <h2 id="spatialhadoop的相关文件">spatialhadoop的相关文件</h2>
 <p>spatialhadoop-2.4.3-SNAPSHOT-bin.tar.gz 中有以下的文件。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">.
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">.
 ├── bin
 │   └── shadoop
 ├── etc
@@ -290,7 +292,7 @@ bin<span style="color:#f92672">=</span><span style="color:#e6db74">`</span>cd <s
 </code></pre></div><p>配置文件貌似基本功能上用得不多，shadoop脚本也比较简单，除去使用的相关环境依赖jar包，spatialhadoop实质上只是执行spatialhadoop-2.4.3-SNAPSHOT.jar包中的函数而已。</p>
 <h1 id="spatialhadoop-基本使用">SpatialHadoop 基本使用</h1>
 <p>构建索引文件与空间范围查询</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">shadoop index test.rects sindex:grid test.grid shape:rect 
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">shadoop index test.rects sindex:grid test.grid shape:rect 
 shadoop rangequery test.grid rect:10,10,2000,3000 rangequery.out shape:rect
 </code></pre></div><p>主要的索引结构，文件存储形式等在官网有相关文档。</p>
 <p>具体运行的参数和运行的命令很多没有介绍，输入bin/shadoop以及bin/shadoop 接命令能够看到命令的基本使用情况，更具体的估计要去找源码了。</p>

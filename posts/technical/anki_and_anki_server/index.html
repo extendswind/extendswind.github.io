@@ -47,7 +47,7 @@ $ git submodule update --init # anki-bundled已经加入为submodule，可以先
 <meta property='og:site_name' content='A Notebook of Extendswind'>
 <meta property='og:type' content='article'><meta property='article:section' content='posts'><meta property='article:tag' content='software'><meta property='article:published_time' content='2019-03-04T21:59:49&#43;08:00'/><meta property='article:modified_time' content='2019-03-04T21:59:49&#43;08:00'/><meta name='twitter:card' content='summary'>
 
-<meta name="generator" content="Hugo 0.81.0" />
+<meta name="generator" content="Hugo 0.86.0" />
 
   <title>anki的使用以及anki server的配置 • A Notebook of Extendswind</title>
   <link rel='canonical' href='https://extendswind.top/posts/technical/anki_and_anki_server/'>
@@ -125,6 +125,8 @@ $ git submodule update --init # anki-bundled已经加入为submodule，可以先
         <a href='/tags/linux/' style='font-size:1em'>linux</a>
       </li><li>
         <a href='/tags/log4j/' style='font-size:1em'>log4j</a>
+      </li><li>
+        <a href='/tags/python/' style='font-size:1em'>python</a>
       </li><li>
         <a href='/tags/raspberry/' style='font-size:1em'>raspberry</a>
       </li><li>
@@ -251,7 +253,7 @@ $ git submodule update --init # anki-bundled已经加入为submodule，可以先
 <p>2、安装anki或anki-bundled相关的库</p>
 <p>直接使用包管理器安装 <code>sudo pacman -S anki</code></p>
 <p>如果包管理器里没有anki（如debian），也可以用pip安装anki-bundled相关的库</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> $ git submodule update --init  <span style="color:#75715e"># anki-bundled已经加入为submodule，可以先更新</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> $ git submodule update --init  <span style="color:#75715e"># anki-bundled已经加入为submodule，可以先更新</span>
  $ cd anki-bundled
  $ pip install -r requirements.txt  <span style="color:#75715e"># 安装相关的库</span>
 </code></pre></div><p>3、安装webob</p>
@@ -265,15 +267,15 @@ $ git submodule update --init # anki-bundled已经加入为submodule，可以先
 <h2 id="客户端配置">客户端配置</h2>
 <p><strong>android anki</strong> 在高级设置里填上ip和端口就行。</p>
 <p><strong>anki桌面版2.1.x</strong> 修改了添加插件方式。在插件文件夹下新建一个新的文件夹（官方插件命名都是数字方便更新，用字母也行），然后在其下新建一个文件<code>__init__.py</code>，加入以下内容。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> anki.sync<span style="color:#f92672">,</span> anki.hooks<span style="color:#f92672">,</span> aqt
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> anki.sync<span style="color:#f92672">,</span> anki.hooks<span style="color:#f92672">,</span> aqt
 
 addr <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;http://127.0.0.1:27701/&#34;</span> <span style="color:#75715e"># put your server address here</span>
 anki<span style="color:#f92672">.</span>sync<span style="color:#f92672">.</span>SYNC_BASE <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">%s</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">+</span> addr
 <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">resetHostNum</span>():
-    aqt<span style="color:#f92672">.</span>mw<span style="color:#f92672">.</span>pm<span style="color:#f92672">.</span>profile[<span style="color:#e6db74">&#39;hostNum&#39;</span>] <span style="color:#f92672">=</span> None
+    aqt<span style="color:#f92672">.</span>mw<span style="color:#f92672">.</span>pm<span style="color:#f92672">.</span>profile[<span style="color:#e6db74">&#39;hostNum&#39;</span>] <span style="color:#f92672">=</span> <span style="color:#66d9ef">None</span>
 anki<span style="color:#f92672">.</span>hooks<span style="color:#f92672">.</span>addHook(<span style="color:#e6db74">&#34;profileLoaded&#34;</span>, resetHostNum)
 </code></pre></div><p><strong>anki桌面版2.0</strong> 直接在插件文件夹下新建一个.py文件（如ankisyncd.py），加入以下内容。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> anki.sync
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> anki.sync
 
 addr <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;http://127.0.0.1:27701/&#34;</span> <span style="color:#75715e"># put your server address here</span>
 anki<span style="color:#f92672">.</span>sync<span style="color:#f92672">.</span>SYNC_BASE <span style="color:#f92672">=</span> addr
@@ -283,7 +285,7 @@ anki<span style="color:#f92672">.</span>sync<span style="color:#f92672">.</span>
 <p>简直就是个没人测试的系统！各种莫名奇妙的bug需要调。</p>
 <p>好不容易装好了，局域网下卡片数量较多时（4000）速度也不怎么样&hellip;.</p>
 <p>debian 系统安装稍正常</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">easy_install ankiserver  <span style="color:#75715e"># 为什么不用pip？  因为会有莫名奇妙的错误！！</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">easy_install ankiserver  <span style="color:#75715e"># 为什么不用pip？  因为会有莫名奇妙的错误！！</span>
 mkdir ankiserver_data  <span style="color:#75715e"># anki server的数据目录</span>
 cd ankiserver_data
 cp /usr/lib/python2.7/site-packages/AnkiServer-2.0.6-py2.7.egg/examples/example.ini ./production.ini <span style="color:#75715e"># 复制配置文件，如有必要可以改改端口一类的</span>

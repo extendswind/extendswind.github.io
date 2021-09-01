@@ -29,7 +29,7 @@ hdfs fsck /readme.md -files -blocks -racks
 <meta property='og:site_name' content='A Notebook of Extendswind'>
 <meta property='og:type' content='article'><meta property='article:section' content='posts'><meta property='article:tag' content='hadoop'><meta property='article:published_time' content='2018-12-12T11:20:00&#43;08:00'/><meta property='article:modified_time' content='2018-12-12T11:20:00&#43;08:00'/><meta name='twitter:card' content='summary'>
 
-<meta name="generator" content="Hugo 0.81.0" />
+<meta name="generator" content="Hugo 0.86.0" />
 
   <title>Hadoop 机架（集群拓扑）设置 • A Notebook of Extendswind</title>
   <link rel='canonical' href='https://extendswind.top/posts/technical/hadoop_rack_awareness/'>
@@ -107,6 +107,8 @@ hdfs fsck /readme.md -files -blocks -racks
         <a href='/tags/linux/' style='font-size:1em'>linux</a>
       </li><li>
         <a href='/tags/log4j/' style='font-size:1em'>log4j</a>
+      </li><li>
+        <a href='/tags/python/' style='font-size:1em'>python</a>
       </li><li>
         <a href='/tags/raspberry/' style='font-size:1em'>raspberry</a>
       </li><li>
@@ -231,7 +233,7 @@ hdfs fsck /readme.md -files -blocks -racks
 </code></pre><p>时，会输出</p>
 <pre><code>/rack1
 /rack4
-</code></pre><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">
+</code></pre><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">
 <span style="color:#75715e">#!/bin/python3</span>
 <span style="color:#f92672">import</span> sys
 
@@ -247,10 +249,10 @@ sys<span style="color:#f92672">.</span>argv<span style="color:#f92672">.</span>p
 <span style="color:#75715e"># 实践上可以读文件确定ip的对应关系</span>
 <span style="color:#66d9ef">for</span> ip <span style="color:#f92672">in</span> sys<span style="color:#f92672">.</span>argv:      
     hostNum <span style="color:#f92672">=</span> int(ip<span style="color:#f92672">.</span>split(<span style="color:#e6db74">&#34;.&#34;</span>)[<span style="color:#ae81ff">3</span>])
-    <span style="color:#66d9ef">print</span>(<span style="color:#e6db74">&#34;/rack&#34;</span> <span style="color:#f92672">+</span> str(int(hostNum<span style="color:#f92672">/</span><span style="color:#ae81ff">4</span>)))
+    print(<span style="color:#e6db74">&#34;/rack&#34;</span> <span style="color:#f92672">+</span> str(int(hostNum<span style="color:#f92672">/</span><span style="color:#ae81ff">4</span>)))
 
 </code></pre></div><h2 id="设置配置参数">设置配置参数</h2>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#f92672">&lt;property&gt;</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#f92672">&lt;property&gt;</span>
   <span style="color:#f92672">&lt;name&gt;</span>net.topology.script.file.name<span style="color:#f92672">&lt;/name&gt;</span>
   <span style="color:#f92672">&lt;value&gt;</span>/home/sparkl/hadoop/etc/hadoop/topology.py<span style="color:#f92672">&lt;/value&gt;</span>
 <span style="color:#f92672">&lt;/property&gt;</span>

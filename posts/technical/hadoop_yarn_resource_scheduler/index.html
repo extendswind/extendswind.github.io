@@ -31,7 +31,7 @@ Capacity Scheduler CapacityScheduler重点解决多个组织共享集群资源�
 <meta property='og:site_name' content='A Notebook of Extendswind'>
 <meta property='og:type' content='article'><meta property='article:section' content='posts'><meta property='article:tag' content='hadoop'><meta property='article:published_time' content='2018-09-04T10:30:00&#43;08:00'/><meta property='article:modified_time' content='2018-09-04T10:30:00&#43;08:00'/><meta name='twitter:card' content='summary'>
 
-<meta name="generator" content="Hugo 0.81.0" />
+<meta name="generator" content="Hugo 0.86.0" />
 
   <title>Hadoop YARN 调度器（scheduler） —— 资源调度策略 • A Notebook of Extendswind</title>
   <link rel='canonical' href='https://extendswind.top/posts/technical/hadoop_yarn_resource_scheduler/'>
@@ -109,6 +109,8 @@ Capacity Scheduler CapacityScheduler重点解决多个组织共享集群资源�
         <a href='/tags/linux/' style='font-size:1em'>linux</a>
       </li><li>
         <a href='/tags/log4j/' style='font-size:1em'>log4j</a>
+      </li><li>
+        <a href='/tags/python/' style='font-size:1em'>python</a>
       </li><li>
         <a href='/tags/raspberry/' style='font-size:1em'>raspberry</a>
       </li><li>
@@ -238,7 +240,7 @@ Capacity Scheduler CapacityScheduler重点解决多个组织共享集群资源�
 <p>Fair Scheduler 会在第一个任务运行时分配当前同级队列的所有资源，当有其它任务运行时，回收前面任务运行时的部分资源（一般为运行完成的Container）用于其它任务。</p>
 <p>至于FIFO，源码里都没有描述，可能就是一般的先进先出了。</p>
 <p>YARN默认使用CapacityScheduler，通过下面的属性配置：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#f92672">&lt;property&gt;</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#f92672">&lt;property&gt;</span>
   <span style="color:#f92672">&lt;name&gt;</span>yarn.resourcemanager.scheduler.class<span style="color:#f92672">&lt;/name&gt;</span>
   <span style="color:#f92672">&lt;value&gt;</span>org.apache.hadoop.yarn.server.resourcemanager.scheduler.fair.FairScheduler<span style="color:#f92672">&lt;/value&gt;</span>
 <span style="color:#f92672">&lt;/property&gt;</span>
@@ -248,7 +250,7 @@ Capacity Scheduler CapacityScheduler重点解决多个组织共享集群资源�
 <h1 id="capacity-scheduler">Capacity Scheduler</h1>
 <p>CapacityScheduler重点解决多个组织共享集群资源，并保证每个组织自己的资源使用量。当自己的资源不足时能够使用其它组织的空闲资源。</p>
 <p>资源通过层级队列（hierarchical queues）的形式进行组织，配置在etc/hadoop/capacity-scheduler.xml.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#75715e">&lt;!-- 队列结构设置 --&gt;</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#75715e">&lt;!-- 队列结构设置 --&gt;</span>
 <span style="color:#f92672">&lt;property&gt;</span>
   <span style="color:#f92672">&lt;name&gt;</span>yarn.scheduler.capacity.root.queues<span style="color:#f92672">&lt;/name&gt;</span>
   <span style="color:#f92672">&lt;value&gt;</span>a,b<span style="color:#f92672">&lt;/value&gt;</span>
@@ -305,7 +307,7 @@ Capacity Scheduler CapacityScheduler重点解决多个组织共享集群资源�
 </ul>
 <h1 id="fair-scheduler-公平调度器">Fair Scheduler （公平调度器）</h1>
 <p>对比CapacityScheduler的主要区别： 任务提交时占用同一层队列所有的资源 (Capacity Scheduler中只使用maximum-capacity限制下的其它队列闲置的资源），另一个任务提交时，会回收先前任务的部分资源。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#f92672">&lt;allocations&gt;</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#f92672">&lt;allocations&gt;</span>
   <span style="color:#f92672">&lt;defaultQueueSchedulingPolicy&gt;</span>fair<span style="color:#f92672">&lt;/defaultQueueSchedulingPolicy&gt;</span>
   <span style="color:#f92672">&lt;queue</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;a&#34;</span><span style="color:#f92672">&gt;</span>
     <span style="color:#f92672">&lt;weight&gt;</span>4<span style="color:#f92672">&lt;/weight&gt;</span>

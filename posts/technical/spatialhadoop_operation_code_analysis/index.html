@@ -21,7 +21,7 @@ public static void main(String[] args) { int exitCode = -1; ProgramDriver pgd = 
 <meta property='og:site_name' content='A Notebook of Extendswind'>
 <meta property='og:type' content='article'><meta property='article:section' content='posts'><meta property='article:tag' content='hadoop'><meta property='article:tag' content='GIS'><meta property='article:published_time' content='2020-11-07T10:30:00&#43;08:00'/><meta property='article:modified_time' content='2020-11-07T10:30:00&#43;08:00'/><meta name='twitter:card' content='summary'>
 
-<meta name="generator" content="Hugo 0.81.0" />
+<meta name="generator" content="Hugo 0.86.0" />
 
   <title>SpatialHadoop二级空间索引机制源码分析 • A Notebook of Extendswind</title>
   <link rel='canonical' href='https://extendswind.top/posts/technical/spatialhadoop_operation_code_analysis/'>
@@ -99,6 +99,8 @@ public static void main(String[] args) { int exitCode = -1; ProgramDriver pgd = 
         <a href='/tags/linux/' style='font-size:1em'>linux</a>
       </li><li>
         <a href='/tags/log4j/' style='font-size:1em'>log4j</a>
+      </li><li>
+        <a href='/tags/python/' style='font-size:1em'>python</a>
       </li><li>
         <a href='/tags/raspberry/' style='font-size:1em'>raspberry</a>
       </li><li>
@@ -211,15 +213,15 @@ public static void main(String[] args) { int exitCode = -1; ProgramDriver pgd = 
 <p>相比GeoSpark的代码，没有Spark现成的算子可以复用并且要处理文件方面的问题，逻辑上的处理稍复杂一点。</p>
 <h1 id="空间分析任务的提交">空间分析任务的提交</h1>
 <p>SpatialHadoop提供了一个脚本，用于基本的空间处理，如下面的代码生成测试数据。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sbin/shadoop generate test.rects size:1.gb shape:rect mbr:0,0,1000000,1000000 -overwrite
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sbin/shadoop generate test.rects size:1.gb shape:rect mbr:0,0,1000000,1000000 -overwrite
 </code></pre></div><p>shadoop脚本做的操作不多，直接通过Hadoop的运行命令运行了edu.umn.cs.spatialHadoop.operations.Main类，在类中的Main函数中处理输入参数。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">bin<span style="color:#f92672">=</span><span style="color:#e6db74">`</span>dirname <span style="color:#e6db74">&#34;</span>$0<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">`</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">bin<span style="color:#f92672">=</span><span style="color:#e6db74">`</span>dirname <span style="color:#e6db74">&#34;</span>$0<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">`</span>
 bin<span style="color:#f92672">=</span><span style="color:#e6db74">`</span>cd <span style="color:#e6db74">&#34;</span>$bin<span style="color:#e6db74">&#34;</span> &gt; /dev/null; pwd<span style="color:#e6db74">`</span>
 
 <span style="color:#75715e"># Call Hadoop with the operations.Main as the main class</span>
 . <span style="color:#e6db74">&#34;</span>$bin<span style="color:#e6db74">&#34;</span>/hadoop edu.umn.cs.spatialHadoop.operations.Main $@
 </code></pre></div><p>在Main函数中使用了Hadoop的ProgramDriver运行具体的类对象。首先从配置文件 <code>spatial-operations.yaml</code> 中读取支持的类，然后利用反射机制，读取对应类注释的shortName标签，通过shortName决定参数传递的具体的类。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span><span style="color:#f92672">(</span>String<span style="color:#f92672">[]</span> args<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span><span style="color:#f92672">(</span>String<span style="color:#f92672">[]</span> args<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
   <span style="color:#66d9ef">int</span> exitCode <span style="color:#f92672">=</span> <span style="color:#f92672">-</span>1<span style="color:#f92672">;</span>
   ProgramDriver pgd <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ProgramDriver<span style="color:#f92672">();</span>
   <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
@@ -242,12 +244,12 @@ bin<span style="color:#f92672">=</span><span style="color:#e6db74">`</span>cd <s
   System<span style="color:#f92672">.</span><span style="color:#a6e22e">exit</span><span style="color:#f92672">(</span>exitCode<span style="color:#f92672">);</span>
 <span style="color:#f92672">}</span>
 </code></pre></div><h1 id="二级空间索引机制">二级空间索引机制</h1>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">bin/shadoop index &lt;input&gt; &lt;output&gt; shape:&lt;input format&gt; sindex:&lt;index&gt; blocksize:&lt;size&gt; -overwrite
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">bin/shadoop index &lt;input&gt; &lt;output&gt; shape:&lt;input format&gt; sindex:&lt;index&gt; blocksize:&lt;size&gt; -overwrite
 
 <span style="color:#75715e"># 示例</span>
 shadoop index test.rects test.grid sindex:grid shape:rect 
 </code></pre></div><p>按照上面提到的机制，会调用Indexer类的Main函数，然后在 <code>index(inputPaths, outputPath, params);</code> 函数的调用提交任务。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> Job <span style="color:#a6e22e">index</span><span style="color:#f92672">(</span>Path<span style="color:#f92672">[]</span> inPaths<span style="color:#f92672">,</span> Path outPath<span style="color:#f92672">,</span> OperationsParams params<span style="color:#f92672">)</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> Job <span style="color:#a6e22e">index</span><span style="color:#f92672">(</span>Path<span style="color:#f92672">[]</span> inPaths<span style="color:#f92672">,</span> Path outPath<span style="color:#f92672">,</span> OperationsParams params<span style="color:#f92672">)</span>
     <span style="color:#66d9ef">throws</span> IOException<span style="color:#f92672">,</span> InterruptedException<span style="color:#f92672">,</span> ClassNotFoundException <span style="color:#f92672">{</span>
   <span style="color:#75715e">// initiallize主要指定local index对象以及构建全局索引
 </span><span style="color:#75715e"></span>  <span style="color:#75715e">// 索引的方式从params中读取具体的类
@@ -287,7 +289,7 @@ shadoop index test.rects test.grid sindex:grid shape:rect
 <p>对于文件输入的处理，通过SpatialInputFormat3划分数据（为啥后面有个3，没有看到1和2..），继承了FileInputFormat。InputSplit的划分比较常规，基于splitSize将文件划分成多个InputSplit，然后会根据数据本地性做一次合并以降低task的数量。在createRecordReader中，根据InputSplit中文件的后缀判断是否为已经有localIndex的文件，如果有则返回LocalIndexRecordReader，否则返回配置文件中设置的对应后缀的RecordReader（默认为SpatialRecordReader3）。</p>
 <p>RecordReader用于解析整个InputSplit，使用的key-value形式直接为&lt;Partition, Iterable<!-- raw HTML omitted -->&gt;的形式，key对应整个InputSplit，value为解析后的数据迭代器，其中V表示空间数据的类型，继承shape。</p>
 <p>对于没有索引过的文件，直接按行读取文件后，将每行的text转为具体的Shape。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">protected</span> <span style="color:#66d9ef">boolean</span> <span style="color:#a6e22e">nextShape</span><span style="color:#f92672">(</span>V s<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> IOException <span style="color:#f92672">{</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">protected</span> <span style="color:#66d9ef">boolean</span> <span style="color:#a6e22e">nextShape</span><span style="color:#f92672">(</span>V s<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> IOException <span style="color:#f92672">{</span>
   <span style="color:#66d9ef">do</span> <span style="color:#f92672">{</span>
     <span style="color:#66d9ef">if</span> <span style="color:#f92672">(!</span>nextLine<span style="color:#f92672">(</span>tempLine<span style="color:#f92672">))</span>
       <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span><span style="color:#f92672">;</span>
@@ -296,7 +298,7 @@ shadoop index test.rects test.grid sindex:grid shape:rect
   <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">true</span><span style="color:#f92672">;</span>
 <span style="color:#f92672">}</span>
 </code></pre></div><p>map过程的逻辑比较常规，遍历所有的shape，分别判断每个shape与哪些partition相交，以&lt;partitionID, shape&gt;的key-value形式送到reduce过程处理。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">// 去除了些异常处理的语句
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">// 去除了些异常处理的语句
 </span><span style="color:#75715e"></span><span style="color:#a6e22e">@Override</span>
 <span style="color:#66d9ef">protected</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">map</span><span style="color:#f92672">(</span>Rectangle key<span style="color:#f92672">,</span> Iterable<span style="color:#f92672">&lt;?</span> <span style="color:#66d9ef">extends</span> Shape<span style="color:#f92672">&gt;</span> shapes<span style="color:#f92672">,</span>
     <span style="color:#66d9ef">final</span> Context context<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> IOException<span style="color:#f92672">,</span> InterruptedException <span style="color:#f92672">{</span>
@@ -342,7 +344,7 @@ shadoop index test.rects test.grid sindex:grid shape:rect
 <span style="color:#f92672">}</span>
 </code></pre></div><p>reduce过程直接以partition_id和对应的shape创建输出流，将对应的数据按行写入到输出流。对于不带索引的文件，直接写入到最终的结果中；带索引的文件会在getOrCreateDataOutput函数中得到一个临时文件的输出流，在写入结束后又把整个文件读到内存中构建局部索引（这一写一读外加文本解析的开销？），最后将结果文件写入到HDFS。</p>
 <p>LocalIndex接口被实现的类只有RRStarLocalIndex，本地索引貌似只支持R*树。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#a6e22e">@Override</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#a6e22e">@Override</span>
 <span style="color:#66d9ef">protected</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">reduce</span><span style="color:#f92672">(</span>IntWritable partitionID<span style="color:#f92672">,</span> Iterable<span style="color:#f92672">&lt;</span>Shape<span style="color:#f92672">&gt;</span> shapes<span style="color:#f92672">,</span>
     Context context<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> IOException<span style="color:#f92672">,</span> InterruptedException <span style="color:#f92672">{</span>
   LOG<span style="color:#f92672">.</span><span style="color:#a6e22e">info</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;Working on partition #&#34;</span><span style="color:#f92672">+</span>partitionID<span style="color:#f92672">);</span>
@@ -462,7 +464,7 @@ shadoop index test.rects test.grid sindex:grid shape:rect
 <li>写入元数据</li>
 </ol>
 <p>这个元数据放文件末尾的方式略微有点非主流。可以参考单元测试中的LocalIndexRecordReaderTest，涉及了对空间文件构建索引后存入文件，然后调用LocalIndexRecordReader读取文件。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">/**
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">/**
 </span><span style="color:#75715e"> * &lt;ul&gt;
 </span><span style="color:#75715e"> *   &lt;li&gt;
 </span><span style="color:#75715e"> *     Data Entries: First, all data entries are written in an order that is consistent
@@ -578,7 +580,7 @@ shadoop index test.rects test.grid sindex:grid shape:rect
   out<span style="color:#f92672">.</span><span style="color:#a6e22e">writeInt</span><span style="color:#f92672">(</span>footerOffset <span style="color:#f92672">+</span> footerSize<span style="color:#f92672">);</span>
 <span style="color:#f92672">}</span>
 </code></pre></div><p>以数组形式组织的R树，在读取时直接按文件顺序读取到数组中即可。对于元数据文件放在了文件尾，LocalIndexRecordReader用了一个这样的操作，seek到文件末尾的位置读取数据：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">in<span style="color:#f92672">.</span><span style="color:#a6e22e">seek</span><span style="color:#f92672">(</span>indexEnd <span style="color:#f92672">-</span> 4<span style="color:#f92672">);</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">in<span style="color:#f92672">.</span><span style="color:#a6e22e">seek</span><span style="color:#f92672">(</span>indexEnd <span style="color:#f92672">-</span> 4<span style="color:#f92672">);</span>
 <span style="color:#66d9ef">int</span> indexSize <span style="color:#f92672">=</span> in<span style="color:#f92672">.</span><span style="color:#a6e22e">readInt</span><span style="color:#f92672">();</span>
 <span style="color:#66d9ef">long</span> indexStart <span style="color:#f92672">=</span> indexEnd <span style="color:#f92672">-</span> indexSize <span style="color:#f92672">-</span> 4<span style="color:#f92672">;</span>
 <span style="color:#75715e">// ...

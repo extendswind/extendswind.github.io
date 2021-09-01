@@ -41,7 +41,7 @@ sudo pacman -S cinnamon # awesome的autorun里加入下面程序使开机运行 
 <meta property='og:site_name' content='A Notebook of Extendswind'>
 <meta property='og:type' content='article'><meta property='article:section' content='posts'><meta property='article:tag' content='linux'><meta property='article:published_time' content='2019-01-20T20:59:49&#43;08:00'/><meta property='article:modified_time' content='2019-01-20T20:59:49&#43;08:00'/><meta name='twitter:card' content='summary'>
 
-<meta name="generator" content="Hugo 0.81.0" />
+<meta name="generator" content="Hugo 0.86.0" />
 
   <title>在非gnome系桌面环境下运行deepin-wine tim的错误解决 • A Notebook of Extendswind</title>
   <link rel='canonical' href='https://extendswind.top/posts/technical/deepin_wine_run_in_not_gnome_desktop_environment/'>
@@ -119,6 +119,8 @@ sudo pacman -S cinnamon # awesome的autorun里加入下面程序使开机运行 
         <a href='/tags/linux/' style='font-size:1em'>linux</a>
       </li><li>
         <a href='/tags/log4j/' style='font-size:1em'>log4j</a>
+      </li><li>
+        <a href='/tags/python/' style='font-size:1em'>python</a>
       </li><li>
         <a href='/tags/raspberry/' style='font-size:1em'>raspberry</a>
       </li><li>
@@ -222,7 +224,7 @@ sudo pacman -S cinnamon # awesome的autorun里加入下面程序使开机运行 
 <p>最近终于在aur上看到是因为deepin-wine依赖了gnome-settings-daemon（gnome系的cinnamon和mate的对应组件也能用），启动后就能正常运行，但AwesomeWM会使用xsettings对应的主题，KDE基本正常运行，其它非gnome系的桌面环境未测试。</p>
 <h1 id="解决方案">解决方案</h1>
 <h2 id="1-安装gnome-settings-daemon--arch-系">1. 安装gnome-settings-daemon  (arch 系）</h2>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sudo pacman -S gnome-settings-daemon
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sudo pacman -S gnome-settings-daemon
 </code></pre></div><p>ubuntu 下的包和运行的程序名略不一样，参考：</p>
 <p><code>https://github.com/wszqkzqk/deepin-wine-ubuntu/issues/12#issuecomment-443656358</code></p>
 <h2 id="2-在tim启动脚本中加入启动">2. 在tim启动脚本中加入启动</h2>
@@ -238,7 +240,7 @@ sudo pacman -S cinnamon # awesome的autorun里加入下面程序使开机运行 
 <p><code>/usr/lib/cinnamon-settings-daemon/csd-xsettings --exit-time 5 &amp;</code></p>
 <h3 id="附使用cinnamon的xsettings的设置">附：使用cinnamon的xsettings的设置</h3>
 <p>主题的问题在awesome这种环境下略坑，懒得去试gnome上的主题设置需要哪些包，安装整个gnome的包需要800多M，直接安装了cinnamon的基础包（90M左右）。和gnome只是些名字上的区别：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sudo pacman -S cinnamon
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sudo pacman -S cinnamon
 
 <span style="color:#75715e"># awesome的autorun里加入下面程序使开机运行</span>
 /usr/lib/cinnamon-settings-daemon/csd-xsettings
