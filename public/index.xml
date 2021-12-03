@@ -5,7 +5,51 @@
     <link>https://extendswind.top/</link>
     <description>Recent content in Home on A Notebook of Extendswind</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Wed, 01 Sep 2021 08:30:00 +0800</lastBuildDate><atom:link href="https://extendswind.top/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 04 Dec 2021 00:00:00 +0800</lastBuildDate><atom:link href="https://extendswind.top/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>syncthing文件同步网盘配置</title>
+      <link>https://extendswind.top/posts/technical/syncthing_install_for_vps/</link>
+      <pubDate>Sat, 04 Dec 2021 00:00:00 +0800</pubDate>
+      
+      <guid>https://extendswind.top/posts/technical/syncthing_install_for_vps/</guid>
+      <description>在需要同步的文件不太大时，坚果云一类的网盘的效果不错，安装软件即可，不需要折腾还功能多。不考虑同步功能，只是想要存数据的话，NAS一般就可以满足要求。owncloud、nextcloud一类的私有云网盘提供了更多的功能，如可以浏览器查看分享文件。
+相比之下，Syncthing只是一个纯粹的文件同步软件。主要优点是配置简单，没有其它的依赖，配置局域网的文件同步以及vps的文件同步实现起来容易，不像私有网盘程序依赖一套数据库、php、web服务等。但是缺点也很明显，没有什么多余的功能，无法单独上传和下载文件，也不能直接分享单个文件。
+简单配置 linux的包管理器大多可以直接安装，然后运行Syncthing就可以启动，默认只提供了浏览器的web端管理UI，在 127.0.0.1:8384 访问。
+两个节点都安装启动后，可以直接通过id添加对方。运行Syncting的各个节点之间没有主从的区别，通过共享文件夹的方式全部同步为相同的文件状态。添加后需要在对方的web UI中确认。
+如果在没有桌面环境的linux服务器（如VPS）上安装，需要在 ~/.config/syncthing/config.xml 配置中将127.0.0.1改为0.0.0.0，防火墙放开8384端口、22000端口。然后在本地浏览器中用服务器 ip:8384 访问。
+直连服务器配置 在局域网内或者连接有公网ip的主机时，会默认使用直连的方式。当两个主机不能直接连接，或者网络状态不好时，会通过relay中继服务器连接。
+VPS的web UI中直连的listener选项卡为：
+ quic://0.0.0.0:22000
+tcp://0.0.0.0:22000
+ 连接VPS时，在address选项中将上面0.0.0.0替换成VPS服务器的ip，替代默认的dynamic即可。
+文件版本保存 一个文件可能会修改多次，文件夹的设置中有File Version选项，可以按时间、修改次数、删除等方式备份多个版本，具体设置界面有说明。
+安全相关 每个节点的id不包含隐私信息，连接时以及分享文件夹时都需要在两个节点的web UI中确认，id没必要加密保存。节点之间的数据传输通过TLS加密，不用太考虑中心服务器导致的隐私问题。
+web UI 页面直接暴露给外网可能会容易被被端口扫描后攻击，可以设置密码加强安全性。或者通过反向代理隐藏web UI的端口，具体配置在 https://docs.syncthing.net/users/reverseproxy.html。关于反向代理踩的一个小坑：nginx设置中的location /syncthing/后面的斜杠不能漏。
+文件分享 Syncthing不支持文件分享，只能间接的处理，下面放个简单的nginx配置解决web服务中分享某个文件文件的下载功能。（至于上传，可以考虑sftp、samba一类的服务，这个比较弱）
+ location /file_share/ { alias /home/user/Syncthing/public/; autoindex on; autoindex_exact_size off; # 文件大小显示MB，GB单位，默认为b； autoindex_localtime on; # 服务器本地时区显示文件修改日期 } 基本原理 同步设计上首先将大文件切割成block，小文件直接单独作为block（和HDFS的操作类似）。对每个block计算hash值，通过hash值判断文件的完整性和变化（可以自动识别重命名）。当发生文件变化时，操作系统会通知Syncthing程序，Syncthing程序之间传输元数据信息以及变化的数据。
+连接上每个Syncthing程序通过唯一id识别，默认打开了本地发现（local discovery）和全网发现（global discovery）。本地发现能够在添加其它节点时自动找到局域网内的其它服务，全局发现依赖了额外的官方服务器，能根据id直接找到对应的节点（不确定ip是通过id算出来的还是全局发现找到的）。
+为了使不在同一个局域网下的节点能够同步，官方提供了relay服务器作为中介，不在局域网内的同步默认可以直接通过官方relay服务器进行，也可以自己在有公网ip的机器上架服务。relay服务默认为开启状态，局域网内的节点可能由于网络状况等问题从直连转为relay连接，在配置的web GUI中的Remote Devices下的address中可以看到是直接的ip还是带relay的ip，此处配置可以修改。
+Sycnthing默认有几个地方会连接官方服务器：1. 使用数据收集（第一次打开web UI会询问是否同意）；2. 全局发现；3. relay中继服务器。为了方便无所谓，如果只是想单纯在网络可以互通的环境下使用文件同步，可以考虑在设置中把这几个都关了。</description>
+    </item>
+    
+    <item>
+      <title>git push时提示错误 sign_and_send_pubkey: no mutual signature supported</title>
+      <link>https://extendswind.top/posts/technical/git_push_sign_and_send_pubkey/</link>
+      <pubDate>Fri, 03 Dec 2021 16:00:48 +0800</pubDate>
+      
+      <guid>https://extendswind.top/posts/technical/git_push_sign_and_send_pubkey/</guid>
+      <description>git push命令之后，出现下面的错误提示：
+ sign_and_send_pubkey: no mutual signature supported git@gitee.com: Permission denied (publickey). fatal: Could not read from remote repository.
+Please make sure you have the correct access rights and the repository exists.
+ openssh的新版本（当前8.8p1-1）默认不支持ras的默认秘钥。
+一开始以为是gitee码云干了什么升级，之后发现是我的manjaro openssh版本太新的问题，已经不支持我几年前生成的秘钥（但是为什么ssh-keygen还是默认用的rsa）。
+推荐做法 ssh-keygen -t ed25519 -C &amp;ldquo;your_email@example.com&amp;rdquo;
+生成一个新的秘钥，然后公钥添加到gitee账户。
+最简单处理 修改ssh的客户端的配置文件，~/.ssh/config 或全局的配置文件 /etc/ssh/ssh_config，在其中加下面的代码。
+ PubkeyAcceptedKeyTypes +ssh-rsa
+ </description>
+    </item>
+    
     <item>
       <title>python脚本避免被多次执行</title>
       <link>https://extendswind.top/posts/technical/python_prevent_python_script_running_more_than_once/</link>
