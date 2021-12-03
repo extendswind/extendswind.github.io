@@ -43,7 +43,7 @@ sudo add-apt-repository ppa:yannubuntu/boot-repair -y sudo apt-get update sudo a
 <meta property='og:site_name' content='A Notebook of Extendswind'>
 <meta property='og:type' content='article'><meta property='article:section' content='posts'><meta property='article:tag' content='linux'><meta property='article:published_time' content='2019-11-26T20:59:49&#43;08:00'/><meta property='article:modified_time' content='2019-11-26T20:59:49&#43;08:00'/><meta name='twitter:card' content='summary'>
 
-<meta name="generator" content="Hugo 0.86.0" />
+<meta name="generator" content="Hugo 0.88.1" />
 
   <title>一次修复linux的efi引导的集中方法总结记录 • A Notebook of Extendswind</title>
   <link rel='canonical' href='https://extendswind.top/posts/technical/grub_uefi_repair/'>
@@ -286,14 +286,14 @@ sudo boot-repair
 3、 挂载efi分区到系统分区的<code>/boot/efi</code>目录（`mount /dev/sda2 /mnt/boot/efi）
 4、 chroot到硬盘系统分区</p>
 <p>对于ubuntu</p>
-<pre><code>mount --bind /dev/ /mnt/dev
+<pre tabindex="0"><code>mount --bind /dev/ /mnt/dev
 mount --bind /proc /mnt/proc
 mount --bind /sys /mnt/sys
 chroot /mnt
 </code></pre><p>对于manjaro直接</p>
-<pre><code>manjaro-chroot /mnt
+<pre tabindex="0"><code>manjaro-chroot /mnt
 </code></pre><p>5、 安装grub</p>
-<pre><code>grub-install --target=x86_64-efi /dev/sda2  # target默认是x86_64-efi
+<pre tabindex="0"><code>grub-install --target=x86_64-efi /dev/sda2  # target默认是x86_64-efi
 grub-grub-mkconfig -o /boot/grub/grub.cfg
 update-grub
 </code></pre><h1 id="各种操作和问题">各种操作和问题</h1>
@@ -304,7 +304,7 @@ update-grub
 <h2 id="安装完仍默认启动win10">安装完仍默认启动win10</h2>
 <p>UEFI支持一种安全模式，win10会独占UEFI，双系统时需要在win10中关闭安全启动。（没碰到，具体资料可搜）。</p>
 <p>其次，修改efi的引导顺序，进入win10后，使用bcdedit命令</p>
-<pre><code>bcdedit /enum  # 查看引导
+<pre tabindex="0"><code>bcdedit /enum  # 查看引导
 bcdedit /default {12277df3-07da-11e8-a54c-9f200771404e}  # 设置默认项
 
 # 如果上面的设置默认没有用，可以暴力修改windows的引导文件到其它的引导文件

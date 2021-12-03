@@ -43,7 +43,7 @@ ctrl&#43;super&#43;j/k 屏幕之间焦点移动 super&#43;o 当前窗口移动�
 <meta property='og:site_name' content='A Notebook of Extendswind'>
 <meta property='og:type' content='article'><meta property='article:section' content='posts'><meta property='article:tag' content='linux'><meta property='article:published_time' content='2019-01-24T21:59:49&#43;08:00'/><meta property='article:modified_time' content='2019-01-24T21:59:49&#43;08:00'/><meta name='twitter:card' content='summary'>
 
-<meta name="generator" content="Hugo 0.86.0" />
+<meta name="generator" content="Hugo 0.88.1" />
 
   <title>manjaro AwesomeWM 上使用双显示器 • A Notebook of Extendswind</title>
   <link rel='canonical' href='https://extendswind.top/posts/technical/dual_monitor_manjaro_awesome/'>
@@ -237,7 +237,7 @@ ctrl&#43;super&#43;j/k 屏幕之间焦点移动 super&#43;o 当前窗口移动�
 <h2 id="驱动问题">驱动问题</h2>
 <p>一般建议将两个显示器都接在独显上，出问题的概率更低（独显一般口不够或者需要转换略尴尬）。</p>
 <p>我将显示器分别接在独显和主板接口上，在manjaro和deepin两个系统下都发现NVIDIA驱动有问题，primary显示器会显示两个显示器的内容。而将显卡驱动切换到开源驱动（nouveau）时正常(据说开源驱动性能略低）。</p>
-<pre><code>mhwd -li --pci 查看已经安装的驱动
+<pre tabindex="0"><code>mhwd -li --pci 查看已经安装的驱动
 mhwd -l --pci 查看能用的驱动
 sudo mhwd -r pci video-nvidia 移除驱动video-nvidia
 sudo mhwd -a pci videa-linux 安装开源显卡驱动（nouveau）

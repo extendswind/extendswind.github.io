@@ -3,22 +3,57 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://extendswind.top/</loc>
-    <lastmod>2021-09-01T08:30:00+08:00</lastmod>
+    <lastmod>2021-12-04T00:00:00+08:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://extendswind.top/categories/</loc>
-    <lastmod>2021-09-01T08:30:00+08:00</lastmod>
+    <lastmod>2021-12-04T00:00:00+08:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url><url>
+    <loc>https://extendswind.top/tags/linux/</loc>
+    <lastmod>2021-12-04T00:00:00+08:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url><url>
+    <loc>https://extendswind.top/categories/operation/</loc>
+    <lastmod>2021-12-04T00:00:00+08:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://extendswind.top/posts/</loc>
-    <lastmod>2021-09-01T08:30:00+08:00</lastmod>
+    <lastmod>2021-12-04T00:00:00+08:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url><url>
+    <loc>https://extendswind.top/tags/software/</loc>
+    <lastmod>2021-12-04T00:00:00+08:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url><url>
+    <loc>https://extendswind.top/posts/technical/syncthing_install_for_vps/</loc>
+    <lastmod>2021-12-04T00:00:00+08:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url><url>
+    <loc>https://extendswind.top/tags/</loc>
+    <lastmod>2021-12-04T00:00:00+08:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url><url>
+    <loc>https://extendswind.top/tags/git/</loc>
+    <lastmod>2021-12-03T16:00:48+08:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url><url>
+    <loc>https://extendswind.top/posts/technical/git_push_sign_and_send_pubkey/</loc>
+    <lastmod>2021-12-03T16:00:48+08:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://extendswind.top/categories/programming-basic/</loc>
-    <lastmod>2021-09-01T08:30:00+08:00</lastmod>
+    <lastmod>2021-12-03T16:00:48+08:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url><url>
@@ -32,17 +67,7 @@
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url><url>
-    <loc>https://extendswind.top/tags/</loc>
-    <lastmod>2021-09-01T08:30:00+08:00</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url><url>
     <loc>https://extendswind.top/tags/iot/</loc>
-    <lastmod>2021-03-15T10:30:00+08:00</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url><url>
-    <loc>https://extendswind.top/categories/iot/</loc>
     <lastmod>2021-03-15T10:30:00+08:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
@@ -107,11 +132,6 @@
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url><url>
-    <loc>https://extendswind.top/tags/linux/</loc>
-    <lastmod>2020-05-20T22:30:00+08:00</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url><url>
     <loc>https://extendswind.top/categories/linux-desktop/</loc>
     <lastmod>2020-05-20T22:30:00+08:00</lastmod>
     <changefreq>monthly</changefreq>
@@ -164,11 +184,6 @@
   </url><url>
     <loc>https://extendswind.top/posts/technical/raspberry_from_install_to_remote_access/</loc>
     <lastmod>2019-10-25T10:59:49+08:00</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url><url>
-    <loc>https://extendswind.top/tags/software/</loc>
-    <lastmod>2019-10-18T21:59:49+08:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url><url>
@@ -262,11 +277,6 @@
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url><url>
-    <loc>https://extendswind.top/tags/git/</loc>
-    <lastmod>2018-11-13T10:30:00+08:00</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url><url>
     <loc>https://extendswind.top/posts/technical/leetcode4/</loc>
     <lastmod>2018-11-13T10:30:00+08:00</lastmod>
     <changefreq>monthly</changefreq>
@@ -303,11 +313,6 @@
     <priority>0.5</priority>
   </url><url>
     <loc>https://extendswind.top/posts/technical/hadoop_yarn_resource_scheduler/</loc>
-    <lastmod>2018-09-04T10:30:00+08:00</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url><url>
-    <loc>https://extendswind.top/categories/operation/</loc>
     <lastmod>2018-09-04T10:30:00+08:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>

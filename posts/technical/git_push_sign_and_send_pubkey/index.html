@@ -2,21 +2,37 @@
 <html lang='en' dir='auto'><head>
   <meta charset='utf-8'>
 <meta name='viewport' content='width=device-width, initial-scale=1'>
-<meta name='description' content='a simple blog site'>
+<meta name='description' content='git push命令之后，出现下面的错误提示：
+ sign_and_send_pubkey: no mutual signature supported git@gitee.com: Permission denied (publickey). fatal: Could not read from remote repository.
+Please make sure you have the correct access rights and the repository exists.
+ openssh的新版本（当前8.8p1-1）默认不支持ras的默认秘钥。
+一开始以为是gitee码云干了什么升级，之后发现是我的manjaro openssh版本太新的问题，已经不支持我几年前生成的秘钥（但是为什么ssh-keygen还是默认用的rsa）。
+推荐做法 ssh-keygen -t ed25519 -C &ldquo;your_email@example.com&rdquo;
+生成一个新的秘钥，然后公钥添加到gitee账户。
+最简单处理 修改ssh的客户端的配置文件，~/.ssh/config 或全局的配置文件 /etc/ssh/ssh_config，在其中加下面的代码。
+ PubkeyAcceptedKeyTypes &#43;ssh-rsa
+ '>
 <meta name='theme-color' content='#cccccc'>
 
-<meta property='og:title' content='Posts • A Notebook of Extendswind'>
-<meta property='og:description' content='a simple blog site'>
-<meta property='og:url' content='https://extendswind.top/posts/'>
+<meta property='og:title' content='git push时提示错误 sign_and_send_pubkey: no mutual signature supported • A Notebook of Extendswind'>
+<meta property='og:description' content='git push命令之后，出现下面的错误提示：
+ sign_and_send_pubkey: no mutual signature supported git@gitee.com: Permission denied (publickey). fatal: Could not read from remote repository.
+Please make sure you have the correct access rights and the repository exists.
+ openssh的新版本（当前8.8p1-1）默认不支持ras的默认秘钥。
+一开始以为是gitee码云干了什么升级，之后发现是我的manjaro openssh版本太新的问题，已经不支持我几年前生成的秘钥（但是为什么ssh-keygen还是默认用的rsa）。
+推荐做法 ssh-keygen -t ed25519 -C &ldquo;your_email@example.com&rdquo;
+生成一个新的秘钥，然后公钥添加到gitee账户。
+最简单处理 修改ssh的客户端的配置文件，~/.ssh/config 或全局的配置文件 /etc/ssh/ssh_config，在其中加下面的代码。
+ PubkeyAcceptedKeyTypes &#43;ssh-rsa
+ '>
+<meta property='og:url' content='https://extendswind.top/posts/technical/git_push_sign_and_send_pubkey/'>
 <meta property='og:site_name' content='A Notebook of Extendswind'>
-<meta property='og:type' content='website'><meta property='og:updated_time' content='2021-12-04T00:00:00&#43;08:00'/><meta name='twitter:card' content='summary'>
+<meta property='og:type' content='article'><meta property='article:section' content='posts'><meta property='article:tag' content='git'><meta property='article:published_time' content='2021-12-03T16:00:48&#43;08:00'/><meta property='article:modified_time' content='2021-12-03T16:00:48&#43;08:00'/><meta name='twitter:card' content='summary'>
 
 <meta name="generator" content="Hugo 0.88.1" />
 
-  <title>Posts • A Notebook of Extendswind</title>
-  <link rel='canonical' href='https://extendswind.top/posts/'>
-  
-    <link href="https://extendswind.top/posts/index.xml" rel="alternate" type="application/rss+xml" title="A Notebook of Extendswind" />
+  <title>git push时提示错误 sign_and_send_pubkey: no mutual signature supported • A Notebook of Extendswind</title>
+  <link rel='canonical' href='https://extendswind.top/posts/technical/git_push_sign_and_send_pubkey/'>
   
   
   <link rel='icon' href='/images/wind.jpeg'>
@@ -27,7 +43,7 @@
   
 
 </head>
-<body class='section type-posts has-sidebar'>
+<body class='page type-posts has-sidebar'>
 
   <div class='site'><div id='sidebar' class='sidebar'>
   <a class='screen-reader-text' href='#main-menu'>Skip to Main Menu</a>
@@ -154,215 +170,109 @@
       <main id='content'>
 
 
-<header class='header'>
+<article lang='en' class='entry'>
+  <header class='header entry-header'>
   <div class='container sep-after'>
     <div class='header-info'>
-      <h1 class='title'>Posts</h1>
-
+      <h1 class='title'>git push时提示错误 sign_and_send_pubkey: no mutual signature supported</h1>
       
 
     </div>
+    <div class='entry-meta'>
+  <span class='posted-on'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+  <line x1="16" y1="2" x2="16" y2="6"/>
+  <line x1="8" y1="2" x2="8" y2="6"/>
+  <line x1="3" y1="10" x2="21" y2="10"/>
+  
+</svg>
+<span class='screen-reader-text'>Posted on </span>
+  <time class='entry-date' datetime='2021-12-03T16:00:48&#43;08:00'>2021, Dec 03</time>
+</span>
+
+  
+  
+
+</div>
+
+
   </div>
 </header>
 
+  
+  
 
+  <div class='container entry-content'>
+  <p>git push命令之后，出现下面的错误提示：</p>
+<blockquote>
+<p>sign_and_send_pubkey: no mutual signature supported
+<a href="mailto:git@gitee.com">git@gitee.com</a>: Permission denied (publickey).
+fatal: Could not read from remote repository.</p>
+<p>Please make sure you have the correct access rights
+and the repository exists.</p>
+</blockquote>
+<p>openssh的新版本（当前8.8p1-1）默认不支持ras的默认秘钥。</p>
+<p>一开始以为是gitee码云干了什么升级，之后发现是我的manjaro openssh版本太新的问题，已经不支持我几年前生成的秘钥（但是为什么ssh-keygen还是默认用的rsa）。</p>
+<h1 id="推荐做法">推荐做法</h1>
+<p>ssh-keygen -t ed25519 -C &ldquo;<a href="mailto:your_email@example.com">your_email@example.com</a>&rdquo;</p>
+<p>生成一个新的秘钥，然后公钥添加到gitee账户。</p>
+<h1 id="最简单处理">最简单处理</h1>
+<p>修改ssh的客户端的配置文件，<code>~/.ssh/config</code> 或全局的配置文件 <code>/etc/ssh/ssh_config</code>，在其中加下面的代码。</p>
+<blockquote>
+<p>PubkeyAcceptedKeyTypes +ssh-rsa</p>
+</blockquote>
 
-
-<div class='container list-container'>
-  <ul class='list'>
-    
-      <li class='item'>
-  <div class='meta'>
-    <span>
-  <span class='screen-reader-text'>Posted on </span>
-  <time datetime='2018-07-17T20:59:49&#43;08:00'>2018, Jul 17</time>
-</span>
-
-  </div>
-  <header class='item-header'>
-    <h3 class='item-title'>
-      <a href='/posts/technical/from_geeker_to_no_self_inflicted/'>开启不折腾模式</a>
-    </h3>
-  </header>
-</li>
-
-    
-      <li class='item'>
-  <div class='meta'>
-    <span>
-  <span class='screen-reader-text'>Posted on </span>
-  <time datetime='2018-07-03T21:25:25&#43;08:00'>2018, Jul 03</time>
-</span>
-
-  </div>
-  <header class='item-header'>
-    <h3 class='item-title'>
-      <a href='/posts/technical/design_patterns_prototype/'>设计模式 之 原型模式</a>
-    </h3>
-  </header>
-</li>
-
-    
-      <li class='item'>
-  <div class='meta'>
-    <span>
-  <span class='screen-reader-text'>Posted on </span>
-  <time datetime='2018-07-02T11:25:25&#43;08:00'>2018, Jul 02</time>
-</span>
-
-  </div>
-  <header class='item-header'>
-    <h3 class='item-title'>
-      <a href='/posts/technical/design_patterns_singleton/'>设计模式 之 单例模式</a>
-    </h3>
-  </header>
-</li>
-
-    
-      <li class='item'>
-  <div class='meta'>
-    <span>
-  <span class='screen-reader-text'>Posted on </span>
-  <time datetime='2018-06-29T20:59:49&#43;08:00'>2018, Jun 29</time>
-</span>
-
-  </div>
-  <header class='item-header'>
-    <h3 class='item-title'>
-      <a href='/posts/technical/linux_desktop_distribution/'>linux桌面发行版简介</a>
-    </h3>
-  </header>
-</li>
-
-    
-      <li class='item'>
-  <div class='meta'>
-    <span>
-  <span class='screen-reader-text'>Posted on </span>
-  <time datetime='2018-06-29T11:25:25&#43;08:00'>2018, Jun 29</time>
-</span>
-
-  </div>
-  <header class='item-header'>
-    <h3 class='item-title'>
-      <a href='/posts/life/simplealone/'>浅忆孤独</a>
-    </h3>
-  </header>
-</li>
-
-    
-      <li class='item'>
-  <div class='meta'>
-    <span>
-  <span class='screen-reader-text'>Posted on </span>
-  <time datetime='2018-06-20T17:25:25&#43;08:00'>2018, Jun 20</time>
-</span>
-
-  </div>
-  <header class='item-header'>
-    <h3 class='item-title'>
-      <a href='/posts/technical/design_patterns_static_proxy_and_decoration/'>设计模式 之 静态代理模式和装饰者模式</a>
-    </h3>
-  </header>
-</li>
-
-    
-      <li class='item'>
-  <div class='meta'>
-    <span>
-  <span class='screen-reader-text'>Posted on </span>
-  <time datetime='2018-06-15T17:25:25&#43;08:00'>2018, Jun 15</time>
-</span>
-
-  </div>
-  <header class='item-header'>
-    <h3 class='item-title'>
-      <a href='/posts/technical/design_patterns_factory/'>设计模式 之 工厂模式</a>
-    </h3>
-  </header>
-</li>
-
-    
-      <li class='item'>
-  <div class='meta'>
-    <span>
-  <span class='screen-reader-text'>Posted on </span>
-  <time datetime='2018-06-13T20:59:49&#43;08:00'>2018, Jun 13</time>
-</span>
-
-  </div>
-  <header class='item-header'>
-    <h3 class='item-title'>
-      <a href='/posts/life/will/'>本科笔记-will</a>
-    </h3>
-  </header>
-</li>
-
-    
-      <li class='item'>
-  <div class='meta'>
-    <span>
-  <span class='screen-reader-text'>Posted on </span>
-  <time datetime='2018-06-04T22:40:48&#43;08:00'>2018, Jun 04</time>
-</span>
-
-  </div>
-  <header class='item-header'>
-    <h3 class='item-title'>
-      <a href='/posts/life/blog_first/'>第一篇博客</a>
-    </h3>
-  </header>
-</li>
-
-    
-  </ul>
+</div>
 
   
-<nav id='pagination'>
-  <div class='page-links'>
+<footer class='entry-footer'>
+  <div class='container sep-before'><div class='categories'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M22,19a2,2,0,0,1-2,2H4a2,2,0,0,1-2-2V5A2,2,0,0,1,4,3H9l2,3h9a2,2,0,0,1,2,2Z"/>
+  
+</svg>
+<span class='screen-reader-text'>Categories: </span><a class='category' href='/categories/programming-basic/'>programming basic</a></div>
+<div class='tags'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M20.59,13.41l-7.17,7.17a2,2,0,0,1-2.83,0L2,12V2H12l8.59,8.59A2,2,0,0,1,20.59,13.41Z"/>
+  <line x1="7" y1="7" x2="7" y2="7"/>
+  
+</svg>
+<span class='screen-reader-text'>Tags: </span><a class='tag' href='/tags/git/'>git</a></div>
 
-    
-    <a class='page-link prev' href='/posts/page/4/'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  </div>
+</footer>
+
+
+</article>
+
+<nav class='entry-nav'>
+  <div class='container'><div class='prev-entry sep-before'>
+      <a href='/posts/technical/python_prevent_python_script_running_more_than_once/'>
+        <span aria-hidden='true'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
   
   <line x1="20" y1="12" x2="4" y2="12"/>
   <polyline points="10 18 4 12 10 6"/>
   
 </svg>
-<span class='screen-reader-text'>Previous page</span>
-    </a>
-    
-      
-      <a class='page-link' href='/posts/'>
-        <span class='screen-reader-text'>Page: </span>1</a>
-      
-    
-      
-        <span class='page-link dots'>&hellip;</span>
-        
-      
-    
-      
-        
-      
-    
-      
-      <a class='page-link' href='/posts/page/4/'>
-        <span class='screen-reader-text'>Page: </span>4</a>
-      
-    
-      
-      <span aria-current='page' class='page-link current'>
-        <span class='screen-reader-text'>Current page: </span>5</span>
-      
-    
-
-    
-
-  </div>
+ Previous</span>
+        <span class='screen-reader-text'>Previous post: </span>python脚本避免被多次执行</a>
+    </div><div class='next-entry sep-before'>
+      <a href='/posts/technical/syncthing_install_for_vps/'>
+        <span class='screen-reader-text'>Next post: </span>syncthing文件同步网盘配置<span aria-hidden='true'>Next <svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="4" y1="12" x2="20" y2="12"/>
+  <polyline points="14 6 20 12 14 18"/>
+  
+</svg>
+</span>
+      </a>
+    </div></div>
 </nav>
 
 
-</div>
+
 
       </main>
 

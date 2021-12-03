@@ -31,7 +31,7 @@ Capacity Scheduler CapacityScheduler重点解决多个组织共享集群资源�
 <meta property='og:site_name' content='A Notebook of Extendswind'>
 <meta property='og:type' content='article'><meta property='article:section' content='posts'><meta property='article:tag' content='hadoop'><meta property='article:published_time' content='2018-09-04T10:30:00&#43;08:00'/><meta property='article:modified_time' content='2018-09-04T10:30:00&#43;08:00'/><meta name='twitter:card' content='summary'>
 
-<meta name="generator" content="Hugo 0.86.0" />
+<meta name="generator" content="Hugo 0.88.1" />
 
   <title>Hadoop YARN 调度器（scheduler） —— 资源调度策略 • A Notebook of Extendswind</title>
   <link rel='canonical' href='https://extendswind.top/posts/technical/hadoop_yarn_resource_scheduler/'>
@@ -291,7 +291,7 @@ Capacity Scheduler CapacityScheduler重点解决多个组织共享集群资源�
   <span style="color:#f92672">&lt;name&gt;</span>yarn.scheduler.capacity.root.a.maximum-capacity<span style="color:#f92672">&lt;/name&gt;</span>
   <span style="color:#f92672">&lt;value&gt;</span>75<span style="color:#f92672">&lt;/value&gt;</span>
 <span style="color:#f92672">&lt;/property&gt;</span>
-</code></pre></div><pre><code>root  
+</code></pre></div><pre tabindex="0"><code>root  
 ├── a 40%  
 |   ├── a1 50%  
 |   └── a2 50%  
@@ -325,7 +325,7 @@ Capacity Scheduler CapacityScheduler重点解决多个组织共享集群资源�
   <span style="color:#f92672">&lt;/queuePlacementPolicy&gt;</span>
 <span style="color:#f92672">&lt;/allocations&gt;</span>
 </code></pre></div><p>上面的配置文件给出了一个如下图的层级队列。</p>
-<pre><code>root 
+<pre tabindex="0"><code>root 
 ├── a (权重4 因此占用总体40%的资源）
 |   ├── a1  没有指定权重，因此与a2队列平分a队列40%的资源；队列内部的多个应用使用fifo策略。 
 |   └── a2 
