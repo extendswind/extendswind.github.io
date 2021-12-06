@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang='en' dir='auto'><head>
+  <meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<meta name='description' content='总体上涉及了心跳检测、副本移除线程、副本恢复线程。当datanode发生宕机或者datanode中的某个storage（如一块硬盘）发生的错误时，namenode会根据datanode发送的心跳进行检测。但namenode并没有在心跳检测的汇报中进行即时反应，而是先记录对应的心跳信息，由另一个定期检测线程移除DatanodeManager和BlockManager中对应的block信息，并记录需要恢复的数据。对于数据的恢复，又新建了一个线程进行定期扫描，分配恢复副本需要的源数据节点和目标数据节点，在datanode的下一轮心跳检测中转换为对应的命令返回给datanode。
+宕机的心跳检测 datanode会定时向namenode发送心跳数据包汇报当前的运行状态。namenode在一定时间内没收到数据节点的心跳时会标记为stale状态，然后转移该数据节点中的block到其它的数据节点。
+hdfs配置中的几个参数：
+ dfs.heartbeat.interval，Hadoop心跳检测间隔，默认为3s。 dfs.namenode.stale.datanode.minimum.interval，datanode标记为stale状态的需要丢失的最小心跳次数，默认为3。 dfs.namenode.stale.datanode.interval，Hadoop datanode超时范围，超过此时间没收到心跳检测会被标记为stale状态，默认为30s，大小必须超过前面两个参数的乘积。  接收心跳消息 Hadoop的datanode心跳检测通过rpc的形式发送，rpc函数通过参数传递数据节点统计信息，返回namenode需要对数据节点的命令。
+datanode在通过rpc发送消息时，namenode首先在rpc server处理，交给NameSystem。NameNodeRpcServer中的处理：
+@Override // DatanodeProtocol public HeartbeatResponse sendHeartbeat(DatanodeRegistration nodeReg, StorageReport[] report, long dnCacheCapacity, long dnCacheUsed, int xmitsInProgress, int xceiverCount, int failedVolumes, VolumeFailureSummary volumeFailureSummary, boolean requestFullBlockReportLease, @Nonnull SlowPeerReports slowPeers, @Nonnull SlowDiskReports slowDisks) throws IOException { checkNNStartup(); verifyRequest(nodeReg); return namesystem.handleHeartbeat(nodeReg, report, dnCacheCapacity, dnCacheUsed, xceiverCount, xmitsInProgress, failedVolumes, volumeFailureSummary, requestFullBlockReportLease, slowPeers, slowDisks); } namesystem的类型为FSNamesystem，负责name-space state的相关管理（is a container of both transient and persisted name-space state, and does all the book-keeping work on a NameNode），是BlockManager, DatanodeManager, DelegationTokens, LeaseManager等服务的容器。在handleHeartbeat函数中，通过blockManager获取的DatanodeManager进行了处理：'>
+<meta name='theme-color' content='#cccccc'>
+
+<meta property='og:title' content='Hadoop集群对datanode宕机后的处理机制源码阅读 • A Notebook of Extendswind'>
+<meta property='og:description' content='总体上涉及了心跳检测、副本移除线程、副本恢复线程。当datanode发生宕机或者datanode中的某个storage（如一块硬盘）发生的错误时，namenode会根据datanode发送的心跳进行检测。但namenode并没有在心跳检测的汇报中进行即时反应，而是先记录对应的心跳信息，由另一个定期检测线程移除DatanodeManager和BlockManager中对应的block信息，并记录需要恢复的数据。对于数据的恢复，又新建了一个线程进行定期扫描，分配恢复副本需要的源数据节点和目标数据节点，在datanode的下一轮心跳检测中转换为对应的命令返回给datanode。
+宕机的心跳检测 datanode会定时向namenode发送心跳数据包汇报当前的运行状态。namenode在一定时间内没收到数据节点的心跳时会标记为stale状态，然后转移该数据节点中的block到其它的数据节点。
+hdfs配置中的几个参数：
+ dfs.heartbeat.interval，Hadoop心跳检测间隔，默认为3s。 dfs.namenode.stale.datanode.minimum.interval，datanode标记为stale状态的需要丢失的最小心跳次数，默认为3。 dfs.namenode.stale.datanode.interval，Hadoop datanode超时范围，超过此时间没收到心跳检测会被标记为stale状态，默认为30s，大小必须超过前面两个参数的乘积。  接收心跳消息 Hadoop的datanode心跳检测通过rpc的形式发送，rpc函数通过参数传递数据节点统计信息，返回namenode需要对数据节点的命令。
+datanode在通过rpc发送消息时，namenode首先在rpc server处理，交给NameSystem。NameNodeRpcServer中的处理：
+@Override // DatanodeProtocol public HeartbeatResponse sendHeartbeat(DatanodeRegistration nodeReg, StorageReport[] report, long dnCacheCapacity, long dnCacheUsed, int xmitsInProgress, int xceiverCount, int failedVolumes, VolumeFailureSummary volumeFailureSummary, boolean requestFullBlockReportLease, @Nonnull SlowPeerReports slowPeers, @Nonnull SlowDiskReports slowDisks) throws IOException { checkNNStartup(); verifyRequest(nodeReg); return namesystem.handleHeartbeat(nodeReg, report, dnCacheCapacity, dnCacheUsed, xceiverCount, xmitsInProgress, failedVolumes, volumeFailureSummary, requestFullBlockReportLease, slowPeers, slowDisks); } namesystem的类型为FSNamesystem，负责name-space state的相关管理（is a container of both transient and persisted name-space state, and does all the book-keeping work on a NameNode），是BlockManager, DatanodeManager, DelegationTokens, LeaseManager等服务的容器。在handleHeartbeat函数中，通过blockManager获取的DatanodeManager进行了处理：'>
+<meta property='og:url' content='https://extendswind.top/posts/technical/hadoop_datanode_failure_processing/'>
+<meta property='og:site_name' content='A Notebook of Extendswind'>
+<meta property='og:type' content='article'><meta property='article:section' content='posts'><meta property='article:tag' content='hadoop'><meta property='article:published_time' content='2021-12-06T16:00:00&#43;08:00'/><meta property='article:modified_time' content='2021-12-06T16:00:00&#43;08:00'/><meta name='twitter:card' content='summary'>
+
+<meta name="generator" content="Hugo 0.88.1" />
+
+  <title>Hadoop集群对datanode宕机后的处理机制源码阅读 • A Notebook of Extendswind</title>
+  <link rel='canonical' href='https://extendswind.top/posts/technical/hadoop_datanode_failure_processing/'>
+  
+  
+  <link rel='icon' href='/images/wind.jpeg'>
+<link rel='stylesheet' href='/assets/css/main.ab98e12b.css'><link rel='stylesheet' href='/css/custom.css'><style>
+:root{--color-accent:#cccccc;}
+</style>
+
+  
+
+</head>
+<body class='page type-posts has-sidebar'>
+
+  <div class='site'><div id='sidebar' class='sidebar'>
+  <a class='screen-reader-text' href='#main-menu'>Skip to Main Menu</a>
+
+  <div class='container'><section class='widget widget-about sep-after'>
+  <header>
+    
+    <div class='logo'>
+      <a href='/'>
+        <img src='/images/wind.jpeg'>
+      </a>
+    </div>
+    
+    <h2 class='title site-title '>
+      <a href='/'>
+      extendswind
+      </a>
+    </h2>
+    <div class='desc'>
+    
+    </div>
+  </header>
+
+</section>
+<section class='widget widget-sidebar_menu sep-after'><nav id='sidebar-menu' class='menu sidebar-menu' aria-label='Sidebar Menu'>
+    <div class='container'>
+      <ul><li class='item'>
+  <a href='/'>Home</a></li><li class='item'>
+  <a href='/posts'>Posts</a></li><li class='item'>
+  <a href='/categories'>Categories</a></li><li class='item'>
+  <a href='https://github.com/extendswind'>GitHub</a></li><li class='item'>
+  <a href='https://www.cnblogs.com/fly2wind/'>Cnblog</a></li></ul>
+    </div>
+  </nav>
+
+</section><section class='widget widget-taxonomy_cloud sep-after'>
+  <header>
+    <h4 class='title widget-title'>Tags</h4>
+  </header>
+
+  <div class='container list-container'>
+  <ul class='list taxonomy-cloud'><li>
+        <a href='/tags/blog/' style='font-size:1em'>blog</a>
+      </li><li>
+        <a href='/tags/design-patterns/' style='font-size:1em'>design patterns</a>
+      </li><li>
+        <a href='/tags/geospark/' style='font-size:1em'>GeoSpark</a>
+      </li><li>
+        <a href='/tags/gis/' style='font-size:1em'>GIS</a>
+      </li><li>
+        <a href='/tags/git/' style='font-size:1em'>git</a>
+      </li><li>
+        <a href='/tags/hadoop/' style='font-size:1em'>hadoop</a>
+      </li><li>
+        <a href='/tags/iot/' style='font-size:1em'>IoT</a>
+      </li><li>
+        <a href='/tags/java/' style='font-size:1em'>java</a>
+      </li><li>
+        <a href='/tags/life/' style='font-size:1em'>life</a>
+      </li><li>
+        <a href='/tags/linux/' style='font-size:1em'>linux</a>
+      </li><li>
+        <a href='/tags/log4j/' style='font-size:1em'>log4j</a>
+      </li><li>
+        <a href='/tags/python/' style='font-size:1em'>python</a>
+      </li><li>
+        <a href='/tags/raspberry/' style='font-size:1em'>raspberry</a>
+      </li><li>
+        <a href='/tags/reading/' style='font-size:1em'>reading</a>
+      </li><li>
+        <a href='/tags/software/' style='font-size:1em'>software</a>
+      </li><li>
+        <a href='/tags/spark/' style='font-size:1em'>Spark</a>
+      </li></ul>
+</div>
+
+
+</section>
+<section class='widget widget-search sep-after'>
+  <header>
+    <h4 class='title widget-title'>Search</h4>
+  </header>
+
+  <form action='/search' id='search-form' class='search-form'>
+    <label>
+      <span class='screen-reader-text'>Search</span>
+      <input id='search-term' class='search-term' type='search' name='q' placeholder='Search&hellip;'>
+    </label></form>
+
+</section>
+</div>
+
+  <div class='sidebar-overlay'></div>
+</div><div class='main'><a class='screen-reader-text' href='#content'>Skip to Content</a>
+
+<button id='sidebar-toggler' class='sidebar-toggler' aria-controls='sidebar'>
+  <span class='screen-reader-text'>Toggle Sidebar</span>
+  <span class='open'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="3" y1="12" x2="21" y2="12" />
+  <line x1="3" y1="6" x2="21" y2="6" />
+  <line x1="3" y1="18" x2="21" y2="18" />
+  
+</svg>
+</span>
+  <span class='close'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="18" y1="6" x2="6" y2="18" />
+  <line x1="6" y1="6" x2="18" y2="18" />
+  
+</svg>
+</span>
+</button><div class='header-widgets'>
+        <div class='container'></div>
+      </div>
+
+      <header id='header' class='header site-header'>
+        <div class='container sep-after'>
+          <div class='header-info'><p class='site-title title'>A Notebook of Extendswind</p><p class='desc site-desc'>a simple blog site</p>
+          </div>
+        </div>
+      </header>
+
+      <main id='content'>
+
+
+<article lang='en' class='entry'>
+  <header class='header entry-header'>
+  <div class='container sep-after'>
+    <div class='header-info'>
+      <h1 class='title'>Hadoop集群对datanode宕机后的处理机制源码阅读</h1>
+      
+
+    </div>
+    <div class='entry-meta'>
+  <span class='posted-on'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+  <line x1="16" y1="2" x2="16" y2="6"/>
+  <line x1="8" y1="2" x2="8" y2="6"/>
+  <line x1="3" y1="10" x2="21" y2="10"/>
+  
+</svg>
+<span class='screen-reader-text'>Posted on </span>
+  <time class='entry-date' datetime='2021-12-06T16:00:00&#43;08:00'>2021, Dec 06</time>
+</span>
+
+  
+  
+
+</div>
+
+
+  </div>
+</header>
+
+  
+  
+<details class='container entry-toc' open>
+  <summary class='title'>
+    <span>Table of Contents</span>
+  </summary>
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#宕机的心跳检测">宕机的心跳检测</a></li>
+    <li><a href="#接收心跳消息">接收心跳消息</a></li>
+    <li><a href="#heartbeatmanager中心跳的处理">HeartbeatManager中心跳的处理</a></li>
+    <li><a href="#恢复数据">恢复数据</a></li>
+    <li><a href="#数据节点的执行恢复的逻辑">数据节点的执行恢复的逻辑</a></li>
+  </ul>
+</nav>
+</details>
+
+
+  <div class='container entry-content'>
+  <p>总体上涉及了心跳检测、副本移除线程、副本恢复线程。当datanode发生宕机或者datanode中的某个storage（如一块硬盘）发生的错误时，namenode会根据datanode发送的心跳进行检测。但namenode并没有在心跳检测的汇报中进行即时反应，而是先记录对应的心跳信息，由另一个定期检测线程移除DatanodeManager和BlockManager中对应的block信息，并记录需要恢复的数据。对于数据的恢复，又新建了一个线程进行定期扫描，分配恢复副本需要的源数据节点和目标数据节点，在datanode的下一轮心跳检测中转换为对应的命令返回给datanode。</p>
+<h1 id="宕机的心跳检测">宕机的心跳检测</h1>
+<p>datanode会定时向namenode发送心跳数据包汇报当前的运行状态。namenode在一定时间内没收到数据节点的心跳时会标记为stale状态，然后转移该数据节点中的block到其它的数据节点。</p>
+<p>hdfs配置中的几个参数：</p>
+<ul>
+<li><code>dfs.heartbeat.interval</code>，Hadoop心跳检测间隔，默认为3s。</li>
+<li><code>dfs.namenode.stale.datanode.minimum.interval</code>，datanode标记为stale状态的需要丢失的最小心跳次数，默认为3。</li>
+<li><code>dfs.namenode.stale.datanode.interval</code>，Hadoop datanode超时范围，超过此时间没收到心跳检测会被标记为stale状态，默认为30s，大小必须超过前面两个参数的乘积。</li>
+</ul>
+<h1 id="接收心跳消息">接收心跳消息</h1>
+<p>Hadoop的datanode心跳检测通过rpc的形式发送，rpc函数通过参数传递数据节点统计信息，返回namenode需要对数据节点的命令。</p>
+<p>datanode在通过rpc发送消息时，namenode首先在rpc server处理，交给NameSystem。NameNodeRpcServer中的处理：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#a6e22e">@Override</span> <span style="color:#75715e">// DatanodeProtocol
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">public</span> HeartbeatResponse <span style="color:#a6e22e">sendHeartbeat</span><span style="color:#f92672">(</span>DatanodeRegistration nodeReg<span style="color:#f92672">,</span>
+    StorageReport<span style="color:#f92672">[]</span> report<span style="color:#f92672">,</span> <span style="color:#66d9ef">long</span> dnCacheCapacity<span style="color:#f92672">,</span> <span style="color:#66d9ef">long</span> dnCacheUsed<span style="color:#f92672">,</span>
+    <span style="color:#66d9ef">int</span> xmitsInProgress<span style="color:#f92672">,</span> <span style="color:#66d9ef">int</span> xceiverCount<span style="color:#f92672">,</span>
+    <span style="color:#66d9ef">int</span> failedVolumes<span style="color:#f92672">,</span> VolumeFailureSummary volumeFailureSummary<span style="color:#f92672">,</span>
+    <span style="color:#66d9ef">boolean</span> requestFullBlockReportLease<span style="color:#f92672">,</span>
+    <span style="color:#a6e22e">@Nonnull</span> SlowPeerReports slowPeers<span style="color:#f92672">,</span>
+    <span style="color:#a6e22e">@Nonnull</span> SlowDiskReports slowDisks<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> IOException <span style="color:#f92672">{</span>
+  checkNNStartup<span style="color:#f92672">();</span>
+  verifyRequest<span style="color:#f92672">(</span>nodeReg<span style="color:#f92672">);</span>
+  <span style="color:#66d9ef">return</span> namesystem<span style="color:#f92672">.</span><span style="color:#a6e22e">handleHeartbeat</span><span style="color:#f92672">(</span>nodeReg<span style="color:#f92672">,</span> report<span style="color:#f92672">,</span>
+      dnCacheCapacity<span style="color:#f92672">,</span> dnCacheUsed<span style="color:#f92672">,</span> xceiverCount<span style="color:#f92672">,</span> xmitsInProgress<span style="color:#f92672">,</span>
+      failedVolumes<span style="color:#f92672">,</span> volumeFailureSummary<span style="color:#f92672">,</span> requestFullBlockReportLease<span style="color:#f92672">,</span>
+      slowPeers<span style="color:#f92672">,</span> slowDisks<span style="color:#f92672">);</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>namesystem的类型为FSNamesystem，负责name-space state的相关管理（is a container of both transient and persisted name-space state, and does all the book-keeping work on a NameNode），是BlockManager, DatanodeManager, DelegationTokens, LeaseManager等服务的容器。在handleHeartbeat函数中，通过blockManager获取的DatanodeManager进行了处理：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">DatanodeCommand<span style="color:#f92672">[]</span> cmds <span style="color:#f92672">=</span> blockManager<span style="color:#f92672">.</span><span style="color:#a6e22e">getDatanodeManager</span><span style="color:#f92672">().</span><span style="color:#a6e22e">handleHeartbeat</span><span style="color:#f92672">(</span>
+  nodeReg<span style="color:#f92672">,</span> reports<span style="color:#f92672">,</span> getBlockPoolId<span style="color:#f92672">(),</span> cacheCapacity<span style="color:#f92672">,</span> cacheUsed<span style="color:#f92672">,</span>
+  xceiverCount<span style="color:#f92672">,</span> maxTransfer<span style="color:#f92672">,</span> failedVolumes<span style="color:#f92672">,</span> volumeFailureSummary<span style="color:#f92672">,</span>
+  slowPeers<span style="color:#f92672">,</span> slowDisks<span style="color:#f92672">);</span>
+</code></pre></div><p>然后DatanodeManager中调用HeartbeatManager进行了处理：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">heartbeatManager<span style="color:#f92672">.</span><span style="color:#a6e22e">updateHeartbeat</span><span style="color:#f92672">(</span>nodeinfo<span style="color:#f92672">,</span> reports<span style="color:#f92672">,</span> cacheCapacity<span style="color:#f92672">,</span>
+        cacheUsed<span style="color:#f92672">,</span> xceiverCount<span style="color:#f92672">,</span> failedVolumes<span style="color:#f92672">,</span> volumeFailureSummary<span style="color:#f92672">);</span>
+</code></pre></div><h1 id="heartbeatmanager中心跳的处理">HeartbeatManager中心跳的处理</h1>
+<p>HeartbeatManager类负责心跳的处理，心跳的处理并没有在接收到心跳消息后，而是用了一个额外的线程进行处理，默认每5min进行一次状态扫描。可能是某些处理中需要多个datanode的信息，所以没有直接对单个datanode发送消息时回复。对于datanodeManager中记录的有问题的datanode和storage，直接进行移除。此处只负责移除namenode（BlockManager和DatanodeManager等）中的datanode信息，对于丢失副本的恢复过程并不处理。</p>
+<p>一个Monitor内部类实现了Runnable接口，负责监测线程的运行。<code>private final Daemon heartbeatThread = new Daemon(new Monitor());</code>。在当前的时间与上次检测的时间超过heartbeatRecheckInterval时，会调用heartbeatCheck()函数进行处理。</p>
+<p>heartbeatCheck()函数中。每次循环首先遍历DatanodeManager中的所有的datanode状态以及每个datanode中的storage状态，统计发生错误的datanode和storage（每个datanode上可能有多个storage，标记datanode运行正常但是storage出现问题的情况）；然后通过DatanodeManager和BlockManager处理其中第一个datanode和storage，直至所有存在问题的datanode和storage都被处理完。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">  <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">run</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">while</span><span style="color:#f92672">(</span>namesystem<span style="color:#f92672">.</span><span style="color:#a6e22e">isRunning</span><span style="color:#f92672">())</span> <span style="color:#f92672">{</span>
+      restartHeartbeatStopWatch<span style="color:#f92672">();</span>
+      <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">long</span> now <span style="color:#f92672">=</span> Time<span style="color:#f92672">.</span><span style="color:#a6e22e">monotonicNow</span><span style="color:#f92672">();</span>
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>lastHeartbeatCheck <span style="color:#f92672">+</span> heartbeatRecheckInterval <span style="color:#f92672">&lt;</span> now<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+          heartbeatCheck<span style="color:#f92672">();</span>
+          lastHeartbeatCheck <span style="color:#f92672">=</span> now<span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+	  <span style="color:#75715e">// ....
+</span><span style="color:#75715e"></span>     <span style="color:#f92672">}</span>
+  <span style="color:#f92672">}</span>
+	
+	
+  <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">heartbeatCheck</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">final</span> DatanodeManager dm <span style="color:#f92672">=</span> blockManager<span style="color:#f92672">.</span><span style="color:#a6e22e">getDatanodeManager</span><span style="color:#f92672">();</span>
+    <span style="color:#75715e">// It&#39;s OK to check safe mode w/o taking the lock here, we re-check
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">// for safe mode after taking the lock before removing a datanode.
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>namesystem<span style="color:#f92672">.</span><span style="color:#a6e22e">isInStartupSafeMode</span><span style="color:#f92672">())</span> <span style="color:#f92672">{</span>
+      <span style="color:#66d9ef">return</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+    <span style="color:#66d9ef">boolean</span> allAlive <span style="color:#f92672">=</span> <span style="color:#66d9ef">false</span><span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">while</span> <span style="color:#f92672">(!</span>allAlive<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+      <span style="color:#75715e">// locate the first dead node.
+</span><span style="color:#75715e"></span>      DatanodeDescriptor dead <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
+
+      <span style="color:#75715e">// locate the first failed storage that isn&#39;t on a dead node.
+</span><span style="color:#75715e"></span>      DatanodeStorageInfo failedStorage <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
+
+      <span style="color:#75715e">// check the number of stale nodes
+</span><span style="color:#75715e"></span>      <span style="color:#66d9ef">int</span> numOfStaleNodes <span style="color:#f92672">=</span> 0<span style="color:#f92672">;</span>
+      <span style="color:#66d9ef">int</span> numOfStaleStorages <span style="color:#f92672">=</span> 0<span style="color:#f92672">;</span>
+      <span style="color:#66d9ef">synchronized</span><span style="color:#f92672">(</span><span style="color:#66d9ef">this</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span>DatanodeDescriptor d <span style="color:#f92672">:</span> datanodes<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+          <span style="color:#75715e">// check if an excessive GC pause has occurred
+</span><span style="color:#75715e"></span>          <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>shouldAbortHeartbeatCheck<span style="color:#f92672">(</span>0<span style="color:#f92672">))</span> <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">return</span><span style="color:#f92672">;</span>
+          <span style="color:#f92672">}</span>
+          <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>dead <span style="color:#f92672">==</span> <span style="color:#66d9ef">null</span> <span style="color:#f92672">&amp;&amp;</span> dm<span style="color:#f92672">.</span><span style="color:#a6e22e">isDatanodeDead</span><span style="color:#f92672">(</span>d<span style="color:#f92672">))</span> <span style="color:#f92672">{</span>
+            stats<span style="color:#f92672">.</span><span style="color:#a6e22e">incrExpiredHeartbeats</span><span style="color:#f92672">();</span>
+            dead <span style="color:#f92672">=</span> d<span style="color:#f92672">;</span>
+          <span style="color:#f92672">}</span>
+          <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>d<span style="color:#f92672">.</span><span style="color:#a6e22e">isStale</span><span style="color:#f92672">(</span>dm<span style="color:#f92672">.</span><span style="color:#a6e22e">getStaleInterval</span><span style="color:#f92672">()))</span> <span style="color:#f92672">{</span>
+            numOfStaleNodes<span style="color:#f92672">++;</span>
+          <span style="color:#f92672">}</span>
+          DatanodeStorageInfo<span style="color:#f92672">[]</span> storageInfos <span style="color:#f92672">=</span> d<span style="color:#f92672">.</span><span style="color:#a6e22e">getStorageInfos</span><span style="color:#f92672">();</span>
+          <span style="color:#66d9ef">for</span><span style="color:#f92672">(</span>DatanodeStorageInfo storageInfo <span style="color:#f92672">:</span> storageInfos<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>storageInfo<span style="color:#f92672">.</span><span style="color:#a6e22e">areBlockContentsStale</span><span style="color:#f92672">())</span> <span style="color:#f92672">{</span>
+              numOfStaleStorages<span style="color:#f92672">++;</span>
+            <span style="color:#f92672">}</span>
+            <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>failedStorage <span style="color:#f92672">==</span> <span style="color:#66d9ef">null</span> <span style="color:#f92672">&amp;&amp;</span>
+                storageInfo<span style="color:#f92672">.</span><span style="color:#a6e22e">areBlocksOnFailedStorage</span><span style="color:#f92672">()</span> <span style="color:#f92672">&amp;&amp;</span>
+                d <span style="color:#f92672">!=</span> dead<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+              failedStorage <span style="color:#f92672">=</span> storageInfo<span style="color:#f92672">;</span>
+            <span style="color:#f92672">}</span>
+          <span style="color:#f92672">}</span>
+        <span style="color:#f92672">}</span>
+        
+        <span style="color:#75715e">// Set the number of stale nodes in the DatanodeManager
+</span><span style="color:#75715e"></span>        dm<span style="color:#f92672">.</span><span style="color:#a6e22e">setNumStaleNodes</span><span style="color:#f92672">(</span>numOfStaleNodes<span style="color:#f92672">);</span>
+        dm<span style="color:#f92672">.</span><span style="color:#a6e22e">setNumStaleStorages</span><span style="color:#f92672">(</span>numOfStaleStorages<span style="color:#f92672">);</span>
+      <span style="color:#f92672">}</span>
+
+      allAlive <span style="color:#f92672">=</span> <span style="color:#f92672">(</span>dead <span style="color:#f92672">==</span> <span style="color:#66d9ef">null</span> <span style="color:#f92672">&amp;&amp;</span> failedStorage <span style="color:#f92672">==</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">);</span>
+      <span style="color:#66d9ef">if</span> <span style="color:#f92672">(!</span>allAlive <span style="color:#f92672">&amp;&amp;</span> namesystem<span style="color:#f92672">.</span><span style="color:#a6e22e">isInStartupSafeMode</span><span style="color:#f92672">())</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">return</span><span style="color:#f92672">;</span>
+      <span style="color:#f92672">}</span>
+      <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>dead <span style="color:#f92672">!=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#75715e">// acquire the fsnamesystem lock, and then remove the dead node.
+</span><span style="color:#75715e"></span>        namesystem<span style="color:#f92672">.</span><span style="color:#a6e22e">writeLock</span><span style="color:#f92672">();</span>
+        <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+          dm<span style="color:#f92672">.</span><span style="color:#a6e22e">removeDeadDatanode</span><span style="color:#f92672">(</span>dead<span style="color:#f92672">,</span> <span style="color:#f92672">!</span>dead<span style="color:#f92672">.</span><span style="color:#a6e22e">isMaintenance</span><span style="color:#f92672">());</span>
+        <span style="color:#f92672">}</span> <span style="color:#66d9ef">finally</span> <span style="color:#f92672">{</span>
+          namesystem<span style="color:#f92672">.</span><span style="color:#a6e22e">writeUnlock</span><span style="color:#f92672">();</span>
+        <span style="color:#f92672">}</span>
+      <span style="color:#f92672">}</span>
+      <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>failedStorage <span style="color:#f92672">!=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#75715e">// acquire the fsnamesystem lock, and remove blocks on the storage.
+</span><span style="color:#75715e"></span>        namesystem<span style="color:#f92672">.</span><span style="color:#a6e22e">writeLock</span><span style="color:#f92672">();</span>
+        <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+          blockManager<span style="color:#f92672">.</span><span style="color:#a6e22e">removeBlocksAssociatedTo</span><span style="color:#f92672">(</span>failedStorage<span style="color:#f92672">);</span>
+        <span style="color:#f92672">}</span> <span style="color:#66d9ef">finally</span> <span style="color:#f92672">{</span>
+          namesystem<span style="color:#f92672">.</span><span style="color:#a6e22e">writeUnlock</span><span style="color:#f92672">();</span>
+        <span style="color:#f92672">}</span>
+      <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span>
+  <span style="color:#f92672">}</span>
+</code></pre></div><p>dm.removeDeadDatanode(dead, !dead.isMaintenance())。在removeDeadDatanode函数中又调用了removeDatanode处理datanode的删除逻辑。删除heartbeatManager中记录的datanode、blockManager中相关的block、DatanodeManager内部（networktopology）的datanode记录、版本信息处理、blockManager中的租约信息。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">  <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">removeDatanode</span><span style="color:#f92672">(</span>DatanodeDescriptor nodeInfo<span style="color:#f92672">,</span>
+      <span style="color:#66d9ef">boolean</span> removeBlocksFromBlocksMap<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">assert</span> namesystem<span style="color:#f92672">.</span><span style="color:#a6e22e">hasWriteLock</span><span style="color:#f92672">();</span>
+    heartbeatManager<span style="color:#f92672">.</span><span style="color:#a6e22e">removeDatanode</span><span style="color:#f92672">(</span>nodeInfo<span style="color:#f92672">);</span>
+    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>removeBlocksFromBlocksMap<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+      blockManager<span style="color:#f92672">.</span><span style="color:#a6e22e">removeBlocksAssociatedTo</span><span style="color:#f92672">(</span>nodeInfo<span style="color:#f92672">);</span>
+    <span style="color:#f92672">}</span>
+    networktopology<span style="color:#f92672">.</span><span style="color:#a6e22e">remove</span><span style="color:#f92672">(</span>nodeInfo<span style="color:#f92672">);</span>
+    decrementVersionCount<span style="color:#f92672">(</span>nodeInfo<span style="color:#f92672">.</span><span style="color:#a6e22e">getSoftwareVersion</span><span style="color:#f92672">());</span>
+    blockManager<span style="color:#f92672">.</span><span style="color:#a6e22e">getBlockReportLeaseManager</span><span style="color:#f92672">().</span><span style="color:#a6e22e">unregister</span><span style="color:#f92672">(</span>nodeInfo<span style="color:#f92672">);</span>
+
+    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>LOG<span style="color:#f92672">.</span><span style="color:#a6e22e">isDebugEnabled</span><span style="color:#f92672">())</span> <span style="color:#f92672">{</span>
+      LOG<span style="color:#f92672">.</span><span style="color:#a6e22e">debug</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;remove datanode &#34;</span> <span style="color:#f92672">+</span> nodeInfo<span style="color:#f92672">);</span>
+    <span style="color:#f92672">}</span>
+    blockManager<span style="color:#f92672">.</span><span style="color:#a6e22e">checkSafeMode</span><span style="color:#f92672">();</span>
+  <span style="color:#f92672">}</span>
+</code></pre></div><h1 id="恢复数据">恢复数据</h1>
+<p>当数据节点被判断为丢失时，blockManager在删除数据节点内的block信息的同时，会将block加入到pendingReconstruction类的列表中。BlockManager中的另一个线程会定期（默认3s）处理pendingReconstruction对象中的数据。</p>
+<p>主要分成3步：1. 将block分为EC码block和副本block；2. 选择目标节点执行task；3. 将task放入到DatanodeDescriptor类的replicateBlocks队列中。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">  <span style="color:#75715e">/**
+</span><span style="color:#75715e">   * Periodically calls computeBlockRecoveryWork().
+</span><span style="color:#75715e">   * 默认每3s调用一次block recovery的操作。
+</span><span style="color:#75715e">   */</span>
+  <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">RedundancyMonitor</span> <span style="color:#66d9ef">implements</span> Runnable <span style="color:#f92672">{</span>
+
+    <span style="color:#a6e22e">@Override</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">run</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+      <span style="color:#66d9ef">while</span> <span style="color:#f92672">(</span>namesystem<span style="color:#f92672">.</span><span style="color:#a6e22e">isRunning</span><span style="color:#f92672">())</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+          <span style="color:#75715e">// Process recovery work only when active NN is out of safe mode.
+</span><span style="color:#75715e"></span>          <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>isPopulatingReplQueues<span style="color:#f92672">())</span> <span style="color:#f92672">{</span>
+		    <span style="color:#75715e">// 扫描neededReconstruction中的block，并且对每个block选择需要被恢复到的数据节点和拷贝数据的节点
+</span><span style="color:#75715e"></span>            computeDatanodeWork<span style="color:#f92672">();</span>
+            processPendingReconstructions<span style="color:#f92672">();</span>
+            rescanPostponedMisreplicatedBlocks<span style="color:#f92672">();</span>
+          <span style="color:#f92672">}</span>
+          TimeUnit<span style="color:#f92672">.</span><span style="color:#a6e22e">MILLISECONDS</span><span style="color:#f92672">.</span><span style="color:#a6e22e">sleep</span><span style="color:#f92672">(</span>redundancyRecheckIntervalMs<span style="color:#f92672">);</span> <span style="color:#75715e">// 默认 3s
+</span><span style="color:#75715e"></span>        <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>Throwable t<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+			<span style="color:#75715e">// 省略异常处理
+</span><span style="color:#75715e"></span>        <span style="color:#f92672">}</span>
+      <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span>
+  <span style="color:#f92672">}</span>
+  
+    <span style="color:#75715e">/**
+</span><span style="color:#75715e">   * Reconstruct a set of blocks to full strength through replication or
+</span><span style="color:#75715e">   * erasure coding
+</span><span style="color:#75715e">   *
+</span><span style="color:#75715e">   * @param blocksToReconstruct blocks to be reconstructed, for each priority
+</span><span style="color:#75715e">   * @return the number of blocks scheduled for replication
+</span><span style="color:#75715e">   */</span>
+  <span style="color:#a6e22e">@VisibleForTesting</span>
+  <span style="color:#66d9ef">int</span> <span style="color:#a6e22e">computeReconstructionWorkForBlocks</span><span style="color:#f92672">(</span>
+      List<span style="color:#f92672">&lt;</span>List<span style="color:#f92672">&lt;</span>BlockInfo<span style="color:#f92672">&gt;&gt;</span> blocksToReconstruct<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">int</span> scheduledWork <span style="color:#f92672">=</span> 0<span style="color:#f92672">;</span>
+    List<span style="color:#f92672">&lt;</span>BlockReconstructionWork<span style="color:#f92672">&gt;</span> reconWork <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> LinkedList<span style="color:#f92672">&lt;&gt;();</span>
+
+    <span style="color:#75715e">// Step 1: categorize at-risk blocks into replication and EC tasks
+</span><span style="color:#75715e"></span>    namesystem<span style="color:#f92672">.</span><span style="color:#a6e22e">writeLock</span><span style="color:#f92672">();</span>
+    <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+      <span style="color:#66d9ef">synchronized</span> <span style="color:#f92672">(</span>neededReconstruction<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> priority <span style="color:#f92672">=</span> 0<span style="color:#f92672">;</span> priority <span style="color:#f92672">&lt;</span> blocksToReconstruct<span style="color:#f92672">.</span><span style="color:#a6e22e">size</span><span style="color:#f92672">();</span> priority<span style="color:#f92672">++)</span> <span style="color:#f92672">{</span>
+          <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span>BlockInfo block <span style="color:#f92672">:</span> blocksToReconstruct<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span>priority<span style="color:#f92672">))</span> <span style="color:#f92672">{</span>
+            BlockReconstructionWork rw <span style="color:#f92672">=</span> scheduleReconstruction<span style="color:#f92672">(</span>block<span style="color:#f92672">,</span>
+                priority<span style="color:#f92672">);</span>
+            <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>rw <span style="color:#f92672">!=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+              reconWork<span style="color:#f92672">.</span><span style="color:#a6e22e">add</span><span style="color:#f92672">(</span>rw<span style="color:#f92672">);</span>
+            <span style="color:#f92672">}</span>
+          <span style="color:#f92672">}</span>
+        <span style="color:#f92672">}</span>
+      <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span> <span style="color:#66d9ef">finally</span> <span style="color:#f92672">{</span>
+      namesystem<span style="color:#f92672">.</span><span style="color:#a6e22e">writeUnlock</span><span style="color:#f92672">();</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#75715e">// Step 2: choose target nodes for each reconstruction task
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">final</span> Set<span style="color:#f92672">&lt;</span>Node<span style="color:#f92672">&gt;</span> excludedNodes <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> HashSet<span style="color:#f92672">&lt;&gt;();</span>
+    <span style="color:#66d9ef">for</span><span style="color:#f92672">(</span>BlockReconstructionWork rw <span style="color:#f92672">:</span> reconWork<span style="color:#f92672">){</span>
+      <span style="color:#75715e">// Exclude all of the containing nodes from being targets.
+</span><span style="color:#75715e"></span>      <span style="color:#75715e">// This list includes decommissioning or corrupt nodes.
+</span><span style="color:#75715e"></span>      excludedNodes<span style="color:#f92672">.</span><span style="color:#a6e22e">clear</span><span style="color:#f92672">();</span>
+      <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span>DatanodeDescriptor dn <span style="color:#f92672">:</span> rw<span style="color:#f92672">.</span><span style="color:#a6e22e">getContainingNodes</span><span style="color:#f92672">())</span> <span style="color:#f92672">{</span>
+        excludedNodes<span style="color:#f92672">.</span><span style="color:#a6e22e">add</span><span style="color:#f92672">(</span>dn<span style="color:#f92672">);</span>
+      <span style="color:#f92672">}</span>
+
+      <span style="color:#75715e">// choose replication targets: NOT HOLDING THE GLOBAL LOCK
+</span><span style="color:#75715e"></span>      <span style="color:#66d9ef">final</span> BlockPlacementPolicy placementPolicy <span style="color:#f92672">=</span>
+          placementPolicies<span style="color:#f92672">.</span><span style="color:#a6e22e">getPolicy</span><span style="color:#f92672">(</span>rw<span style="color:#f92672">.</span><span style="color:#a6e22e">getBlock</span><span style="color:#f92672">().</span><span style="color:#a6e22e">getBlockType</span><span style="color:#f92672">());</span>
+      rw<span style="color:#f92672">.</span><span style="color:#a6e22e">chooseTargets</span><span style="color:#f92672">(</span>placementPolicy<span style="color:#f92672">,</span> storagePolicySuite<span style="color:#f92672">,</span> excludedNodes<span style="color:#f92672">);</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#75715e">// Step 3: add tasks to the DN
+</span><span style="color:#75715e"></span>    namesystem<span style="color:#f92672">.</span><span style="color:#a6e22e">writeLock</span><span style="color:#f92672">();</span>
+    <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+      <span style="color:#66d9ef">for</span><span style="color:#f92672">(</span>BlockReconstructionWork rw <span style="color:#f92672">:</span> reconWork<span style="color:#f92672">){</span>
+        <span style="color:#66d9ef">final</span> DatanodeStorageInfo<span style="color:#f92672">[]</span> targets <span style="color:#f92672">=</span> rw<span style="color:#f92672">.</span><span style="color:#a6e22e">getTargets</span><span style="color:#f92672">();</span>
+        <span style="color:#66d9ef">if</span><span style="color:#f92672">(</span>targets <span style="color:#f92672">==</span> <span style="color:#66d9ef">null</span> <span style="color:#f92672">||</span> targets<span style="color:#f92672">.</span><span style="color:#a6e22e">length</span> <span style="color:#f92672">==</span> 0<span style="color:#f92672">){</span>
+          rw<span style="color:#f92672">.</span><span style="color:#a6e22e">resetTargets</span><span style="color:#f92672">();</span>
+          <span style="color:#66d9ef">continue</span><span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+
+        <span style="color:#66d9ef">synchronized</span> <span style="color:#f92672">(</span>neededReconstruction<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+          <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>validateReconstructionWork<span style="color:#f92672">(</span>rw<span style="color:#f92672">))</span> <span style="color:#f92672">{</span>
+            scheduledWork<span style="color:#f92672">++;</span>
+          <span style="color:#f92672">}</span>
+        <span style="color:#f92672">}</span>
+      <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span> <span style="color:#66d9ef">finally</span> <span style="color:#f92672">{</span>
+      namesystem<span style="color:#f92672">.</span><span style="color:#a6e22e">writeUnlock</span><span style="color:#f92672">();</span>
+    <span style="color:#f92672">}</span>
+	<span style="color:#75715e">// 省略debug
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">return</span> scheduledWork<span style="color:#f92672">;</span>
+  <span style="color:#f92672">}</span>
+
+</code></pre></div><p>在对每个block创建新的转移任务时，需要选择一个当前已有副本的datanode和需要被复制到的datanode。对于已有副本的数据节点的选择，默认会先从没有写开销的DECOMMISSION_INPROGRESS状态的datanode中选，否则随机选一个没有达到副本限制的节点（每个节点会记录将要被复制的副本数，参数dfs.namenode.replication.max-streams用于限制每个节点上的副本数，默认为2），如果还不存在则随机选择其它符合要求的节点。对于被复制的数据节点，如同文件的第一次上传过程，调用了对应的副本放置策略进行选择。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">/**
+</span><span style="color:#75715e">   * Parse the data-nodes the block belongs to and choose a certain number
+</span><span style="color:#75715e">   * from them to be the recovery sources.
+</span><span style="color:#75715e">   *
+</span><span style="color:#75715e">   * We prefer nodes that are in DECOMMISSION_INPROGRESS state to other nodes
+</span><span style="color:#75715e">   * since the former do not have write traffic and hence are less busy.
+</span><span style="color:#75715e">   * We do not use already decommissioned nodes as a source, unless there is
+</span><span style="color:#75715e">   * no other choice.
+</span><span style="color:#75715e">   * Otherwise we randomly choose nodes among those that did not reach their
+</span><span style="color:#75715e">   * replication limits. However, if the recovery work is of the highest
+</span><span style="color:#75715e">   * priority and all nodes have reached their replication limits, we will
+</span><span style="color:#75715e">   * randomly choose the desired number of nodes despite the replication limit.
+</span><span style="color:#75715e">   *
+</span><span style="color:#75715e">   * In addition form a list of all nodes containing the block
+</span><span style="color:#75715e">   * and calculate its replication numbers.
+</span><span style="color:#75715e">   *
+</span><span style="color:#75715e">   * @return the array of DatanodeDescriptor of the chosen nodes from which to
+</span><span style="color:#75715e">   *         recover the given block
+</span><span style="color:#75715e">   */</span>
+  <span style="color:#a6e22e">@VisibleForTesting</span>
+  DatanodeDescriptor<span style="color:#f92672">[]</span> <span style="color:#a6e22e">chooseSourceDatanodes</span><span style="color:#f92672">(</span>BlockInfo block<span style="color:#f92672">,</span>
+      List<span style="color:#f92672">&lt;</span>DatanodeDescriptor<span style="color:#f92672">&gt;</span> containingNodes<span style="color:#f92672">,</span>
+      List<span style="color:#f92672">&lt;</span>DatanodeStorageInfo<span style="color:#f92672">&gt;</span> nodesContainingLiveReplicas<span style="color:#f92672">,</span>
+      NumberReplicas numReplicas<span style="color:#f92672">,</span>
+      List<span style="color:#f92672">&lt;</span>Byte<span style="color:#f92672">&gt;</span> liveBlockIndices<span style="color:#f92672">,</span> <span style="color:#66d9ef">int</span> priority<span style="color:#f92672">)</span> <span style="color:#75715e">// ...
+</span></code></pre></div><h1 id="数据节点的执行恢复的逻辑">数据节点的执行恢复的逻辑</h1>
+<p>前面向blockManager中获取的DatanodeDescriptor类加入了block需要创建副本的任务。DatanodeManager在通过RPC发送心跳消息给namenode时，namenode会在处理心跳时将副本复制任务转变为对应的命令返回给datanode。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">
+<span style="color:#75715e">// datanode发送心跳的rpc函数
+</span><span style="color:#75715e"></span><span style="color:#a6e22e">@Override</span> <span style="color:#75715e">// DatanodeProtocol
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">public</span> HeartbeatResponse <span style="color:#a6e22e">sendHeartbeat</span><span style="color:#f92672">(</span>DatanodeRegistration nodeReg<span style="color:#f92672">,</span>
+    StorageReport<span style="color:#f92672">[]</span> report<span style="color:#f92672">,</span> <span style="color:#66d9ef">long</span> dnCacheCapacity<span style="color:#f92672">,</span> <span style="color:#66d9ef">long</span> dnCacheUsed<span style="color:#f92672">,</span>
+    <span style="color:#66d9ef">int</span> xmitsInProgress<span style="color:#f92672">,</span> <span style="color:#66d9ef">int</span> xceiverCount<span style="color:#f92672">,</span>
+    <span style="color:#66d9ef">int</span> failedVolumes<span style="color:#f92672">,</span> VolumeFailureSummary volumeFailureSummary<span style="color:#f92672">,</span>
+    <span style="color:#66d9ef">boolean</span> requestFullBlockReportLease<span style="color:#f92672">,</span>
+    <span style="color:#a6e22e">@Nonnull</span> SlowPeerReports slowPeers<span style="color:#f92672">,</span>
+    <span style="color:#a6e22e">@Nonnull</span> SlowDiskReports slowDisks<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> IOException <span style="color:#f92672">{</span>
+  checkNNStartup<span style="color:#f92672">();</span>
+  verifyRequest<span style="color:#f92672">(</span>nodeReg<span style="color:#f92672">);</span>
+  <span style="color:#66d9ef">return</span> namesystem<span style="color:#f92672">.</span><span style="color:#a6e22e">handleHeartbeat</span><span style="color:#f92672">(</span>nodeReg<span style="color:#f92672">,</span> report<span style="color:#f92672">,</span>
+      dnCacheCapacity<span style="color:#f92672">,</span> dnCacheUsed<span style="color:#f92672">,</span> xceiverCount<span style="color:#f92672">,</span> xmitsInProgress<span style="color:#f92672">,</span>
+      failedVolumes<span style="color:#f92672">,</span> volumeFailureSummary<span style="color:#f92672">,</span> requestFullBlockReportLease<span style="color:#f92672">,</span>
+      slowPeers<span style="color:#f92672">,</span> slowDisks<span style="color:#f92672">);</span>
+<span style="color:#f92672">}</span>
+
+<span style="color:#75715e">// FSNameSystem的handleHearbeat函数，通过blockManager调用DatanodeManager处理心跳
+</span><span style="color:#75715e"></span><span style="color:#f92672">{</span>
+  <span style="color:#75715e">// ...
+</span><span style="color:#75715e"></span>  DatanodeCommand<span style="color:#f92672">[]</span> cmds <span style="color:#f92672">=</span> blockManager<span style="color:#f92672">.</span><span style="color:#a6e22e">getDatanodeManager</span><span style="color:#f92672">().</span><span style="color:#a6e22e">handleHeartbeat</span><span style="color:#f92672">(</span>
+          nodeReg<span style="color:#f92672">,</span> reports<span style="color:#f92672">,</span> getBlockPoolId<span style="color:#f92672">(),</span> cacheCapacity<span style="color:#f92672">,</span> cacheUsed<span style="color:#f92672">,</span>
+          xceiverCount<span style="color:#f92672">,</span> maxTransfer<span style="color:#f92672">,</span> failedVolumes<span style="color:#f92672">,</span> volumeFailureSummary<span style="color:#f92672">,</span>
+          slowPeers<span style="color:#f92672">,</span> slowDisks<span style="color:#f92672">);</span>
+  <span style="color:#75715e">// ...
+</span><span style="color:#75715e"></span><span style="color:#f92672">}</span>
+
+<span style="color:#75715e">// DatanodeManager中handleHeartbeat取出先前存储的任务，并转为BlockCommander。
+</span><span style="color:#75715e"></span><span style="color:#f92672">{</span>
+  <span style="color:#75715e">// ...
+</span><span style="color:#75715e"></span>  List<span style="color:#f92672">&lt;</span>BlockTargetPair<span style="color:#f92672">&gt;</span> pendingList <span style="color:#f92672">=</span> nodeinfo<span style="color:#f92672">.</span><span style="color:#a6e22e">getReplicationCommand</span><span style="color:#f92672">(</span>
+      numReplicationTasks<span style="color:#f92672">);</span>
+  <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>pendingList <span style="color:#f92672">!=</span> <span style="color:#66d9ef">null</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#f92672">!</span>pendingList<span style="color:#f92672">.</span><span style="color:#a6e22e">isEmpty</span><span style="color:#f92672">())</span> <span style="color:#f92672">{</span>
+    cmds<span style="color:#f92672">.</span><span style="color:#a6e22e">add</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> BlockCommand<span style="color:#f92672">(</span>DatanodeProtocol<span style="color:#f92672">.</span><span style="color:#a6e22e">DNA_TRANSFER</span><span style="color:#f92672">,</span> blockPoolId<span style="color:#f92672">,</span>
+        pendingList<span style="color:#f92672">));</span>
+  <span style="color:#f92672">}</span>
+
+</code></pre></div>
+</div>
+
+  
+<footer class='entry-footer'>
+  <div class='container sep-before'><div class='categories'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M22,19a2,2,0,0,1-2,2H4a2,2,0,0,1-2-2V5A2,2,0,0,1,4,3H9l2,3h9a2,2,0,0,1,2,2Z"/>
+  
+</svg>
+<span class='screen-reader-text'>Categories: </span><a class='category' href='/categories/cloud-computing/'>cloud computing</a></div>
+<div class='tags'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M20.59,13.41l-7.17,7.17a2,2,0,0,1-2.83,0L2,12V2H12l8.59,8.59A2,2,0,0,1,20.59,13.41Z"/>
+  <line x1="7" y1="7" x2="7" y2="7"/>
+  
+</svg>
+<span class='screen-reader-text'>Tags: </span><a class='tag' href='/tags/hadoop/'>hadoop</a></div>
+
+  </div>
+</footer>
+
+
+</article>
+
+<nav class='entry-nav'>
+  <div class='container'><div class='prev-entry sep-before'>
+      <a href='/posts/technical/syncthing_install_for_vps/'>
+        <span aria-hidden='true'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="20" y1="12" x2="4" y2="12"/>
+  <polyline points="10 18 4 12 10 6"/>
+  
+</svg>
+ Previous</span>
+        <span class='screen-reader-text'>Previous post: </span>syncthing文件同步网盘配置</a>
+    </div></div>
+</nav>
+
+
+
+
+      </main>
+
+      <footer id='footer' class='footer'>
+        <div class='container sep-before'><section class='widget widget-social_menu sep-after'><header>
+    <h4 class='title widget-title'>Contact</h4>
+  </header><nav aria-label='Social Menu'>
+    <ul><li>
+        <a href='https://github.com/extendswind' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Open Github account in new tab</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+  
+</svg>
+</a>
+      </li><li>
+        <a href='mailto:extendswind@foxmail.com' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Contact via Email</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+  <polyline points="22,6 12,13 2,6"/>
+  
+</svg>
+</a>
+      </li></ul>
+  </nav>
+</section><div class='copyright'>
+  <p> &copy; 2018-2021 extendswind </p>
+</div>
+
+        </div>
+      </footer>
+
+    </div>
+  </div><script>window.__assets_js_src="/assets/js/"</script>
+
+<script src='/assets/js/main.c3bcf2df.js'></script>
+
+</body>
+
+</html>
+

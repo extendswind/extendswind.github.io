@@ -5,7 +5,21 @@
     <link>https://extendswind.top/categories/cloud-computing/</link>
     <description>Recent content in cloud computing on A Notebook of Extendswind</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Sat, 07 Nov 2020 10:30:00 +0800</lastBuildDate><atom:link href="https://extendswind.top/categories/cloud-computing/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 06 Dec 2021 16:00:00 +0800</lastBuildDate><atom:link href="https://extendswind.top/categories/cloud-computing/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Hadoop集群对datanode宕机后的处理机制源码阅读</title>
+      <link>https://extendswind.top/posts/technical/hadoop_datanode_failure_processing/</link>
+      <pubDate>Mon, 06 Dec 2021 16:00:00 +0800</pubDate>
+      
+      <guid>https://extendswind.top/posts/technical/hadoop_datanode_failure_processing/</guid>
+      <description>总体上涉及了心跳检测、副本移除线程、副本恢复线程。当datanode发生宕机或者datanode中的某个storage（如一块硬盘）发生的错误时，namenode会根据datanode发送的心跳进行检测。但namenode并没有在心跳检测的汇报中进行即时反应，而是先记录对应的心跳信息，由另一个定期检测线程移除DatanodeManager和BlockManager中对应的block信息，并记录需要恢复的数据。对于数据的恢复，又新建了一个线程进行定期扫描，分配恢复副本需要的源数据节点和目标数据节点，在datanode的下一轮心跳检测中转换为对应的命令返回给datanode。
+宕机的心跳检测 datanode会定时向namenode发送心跳数据包汇报当前的运行状态。namenode在一定时间内没收到数据节点的心跳时会标记为stale状态，然后转移该数据节点中的block到其它的数据节点。
+hdfs配置中的几个参数：
+ dfs.heartbeat.interval，Hadoop心跳检测间隔，默认为3s。 dfs.namenode.stale.datanode.minimum.interval，datanode标记为stale状态的需要丢失的最小心跳次数，默认为3。 dfs.namenode.stale.datanode.interval，Hadoop datanode超时范围，超过此时间没收到心跳检测会被标记为stale状态，默认为30s，大小必须超过前面两个参数的乘积。  接收心跳消息 Hadoop的datanode心跳检测通过rpc的形式发送，rpc函数通过参数传递数据节点统计信息，返回namenode需要对数据节点的命令。
+datanode在通过rpc发送消息时，namenode首先在rpc server处理，交给NameSystem。NameNodeRpcServer中的处理：
+@Override // DatanodeProtocol public HeartbeatResponse sendHeartbeat(DatanodeRegistration nodeReg, StorageReport[] report, long dnCacheCapacity, long dnCacheUsed, int xmitsInProgress, int xceiverCount, int failedVolumes, VolumeFailureSummary volumeFailureSummary, boolean requestFullBlockReportLease, @Nonnull SlowPeerReports slowPeers, @Nonnull SlowDiskReports slowDisks) throws IOException { checkNNStartup(); verifyRequest(nodeReg); return namesystem.handleHeartbeat(nodeReg, report, dnCacheCapacity, dnCacheUsed, xceiverCount, xmitsInProgress, failedVolumes, volumeFailureSummary, requestFullBlockReportLease, slowPeers, slowDisks); } namesystem的类型为FSNamesystem，负责name-space state的相关管理（is a container of both transient and persisted name-space state, and does all the book-keeping work on a NameNode），是BlockManager, DatanodeManager, DelegationTokens, LeaseManager等服务的容器。在handleHeartbeat函数中，通过blockManager获取的DatanodeManager进行了处理：</description>
+    </item>
+    
     <item>
       <title>SpatialHadoop二级空间索引机制源码分析</title>
       <link>https://extendswind.top/posts/technical/spatialhadoop_operation_code_analysis/</link>
