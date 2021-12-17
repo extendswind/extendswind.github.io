@@ -1,0 +1,1 @@
+../../../myNote/./technical/cloud_computing/hive_hadoop_sql_simple_execute_src_read.md

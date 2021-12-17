@@ -3,36 +3,46 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://extendswind.top/</loc>
-    <lastmod>2021-12-06T16:00:00+08:00</lastmod>
+    <lastmod>2021-12-17T19:30:00+08:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url><url>
+    <loc>https://extendswind.top/posts/technical/hive_hadoop_sql_simple_execute_src_read/</loc>
+    <lastmod>2021-12-17T19:30:00+08:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://extendswind.top/categories/</loc>
-    <lastmod>2021-12-06T16:00:00+08:00</lastmod>
+    <lastmod>2021-12-17T19:30:00+08:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://extendswind.top/categories/cloud-computing/</loc>
-    <lastmod>2021-12-06T16:00:00+08:00</lastmod>
+    <lastmod>2021-12-17T19:30:00+08:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://extendswind.top/tags/hadoop/</loc>
-    <lastmod>2021-12-06T16:00:00+08:00</lastmod>
+    <lastmod>2021-12-17T19:30:00+08:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url><url>
-    <loc>https://extendswind.top/posts/technical/hadoop_datanode_failure_processing/</loc>
-    <lastmod>2021-12-06T16:00:00+08:00</lastmod>
+    <loc>https://extendswind.top/tags/hive/</loc>
+    <lastmod>2021-12-17T19:30:00+08:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://extendswind.top/posts/</loc>
-    <lastmod>2021-12-06T16:00:00+08:00</lastmod>
+    <lastmod>2021-12-17T19:30:00+08:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://extendswind.top/tags/</loc>
+    <lastmod>2021-12-17T19:30:00+08:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url><url>
+    <loc>https://extendswind.top/posts/technical/hadoop_datanode_failure_processing/</loc>
     <lastmod>2021-12-06T16:00:00+08:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>

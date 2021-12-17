@@ -14,7 +14,7 @@ keyFile = open("cnblogkey", "r")
 username = keyFile.readline().strip("\n")
 passwd = keyFile.readline().strip("\n")
 print(username)
-print(passwd)
+# print(passwd)
 
 title = "helloWorld"
 content = "<p> test <p>"
@@ -60,7 +60,7 @@ for line in sitemapfile:
         tagList = [i.get_text() for i in soup.findAll("a",attrs={'class':'tag'})]
         isContainTag = False
         for tag in tagList:
-            print(tag)
+            # print(tag)
             if tag == "life":
                 isContainTag = True
         if isContainTag:

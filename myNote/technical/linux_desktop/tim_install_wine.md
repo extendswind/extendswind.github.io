@@ -16,6 +16,11 @@ tags:
 
 更推荐使用的deepin.com.qq.office，基于deepin-wine，配置好了比较稳定。
 
+ps: 2021年12月更新，AUR里com.qq.tim.spark从Spark应用商店的移植实现的效果也差不多，deepin-wine-time 已经从wine转到了deepin-wine，各方面的问题也有比较好的解决方案，外加作者一直在积极更新。项目地址上有一些问题的解决方案：
+
+`https://github.com/vufa/deepin-wine-tim-arch`
+
+新版本的更新在不同的环境下出现了一些新问题，建议在各个仓库对应的github链接以及一直更新的arch wiki上找找最新的方案。
 
 # 安装步骤
 
