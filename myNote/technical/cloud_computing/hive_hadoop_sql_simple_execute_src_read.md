@@ -327,7 +327,7 @@ private CommandProcessorResponse runInternal(String command, boolean alreadyComp
 }
 ```
 
-### SQL语句编译和编译后执行过程
+## SQL语句编译和编译后执行过程
 
 ```java
 // compileInternal()调用了compile()函数执行主要逻辑
