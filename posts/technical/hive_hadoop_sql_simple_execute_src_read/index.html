@@ -207,11 +207,8 @@ bin/beeline 脚本的执行会跳到 bin/hive 脚本，并传递service参数。
     <li><a href="#服务端的处理">服务端的处理</a>
       <ul>
         <li><a href="#rpc服务端的处理">RPC服务端的处理</a></li>
-        <li><a href="#driver的sql语句处理">driver的SQL语句处理</a>
-          <ul>
-            <li><a href="#sql语句编译和编译后执行过程">SQL语句编译和编译后执行过程</a></li>
-          </ul>
-        </li>
+        <li><a href="#driver的sql语句处理">driver的SQL语句处理</a></li>
+        <li><a href="#sql语句编译和编译后执行过程">SQL语句编译和编译后执行过程</a></li>
       </ul>
     </li>
   </ul>
@@ -495,7 +492,7 @@ logThread<span style="color:#f92672">.</span><span style="color:#a6e22e">join</s
     <span style="color:#66d9ef">return</span> handleHiveException<span style="color:#f92672">(</span>e<span style="color:#f92672">,</span> 12<span style="color:#f92672">);</span>
   <span style="color:#f92672">}</span>
 <span style="color:#f92672">}</span>
-</code></pre></div><h3 id="sql语句编译和编译后执行过程">SQL语句编译和编译后执行过程</h3>
+</code></pre></div><h2 id="sql语句编译和编译后执行过程">SQL语句编译和编译后执行过程</h2>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">// compileInternal()调用了compile()函数执行主要逻辑
 </span><span style="color:#75715e"></span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">int</span> <span style="color:#a6e22e">compile</span><span style="color:#f92672">(</span>String command<span style="color:#f92672">,</span> <span style="color:#66d9ef">boolean</span> resetTaskIds<span style="color:#f92672">,</span> <span style="color:#66d9ef">boolean</span> deferClose<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
   <span style="color:#75715e">// ... 省略日志、容错、Hive事务、绑定的hook事件执行等细节
