@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang='en' dir='auto'><head>
+  <meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<meta name='description' content='写一下Hive源码中执行SQL的SELECT语句的简单执行流程，手头没有具体的环境进调试模式，只根据源码写写大概的处理流程。
+总体上从beeline脚本执行，调用了类Beeline.java，将终端的命令读入后通过rpc发送给driver处理。driver调用SemanticAnalyzer将SQL语句编译为可以执行的tasks，然后给每个task创建一个线程执行，在task中调用Tez等并行框架处理。
+脚本执行 以beeline脚本执行为例，跳了两个脚本后执行了etx/beeline.sh中的beeline()执行对应的java类。
+bin/beeline 脚本的执行会跳到 bin/hive 脚本，并传递service参数。
+# beeline 脚本 bin=`dirname &#34;$0&#34;` bin=`cd &#34;$bin&#34;; pwd` . &#34;$bin&#34;/hive --service beeline &#34;$@&#34; 在 bin/hive 脚本中，首先从$bin/ext/*.sh以及$bin/ext/util/*.sh目录下执行所有脚本，脚本中定了一个和service名相同的函数，并且把service名加入到SERVICE_LIST变量。然后根据SREVICE名称运行对应脚本中的函数。
+# bin/hive 省略了大部分代码 SERVICE_LIST=&#34;&#34; for i in &#34;$bin&#34;/ext/*.sh ; do . $i done for i in &#34;$bin&#34;/ext/util/*.sh ; do . $i done TORUN=&#34;&#34; for j in $SERVICE_LIST ; do if [ &#34;$j&#34; = &#34;$SERVICE&#34; ] ; then TORUN=${j}$HELP fi done if [ &#34;$TORUN&#34; = &#34;&#34; ] ; then echo &#34;Service $SERVICEnot found&#34; echo &#34;Available Services: $SERVICE_LIST&#34; exit 7 else set -- &#34;${SERVICE_ARGS[@]}&#34; $TORUN &#34;$@&#34; fi 对应执行bin/ext/beeline.'>
+<meta name='theme-color' content='#cccccc'>
+
+<meta property='og:title' content='Apache Hive代码阅读 -- SQL语句执行流程 • A Notebook of Extendswind'>
+<meta property='og:description' content='写一下Hive源码中执行SQL的SELECT语句的简单执行流程，手头没有具体的环境进调试模式，只根据源码写写大概的处理流程。
+总体上从beeline脚本执行，调用了类Beeline.java，将终端的命令读入后通过rpc发送给driver处理。driver调用SemanticAnalyzer将SQL语句编译为可以执行的tasks，然后给每个task创建一个线程执行，在task中调用Tez等并行框架处理。
+脚本执行 以beeline脚本执行为例，跳了两个脚本后执行了etx/beeline.sh中的beeline()执行对应的java类。
+bin/beeline 脚本的执行会跳到 bin/hive 脚本，并传递service参数。
+# beeline 脚本 bin=`dirname &#34;$0&#34;` bin=`cd &#34;$bin&#34;; pwd` . &#34;$bin&#34;/hive --service beeline &#34;$@&#34; 在 bin/hive 脚本中，首先从$bin/ext/*.sh以及$bin/ext/util/*.sh目录下执行所有脚本，脚本中定了一个和service名相同的函数，并且把service名加入到SERVICE_LIST变量。然后根据SREVICE名称运行对应脚本中的函数。
+# bin/hive 省略了大部分代码 SERVICE_LIST=&#34;&#34; for i in &#34;$bin&#34;/ext/*.sh ; do . $i done for i in &#34;$bin&#34;/ext/util/*.sh ; do . $i done TORUN=&#34;&#34; for j in $SERVICE_LIST ; do if [ &#34;$j&#34; = &#34;$SERVICE&#34; ] ; then TORUN=${j}$HELP fi done if [ &#34;$TORUN&#34; = &#34;&#34; ] ; then echo &#34;Service $SERVICEnot found&#34; echo &#34;Available Services: $SERVICE_LIST&#34; exit 7 else set -- &#34;${SERVICE_ARGS[@]}&#34; $TORUN &#34;$@&#34; fi 对应执行bin/ext/beeline.'>
+<meta property='og:url' content='https://extendswind.top/posts/technical/hive_hadoop_sql_simple_execute_src_read/'>
+<meta property='og:site_name' content='A Notebook of Extendswind'>
+<meta property='og:type' content='article'><meta property='article:section' content='posts'><meta property='article:tag' content='hadoop'><meta property='article:tag' content='hive'><meta property='article:published_time' content='2021-12-17T19:30:00&#43;08:00'/><meta property='article:modified_time' content='2021-12-17T19:30:00&#43;08:00'/><meta name='twitter:card' content='summary'>
+
+<meta name="generator" content="Hugo 0.89.4" />
+
+  <title>Apache Hive代码阅读 -- SQL语句执行流程 • A Notebook of Extendswind</title>
+  <link rel='canonical' href='https://extendswind.top/posts/technical/hive_hadoop_sql_simple_execute_src_read/'>
+  
+  
+  <link rel='icon' href='/images/wind.jpeg'>
+<link rel='stylesheet' href='/assets/css/main.ab98e12b.css'><link rel='stylesheet' href='/css/custom.css'><style>
+:root{--color-accent:#cccccc;}
+</style>
+
+  
+
+</head>
+<body class='page type-posts has-sidebar'>
+
+  <div class='site'><div id='sidebar' class='sidebar'>
+  <a class='screen-reader-text' href='#main-menu'>Skip to Main Menu</a>
+
+  <div class='container'><section class='widget widget-about sep-after'>
+  <header>
+    
+    <div class='logo'>
+      <a href='/'>
+        <img src='/images/wind.jpeg'>
+      </a>
+    </div>
+    
+    <h2 class='title site-title '>
+      <a href='/'>
+      extendswind
+      </a>
+    </h2>
+    <div class='desc'>
+    
+    </div>
+  </header>
+
+</section>
+<section class='widget widget-sidebar_menu sep-after'><nav id='sidebar-menu' class='menu sidebar-menu' aria-label='Sidebar Menu'>
+    <div class='container'>
+      <ul><li class='item'>
+  <a href='/'>Home</a></li><li class='item'>
+  <a href='/posts'>Posts</a></li><li class='item'>
+  <a href='/categories'>Categories</a></li><li class='item'>
+  <a href='https://github.com/extendswind'>GitHub</a></li><li class='item'>
+  <a href='https://www.cnblogs.com/fly2wind/'>Cnblog</a></li></ul>
+    </div>
+  </nav>
+
+</section><section class='widget widget-taxonomy_cloud sep-after'>
+  <header>
+    <h4 class='title widget-title'>Tags</h4>
+  </header>
+
+  <div class='container list-container'>
+  <ul class='list taxonomy-cloud'><li>
+        <a href='/tags/blog/' style='font-size:1em'>blog</a>
+      </li><li>
+        <a href='/tags/design-patterns/' style='font-size:1em'>design patterns</a>
+      </li><li>
+        <a href='/tags/geospark/' style='font-size:1em'>GeoSpark</a>
+      </li><li>
+        <a href='/tags/gis/' style='font-size:1em'>GIS</a>
+      </li><li>
+        <a href='/tags/git/' style='font-size:1em'>git</a>
+      </li><li>
+        <a href='/tags/hadoop/' style='font-size:1em'>hadoop</a>
+      </li><li>
+        <a href='/tags/hive/' style='font-size:1em'>hive</a>
+      </li><li>
+        <a href='/tags/iot/' style='font-size:1em'>IoT</a>
+      </li><li>
+        <a href='/tags/java/' style='font-size:1em'>java</a>
+      </li><li>
+        <a href='/tags/life/' style='font-size:1em'>life</a>
+      </li><li>
+        <a href='/tags/linux/' style='font-size:1em'>linux</a>
+      </li><li>
+        <a href='/tags/log4j/' style='font-size:1em'>log4j</a>
+      </li><li>
+        <a href='/tags/python/' style='font-size:1em'>python</a>
+      </li><li>
+        <a href='/tags/raspberry/' style='font-size:1em'>raspberry</a>
+      </li><li>
+        <a href='/tags/reading/' style='font-size:1em'>reading</a>
+      </li><li>
+        <a href='/tags/software/' style='font-size:1em'>software</a>
+      </li><li>
+        <a href='/tags/spark/' style='font-size:1em'>Spark</a>
+      </li></ul>
+</div>
+
+
+</section>
+<section class='widget widget-search sep-after'>
+  <header>
+    <h4 class='title widget-title'>Search</h4>
+  </header>
+
+  <form action='/search' id='search-form' class='search-form'>
+    <label>
+      <span class='screen-reader-text'>Search</span>
+      <input id='search-term' class='search-term' type='search' name='q' placeholder='Search&hellip;'>
+    </label></form>
+
+</section>
+</div>
+
+  <div class='sidebar-overlay'></div>
+</div><div class='main'><a class='screen-reader-text' href='#content'>Skip to Content</a>
+
+<button id='sidebar-toggler' class='sidebar-toggler' aria-controls='sidebar'>
+  <span class='screen-reader-text'>Toggle Sidebar</span>
+  <span class='open'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="3" y1="12" x2="21" y2="12" />
+  <line x1="3" y1="6" x2="21" y2="6" />
+  <line x1="3" y1="18" x2="21" y2="18" />
+  
+</svg>
+</span>
+  <span class='close'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="18" y1="6" x2="6" y2="18" />
+  <line x1="6" y1="6" x2="18" y2="18" />
+  
+</svg>
+</span>
+</button><div class='header-widgets'>
+        <div class='container'></div>
+      </div>
+
+      <header id='header' class='header site-header'>
+        <div class='container sep-after'>
+          <div class='header-info'><p class='site-title title'>A Notebook of Extendswind</p><p class='desc site-desc'>a simple blog site</p>
+          </div>
+        </div>
+      </header>
+
+      <main id='content'>
+
+
+<article lang='en' class='entry'>
+  <header class='header entry-header'>
+  <div class='container sep-after'>
+    <div class='header-info'>
+      <h1 class='title'>Apache Hive代码阅读 -- SQL语句执行流程</h1>
+      
+
+    </div>
+    <div class='entry-meta'>
+  <span class='posted-on'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+  <line x1="16" y1="2" x2="16" y2="6"/>
+  <line x1="8" y1="2" x2="8" y2="6"/>
+  <line x1="3" y1="10" x2="21" y2="10"/>
+  
+</svg>
+<span class='screen-reader-text'>Posted on </span>
+  <time class='entry-date' datetime='2021-12-17T19:30:00&#43;08:00'>2021, Dec 17</time>
+</span>
+
+  
+  
+
+</div>
+
+
+  </div>
+</header>
+
+  
+  
+<details class='container entry-toc' open>
+  <summary class='title'>
+    <span>Table of Contents</span>
+  </summary>
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#脚本执行">脚本执行</a></li>
+    <li><a href="#cli端java代码执行逻辑">cli端java代码执行逻辑</a></li>
+    <li><a href="#服务端的处理">服务端的处理</a>
+      <ul>
+        <li><a href="#rpc服务端的处理">RPC服务端的处理</a></li>
+        <li><a href="#driver的sql语句处理">driver的SQL语句处理</a>
+          <ul>
+            <li><a href="#sql语句编译和编译后执行过程">SQL语句编译和编译后执行过程</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+</details>
+
+
+  <div class='container entry-content'>
+  <p>写一下Hive源码中执行SQL的SELECT语句的简单执行流程，手头没有具体的环境进调试模式，只根据源码写写大概的处理流程。</p>
+<p>总体上从beeline脚本执行，调用了类Beeline.java，将终端的命令读入后通过rpc发送给driver处理。driver调用SemanticAnalyzer将SQL语句编译为可以执行的tasks，然后给每个task创建一个线程执行，在task中调用Tez等并行框架处理。</p>
+<h1 id="脚本执行">脚本执行</h1>
+<p>以beeline脚本执行为例，跳了两个脚本后执行了etx/beeline.sh中的beeline()执行对应的java类。</p>
+<p>bin/beeline 脚本的执行会跳到 bin/hive 脚本，并传递service参数。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># beeline 脚本</span>
+
+bin<span style="color:#f92672">=</span><span style="color:#e6db74">`</span>dirname <span style="color:#e6db74">&#34;</span>$0<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">`</span>
+bin<span style="color:#f92672">=</span><span style="color:#e6db74">`</span>cd <span style="color:#e6db74">&#34;</span>$bin<span style="color:#e6db74">&#34;</span>; pwd<span style="color:#e6db74">`</span>
+
+. <span style="color:#e6db74">&#34;</span>$bin<span style="color:#e6db74">&#34;</span>/hive --service beeline <span style="color:#e6db74">&#34;</span>$@<span style="color:#e6db74">&#34;</span>
+</code></pre></div><p>在 bin/hive 脚本中，首先从<code>$bin/ext/*.sh</code>以及<code>$bin/ext/util/*.sh</code>目录下执行所有脚本，脚本中定了一个和service名相同的函数，并且把service名加入到<code>SERVICE_LIST</code>变量。然后根据SREVICE名称运行对应脚本中的函数。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># bin/hive  省略了大部分代码</span>
+
+SERVICE_LIST<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;&#34;</span>
+
+<span style="color:#66d9ef">for</span> i in <span style="color:#e6db74">&#34;</span>$bin<span style="color:#e6db74">&#34;</span>/ext/*.sh ; <span style="color:#66d9ef">do</span>
+  . $i
+<span style="color:#66d9ef">done</span>
+
+<span style="color:#66d9ef">for</span> i in <span style="color:#e6db74">&#34;</span>$bin<span style="color:#e6db74">&#34;</span>/ext/util/*.sh ; <span style="color:#66d9ef">do</span>
+  . $i
+<span style="color:#66d9ef">done</span>
+
+TORUN<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;&#34;</span>
+<span style="color:#66d9ef">for</span> j in $SERVICE_LIST ; <span style="color:#66d9ef">do</span>
+  <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> <span style="color:#e6db74">&#34;</span>$j<span style="color:#e6db74">&#34;</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;</span>$SERVICE<span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span> ; <span style="color:#66d9ef">then</span>
+    TORUN<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>j<span style="color:#e6db74">}</span>$HELP
+  <span style="color:#66d9ef">fi</span>
+<span style="color:#66d9ef">done</span>
+
+<span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> <span style="color:#e6db74">&#34;</span>$TORUN<span style="color:#e6db74">&#34;</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;&#34;</span> <span style="color:#f92672">]</span> ; <span style="color:#66d9ef">then</span>
+  echo <span style="color:#e6db74">&#34;Service </span>$SERVICE<span style="color:#e6db74"> not found&#34;</span>
+  echo <span style="color:#e6db74">&#34;Available Services: </span>$SERVICE_LIST<span style="color:#e6db74">&#34;</span>
+  exit <span style="color:#ae81ff">7</span>
+<span style="color:#66d9ef">else</span>
+  set -- <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>SERVICE_ARGS[@]<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>
+  $TORUN <span style="color:#e6db74">&#34;</span>$@<span style="color:#e6db74">&#34;</span>
+<span style="color:#66d9ef">fi</span>
+</code></pre></div><p>对应执行bin/ext/beeline.sh中的beeline()函数。通过<code>hadoop jar</code>命令运行了java类org.apache.hive.beeline.BeeLine 。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># bin/ext/beeline.sh</span>
+
+THISSERVICE<span style="color:#f92672">=</span>beeline
+export SERVICE_LIST<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>SERVICE_LIST<span style="color:#e6db74">}${</span>THISSERVICE<span style="color:#e6db74">}</span><span style="color:#e6db74"> &#34;</span>
+
+beeline <span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+  CLASS<span style="color:#f92672">=</span>org.apache.hive.beeline.BeeLine;
+
+  <span style="color:#75715e"># include only the beeline client jar and its dependencies</span>
+  beelineJarPath<span style="color:#f92672">=</span><span style="color:#e6db74">`</span>ls <span style="color:#e6db74">${</span>HIVE_LIB<span style="color:#e6db74">}</span>/hive-beeline-*.jar<span style="color:#e6db74">`</span>
+  superCsvJarPath<span style="color:#f92672">=</span><span style="color:#e6db74">`</span>ls <span style="color:#e6db74">${</span>HIVE_LIB<span style="color:#e6db74">}</span>/super-csv-*.jar<span style="color:#e6db74">`</span>
+  jlineJarPath<span style="color:#f92672">=</span><span style="color:#e6db74">`</span>ls <span style="color:#e6db74">${</span>HIVE_LIB<span style="color:#e6db74">}</span>/jline-*.jar<span style="color:#e6db74">`</span>
+  hadoopClasspath<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;&#34;</span>
+  <span style="color:#66d9ef">if</span> <span style="color:#f92672">[[</span> -n <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>HADOOP_CLASSPATH<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]]</span>
+  <span style="color:#66d9ef">then</span>
+    hadoopClasspath<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>HADOOP_CLASSPATH<span style="color:#e6db74">}</span><span style="color:#e6db74">:&#34;</span>
+  <span style="color:#66d9ef">fi</span>
+  export HADOOP_CLASSPATH<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>hadoopClasspath<span style="color:#e6db74">}${</span>HIVE_CONF_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">:</span><span style="color:#e6db74">${</span>beelineJarPath<span style="color:#e6db74">}</span><span style="color:#e6db74">:</span><span style="color:#e6db74">${</span>superCsvJarPath<span style="color:#e6db74">}</span><span style="color:#e6db74">:</span><span style="color:#e6db74">${</span>jlineJarPath<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>
+  export HADOOP_CLIENT_OPTS<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span>$HADOOP_CLIENT_OPTS<span style="color:#e6db74"> -Dlog4j.configurationFile=beeline-log4j2.properties &#34;</span>
+
+  exec $HADOOP jar <span style="color:#e6db74">${</span>beelineJarPath<span style="color:#e6db74">}</span> $CLASS $HIVE_OPTS <span style="color:#e6db74">&#34;</span>$@<span style="color:#e6db74">&#34;</span>
+<span style="color:#f92672">}</span>
+
+beeline_help <span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+  beeline <span style="color:#e6db74">&#34;--help&#34;</span>
+<span style="color:#f92672">}</span> 
+</code></pre></div><h1 id="cli端java代码执行逻辑">cli端java代码执行逻辑</h1>
+<p>总体上，java代码中不断读取输入的行，区分命令的类型后，将SQL语句通过Thrift的rpc发送给Thrift Server。</p>
+<p>Beeline.java类中按行读命令行后处理，根据每行开头的字符决定是作为beeline命令还是sql语句执行。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">while</span> <span style="color:#f92672">(!</span>exit<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+  <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+    <span style="color:#75715e">// Execute one instruction; terminate on executing a script if there is an error
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">// in silent mode, prevent the query and prompt being echoed back to terminal
+</span><span style="color:#75715e"></span>    String line <span style="color:#f92672">=</span> <span style="color:#f92672">(</span>getOpts<span style="color:#f92672">().</span><span style="color:#a6e22e">isSilent</span><span style="color:#f92672">()</span> <span style="color:#f92672">&amp;&amp;</span> getOpts<span style="color:#f92672">().</span><span style="color:#a6e22e">getScriptFile</span><span style="color:#f92672">()</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">?</span> reader
+        <span style="color:#f92672">.</span><span style="color:#a6e22e">readLine</span><span style="color:#f92672">(</span><span style="color:#66d9ef">null</span><span style="color:#f92672">,</span> ConsoleReader<span style="color:#f92672">.</span><span style="color:#a6e22e">NULL_MASK</span><span style="color:#f92672">)</span> <span style="color:#f92672">:</span> reader<span style="color:#f92672">.</span><span style="color:#a6e22e">readLine</span><span style="color:#f92672">(</span>getPrompt<span style="color:#f92672">());</span>
+
+    <span style="color:#75715e">// trim line
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>line <span style="color:#f92672">!=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+      line <span style="color:#f92672">=</span> line<span style="color:#f92672">.</span><span style="color:#a6e22e">trim</span><span style="color:#f92672">();</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(!</span>dispatch<span style="color:#f92672">(</span>line<span style="color:#f92672">))</span> <span style="color:#f92672">{</span>
+      lastExecutionResult <span style="color:#f92672">=</span> ERRNO_OTHER<span style="color:#f92672">;</span>
+      <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>exitOnError<span style="color:#f92672">)</span> <span style="color:#66d9ef">break</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>line <span style="color:#f92672">!=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+      lastExecutionResult <span style="color:#f92672">=</span> ERRNO_OK<span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+
+  <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>Throwable t<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    handleException<span style="color:#f92672">(</span>t<span style="color:#f92672">);</span>
+    <span style="color:#66d9ef">return</span> ERRNO_OTHER<span style="color:#f92672">;</span>
+  <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+
+<span style="color:#75715e">// ....
+</span><span style="color:#75715e">// dispatch(line)函数中
+</span><span style="color:#75715e"></span>
+<span style="color:#75715e">// isBeeLine标记运行为beeline模式还是兼容模式
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>isBeeLine<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>line<span style="color:#f92672">.</span><span style="color:#a6e22e">startsWith</span><span style="color:#f92672">(</span>COMMAND_PREFIX<span style="color:#f92672">))</span> <span style="color:#f92672">{</span>
+      <span style="color:#75715e">// handle SQLLine command in beeline which starts with ! and does not end with ;
+</span><span style="color:#75715e"></span>      <span style="color:#66d9ef">return</span> execCommandWithPrefix<span style="color:#f92672">(</span>line<span style="color:#f92672">);</span>
+    <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#f92672">{</span>
+      <span style="color:#66d9ef">return</span> commands<span style="color:#f92672">.</span><span style="color:#a6e22e">sql</span><span style="color:#f92672">(</span>line<span style="color:#f92672">,</span> getOpts<span style="color:#f92672">().</span><span style="color:#a6e22e">getEntireLineAsCommand</span><span style="color:#f92672">());</span>
+    <span style="color:#f92672">}</span>
+  <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">return</span> commands<span style="color:#f92672">.</span><span style="color:#a6e22e">sql</span><span style="color:#f92672">(</span>line<span style="color:#f92672">,</span> getOpts<span style="color:#f92672">().</span><span style="color:#a6e22e">getEntireLineAsCommand</span><span style="color:#f92672">());</span>
+  <span style="color:#f92672">}</span>
+</code></pre></div><p>在SQL语句的执行中，实现了java.sql包中的几个类，使用HiveConnection创建了HiveStatement，调用execute函数执行具体的操作。</p>
+<p>execute函数中，向服务器发送了sql语句后等待服务器回应，返回结果。runAsyncOnServer函数中实现了向服务器的发送，通过thrift库的rpc调用实现。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">// Beeline 正常调用
+</span><span style="color:#75715e"></span>InPlaceUpdateStream<span style="color:#f92672">.</span><span style="color:#a6e22e">EventNotifier</span> eventNotifier <span style="color:#f92672">=</span>
+    <span style="color:#66d9ef">new</span> InPlaceUpdateStream<span style="color:#f92672">.</span><span style="color:#a6e22e">EventNotifier</span><span style="color:#f92672">();</span>
+logThread <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Thread<span style="color:#f92672">(</span>createLogRunnable<span style="color:#f92672">(</span>stmnt<span style="color:#f92672">,</span> eventNotifier<span style="color:#f92672">));</span>
+logThread<span style="color:#f92672">.</span><span style="color:#a6e22e">setDaemon</span><span style="color:#f92672">(</span><span style="color:#66d9ef">true</span><span style="color:#f92672">);</span>
+logThread<span style="color:#f92672">.</span><span style="color:#a6e22e">start</span><span style="color:#f92672">();</span>
+<span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>stmnt <span style="color:#66d9ef">instanceof</span> HiveStatement<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+  HiveStatement hiveStatement <span style="color:#f92672">=</span> <span style="color:#f92672">(</span>HiveStatement<span style="color:#f92672">)</span> stmnt<span style="color:#f92672">;</span>
+  hiveStatement<span style="color:#f92672">.</span><span style="color:#a6e22e">setInPlaceUpdateStream</span><span style="color:#f92672">(</span>
+      <span style="color:#66d9ef">new</span> BeelineInPlaceUpdateStream<span style="color:#f92672">(</span>
+          beeLine<span style="color:#f92672">.</span><span style="color:#a6e22e">getErrorStream</span><span style="color:#f92672">(),</span>
+          eventNotifier
+      <span style="color:#f92672">));</span>
+<span style="color:#f92672">}</span>
+hasResults <span style="color:#f92672">=</span> stmnt<span style="color:#f92672">.</span><span style="color:#a6e22e">execute</span><span style="color:#f92672">(</span>sql<span style="color:#f92672">);</span>
+logThread<span style="color:#f92672">.</span><span style="color:#a6e22e">interrupt</span><span style="color:#f92672">();</span>
+logThread<span style="color:#f92672">.</span><span style="color:#a6e22e">join</span><span style="color:#f92672">(</span>DEFAULT_QUERY_PROGRESS_THREAD_TIMEOUT<span style="color:#f92672">);</span>
+
+
+<span style="color:#75715e">// execute函数
+</span><span style="color:#75715e"></span><span style="color:#a6e22e">@Override</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">boolean</span> <span style="color:#a6e22e">execute</span><span style="color:#f92672">(</span>String sql<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> SQLException <span style="color:#f92672">{</span>
+  runAsyncOnServer<span style="color:#f92672">(</span>sql<span style="color:#f92672">);</span>
+  TGetOperationStatusResp status <span style="color:#f92672">=</span> waitForOperationToComplete<span style="color:#f92672">();</span>
+
+  <span style="color:#75715e">// The query should be completed by now
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">if</span> <span style="color:#f92672">(!</span>status<span style="color:#f92672">.</span><span style="color:#a6e22e">isHasResultSet</span><span style="color:#f92672">()</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#f92672">!</span>stmtHandle<span style="color:#f92672">.</span><span style="color:#a6e22e">isHasResultSet</span><span style="color:#f92672">())</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span><span style="color:#f92672">;</span>
+  <span style="color:#f92672">}</span>
+  resultSet <span style="color:#f92672">=</span>  <span style="color:#66d9ef">new</span> HiveQueryResultSet<span style="color:#f92672">.</span><span style="color:#a6e22e">Builder</span><span style="color:#f92672">(</span><span style="color:#66d9ef">this</span><span style="color:#f92672">).</span><span style="color:#a6e22e">setClient</span><span style="color:#f92672">(</span>client<span style="color:#f92672">).</span><span style="color:#a6e22e">setSessionHandle</span><span style="color:#f92672">(</span>sessHandle<span style="color:#f92672">)</span>
+      <span style="color:#f92672">.</span><span style="color:#a6e22e">setStmtHandle</span><span style="color:#f92672">(</span>stmtHandle<span style="color:#f92672">).</span><span style="color:#a6e22e">setMaxRows</span><span style="color:#f92672">(</span>maxRows<span style="color:#f92672">).</span><span style="color:#a6e22e">setFetchSize</span><span style="color:#f92672">(</span>fetchSize<span style="color:#f92672">)</span>
+      <span style="color:#f92672">.</span><span style="color:#a6e22e">setScrollable</span><span style="color:#f92672">(</span>isScrollableResultset<span style="color:#f92672">)</span>
+      <span style="color:#f92672">.</span><span style="color:#a6e22e">build</span><span style="color:#f92672">();</span>
+  <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">true</span><span style="color:#f92672">;</span>
+<span style="color:#f92672">}</span>
+
+
+<span style="color:#66d9ef">private</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">runAsyncOnServer</span><span style="color:#f92672">(</span>String sql<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> SQLException <span style="color:#f92672">{</span>
+  <span style="color:#75715e">// ...
+</span><span style="color:#75715e"></span>
+  TExecuteStatementReq execReq <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> TExecuteStatementReq<span style="color:#f92672">(</span>sessHandle<span style="color:#f92672">,</span> sql<span style="color:#f92672">);</span>
+  execReq<span style="color:#f92672">.</span><span style="color:#a6e22e">setRunAsync</span><span style="color:#f92672">(</span><span style="color:#66d9ef">true</span><span style="color:#f92672">);</span>
+  execReq<span style="color:#f92672">.</span><span style="color:#a6e22e">setConfOverlay</span><span style="color:#f92672">(</span>sessConf<span style="color:#f92672">);</span>
+  execReq<span style="color:#f92672">.</span><span style="color:#a6e22e">setQueryTimeout</span><span style="color:#f92672">(</span>queryTimeout<span style="color:#f92672">);</span>
+  <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+    <span style="color:#75715e">// client 是Thrift的模板编译出来的RPC client
+</span><span style="color:#75715e"></span>    TExecuteStatementResp execResp <span style="color:#f92672">=</span> client<span style="color:#f92672">.</span><span style="color:#a6e22e">ExecuteStatement</span><span style="color:#f92672">(</span>execReq<span style="color:#f92672">);</span>
+    Utils<span style="color:#f92672">.</span><span style="color:#a6e22e">verifySuccessWithInfo</span><span style="color:#f92672">(</span>execResp<span style="color:#f92672">.</span><span style="color:#a6e22e">getStatus</span><span style="color:#f92672">());</span>
+    stmtHandle <span style="color:#f92672">=</span> execResp<span style="color:#f92672">.</span><span style="color:#a6e22e">getOperationHandle</span><span style="color:#f92672">();</span>
+    isExecuteStatementFailed <span style="color:#f92672">=</span> <span style="color:#66d9ef">false</span><span style="color:#f92672">;</span>
+  <span style="color:#f92672">}</span> 
+  <span style="color:#75715e">// ... 
+</span><span style="color:#75715e"></span><span style="color:#f92672">}</span>
+</code></pre></div><h1 id="服务端的处理">服务端的处理</h1>
+<p>服务端的rpc调用通过CLIService类处理，调用了HiveSession，获取到SQLOperation对象后，传递给driver进行处理。</p>
+<h2 id="rpc服务端的处理">RPC服务端的处理</h2>
+<p>CLIService将SQL语句传递给driver。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">// CLIService.java
+</span><span style="color:#75715e"></span>
+<span style="color:#75715e">/**
+</span><span style="color:#75715e">   * Execute statement on the server. This is a blocking call.
+</span><span style="color:#75715e">   */</span>
+  <span style="color:#a6e22e">@Override</span>
+  <span style="color:#66d9ef">public</span> OperationHandle <span style="color:#a6e22e">executeStatement</span><span style="color:#f92672">(</span>SessionHandle sessionHandle<span style="color:#f92672">,</span> String statement<span style="color:#f92672">,</span>
+      Map<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">,</span> String<span style="color:#f92672">&gt;</span> confOverlay<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> HiveSQLException <span style="color:#f92672">{</span>
+    HiveSession session <span style="color:#f92672">=</span> sessionManager<span style="color:#f92672">.</span><span style="color:#a6e22e">getSession</span><span style="color:#f92672">(</span>sessionHandle<span style="color:#f92672">);</span>
+    <span style="color:#75715e">// need to reset the monitor, as operation handle is not available down stream, Ideally the
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">// monitor should be associated with the operation handle.
+</span><span style="color:#75715e"></span>    session<span style="color:#f92672">.</span><span style="color:#a6e22e">getSessionState</span><span style="color:#f92672">().</span><span style="color:#a6e22e">updateProgressMonitor</span><span style="color:#f92672">(</span><span style="color:#66d9ef">null</span><span style="color:#f92672">);</span>
+    OperationHandle opHandle <span style="color:#f92672">=</span> session<span style="color:#f92672">.</span><span style="color:#a6e22e">executeStatement</span><span style="color:#f92672">(</span>statement<span style="color:#f92672">,</span> confOverlay<span style="color:#f92672">);</span>
+    LOG<span style="color:#f92672">.</span><span style="color:#a6e22e">debug</span><span style="color:#f92672">(</span>sessionHandle <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;: executeStatement()&#34;</span><span style="color:#f92672">);</span>
+    <span style="color:#66d9ef">return</span> opHandle<span style="color:#f92672">;</span>
+  <span style="color:#f92672">}</span>
+
+<span style="color:#75715e">// HiveSessionImpl.java
+</span><span style="color:#75715e"></span>  operation <span style="color:#f92672">=</span> getOperationManager<span style="color:#f92672">().</span><span style="color:#a6e22e">newExecuteStatementOperation</span><span style="color:#f92672">(</span>getSession<span style="color:#f92672">(),</span> statement<span style="color:#f92672">,</span>
+      confOverlay<span style="color:#f92672">,</span> runAsync<span style="color:#f92672">,</span> queryTimeout<span style="color:#f92672">);</span>  <span style="color:#75715e">// SQLOperation
+</span><span style="color:#75715e"></span>  opHandle <span style="color:#f92672">=</span> operation<span style="color:#f92672">.</span><span style="color:#a6e22e">getHandle</span><span style="color:#f92672">();</span>
+  operation<span style="color:#f92672">.</span><span style="color:#a6e22e">run</span><span style="color:#f92672">();</span>
+  addOpHandle<span style="color:#f92672">(</span>opHandle<span style="color:#f92672">);</span>
+  <span style="color:#66d9ef">return</span> opHandle<span style="color:#f92672">;</span>
+
+
+<span style="color:#75715e">// SQLOperation.java
+</span><span style="color:#75715e"></span><span style="color:#a6e22e">@Override</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">runInternal</span><span style="color:#f92672">()</span> <span style="color:#66d9ef">throws</span> HiveSQLException <span style="color:#f92672">{</span>
+  setState<span style="color:#f92672">(</span>OperationState<span style="color:#f92672">.</span><span style="color:#a6e22e">PENDING</span><span style="color:#f92672">);</span>
+
+  <span style="color:#66d9ef">boolean</span> runAsync <span style="color:#f92672">=</span> shouldRunAsync<span style="color:#f92672">();</span>
+  <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">boolean</span> asyncPrepare <span style="color:#f92672">=</span> runAsync
+    <span style="color:#f92672">&amp;&amp;</span> HiveConf<span style="color:#f92672">.</span><span style="color:#a6e22e">getBoolVar</span><span style="color:#f92672">(</span>queryState<span style="color:#f92672">.</span><span style="color:#a6e22e">getConf</span><span style="color:#f92672">(),</span>
+      HiveConf<span style="color:#f92672">.</span><span style="color:#a6e22e">ConfVars</span><span style="color:#f92672">.</span><span style="color:#a6e22e">HIVE_SERVER2_ASYNC_EXEC_ASYNC_COMPILE</span><span style="color:#f92672">);</span>
+  <span style="color:#66d9ef">if</span> <span style="color:#f92672">(!</span>asyncPrepare<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    prepare<span style="color:#f92672">(</span>queryState<span style="color:#f92672">);</span>
+  <span style="color:#f92672">}</span>
+  <span style="color:#66d9ef">if</span> <span style="color:#f92672">(!</span>runAsync<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    runQuery<span style="color:#f92672">();</span>
+  <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#f92672">{</span>
+    <span style="color:#75715e">// 后面还是调用了runQuery()
+</span><span style="color:#75715e"></span>    Runnable work <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> BackgroundWork<span style="color:#f92672">(</span>getCurrentUGI<span style="color:#f92672">(),</span> parentSession<span style="color:#f92672">.</span><span style="color:#a6e22e">getSessionHive</span><span style="color:#f92672">(),</span>
+        SessionState<span style="color:#f92672">.</span><span style="color:#a6e22e">getPerfLogger</span><span style="color:#f92672">(),</span> SessionState<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(),</span> asyncPrepare<span style="color:#f92672">);</span>
+    <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+      <span style="color:#75715e">// This submit blocks if no background threads are available to run this operation
+</span><span style="color:#75715e"></span>      Future<span style="color:#f92672">&lt;?&gt;</span> backgroundHandle <span style="color:#f92672">=</span> getParentSession<span style="color:#f92672">().</span><span style="color:#a6e22e">submitBackgroundOperation</span><span style="color:#f92672">(</span>work<span style="color:#f92672">);</span>
+      setBackgroundHandle<span style="color:#f92672">(</span>backgroundHandle<span style="color:#f92672">);</span>
+    <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>RejectedExecutionException rejected<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+      setState<span style="color:#f92672">(</span>OperationState<span style="color:#f92672">.</span><span style="color:#a6e22e">ERROR</span><span style="color:#f92672">);</span>
+      <span style="color:#66d9ef">throw</span> <span style="color:#66d9ef">new</span> HiveSQLException<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;The background threadpool cannot accept&#34;</span> <span style="color:#f92672">+</span>
+          <span style="color:#e6db74">&#34; new task for execution, please retry the operation&#34;</span><span style="color:#f92672">,</span> rejected<span style="color:#f92672">);</span>
+    <span style="color:#f92672">}</span>
+  <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+
+<span style="color:#75715e">// SQLOperation.java
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">private</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">runQuery</span><span style="color:#f92672">()</span> <span style="color:#66d9ef">throws</span> HiveSQLException <span style="color:#f92672">{</span>
+  <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+    OperationState opState <span style="color:#f92672">=</span> getStatus<span style="color:#f92672">().</span><span style="color:#a6e22e">getState</span><span style="color:#f92672">();</span>
+    <span style="color:#75715e">// Operation may have been cancelled by another thread
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>opState<span style="color:#f92672">.</span><span style="color:#a6e22e">isTerminal</span><span style="color:#f92672">())</span> <span style="color:#f92672">{</span>
+      LOG<span style="color:#f92672">.</span><span style="color:#a6e22e">info</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;Not running the query. Operation is already in terminal state: &#34;</span> <span style="color:#f92672">+</span> opState
+          <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;, perhaps cancelled due to query timeout or by another thread.&#34;</span><span style="color:#f92672">);</span>
+      <span style="color:#66d9ef">return</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+    <span style="color:#75715e">// In Hive server mode, we are not able to retry in the FetchTask
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">// case, when calling fetch queries since execute() has returned.
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">// For now, we disable the test attempts.
+</span><span style="color:#75715e"></span>    driver<span style="color:#f92672">.</span><span style="color:#a6e22e">setTryCount</span><span style="color:#f92672">(</span>Integer<span style="color:#f92672">.</span><span style="color:#a6e22e">MAX_VALUE</span><span style="color:#f92672">);</span>
+    response <span style="color:#f92672">=</span> driver<span style="color:#f92672">.</span><span style="color:#a6e22e">run</span><span style="color:#f92672">();</span>
+  <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+
+</code></pre></div><h2 id="driver的sql语句处理">driver的SQL语句处理</h2>
+<p>driver中在runInternal函数执行主要逻辑。主要执行了编译SQL语句、执行编译后的SQL计划、事务提交等操作。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">private</span> CommandProcessorResponse <span style="color:#a6e22e">runInternal</span><span style="color:#f92672">(</span>String command<span style="color:#f92672">,</span> <span style="color:#66d9ef">boolean</span> alreadyCompiled<span style="color:#f92672">)</span>
+    <span style="color:#66d9ef">throws</span> CommandNeedRetryException <span style="color:#f92672">{</span>
+
+  <span style="color:#75715e">// ... 省略日志、容错、Hive事务、绑定的hook事件执行等细节
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">int</span> ret<span style="color:#f92672">;</span>
+
+  <span style="color:#75715e">// 编译SQL语句 ****** 
+</span><span style="color:#75715e"></span>  ret <span style="color:#f92672">=</span> compileInternal<span style="color:#f92672">(</span>command<span style="color:#f92672">,</span> <span style="color:#66d9ef">true</span><span style="color:#f92672">);</span>
+
+  <span style="color:#75715e">// 执行计划 ******
+</span><span style="color:#75715e"></span>  ret <span style="color:#f92672">=</span> execute<span style="color:#f92672">(</span><span style="color:#66d9ef">true</span><span style="color:#f92672">);</span>
+  <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>ret <span style="color:#f92672">!=</span> 0<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#75715e">//if needRequireLock is false, the release here will do nothing because there is no lock
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">return</span> rollback<span style="color:#f92672">(</span>createProcessorResponse<span style="color:#f92672">(</span>ret<span style="color:#f92672">));</span>
+  <span style="color:#f92672">}</span>
+
+  <span style="color:#75715e">// 事务提交 ******
+</span><span style="color:#75715e"></span>  <span style="color:#75715e">// if needRequireLock is false, the release here will do nothing because there is no lock
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">if</span><span style="color:#f92672">(</span>txnManager<span style="color:#f92672">.</span><span style="color:#a6e22e">getAutoCommit</span><span style="color:#f92672">()</span> <span style="color:#f92672">||</span> plan<span style="color:#f92672">.</span><span style="color:#a6e22e">getOperation</span><span style="color:#f92672">()</span> <span style="color:#f92672">==</span> HiveOperation<span style="color:#f92672">.</span><span style="color:#a6e22e">COMMIT</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+      releaseLocksAndCommitOrRollback<span style="color:#f92672">(</span><span style="color:#66d9ef">true</span><span style="color:#f92672">,</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">);</span>
+    <span style="color:#f92672">}</span>
+    <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span><span style="color:#f92672">(</span>plan<span style="color:#f92672">.</span><span style="color:#a6e22e">getOperation</span><span style="color:#f92672">()</span> <span style="color:#f92672">==</span> HiveOperation<span style="color:#f92672">.</span><span style="color:#a6e22e">ROLLBACK</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+      releaseLocksAndCommitOrRollback<span style="color:#f92672">(</span><span style="color:#66d9ef">false</span><span style="color:#f92672">,</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">);</span>
+    <span style="color:#f92672">}</span>
+    <span style="color:#66d9ef">else</span> <span style="color:#f92672">{</span>
+      <span style="color:#75715e">//txn (if there is one started) is not finished
+</span><span style="color:#75715e"></span>    <span style="color:#f92672">}</span>
+  <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>LockException e<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">return</span> handleHiveException<span style="color:#f92672">(</span>e<span style="color:#f92672">,</span> 12<span style="color:#f92672">);</span>
+  <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><h3 id="sql语句编译和编译后执行过程">SQL语句编译和编译后执行过程</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">// compileInternal()调用了compile()函数执行主要逻辑
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">int</span> <span style="color:#a6e22e">compile</span><span style="color:#f92672">(</span>String command<span style="color:#f92672">,</span> <span style="color:#66d9ef">boolean</span> resetTaskIds<span style="color:#f92672">,</span> <span style="color:#66d9ef">boolean</span> deferClose<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+  <span style="color:#75715e">// ... 省略日志、容错、Hive事务、绑定的hook事件执行等细节
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+    <span style="color:#75715e">// command should be redacted to avoid to logging sensitive data
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">// 替换中间一些敏感的字符串，默认不配置
+</span><span style="color:#75715e"></span>    queryStr <span style="color:#f92672">=</span> HookUtils<span style="color:#f92672">.</span><span style="color:#a6e22e">redactLogString</span><span style="color:#f92672">(</span>conf<span style="color:#f92672">,</span> command<span style="color:#f92672">);</span>
+  <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>Exception e<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    LOG<span style="color:#f92672">.</span><span style="color:#a6e22e">warn</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;WARNING! Query command could not be redacted.&#34;</span> <span style="color:#f92672">+</span> e<span style="color:#f92672">);</span>
+  <span style="color:#f92672">}</span>
+
+  <span style="color:#75715e">// 解析为AST树 ******
+</span><span style="color:#75715e"></span>  perfLogger<span style="color:#f92672">.</span><span style="color:#a6e22e">PerfLogBegin</span><span style="color:#f92672">(</span>CLASS_NAME<span style="color:#f92672">,</span> PerfLogger<span style="color:#f92672">.</span><span style="color:#a6e22e">PARSE</span><span style="color:#f92672">);</span>
+  ASTNode tree <span style="color:#f92672">=</span> ParseUtils<span style="color:#f92672">.</span><span style="color:#a6e22e">parse</span><span style="color:#f92672">(</span>command<span style="color:#f92672">,</span> ctx<span style="color:#f92672">);</span>
+  perfLogger<span style="color:#f92672">.</span><span style="color:#a6e22e">PerfLogEnd</span><span style="color:#f92672">(</span>CLASS_NAME<span style="color:#f92672">,</span> PerfLogger<span style="color:#f92672">.</span><span style="color:#a6e22e">PARSE</span><span style="color:#f92672">);</span>
+
+  <span style="color:#75715e">// 获取语义分析对象 ******
+</span><span style="color:#75715e"></span>  perfLogger<span style="color:#f92672">.</span><span style="color:#a6e22e">PerfLogBegin</span><span style="color:#f92672">(</span>CLASS_NAME<span style="color:#f92672">,</span> PerfLogger<span style="color:#f92672">.</span><span style="color:#a6e22e">ANALYZE</span><span style="color:#f92672">);</span>
+  BaseSemanticAnalyzer sem <span style="color:#f92672">=</span> SemanticAnalyzerFactory<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span>queryState<span style="color:#f92672">,</span> tree<span style="color:#f92672">);</span>
+  List<span style="color:#f92672">&lt;</span>HiveSemanticAnalyzerHook<span style="color:#f92672">&gt;</span> saHooks <span style="color:#f92672">=</span>
+      getHooks<span style="color:#f92672">(</span>HiveConf<span style="color:#f92672">.</span><span style="color:#a6e22e">ConfVars</span><span style="color:#f92672">.</span><span style="color:#a6e22e">SEMANTIC_ANALYZER_HOOK</span><span style="color:#f92672">,</span>
+          HiveSemanticAnalyzerHook<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">);</span>
+
+  <span style="color:#75715e">// 语义分析执行 ******
+</span><span style="color:#75715e"></span>  <span style="color:#75715e">// Do semantic analysis and plan generation
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>saHooks <span style="color:#f92672">!=</span> <span style="color:#66d9ef">null</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#f92672">!</span>saHooks<span style="color:#f92672">.</span><span style="color:#a6e22e">isEmpty</span><span style="color:#f92672">())</span> <span style="color:#f92672">{</span>
+    HiveSemanticAnalyzerHookContext hookCtx <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> HiveSemanticAnalyzerHookContextImpl<span style="color:#f92672">();</span>
+    hookCtx<span style="color:#f92672">.</span><span style="color:#a6e22e">setConf</span><span style="color:#f92672">(</span>conf<span style="color:#f92672">);</span>
+    hookCtx<span style="color:#f92672">.</span><span style="color:#a6e22e">setUserName</span><span style="color:#f92672">(</span>userName<span style="color:#f92672">);</span>
+    hookCtx<span style="color:#f92672">.</span><span style="color:#a6e22e">setIpAddress</span><span style="color:#f92672">(</span>SessionState<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">().</span><span style="color:#a6e22e">getUserIpAddress</span><span style="color:#f92672">());</span>
+    hookCtx<span style="color:#f92672">.</span><span style="color:#a6e22e">setCommand</span><span style="color:#f92672">(</span>command<span style="color:#f92672">);</span>
+    hookCtx<span style="color:#f92672">.</span><span style="color:#a6e22e">setHiveOperation</span><span style="color:#f92672">(</span>queryState<span style="color:#f92672">.</span><span style="color:#a6e22e">getHiveOperation</span><span style="color:#f92672">());</span>
+    <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span>HiveSemanticAnalyzerHook hook <span style="color:#f92672">:</span> saHooks<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+      tree <span style="color:#f92672">=</span> hook<span style="color:#f92672">.</span><span style="color:#a6e22e">preAnalyze</span><span style="color:#f92672">(</span>hookCtx<span style="color:#f92672">,</span> tree<span style="color:#f92672">);</span>
+    <span style="color:#f92672">}</span>
+    <span style="color:#75715e">// 分析 ******
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">// SemanticAnalyzer中有默认的处理细节，一个文件里有上万行的代码，
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">// 根据HiveParser中的关键字进行解析
+</span><span style="color:#75715e"></span>    sem<span style="color:#f92672">.</span><span style="color:#a6e22e">analyze</span><span style="color:#f92672">(</span>tree<span style="color:#f92672">,</span> ctx<span style="color:#f92672">);</span>
+    hookCtx<span style="color:#f92672">.</span><span style="color:#a6e22e">update</span><span style="color:#f92672">(</span>sem<span style="color:#f92672">);</span>
+    <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span>HiveSemanticAnalyzerHook hook <span style="color:#f92672">:</span> saHooks<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+      hook<span style="color:#f92672">.</span><span style="color:#a6e22e">postAnalyze</span><span style="color:#f92672">(</span>hookCtx<span style="color:#f92672">,</span> sem<span style="color:#f92672">.</span><span style="color:#a6e22e">getAllRootTasks</span><span style="color:#f92672">());</span>
+    <span style="color:#f92672">}</span>
+  <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#f92672">{</span>
+    sem<span style="color:#f92672">.</span><span style="color:#a6e22e">analyze</span><span style="color:#f92672">(</span>tree<span style="color:#f92672">,</span> ctx<span style="color:#f92672">);</span>
+  <span style="color:#f92672">}</span>
+  
+  <span style="color:#75715e">// validate the plan
+</span><span style="color:#75715e"></span>  sem<span style="color:#f92672">.</span><span style="color:#a6e22e">validate</span><span style="color:#f92672">();</span>
+
+  <span style="color:#75715e">// get the output schema
+</span><span style="color:#75715e"></span>  <span style="color:#75715e">// 构建查询计划 ******
+</span><span style="color:#75715e"></span>  schema <span style="color:#f92672">=</span> getSchema<span style="color:#f92672">(</span>sem<span style="color:#f92672">,</span> conf<span style="color:#f92672">);</span>
+  plan <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> QueryPlan<span style="color:#f92672">(</span>queryStr<span style="color:#f92672">,</span> sem<span style="color:#f92672">,</span> perfLogger<span style="color:#f92672">.</span><span style="color:#a6e22e">getStartTime</span><span style="color:#f92672">(</span>PerfLogger<span style="color:#f92672">.</span><span style="color:#a6e22e">DRIVER_RUN</span><span style="color:#f92672">),</span> queryId<span style="color:#f92672">,</span>
+    queryState<span style="color:#f92672">.</span><span style="color:#a6e22e">getHiveOperation</span><span style="color:#f92672">(),</span> schema<span style="color:#f92672">);</span>
+<span style="color:#f92672">}</span>
+
+
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">int</span> <span style="color:#a6e22e">execute</span><span style="color:#f92672">(</span><span style="color:#66d9ef">boolean</span> deferClose<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> CommandNeedRetryException <span style="color:#f92672">{</span>
+  <span style="color:#75715e">// ... 省略日志、容错、绑定的hook事件执行和一些细节
+</span><span style="color:#75715e"></span>
+  <span style="color:#75715e">// 获取MR tasks ******
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">int</span> mrJobs <span style="color:#f92672">=</span> Utilities<span style="color:#f92672">.</span><span style="color:#a6e22e">getMRTasks</span><span style="color:#f92672">(</span>plan<span style="color:#f92672">.</span><span style="color:#a6e22e">getRootTasks</span><span style="color:#f92672">()).</span><span style="color:#a6e22e">size</span><span style="color:#f92672">();</span>
+  <span style="color:#66d9ef">int</span> jobs <span style="color:#f92672">=</span> mrJobs <span style="color:#f92672">+</span> Utilities<span style="color:#f92672">.</span><span style="color:#a6e22e">getTezTasks</span><span style="color:#f92672">(</span>plan<span style="color:#f92672">.</span><span style="color:#a6e22e">getRootTasks</span><span style="color:#f92672">()).</span><span style="color:#a6e22e">size</span><span style="color:#f92672">()</span>
+      <span style="color:#f92672">+</span> Utilities<span style="color:#f92672">.</span><span style="color:#a6e22e">getSparkTasks</span><span style="color:#f92672">(</span>plan<span style="color:#f92672">.</span><span style="color:#a6e22e">getRootTasks</span><span style="color:#f92672">()).</span><span style="color:#a6e22e">size</span><span style="color:#f92672">();</span>
+
+  <span style="color:#75715e">// plan中有一个runnable的队列存所有tasks，把plan中rootTasks中的队列加入到runnable队列中
+</span><span style="color:#75715e"></span>  <span style="color:#75715e">// 每个task对应一个线程，在单独的run函数中执行具体逻辑 ******
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span>Task<span style="color:#f92672">&lt;?</span> <span style="color:#66d9ef">extends</span> Serializable<span style="color:#f92672">&gt;</span> tsk <span style="color:#f92672">:</span> plan<span style="color:#f92672">.</span><span style="color:#a6e22e">getRootTasks</span><span style="color:#f92672">())</span> <span style="color:#f92672">{</span>
+    <span style="color:#75715e">// This should never happen, if it does, it&#39;s a bug with the potential to produce
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">// incorrect results.
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">assert</span> tsk<span style="color:#f92672">.</span><span style="color:#a6e22e">getParentTasks</span><span style="color:#f92672">()</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">null</span> <span style="color:#f92672">||</span> tsk<span style="color:#f92672">.</span><span style="color:#a6e22e">getParentTasks</span><span style="color:#f92672">().</span><span style="color:#a6e22e">isEmpty</span><span style="color:#f92672">();</span>
+    driverCxt<span style="color:#f92672">.</span><span style="color:#a6e22e">addToRunnable</span><span style="color:#f92672">(</span>tsk<span style="color:#f92672">);</span>
+
+    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>metrics <span style="color:#f92672">!=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+      tsk<span style="color:#f92672">.</span><span style="color:#a6e22e">updateTaskMetrics</span><span style="color:#f92672">(</span>metrics<span style="color:#f92672">);</span>
+    <span style="color:#f92672">}</span>
+  <span style="color:#f92672">}</span>
+
+  <span style="color:#75715e">// Loop while you either have tasks running, or tasks queued up
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">while</span> <span style="color:#f92672">(</span>driverCxt<span style="color:#f92672">.</span><span style="color:#a6e22e">isRunning</span><span style="color:#f92672">())</span> <span style="color:#f92672">{</span>
+    <span style="color:#75715e">// Launch upto maxthreads tasks
+</span><span style="color:#75715e"></span>    Task<span style="color:#f92672">&lt;?</span> <span style="color:#66d9ef">extends</span> Serializable<span style="color:#f92672">&gt;</span> task<span style="color:#f92672">;</span>
+    <span style="color:#75715e">// 遍历runnable队列，每次从队列中取出一个task启动 ******
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">while</span> <span style="color:#f92672">((</span>task <span style="color:#f92672">=</span> driverCxt<span style="color:#f92672">.</span><span style="color:#a6e22e">getRunnable</span><span style="color:#f92672">(</span>maxthreads<span style="color:#f92672">))</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+      TaskRunner runner <span style="color:#f92672">=</span> launchTask<span style="color:#f92672">(</span>task<span style="color:#f92672">,</span> queryId<span style="color:#f92672">,</span> noName<span style="color:#f92672">,</span> jobname<span style="color:#f92672">,</span> jobs<span style="color:#f92672">,</span> driverCxt<span style="color:#f92672">);</span>
+      <span style="color:#66d9ef">if</span> <span style="color:#f92672">(!</span>runner<span style="color:#f92672">.</span><span style="color:#a6e22e">isRunning</span><span style="color:#f92672">())</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">break</span><span style="color:#f92672">;</span>
+      <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#75715e">// ...
+</span><span style="color:#75715e"></span>  <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>SemanticAnalyzer类中有具体的SQL语句解析的处理细节，一个文件里有上万行的代码，根据HiveParser中的关键字进行解析。对具体的细节思路没概念，忽略了细节。</p>
+<p>对任务提交到集群的具体的操作，在每个task内部执行。如Tez的并行分析任务，在TezTask类中调用了Tez库中的TezClient提交任务。</p>
+
+</div>
+
+  
+<footer class='entry-footer'>
+  <div class='container sep-before'><div class='categories'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M22,19a2,2,0,0,1-2,2H4a2,2,0,0,1-2-2V5A2,2,0,0,1,4,3H9l2,3h9a2,2,0,0,1,2,2Z"/>
+  
+</svg>
+<span class='screen-reader-text'>Categories: </span><a class='category' href='/categories/cloud-computing/'>cloud computing</a></div>
+<div class='tags'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M20.59,13.41l-7.17,7.17a2,2,0,0,1-2.83,0L2,12V2H12l8.59,8.59A2,2,0,0,1,20.59,13.41Z"/>
+  <line x1="7" y1="7" x2="7" y2="7"/>
+  
+</svg>
+<span class='screen-reader-text'>Tags: </span><a class='tag' href='/tags/hadoop/'>hadoop</a>, <a class='tag' href='/tags/hive/'>hive</a></div>
+
+  </div>
+</footer>
+
+
+</article>
+
+<nav class='entry-nav'>
+  <div class='container'><div class='prev-entry sep-before'>
+      <a href='/posts/technical/hadoop_datanode_failure_processing/'>
+        <span aria-hidden='true'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="20" y1="12" x2="4" y2="12"/>
+  <polyline points="10 18 4 12 10 6"/>
+  
+</svg>
+ Previous</span>
+        <span class='screen-reader-text'>Previous post: </span>Hadoop集群对datanode宕机后的处理机制源码阅读</a>
+    </div></div>
+</nav>
+
+
+
+
+      </main>
+
+      <footer id='footer' class='footer'>
+        <div class='container sep-before'><section class='widget widget-social_menu sep-after'><header>
+    <h4 class='title widget-title'>Contact</h4>
+  </header><nav aria-label='Social Menu'>
+    <ul><li>
+        <a href='https://github.com/extendswind' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Open Github account in new tab</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+  
+</svg>
+</a>
+      </li><li>
+        <a href='mailto:extendswind@foxmail.com' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Contact via Email</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+  <polyline points="22,6 12,13 2,6"/>
+  
+</svg>
+</a>
+      </li></ul>
+  </nav>
+</section><div class='copyright'>
+  <p> &copy; 2018-2021 extendswind </p>
+</div>
+
+        </div>
+      </footer>
+
+    </div>
+  </div><script>window.__assets_js_src="/assets/js/"</script>
+
+<script src='/assets/js/main.c3bcf2df.js'></script>
+
+</body>
+
+</html>
+

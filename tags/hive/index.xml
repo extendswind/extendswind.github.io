@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>hive on A Notebook of Extendswind</title>
+    <link>https://extendswind.top/tags/hive/</link>
+    <description>Recent content in hive on A Notebook of Extendswind</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <lastBuildDate>Fri, 17 Dec 2021 19:30:00 +0800</lastBuildDate><atom:link href="https://extendswind.top/tags/hive/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Apache Hive代码阅读 -- SQL语句执行流程</title>
+      <link>https://extendswind.top/posts/technical/hive_hadoop_sql_simple_execute_src_read/</link>
+      <pubDate>Fri, 17 Dec 2021 19:30:00 +0800</pubDate>
+      
+      <guid>https://extendswind.top/posts/technical/hive_hadoop_sql_simple_execute_src_read/</guid>
+      <description>写一下Hive源码中执行SQL的SELECT语句的简单执行流程，手头没有具体的环境进调试模式，只根据源码写写大概的处理流程。
+总体上从beeline脚本执行，调用了类Beeline.java，将终端的命令读入后通过rpc发送给driver处理。driver调用SemanticAnalyzer将SQL语句编译为可以执行的tasks，然后给每个task创建一个线程执行，在task中调用Tez等并行框架处理。
+脚本执行 以beeline脚本执行为例，跳了两个脚本后执行了etx/beeline.sh中的beeline()执行对应的java类。
+bin/beeline 脚本的执行会跳到 bin/hive 脚本，并传递service参数。
+# beeline 脚本 bin=`dirname &amp;#34;$0&amp;#34;` bin=`cd &amp;#34;$bin&amp;#34;; pwd` . &amp;#34;$bin&amp;#34;/hive --service beeline &amp;#34;$@&amp;#34; 在 bin/hive 脚本中，首先从$bin/ext/*.sh以及$bin/ext/util/*.sh目录下执行所有脚本，脚本中定了一个和service名相同的函数，并且把service名加入到SERVICE_LIST变量。然后根据SREVICE名称运行对应脚本中的函数。
+# bin/hive 省略了大部分代码 SERVICE_LIST=&amp;#34;&amp;#34; for i in &amp;#34;$bin&amp;#34;/ext/*.sh ; do . $i done for i in &amp;#34;$bin&amp;#34;/ext/util/*.sh ; do . $i done TORUN=&amp;#34;&amp;#34; for j in $SERVICE_LIST ; do if [ &amp;#34;$j&amp;#34; = &amp;#34;$SERVICE&amp;#34; ] ; then TORUN=${j}$HELP fi done if [ &amp;#34;$TORUN&amp;#34; = &amp;#34;&amp;#34; ] ; then echo &amp;#34;Service $SERVICEnot found&amp;#34; echo &amp;#34;Available Services: $SERVICE_LIST&amp;#34; exit 7 else set -- &amp;#34;${SERVICE_ARGS[@]}&amp;#34; $TORUN &amp;#34;$@&amp;#34; fi 对应执行bin/ext/beeline.</description>
+    </item>
+    
+  </channel>
+</rss>
