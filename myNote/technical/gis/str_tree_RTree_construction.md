@@ -19,7 +19,7 @@ tags:
 
 最近需要使用R树做一下空间索引，在GeoSpark中使用了JTS库中实现的STR树，一开始以为是R-tree的一个变种，细看发现只是R树的构建（packing）方式之一。
 
-STR是Sort-Tile-Recursive的缩写，是一种R-tree的packing算法。具体的介绍可以看作者的论文 [https://www.cs.odu.edu/%7Emln/ltrs-pdfs/icase-1997-14.pdf](https://www.cs.odu.edu/%7Emln/ltrs-pdfs/icase-1997-14.pdf) ，CSDN上有个主要内容的翻译 [https://blog.csdn.net/qq_41775852/article/details/105405918](https://blog.csdn.net/qq_41775852/article/details/105405918)。
+STR是Sort-Tile-Recursive的缩写，本质上是一种R树的构建算法，不能单独算是R树。但在一些GIS开源库的实现中，经常直接命名为STRTree，负责STR算法的R树构建以及构建后的数据查询工作。具体的介绍可以看作者的论文 [https://www.cs.odu.edu/%7Emln/ltrs-pdfs/icase-1997-14.pdf](https://www.cs.odu.edu/%7Emln/ltrs-pdfs/icase-1997-14.pdf) ，CSDN上有个主要内容的翻译 [https://blog.csdn.net/qq_41775852/article/details/105405918](https://blog.csdn.net/qq_41775852/article/details/105405918)。
 
 # R树常见构建过程
 
@@ -41,12 +41,12 @@ STR是Sort-Tile-Recursive的缩写，是一种R-tree的packing算法。具体的
 
 STR的算法本身并不复杂，以2维空间为例。对矩形的分组只考虑每个矩形的中心点，STR的基本思想是将所有的矩形以“tile”的方式分配到r/n（取上界）个分组中，此处的tile和网格类似。
 
-首先，对矩形按x坐标排序，然后划分成 $\sqrt{r/n}$ 个slice。然后对slice内的矩形按y坐标排序，进一步划分成 $\sqrt{r/n}$ 份。
+首先，对矩形按x坐标排序，然后划分成 $\sqrt{r/n}$ 个slices。然后对每个slice内的矩形按y坐标排序，进一步划分成 $\sqrt{r/n}$ 份。
 
 对于更高维的空间，可以按这种方式接着划分。
 
 # 总结
 
-这个算法就是这样做一个简单的划分，正如论文的标题 《STR: A Simple and Efficient Algorithm for R-Tree Packing》，有种方法对于一篇论文来讲太简单了的感觉。文章内还做了些对比实验，表明针对不同的空间数据分布情况最好选择对应合适的方法，STR的packing算法并不是适合所有的场景。
+这个算法主要做一个简单的划分，正如论文的标题 《STR: A Simple and Efficient Algorithm for R-Tree Packing》，有种方法对于一篇论文来讲略简单的感觉。文章内还做了些对比实验，表明针对不同的空间数据分布情况最好选择对应合适的方法，STR的packing算法并不是适合所有的场景。
 
-简单点来看，也就是将空间中的矩形划分到了一个x、y方向相等的网格的分组中，当数据为长宽差距较大的矩形范围分布时，做一个xy方向的分组数量相同应该不是最好的方案。
+简单点来看，也就是R树的每层将空间中的矩形划分到了一个x、y方向数量相等分组中，当数据为长宽差距较大的矩形范围分布时，x、y方向的分组数量相同应该不是最好的方案。
