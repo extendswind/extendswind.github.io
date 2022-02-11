@@ -131,7 +131,7 @@ QoS0，At most once，至多一次； QoS1，At least once，至少一次； QoS
       
       <guid>https://extendswind.top/posts/technical/str_tree_rtree_construction/</guid>
       <description>MathJax = { tex: { inlineMath: [[&#34;$&#34;, &#34;$&#34;]], }, displayMath: [ [&#34;$$&#34;, &#34;$$&#34;], [&#34;\[\[&#34;, &#34;\]\]&#34;], ], svg: { fontCache: &#34;global&#34;, }, };    最近需要使用R树做一下空间索引，在GeoSpark中使用了JTS库中实现的STR树，一开始以为是R-tree的一个变种，细看发现只是R树的构建（packing）方式之一。
-STR是Sort-Tile-Recursive的缩写，是一种R-tree的packing算法。具体的介绍可以看作者的论文 https://www.cs.odu.edu/%7Emln/ltrs-pdfs/icase-1997-14.pdf ，CSDN上有个主要内容的翻译 https://blog.csdn.net/qq_41775852/article/details/105405918。
+STR是Sort-Tile-Recursive的缩写，本质上是一种R树的构建算法，不能单独算是R树。但在一些GIS开源库的实现中，经常直接命名为STRTree，负责STR算法的R树构建以及构建后的数据查询工作。具体的介绍可以看作者的论文 https://www.cs.odu.edu/%7Emln/ltrs-pdfs/icase-1997-14.pdf ，CSDN上有个主要内容的翻译 https://blog.csdn.net/qq_41775852/article/details/105405918。
 R树常见构建过程 通常R树是针对动态有增删的数据，因此构建过程可以将所有的数据逐个插入到R树中。这种情况可能会存在一些缺点：
  (a) high load time (b) sub-optimal spac eutilization (c) poor R-tree structure requiring the retrieval of anunduly large number of nodes in order to satisfy a query.  因此，常用packing的方式自底向上的构建R树，主要流程如下：
  假设一共有r个矩形需要被索引，每个叶子结点中存储的矩形数量为n。首先将所有的矩形分成r/n（此处取上界）个组；（分组方式通过下面的packing算法） 将各个分组写入硬盘的pages，并计算每个分组内所有矩形的MBR以及分组对应的page-id； 对分组的MBR递归的执行上面的步骤，直到根节点。  在第1步中，将需要被索引的矩形分成r/n个组，论文中介绍了常见的Nearest-X(NX)、HilbertSort(HS)以及论文提出的Sort-Tile-Recursive(STR)。</description>
@@ -604,6 +604,21 @@ hdfs fsck /readme.md -files -blocks -racks
 主要用途：上传文件时决定文件在HDFS上存储的位置（具体到datanode上的具体存储介质，如具体到存储在哪块硬盘）；rebalance、datanode退出集群、副本数量更改等导致数据移动的操作中，数据移动的具体位置。
 BlockPlacementPolicy BlockPlacementPolicy 作为虚基类提供了基本的接口，具体的子类重点实现下面 选择副本 、 验证副本放置是否满足要求 、 选择能够删除的副本 三个函数：
 /** * 核心的副本放置策略实现，返回副本放置数量的存储位置 * **如果有效节点数量不够（少于副本数），返回尽可能多的节点，而非失败** * * @param srcPath 上传文件的路径 * @param numOfReplicas 除下面chosen参数里已经选择的datanode，还需要的副本数量 * @param writer 写数据的机器, null if not in the cluster. 一般用于放置第一个副本以降低网络通信 * @param chosen 已经选择的节点 * @param returnChosenNodes 返回结果里是否包含chosen的datanode * @param excludedNodes 不选的节点 * @param blocksize 块大小 * @return 排序好的选择结果 */ public abstract DatanodeStorageInfo[] chooseTarget(String srcPath, int numOfReplicas, Node writer, List&amp;lt;DatanodeStorageInfo&amp;gt; chosen, boolean returnChosenNodes, Set&amp;lt;Node&amp;gt; excludedNodes, long blocksize, BlockStoragePolicy storagePolicy); /** * 判断传入的放置方式是否符合要求 */ abstract public BlockPlacementStatus verifyBlockPlacement( DatanodeInfo[] locs, int numOfReplicas); /** * 当副本数量较多时，选择需要删除的节点 */ abstract public List&amp;lt;DatanodeStorageInfo&amp;gt; chooseReplicasToDelete( Collection&amp;lt;DatanodeStorageInfo&amp;gt; candidates, int expectedNumOfReplicas, List&amp;lt;StorageType&amp;gt; excessTypes, DatanodeDescriptor addedNode, DatanodeDescriptor delNodeHint); Hadoop 提供的 BlockPlacementPolicy 实现 Hadoop提供了BlockPlacementPolicyDefault、BlockPlacementPolicyWithNodeGroup、AvailableSpaceBlockPlacementPolicy三种实现（hadoop 2.</description>
+    </item>
+    
+    <item>
+      <title>HDFS写文件源码分析</title>
+      <link>https://extendswind.top/posts/technical/hadoop_hdfs_write_analysis/</link>
+      <pubDate>Tue, 11 Dec 2018 21:30:00 +0800</pubDate>
+      
+      <guid>https://extendswind.top/posts/technical/hadoop_hdfs_write_analysis/</guid>
+      <description>最近参加的面试，一面问了HDFS写文件流程，完了之后把《Hadoop权威指南》上的流程配合源码简单的看了一遍。二面又问到了这个问题，一些细节还是漏了，对这部分还是专门记个笔记吧。稍微梳理了一下，发现感觉这个问题确实太适合作为面试题了，有细节还适合引申到其它的点。
+写数据流程 大体流程如图（来自《Hadoop权威指南》）
+ 客户端通过DistributedFileSystem的create()创建文件，中间会对namenode创建RPC调用（namenode.create)，namenode在检查权限等问题后新建文件。 创建完文件后会返回FSDataOutputStream，在DFSOutputStream上的一层包装，用于处理写入数据所需要的namenode和datanode之间的通信。 在数据写入过程中，DFSOutputStream会将数据划分为packets，并放入data queue，由DataStreamer处理（向namenode申请分配新的block）。 被选择的datanode连起来构成pipeline，DataStreamer流式的将packets发送到第一个datanode，第一个datanode每次收到packet后存储并转发到pipeline上下一个datanode。 DFSOutputStream还维护了一个ack queue，当所有的datanode都应答后对应的packet会被移除。  源码分析 以下代码来自Hadoop 2.7.7。
+FileSystem.get()通过URI返回对应的DistributedFileSystem，调用create函数在namenode上创建文件，返回输出流。
+Configuration conf = new Configuration(); FileSystem hdfs = FileSystem.get(URI.create(hdfsDirectory), conf); FSDataOutputStream outputStream = hdfs.create(new Path(hdfsDirectory)); outputStream.writeInt(1); outputStream.close(); DistributedFileSystem的create()中，通过DFSClient的对象dfs，调用dfs.create()。中间使用了FileSystemLinkResolver类，当doCall函数中抛出UnresolvedLinkException时（解析Path路径失败），会重新解析路径得到合适的FileSystem和Path传入next()。总体上相当于给定的路径解析失败时，重新解析后再次调用create函数。创建完成后对返回的DFSOutputStream外套了一层FSDataOutputStream用于写结果。
+final DFSOutputStream out = dfs.create(getPathName(f), permission, overwrite ? EnumSet.of(CreateFlag.CREATE, CreateFlag.OVERWRITE) : EnumSet.of(CreateFlag.CREATE), true, replication, blockSize, progress, bufferSize, null, favoredNodes); return dfs.createWrappedOutputStream(out, statistics); dfs.create() 调用了DFSOutputStream.newStreamForCreate(&amp;hellip;)。
+public DFSOutputStream create(String src, //...  InetSocketAddress[] favoredNodes) throws IOException { //...  final DFSOutputStream result = DFSOutputStream.</description>
     </item>
     
     <item>
