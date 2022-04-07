@@ -36,7 +36,7 @@ GPIO 针脚图 树莓派有多种GPIO的编号方式，使用python等调用需�
 2. 配置系统 上面的烧录后，sd卡会被分为多个分区，其中windows系统下能识别的只有一个名为boot的分区，存储启动相关的配置文件。
 2.1 开启ssh raspbian 系统默认不开启ssh远程访问，在boot分区下新建文件名为SSH的文件（内容为空无后缀），系统启动时检测到此文件会开启ssh进程。
 2.2 配置wifi 在boot分区下新建文件名为wpa_supplicant.conf的文件，添加以下内容：
-country=CN ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev update_config=1 network={ ssid=&amp;quot;yourWifiName&amp;quot; psk=&amp;quot;passwd&amp;quot; key_mgmt=WPA-PSK priority=1 } 修改其中的wifi名和密码（ssid与psk）
+country=CN ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev update_config=1 network={ ssid=&amp;#34;yourWifiName&amp;#34; psk=&amp;#34;passwd&amp;#34; key_mgmt=WPA-PSK priority=1 } 修改其中的wifi名和密码（ssid与psk）
 如果想省事可以直接用网线连上路由器
 3. 远程访问 3.1 查找树莓派ip 此处需要将电脑和树莓派连接在同一路由器下。
 方法一：浏览器上输入192.168.1.1 （根据不同路由器网关不同），进入管理页面查看树莓派ip。

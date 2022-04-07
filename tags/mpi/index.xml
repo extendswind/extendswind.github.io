@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>MPI on A Notebook of Extendswind</title>
+    <link>https://extendswind.top/tags/mpi/</link>
+    <description>Recent content in MPI on A Notebook of Extendswind</description>
+    <generator>Hugo -- gohugo.io</generator><atom:link href="https://extendswind.top/tags/mpi/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>MPI、Hadoop、Spark的设计对比</title>
+      <link>https://extendswind.top/posts/technical/mpi_hadoop_spark_comparing/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://extendswind.top/posts/technical/mpi_hadoop_spark_comparing/</guid>
+      <description>对Hadoop前前后后看了更多的设计之后突然碰到这个问题，简单的写写自己的理解。
+MPI MPI（Message Passing Interface）一般和GPU一起作为高性能计算技术的重要组成部分。MPI本身只是一种分布式计算的协议，有OpenMPI、MPICH、MSMPI等实现。协议本身定义了很多分布式计算的进程间的通信函数，其中常用的只用以下6个：
+MPI_Init(…); // 初始化 MPI_Comm_size(…); // 获取进程数量 MPI_Comm_rank(…); // 获取当前进程id MPI_Send(…); // 发送消息给指定进程 MPI_Recv(…); // 接收消息 MPI_Finalize(); // 结束程序 其它的消息定义了一些额外的数据通信方法和细节，如缓冲、同步等，用于更多细节上的操作。
+设计上，MPI更多的是为了处理数据传递中的底层细节，一般假设运行在高性能的集群设备中，没有考虑程序容错、数据存储等特性，传输的消息也默认为二进制流。没太关注底层，估计是直接使用的sockets通信，并且配合了Infiniband一类的高效通信技术。
+有高可用、任务调度一类的场景，可以基于MPI做进一步的设计。
+优点：偏底层效率高。缺点：开发难度更大，在大规模集群中的实现更复杂，容错、数据存储一类的需要开发实现。
+Hadoop Hadoop设计的目标应用场景和MPI相差很大。Hadoop针对的一般为普通服务器（相对于高性能计算的服务器）组成的大集群规模（千级别的节点），在集群的应用中，需要考虑更多资源利用、容错、易用性等方面的问题。当前Hadoop主要由MapReduce计算框架、HDFS分布式文件存储系统、YARN资源管理框架组成，MPI只和MapReduce的作用类似。
+MapReduce的目标是简单易用而且高效的分布式计算框架，让框架底层处理中间可能发生的网络、宕机等错误。使用MapReduce模型的计算一般不用关心计算过程中所涉及的计算资源（有多少个节点等），通常可以很容易的扩展到大规模的集群中高效的执行。和HDFS的结合是MapReduce的一大区别，通过移动计算的方式将计算代码移动到存储数据的数据节点上执行，避免了数据密集型计算应用中的通信开销（在百兆和千兆交换机是主流的时代大集群中存算分离的概念还不明显）。但是为了保证容错性，计算过程中的中间数据写硬盘中临时保存，使发生宕机时能够重新读取，一定程度上影响了计算过程的效率。
+MapReduce优点：框架实现了分布式计算的细节，实现可扩展、容错的程序更为容易，并通过HDFS提高了数据密集型应用的数据本地性。缺点：框架启动以及硬盘写入过程的IO开销过大。
+ps:基于Hadoop的并行计算框架还有Tez，可以看作MapReduce的迭代处理改进，提高了多个MapReduce任务迭代计算的效率，但仍存在硬盘IO写入的效率问题。
+Spark Spark的RDD计算模型为了解决MapReduce过程中为了保证容错性而导致的硬盘IO问题，通过设计基于内存的计算模式，将数据存储在内存中，通过数据的转换关系和checkpoint实现数据出错时的错误任务重新计算，可以看作是一个MapReduce加强版，特别是在迭代计算的应用中比MapReduce的效率高出很多，已经逐渐取代了MapReduce在大多数方面的应用。
+在RDD模型之上，Spark还提供了机器学习、SQL查询、图计算等功能，提供了一套完整的数据分析生态，而非最初只有计算模型。
+RDD模型优点：通过内存模型设计降低了硬盘的IO，并且充分利用内存缓存提高效率。缺点：相对更吃内存。
+对比 应用场景
+MPI由于过于偏底层，在易用性、容错性上比云计算框架明显要差，使应用更多的面向对容错要求不高的计算场景与计算效率上要求较高的应用。通常在少量节点的分布式协同计算和超算中应用，以及一些在云计算框架下实现并不完全的科学计算应用。由于配置和运行较为简单，外加c++的运行效率较高，在对高可用要求不高的小集群环境里跑分布式计算较为简单。
+RDD和MapReduce更注重大规模集群中的资源利用和计算，扩展到几千节点的集群中有较好的计算效率，并能自动处理宕机等集群常见错误。
+相对来讲，商业环境对程序运行的稳定性和开发效率看得更为重要，所以Hadoop生态的云计算技术使用得更多。实践上，Hadoop虽然简化的分布式计算的模型，但要想高效的执行任务仍需要很多参数的调整。
+底层存储和网络优化
+MPI使用的Infiniband技术提高网络通信能力，没有固定的数据存储技术，靠移动数据的方式实现分布式计算。在数据密集型应用中对效率有一定的影响，但随着网络通信技术提高影响在降低，也可以配合其它的分布式文件系统实现。
+RDD和MapReduce利用了Hadoop的HDFS存储，多副本的存储方式提高了数据的读效率。通信上使用的rpc通信，将通信的对象高效的序列化为二进制数据提高通信效率。</description>
+    </item>
+    
+  </channel>
+</rss>

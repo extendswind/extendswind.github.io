@@ -16,8 +16,8 @@
 总体上从beeline脚本执行，调用了类Beeline.java，将终端的命令读入后通过rpc发送给driver处理。driver调用SemanticAnalyzer将SQL语句编译为可以执行的tasks，然后给每个task创建一个线程执行，在task中调用Tez等并行框架处理。
 脚本执行 以beeline脚本执行为例，跳了两个脚本后执行了etx/beeline.sh中的beeline()执行对应的java类。
 bin/beeline 脚本的执行会跳到 bin/hive 脚本，并传递service参数。
-# beeline 脚本 bin=`dirname &amp;#34;$0&amp;#34;` bin=`cd &amp;#34;$bin&amp;#34;; pwd` . &amp;#34;$bin&amp;#34;/hive --service beeline &amp;#34;$@&amp;#34; 在 bin/hive 脚本中，首先从$bin/ext/*.sh以及$bin/ext/util/*.sh目录下执行所有脚本，脚本中定了一个和service名相同的函数，并且把service名加入到SERVICE_LIST变量。然后根据SREVICE名称运行对应脚本中的函数。
-# bin/hive 省略了大部分代码 SERVICE_LIST=&amp;#34;&amp;#34; for i in &amp;#34;$bin&amp;#34;/ext/*.sh ; do . $i done for i in &amp;#34;$bin&amp;#34;/ext/util/*.sh ; do . $i done TORUN=&amp;#34;&amp;#34; for j in $SERVICE_LIST ; do if [ &amp;#34;$j&amp;#34; = &amp;#34;$SERVICE&amp;#34; ] ; then TORUN=${j}$HELP fi done if [ &amp;#34;$TORUN&amp;#34; = &amp;#34;&amp;#34; ] ; then echo &amp;#34;Service $SERVICEnot found&amp;#34; echo &amp;#34;Available Services: $SERVICE_LIST&amp;#34; exit 7 else set -- &amp;#34;${SERVICE_ARGS[@]}&amp;#34; $TORUN &amp;#34;$@&amp;#34; fi 对应执行bin/ext/beeline.</description>
+# beeline 脚本  bin=`dirname &amp;#34;$0&amp;#34;` bin=`cd &amp;#34;$bin&amp;#34;; pwd`  . &amp;#34;$bin&amp;#34;/hive --service beeline &amp;#34;$@&amp;#34; 在 bin/hive 脚本中，首先从$bin/ext/*.sh以及$bin/ext/util/*.sh目录下执行所有脚本，脚本中定了一个和service名相同的函数，并且把service名加入到SERVICE_LIST变量。然后根据SREVICE名称运行对应脚本中的函数。
+# bin/hive 省略了大部分代码  SERVICE_LIST=&amp;#34;&amp;#34;  for i in &amp;#34;$bin&amp;#34;/ext/*.sh ; do  . $i done  for i in &amp;#34;$bin&amp;#34;/ext/util/*.sh ; do  . $i done  TORUN=&amp;#34;&amp;#34; for j in $SERVICE_LIST ; do  if [ &amp;#34;$j&amp;#34; = &amp;#34;$SERVICE&amp;#34; ] ; then  TORUN=${j}$HELP  fi done  if [ &amp;#34;$TORUN&amp;#34; = &amp;#34;&amp;#34; ] ; then  echo &amp;#34;Service $SERVICEnot found&amp;#34;  echo &amp;#34;Available Services: $SERVICE_LIST&amp;#34;  exit 7 else  set -- &amp;#34;${SERVICE_ARGS[@]}&amp;#34;  $TORUN &amp;#34;$@&amp;#34; fi 对应执行bin/ext/beeline.</description>
     </item>
     
     <item>
@@ -31,7 +31,7 @@ bin/beeline 脚本的执行会跳到 bin/hive 脚本，并传递service参数。
 hdfs配置中的几个参数：
  dfs.heartbeat.interval，Hadoop心跳检测间隔，默认为3s。 dfs.namenode.stale.datanode.minimum.interval，datanode标记为stale状态的需要丢失的最小心跳次数，默认为3。 dfs.namenode.stale.datanode.interval，Hadoop datanode超时范围，超过此时间没收到心跳检测会被标记为stale状态，默认为30s，大小必须超过前面两个参数的乘积。  接收心跳消息 Hadoop的datanode心跳检测通过rpc的形式发送，rpc函数通过参数传递数据节点统计信息，返回namenode需要对数据节点的命令。
 datanode在通过rpc发送消息时，namenode首先在rpc server处理，交给NameSystem。NameNodeRpcServer中的处理：
-@Override // DatanodeProtocol public HeartbeatResponse sendHeartbeat(DatanodeRegistration nodeReg, StorageReport[] report, long dnCacheCapacity, long dnCacheUsed, int xmitsInProgress, int xceiverCount, int failedVolumes, VolumeFailureSummary volumeFailureSummary, boolean requestFullBlockReportLease, @Nonnull SlowPeerReports slowPeers, @Nonnull SlowDiskReports slowDisks) throws IOException { checkNNStartup(); verifyRequest(nodeReg); return namesystem.handleHeartbeat(nodeReg, report, dnCacheCapacity, dnCacheUsed, xceiverCount, xmitsInProgress, failedVolumes, volumeFailureSummary, requestFullBlockReportLease, slowPeers, slowDisks); } namesystem的类型为FSNamesystem，负责name-space state的相关管理（is a container of both transient and persisted name-space state, and does all the book-keeping work on a NameNode），是BlockManager, DatanodeManager, DelegationTokens, LeaseManager等服务的容器。在handleHeartbeat函数中，通过blockManager获取的DatanodeManager进行了处理：</description>
+@Override // DatanodeProtocol public HeartbeatResponse sendHeartbeat(DatanodeRegistration nodeReg,  StorageReport[] report, long dnCacheCapacity, long dnCacheUsed,  int xmitsInProgress, int xceiverCount,  int failedVolumes, VolumeFailureSummary volumeFailureSummary,  boolean requestFullBlockReportLease,  @Nonnull SlowPeerReports slowPeers,  @Nonnull SlowDiskReports slowDisks) throws IOException {  checkNNStartup();  verifyRequest(nodeReg);  return namesystem.handleHeartbeat(nodeReg, report,  dnCacheCapacity, dnCacheUsed, xceiverCount, xmitsInProgress,  failedVolumes, volumeFailureSummary, requestFullBlockReportLease,  slowPeers, slowDisks); } namesystem的类型为FSNamesystem，负责name-space state的相关管理（is a container of both transient and persisted name-space state, and does all the book-keeping work on a NameNode），是BlockManager, DatanodeManager, DelegationTokens, LeaseManager等服务的容器。在handleHeartbeat函数中，通过blockManager获取的DatanodeManager进行了处理：</description>
     </item>
     
     <item>
@@ -44,8 +44,8 @@ datanode在通过rpc发送消息时，namenode首先在rpc server处理，交给
 相比GeoSpark的代码，没有Spark现成的算子可以复用并且要处理文件方面的问题，逻辑上的处理稍复杂一点。
 空间分析任务的提交 SpatialHadoop提供了一个脚本，用于基本的空间处理，如下面的代码生成测试数据。
 sbin/shadoop generate test.rects size:1.gb shape:rect mbr:0,0,1000000,1000000 -overwrite shadoop脚本做的操作不多，直接通过Hadoop的运行命令运行了edu.umn.cs.spatialHadoop.operations.Main类，在类中的Main函数中处理输入参数。
-bin=`dirname &amp;#34;$0&amp;#34;` bin=`cd &amp;#34;$bin&amp;#34; &amp;gt; /dev/null; pwd` # Call Hadoop with the operations.Main as the main class . &amp;#34;$bin&amp;#34;/hadoop edu.umn.cs.spatialHadoop.operations.Main $@ 在Main函数中使用了Hadoop的ProgramDriver运行具体的类对象。首先从配置文件 spatial-operations.yaml 中读取支持的类，然后利用反射机制，读取对应类注释的shortName标签，通过shortName决定参数传递的具体的类。
-public static void main(String[] args) { int exitCode = -1; ProgramDriver pgd = new ProgramDriver(); try { // 这个位置加载配置文件，配置文件spatial-operations.yaml中包含了支持的完整类名  Yaml yaml = new Yaml(); List&amp;lt;String&amp;gt; ops = yaml.load(SpatialSite.class.getResourceAsStream(&amp;#34;/spatial-operations.yaml&amp;#34;)); // 通过反射的机制，提取类对应的源码中的annotation里的shortName，运行时会通过shortname执行对应的类 	// 用在上面的生成随机数据中就是通过generate执行edu.umn.cs.spatialHadoop.operations.RandomSpatialGenerator。  for (String op : ops) { Class&amp;lt;?</description>
+bin=`dirname &amp;#34;$0&amp;#34;` bin=`cd &amp;#34;$bin&amp;#34; &amp;gt; /dev/null; pwd`  # Call Hadoop with the operations.Main as the main class . &amp;#34;$bin&amp;#34;/hadoop edu.umn.cs.spatialHadoop.operations.Main $@ 在Main函数中使用了Hadoop的ProgramDriver运行具体的类对象。首先从配置文件 spatial-operations.yaml 中读取支持的类，然后利用反射机制，读取对应类注释的shortName标签，通过shortName决定参数传递的具体的类。
+public static void main(String[] args) {  int exitCode = -1;  ProgramDriver pgd = new ProgramDriver();  try {  // 这个位置加载配置文件，配置文件spatial-operations.yaml中包含了支持的完整类名  Yaml yaml = new Yaml();  List&amp;lt;String&amp;gt; ops = yaml.</description>
     </item>
     
     <item>
@@ -74,12 +74,12 @@ This file has three columns and corresponding offsets(Column IDs) are 0, 1, 2. U
       <description>Spark提供了HDFS上一般的文件文件读取接口 sc.textFile()，但在某些情况下HDFS中需要存储自定义格式的文件，需要更加灵活的读取方式。
 使用KeyValueTextInputFormat Hadoop的MapReduce框架下提供了一些InputFormat的实现，其中MapReduce2的接口(org.apache.hadoop.mapreduce下)与先前MapReduce1(org.apache.hadoop.mapred下)有区别，对应于newAPIHadoopFile函数。
 使用KeyValueTextInputFormat的文件读取如下
-import org.apache.hadoop.mapreduce.lib.input.KeyValueTextInputFormat import org.apache.hadoop.io.Text val hFile = sc.newAPIHadoopFile(&amp;#34;hdfs://hadoopmaster:9000/user/sparkl/README.md&amp;#34;, classOf[KeyValueTextInputFormat], classOf[Text], classOf[Text]) hFile.collect 使用自定义InputFormat InputFormat是MapReduce框架下将输入的文件解析成字符串的组件，Spark对HDFS中的文件实现自定义读写需要通过InputFormat的子类实现。下面只写简单的思路，具体的可以参考InputFormat和MapReduce相关资料。
+ import org.apache.hadoop.mapreduce.lib.input.KeyValueTextInputFormat import org.apache.hadoop.io.Text  val hFile = sc.newAPIHadoopFile(&amp;#34;hdfs://hadoopmaster:9000/user/sparkl/README.md&amp;#34;,  classOf[KeyValueTextInputFormat], classOf[Text], classOf[Text])  hFile.collect 使用自定义InputFormat InputFormat是MapReduce框架下将输入的文件解析成字符串的组件，Spark对HDFS中的文件实现自定义读写需要通过InputFormat的子类实现。下面只写简单的思路，具体的可以参考InputFormat和MapReduce相关资料。
 InputFormat的修改可以参考TextInputFormat，继承FileInputFormat后，重载createRecordReader返回一个新的继承RecordReader的类，通过新的RecordReader读取数据返回键值对。
 打包后注意上传时将jar包一起上传：
 `./spark-shell &amp;ndash;jars newInputFormat.jar
 运行的代码和上面差不多，import相关的包后
-val hFile = sc.newAPIHadoopFile(&amp;#34;hdfs://hadoopmaster:9000/user/sparkl/README.md&amp;#34;, classOf[NewTextInputFormat], classOf[Text], classOf[Text]) 一些坑 序列化问题 在读取文件后使用first或者collect时，出现下面的错误
+val hFile = sc.newAPIHadoopFile(&amp;#34;hdfs://hadoopmaster:9000/user/sparkl/README.md&amp;#34;,  classOf[NewTextInputFormat], classOf[Text], classOf[Text]) 一些坑 序列化问题 在读取文件后使用first或者collect时，出现下面的错误
   ERROR scheduler.TaskSetManager: Task 0.0 in stage 2.0 (TID 18) had a not serializable result: org.apache.hadoop.io.IntWritable Serialization stack: - object not serializable (class: org.apache.hadoop.io.IntWritable, value: 35) - element of array (index: 0) - array (class [Lorg.</description>
     </item>
     
@@ -95,7 +95,7 @@ val hFile = sc.newAPIHadoopFile(&amp;#34;hdfs://hadoopmaster:9000/user/sparkl/RE
 其实只是Hadoop会调用脚本，将多个Datanode的ip作为输入，每次最多输入的ip数设置在net.topology.script.number.args，将输入的ip转换成/rack-num的形式(以/开头的字符串)，用标准输出流（如Python的print）输出结果。
 具体操作 编写脚本 下面的脚本在输入
 192.168.3.1 192.168.3.4 时，会输出
-/rack1 /rack4 #!/bin/python3 import sys # 第一个参数是脚本路径，直接pop掉 sys.argv.pop(0) # 0-3 rack0 # 4-7 rack1 # 8-11 rack2 # ... # 其它的参数里每个参数都是一个ip，此处直接取ip的最后一位除以4作为Racknum # 实践上可以读文件确定ip的对应关系 for ip in sys.argv: hostNum = int(ip.split(&amp;#34;.&amp;#34;)[3]) print(&amp;#34;/rack&amp;#34; + str(int(hostNum/4))) 设置配置参数 &amp;lt;property&amp;gt; &amp;lt;name&amp;gt;net.topology.script.file.name&amp;lt;/name&amp;gt; &amp;lt;value&amp;gt;/home/sparkl/hadoop/etc/hadoop/topology.py&amp;lt;/value&amp;gt; &amp;lt;/property&amp;gt; 重启集群即可
+/rack1 /rack4  #!/bin/python3 import sys  # 第一个参数是脚本路径，直接pop掉 sys.argv.pop(0)  # 0-3 rack0 # 4-7 rack1 # 8-11 rack2 # ...  # 其它的参数里每个参数都是一个ip，此处直接取ip的最后一位除以4作为Racknum # 实践上可以读文件确定ip的对应关系 for ip in sys.argv:  hostNum = int(ip.split(&amp;#34;.&amp;#34;)[3])  print(&amp;#34;/rack&amp;#34; + str(int(hostNum/4))) 设置配置参数 &amp;lt;property&amp;gt;  &amp;lt;name&amp;gt;net.topology.script.file.name&amp;lt;/name&amp;gt;  &amp;lt;value&amp;gt;/home/sparkl/hadoop/etc/hadoop/topology.py&amp;lt;/value&amp;gt; &amp;lt;/property&amp;gt; 重启集群即可
 验证结果 以下命令能够直接获取某一个文件的分布状态，以及总的rack数量：
 hdfs fsck /readme.md -files -blocks -racks
 貌似没有直接以树状的形式输出集群拓扑的命令，namenode的日志中能看到datanode在连接时的拓扑位置。</description>
@@ -110,7 +110,7 @@ hdfs fsck /readme.md -files -blocks -racks
       <description>大多数的叫法都是副本放置策略，实质上是HDFS对所有数据的位置放置策略，并非只是针对数据的副本。因此Hadoop的源码里有block replicator(configuration)、 BlockPlacementPolicy(具体逻辑源码)两种叫法。
 主要用途：上传文件时决定文件在HDFS上存储的位置（具体到datanode上的具体存储介质，如具体到存储在哪块硬盘）；rebalance、datanode退出集群、副本数量更改等导致数据移动的操作中，数据移动的具体位置。
 BlockPlacementPolicy BlockPlacementPolicy 作为虚基类提供了基本的接口，具体的子类重点实现下面 选择副本 、 验证副本放置是否满足要求 、 选择能够删除的副本 三个函数：
-/** * 核心的副本放置策略实现，返回副本放置数量的存储位置 * **如果有效节点数量不够（少于副本数），返回尽可能多的节点，而非失败** * * @param srcPath 上传文件的路径 * @param numOfReplicas 除下面chosen参数里已经选择的datanode，还需要的副本数量 * @param writer 写数据的机器, null if not in the cluster. 一般用于放置第一个副本以降低网络通信 * @param chosen 已经选择的节点 * @param returnChosenNodes 返回结果里是否包含chosen的datanode * @param excludedNodes 不选的节点 * @param blocksize 块大小 * @return 排序好的选择结果 */ public abstract DatanodeStorageInfo[] chooseTarget(String srcPath, int numOfReplicas, Node writer, List&amp;lt;DatanodeStorageInfo&amp;gt; chosen, boolean returnChosenNodes, Set&amp;lt;Node&amp;gt; excludedNodes, long blocksize, BlockStoragePolicy storagePolicy); /** * 判断传入的放置方式是否符合要求 */ abstract public BlockPlacementStatus verifyBlockPlacement( DatanodeInfo[] locs, int numOfReplicas); /** * 当副本数量较多时，选择需要删除的节点 */ abstract public List&amp;lt;DatanodeStorageInfo&amp;gt; chooseReplicasToDelete( Collection&amp;lt;DatanodeStorageInfo&amp;gt; candidates, int expectedNumOfReplicas, List&amp;lt;StorageType&amp;gt; excessTypes, DatanodeDescriptor addedNode, DatanodeDescriptor delNodeHint); Hadoop 提供的 BlockPlacementPolicy 实现 Hadoop提供了BlockPlacementPolicyDefault、BlockPlacementPolicyWithNodeGroup、AvailableSpaceBlockPlacementPolicy三种实现（hadoop 2.</description>
+ /** * 核心的副本放置策略实现，返回副本放置数量的存储位置 * **如果有效节点数量不够（少于副本数），返回尽可能多的节点，而非失败** * * @param srcPath 上传文件的路径 * @param numOfReplicas 除下面chosen参数里已经选择的datanode，还需要的副本数量 * @param writer 写数据的机器, null if not in the cluster. 一般用于放置第一个副本以降低网络通信 * @param chosen 已经选择的节点 * @param returnChosenNodes 返回结果里是否包含chosen的datanode * @param excludedNodes 不选的节点 * @param blocksize 块大小 * @return 排序好的选择结果 */  public abstract DatanodeStorageInfo[] chooseTarget(String srcPath,  int numOfReplicas,  Node writer,  List&amp;lt;DatanodeStorageInfo&amp;gt; chosen,  boolean returnChosenNodes,  Set&amp;lt;Node&amp;gt; excludedNodes,  long blocksize,  BlockStoragePolicy storagePolicy);    /** * 判断传入的放置方式是否符合要求 */  abstract public BlockPlacementStatus verifyBlockPlacement(  DatanodeInfo[] locs, int numOfReplicas);    /** * 当副本数量较多时，选择需要删除的节点 */  abstract public List&amp;lt;DatanodeStorageInfo&amp;gt; chooseReplicasToDelete(  Collection&amp;lt;DatanodeStorageInfo&amp;gt; candidates, int expectedNumOfReplicas,  List&amp;lt;StorageType&amp;gt; excessTypes, DatanodeDescriptor addedNode,  DatanodeDescriptor delNodeHint); Hadoop 提供的 BlockPlacementPolicy 实现 Hadoop提供了BlockPlacementPolicyDefault、BlockPlacementPolicyWithNodeGroup、AvailableSpaceBlockPlacementPolicy三种实现（hadoop 2.</description>
     </item>
     
     <item>
@@ -132,7 +132,7 @@ mvn compile 编译源码 mvn assembly:assembly 代码打包，会在target目录
 cp target/spatialhadoop-2.4.3-SNAPSHOT-bin.tar.gz $HADOOP_HOME/ cd $HADOOP_HOME tar -zxvf spatialhadoop-2.4.3-SNAPSHOT-bin.tar.gz Hadoop目录下运行下面的测试代码，会向HDFS中写入一个随机生成的矩形文件。
 sbin/shadoop generate test.rects size:1.gb shape:rect mbr:0,0,1000000,1000000 -overwrite
 SpatialHadoop运行机制 shadoop 脚本 SpatialHadoop 通过脚本shadoop运行命令，脚本就只有几行代码
-bin=`dirname &amp;#34;$0&amp;#34;` bin=`cd &amp;#34;$bin&amp;#34; &amp;gt; /dev/null; pwd` # Call Hadoop with the operations.Main as the main class . &amp;#34;$bin&amp;#34;/hadoop edu.umn.cs.spatialHadoop.operations.Main $@ 其实只是将spatialhadoop的jar包与相关依赖jar包放入Hadoop的包目录中，然后通过shadoop脚本调用Hadoop脚本调用包中的一个类，向YARN提交MapReduce任务。</description>
+bin=`dirname &amp;#34;$0&amp;#34;` bin=`cd &amp;#34;$bin&amp;#34; &amp;gt; /dev/null; pwd`  # Call Hadoop with the operations.Main as the main class . &amp;#34;$bin&amp;#34;/hadoop edu.umn.cs.spatialHadoop.operations.Main $@ 其实只是将spatialhadoop的jar包与相关依赖jar包放入Hadoop的包目录中，然后通过shadoop脚本调用Hadoop脚本调用包中的一个类，向YARN提交MapReduce任务。</description>
     </item>
     
     <item>
@@ -147,11 +147,11 @@ CapacityScheduler首先将所有资源分配到hierarchical queue中，每个任
 Fair Scheduler 会在第一个任务运行时分配当前同级队列的所有资源，当有其它任务运行时，回收前面任务运行时的部分资源（一般为运行完成的Container）用于其它任务。
 至于FIFO，源码里都没有描述，可能就是一般的先进先出了。
 YARN默认使用CapacityScheduler，通过下面的属性配置：
-&amp;lt;property&amp;gt; &amp;lt;name&amp;gt;yarn.resourcemanager.scheduler.class&amp;lt;/name&amp;gt; &amp;lt;value&amp;gt;org.apache.hadoop.yarn.server.resourcemanager.scheduler.fair.FairScheduler&amp;lt;/value&amp;gt; &amp;lt;/property&amp;gt; YARN 动态资源分配 YARN 能够动态申请资源，如MapReduce中reduce的container会在map过程结束后申请。但Spark On YARN的机制为申请固定的executor，而不动态改变已申请的资源。
+&amp;lt;property&amp;gt;  &amp;lt;name&amp;gt;yarn.resourcemanager.scheduler.class&amp;lt;/name&amp;gt;  &amp;lt;value&amp;gt;org.apache.hadoop.yarn.server.resourcemanager.scheduler.fair.FairScheduler&amp;lt;/value&amp;gt; &amp;lt;/property&amp;gt; YARN 动态资源分配 YARN 能够动态申请资源，如MapReduce中reduce的container会在map过程结束后申请。但Spark On YARN的机制为申请固定的executor，而不动态改变已申请的资源。
 YARN上新运行的任务能够使用已运行任务回收的资源(如运行完Map task的container)，甚至还能够通过强行结束先前任务的container抢占资源。
 Capacity Scheduler CapacityScheduler重点解决多个组织共享集群资源，并保证每个组织自己的资源使用量。当自己的资源不足时能够使用其它组织的空闲资源。
 资源通过层级队列（hierarchical queues）的形式进行组织，配置在etc/hadoop/capacity-scheduler.xml.
-&amp;lt;!-- 队列结构设置 --&amp;gt; &amp;lt;property&amp;gt; &amp;lt;name&amp;gt;yarn.scheduler.capacity.root.queues&amp;lt;/name&amp;gt; &amp;lt;value&amp;gt;a,b&amp;lt;/value&amp;gt; &amp;lt;description&amp;gt;The queues at the this level (root is the root queue). &amp;lt;/description&amp;gt; &amp;lt;/property&amp;gt; &amp;lt;property&amp;gt; &amp;lt;name&amp;gt;yarn.scheduler.capacity.root.a.queues&amp;lt;/name&amp;gt; &amp;lt;value&amp;gt;a1,a2&amp;lt;/value&amp;gt; &amp;lt;description&amp;gt;The queues at the this level (root is the root queue).</description>
+&amp;lt;!-- 队列结构设置 --&amp;gt; &amp;lt;property&amp;gt;  &amp;lt;name&amp;gt;yarn.scheduler.capacity.root.queues&amp;lt;/name&amp;gt;  &amp;lt;value&amp;gt;a,b&amp;lt;/value&amp;gt;  &amp;lt;description&amp;gt;The queues at the this level (root is the root queue).  &amp;lt;/description&amp;gt; &amp;lt;/property&amp;gt;  &amp;lt;property&amp;gt;  &amp;lt;name&amp;gt;yarn.scheduler.capacity.root.a.queues&amp;lt;/name&amp;gt;  &amp;lt;value&amp;gt;a1,a2&amp;lt;/value&amp;gt;  &amp;lt;description&amp;gt;The queues at the this level (root is the root queue).</description>
     </item>
     
     <item>
@@ -179,6 +179,34 @@ Hadoop 远程调试 思路和上面的操作一致。下面以调试HDFS中的na
 export HDFS_NAMENODE_OPTS=&amp;quot;-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8000&amp;quot; 
 HDFS启动的jvm主要为namenode和datanode，jvm启动的参数设置在etc/hadoop/hadoop-env.sh中。其中namenode启动参数环境变量为 HDFS_NAMENODE_OPTS，datanode为 HDFS_DATANODE_OPTS（针对Hadoop3，hadoop2的设置为HADOOP_NAMENODE_OPTS HADOOP_NAMENODE_OPTS）。YARN等服务对应的环境变量需要另查。
 2、启动服务 sbin/start-dfs.sh 或者 bin/hdfs --daemon start namenode仅启动namenode</description>
+    </item>
+    
+    <item>
+      <title>MPI、Hadoop、Spark的设计对比</title>
+      <link>https://extendswind.top/posts/technical/mpi_hadoop_spark_comparing/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://extendswind.top/posts/technical/mpi_hadoop_spark_comparing/</guid>
+      <description>对Hadoop前前后后看了更多的设计之后突然碰到这个问题，简单的写写自己的理解。
+MPI MPI（Message Passing Interface）一般和GPU一起作为高性能计算技术的重要组成部分。MPI本身只是一种分布式计算的协议，有OpenMPI、MPICH、MSMPI等实现。协议本身定义了很多分布式计算的进程间的通信函数，其中常用的只用以下6个：
+MPI_Init(…); // 初始化 MPI_Comm_size(…); // 获取进程数量 MPI_Comm_rank(…); // 获取当前进程id MPI_Send(…); // 发送消息给指定进程 MPI_Recv(…); // 接收消息 MPI_Finalize(); // 结束程序 其它的消息定义了一些额外的数据通信方法和细节，如缓冲、同步等，用于更多细节上的操作。
+设计上，MPI更多的是为了处理数据传递中的底层细节，一般假设运行在高性能的集群设备中，没有考虑程序容错、数据存储等特性，传输的消息也默认为二进制流。没太关注底层，估计是直接使用的sockets通信，并且配合了Infiniband一类的高效通信技术。
+有高可用、任务调度一类的场景，可以基于MPI做进一步的设计。
+优点：偏底层效率高。缺点：开发难度更大，在大规模集群中的实现更复杂，容错、数据存储一类的需要开发实现。
+Hadoop Hadoop设计的目标应用场景和MPI相差很大。Hadoop针对的一般为普通服务器（相对于高性能计算的服务器）组成的大集群规模（千级别的节点），在集群的应用中，需要考虑更多资源利用、容错、易用性等方面的问题。当前Hadoop主要由MapReduce计算框架、HDFS分布式文件存储系统、YARN资源管理框架组成，MPI只和MapReduce的作用类似。
+MapReduce的目标是简单易用而且高效的分布式计算框架，让框架底层处理中间可能发生的网络、宕机等错误。使用MapReduce模型的计算一般不用关心计算过程中所涉及的计算资源（有多少个节点等），通常可以很容易的扩展到大规模的集群中高效的执行。和HDFS的结合是MapReduce的一大区别，通过移动计算的方式将计算代码移动到存储数据的数据节点上执行，避免了数据密集型计算应用中的通信开销（在百兆和千兆交换机是主流的时代大集群中存算分离的概念还不明显）。但是为了保证容错性，计算过程中的中间数据写硬盘中临时保存，使发生宕机时能够重新读取，一定程度上影响了计算过程的效率。
+MapReduce优点：框架实现了分布式计算的细节，实现可扩展、容错的程序更为容易，并通过HDFS提高了数据密集型应用的数据本地性。缺点：框架启动以及硬盘写入过程的IO开销过大。
+ps:基于Hadoop的并行计算框架还有Tez，可以看作MapReduce的迭代处理改进，提高了多个MapReduce任务迭代计算的效率，但仍存在硬盘IO写入的效率问题。
+Spark Spark的RDD计算模型为了解决MapReduce过程中为了保证容错性而导致的硬盘IO问题，通过设计基于内存的计算模式，将数据存储在内存中，通过数据的转换关系和checkpoint实现数据出错时的错误任务重新计算，可以看作是一个MapReduce加强版，特别是在迭代计算的应用中比MapReduce的效率高出很多，已经逐渐取代了MapReduce在大多数方面的应用。
+在RDD模型之上，Spark还提供了机器学习、SQL查询、图计算等功能，提供了一套完整的数据分析生态，而非最初只有计算模型。
+RDD模型优点：通过内存模型设计降低了硬盘的IO，并且充分利用内存缓存提高效率。缺点：相对更吃内存。
+对比 应用场景
+MPI由于过于偏底层，在易用性、容错性上比云计算框架明显要差，使应用更多的面向对容错要求不高的计算场景与计算效率上要求较高的应用。通常在少量节点的分布式协同计算和超算中应用，以及一些在云计算框架下实现并不完全的科学计算应用。由于配置和运行较为简单，外加c++的运行效率较高，在对高可用要求不高的小集群环境里跑分布式计算较为简单。
+RDD和MapReduce更注重大规模集群中的资源利用和计算，扩展到几千节点的集群中有较好的计算效率，并能自动处理宕机等集群常见错误。
+相对来讲，商业环境对程序运行的稳定性和开发效率看得更为重要，所以Hadoop生态的云计算技术使用得更多。实践上，Hadoop虽然简化的分布式计算的模型，但要想高效的执行任务仍需要很多参数的调整。
+底层存储和网络优化
+MPI使用的Infiniband技术提高网络通信能力，没有固定的数据存储技术，靠移动数据的方式实现分布式计算。在数据密集型应用中对效率有一定的影响，但随着网络通信技术提高影响在降低，也可以配合其它的分布式文件系统实现。
+RDD和MapReduce利用了Hadoop的HDFS存储，多副本的存储方式提高了数据的读效率。通信上使用的rpc通信，将通信的对象高效的序列化为二进制数据提高通信效率。</description>
     </item>
     
   </channel>

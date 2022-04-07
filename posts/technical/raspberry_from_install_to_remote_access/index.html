@@ -8,7 +8,7 @@
 2. 配置系统 上面的烧录后，sd卡会被分为多个分区，其中windows系统下能识别的只有一个名为boot的分区，存储启动相关的配置文件。
 2.1 开启ssh raspbian 系统默认不开启ssh远程访问，在boot分区下新建文件名为SSH的文件（内容为空无后缀），系统启动时检测到此文件会开启ssh进程。
 2.2 配置wifi 在boot分区下新建文件名为wpa_supplicant.conf的文件，添加以下内容：
-country=CN ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev update_config=1 network={ ssid=&quot;yourWifiName&quot; psk=&quot;passwd&quot; key_mgmt=WPA-PSK priority=1 } 修改其中的wifi名和密码（ssid与psk）
+country=CN ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev update_config=1 network={ ssid=&#34;yourWifiName&#34; psk=&#34;passwd&#34; key_mgmt=WPA-PSK priority=1 } 修改其中的wifi名和密码（ssid与psk）
 如果想省事可以直接用网线连上路由器
 3. 远程访问 3.1 查找树莓派ip 此处需要将电脑和树莓派连接在同一路由器下。
 方法一：浏览器上输入192.168.1.1 （根据不同路由器网关不同），进入管理页面查看树莓派ip。
@@ -30,7 +30,7 @@ Unknown authentication scheme from VNC server: 13, 5, 6, 130, 192'>
 2. 配置系统 上面的烧录后，sd卡会被分为多个分区，其中windows系统下能识别的只有一个名为boot的分区，存储启动相关的配置文件。
 2.1 开启ssh raspbian 系统默认不开启ssh远程访问，在boot分区下新建文件名为SSH的文件（内容为空无后缀），系统启动时检测到此文件会开启ssh进程。
 2.2 配置wifi 在boot分区下新建文件名为wpa_supplicant.conf的文件，添加以下内容：
-country=CN ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev update_config=1 network={ ssid=&quot;yourWifiName&quot; psk=&quot;passwd&quot; key_mgmt=WPA-PSK priority=1 } 修改其中的wifi名和密码（ssid与psk）
+country=CN ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev update_config=1 network={ ssid=&#34;yourWifiName&#34; psk=&#34;passwd&#34; key_mgmt=WPA-PSK priority=1 } 修改其中的wifi名和密码（ssid与psk）
 如果想省事可以直接用网线连上路由器
 3. 远程访问 3.1 查找树莓派ip 此处需要将电脑和树莓派连接在同一路由器下。
 方法一：浏览器上输入192.168.1.1 （根据不同路由器网关不同），进入管理页面查看树莓派ip。
@@ -47,7 +47,7 @@ Unknown authentication scheme from VNC server: 13, 5, 6, 130, 192'>
 <meta property='og:site_name' content='A Notebook of Extendswind'>
 <meta property='og:type' content='article'><meta property='article:section' content='posts'><meta property='article:tag' content='raspberry'><meta property='article:published_time' content='2019-10-25T10:59:49&#43;08:00'/><meta property='article:modified_time' content='2019-10-25T10:59:49&#43;08:00'/><meta name='twitter:card' content='summary'>
 
-<meta name="generator" content="Hugo 0.89.4" />
+<meta name="generator" content="Hugo 0.93.2" />
 
   <title>树莓派从烧录系统到通过wifi远程访问（新树莓派配置，无显示器、网线、键盘） • A Notebook of Extendswind</title>
   <link rel='canonical' href='https://extendswind.top/posts/technical/raspberry_from_install_to_remote_access/'>
@@ -127,6 +127,8 @@ Unknown authentication scheme from VNC server: 13, 5, 6, 130, 192'>
         <a href='/tags/linux/' style='font-size:1em'>linux</a>
       </li><li>
         <a href='/tags/log4j/' style='font-size:1em'>log4j</a>
+      </li><li>
+        <a href='/tags/mpi/' style='font-size:1em'>MPI</a>
       </li><li>
         <a href='/tags/python/' style='font-size:1em'>python</a>
       </li><li>
@@ -239,12 +241,11 @@ ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
 update_config=1
 
 network={
-    ssid=&quot;yourWifiName&quot;
-    psk=&quot;passwd&quot;
+    ssid=&#34;yourWifiName&#34;
+    psk=&#34;passwd&#34;
     key_mgmt=WPA-PSK
     priority=1
 }
-
 </code></pre><p>修改其中的wifi名和密码（ssid与psk）</p>
 <p><em>如果想省事可以直接用网线连上路由器</em></p>
 <h1 id="3-远程访问">3. 远程访问</h1>
@@ -345,7 +346,7 @@ network={
       </li></ul>
   </nav>
 </section><div class='copyright'>
-  <p> &copy; 2018-2021 extendswind </p>
+  <p> &copy; 2018-2022 extendswind </p>
 </div>
 
         </div>

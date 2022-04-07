@@ -411,6 +411,14 @@
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url><url>
+    <loc>https://extendswind.top/tags/mpi/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url><url>
+    <loc>https://extendswind.top/posts/technical/mpi_hadoop_spark_comparing/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url><url>
     <loc>https://extendswind.top/page/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>

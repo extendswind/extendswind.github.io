@@ -33,7 +33,7 @@ appender 主要用于
 <meta property='og:site_name' content='A Notebook of Extendswind'>
 <meta property='og:type' content='article'><meta property='article:section' content='posts'><meta property='article:tag' content='java'><meta property='article:tag' content='log4j'><meta property='article:published_time' content='2019-05-29T20:30:00&#43;08:00'/><meta property='article:modified_time' content='2019-05-29T20:30:00&#43;08:00'/><meta name='twitter:card' content='summary'>
 
-<meta name="generator" content="Hugo 0.89.4" />
+<meta name="generator" content="Hugo 0.93.2" />
 
   <title>log4j 1.2 配置和使用简述 • A Notebook of Extendswind</title>
   <link rel='canonical' href='https://extendswind.top/posts/technical/log4j_properties_simple_introduction/'>
@@ -113,6 +113,8 @@ appender 主要用于
         <a href='/tags/linux/' style='font-size:1em'>linux</a>
       </li><li>
         <a href='/tags/log4j/' style='font-size:1em'>log4j</a>
+      </li><li>
+        <a href='/tags/mpi/' style='font-size:1em'>MPI</a>
       </li><li>
         <a href='/tags/python/' style='font-size:1em'>python</a>
       </li><li>
@@ -290,34 +292,33 @@ Appender{
 <li>配置layout  （配置日志输出的格式）</li>
 </ul>
 <h2 id="示例">示例</h2>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># root logger 的level和对应的appender (fileAppender在后面定义）</span>
-log4j.rootLogger<span style="color:#f92672">=</span>info, fileAppender
-
-<span style="color:#75715e"># 定义fileAppender 为 File appender</span>
-log4j.appender.fileAppender<span style="color:#f92672">=</span>org.apache.log4j.FileAppender
-log4j.appender.fileAppender.File<span style="color:#f92672">=</span>/home/abc/test
-
-<span style="color:#75715e"># 定义 fileAppender 的 layout</span>
-log4j.appender.fileAppender.layout<span style="color:#f92672">=</span>org.apache.log4j.PatternLayout
-log4j.appender.fileAppender.layout.conversionPattern<span style="color:#f92672">=</span>%m%n
-
-
-<span style="color:#75715e"># 子logger配置  针对com.a.Test4log这个类 设置为System.err的输出</span>
-log4j.logger.com.a.Test4log <span style="color:#f92672">=</span> INFO, myConsole
-
-<span style="color:#75715e"># 输出到标准err的appender</span>
-log4j.appender.myConsole<span style="color:#f92672">=</span>org.apache.log4j.ConsoleAppender
-log4j.appender.myConsole.target<span style="color:#f92672">=</span>System.err
-
-<span style="color:#75715e"># 定义layout输出格式</span>
-log4j.appender.myConsole.layout<span style="color:#f92672">=</span>org.apache.log4j.PatternLayout
-log4j.appender.myConsole.layout.ConversionPattern<span style="color:#f92672">=</span>%d<span style="color:#f92672">{</span>yy/MM/dd HH:mm:ss<span style="color:#f92672">}</span> %p %c<span style="color:#f92672">{</span>2<span style="color:#f92672">}</span>: %m%n  myConsole
-
-</code></pre></div><p>分层的语法略奇葩，而且前面可以用到后面定义的变量。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># root logger 的level和对应的appender (fileAppender在后面定义）</span>
+</span></span><span style="display:flex;"><span>log4j.rootLogger<span style="color:#f92672">=</span>info, fileAppender
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 定义fileAppender 为 File appender</span>
+</span></span><span style="display:flex;"><span>log4j.appender.fileAppender<span style="color:#f92672">=</span>org.apache.log4j.FileAppender
+</span></span><span style="display:flex;"><span>log4j.appender.fileAppender.File<span style="color:#f92672">=</span>/home/abc/test
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 定义 fileAppender 的 layout</span>
+</span></span><span style="display:flex;"><span>log4j.appender.fileAppender.layout<span style="color:#f92672">=</span>org.apache.log4j.PatternLayout
+</span></span><span style="display:flex;"><span>log4j.appender.fileAppender.layout.conversionPattern<span style="color:#f92672">=</span>%m%n
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 子logger配置  针对com.a.Test4log这个类 设置为System.err的输出</span>
+</span></span><span style="display:flex;"><span>log4j.logger.com.a.Test4log <span style="color:#f92672">=</span> INFO, myConsole
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 输出到标准err的appender</span>
+</span></span><span style="display:flex;"><span>log4j.appender.myConsole<span style="color:#f92672">=</span>org.apache.log4j.ConsoleAppender
+</span></span><span style="display:flex;"><span>log4j.appender.myConsole.target<span style="color:#f92672">=</span>System.err
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 定义layout输出格式</span>
+</span></span><span style="display:flex;"><span>log4j.appender.myConsole.layout<span style="color:#f92672">=</span>org.apache.log4j.PatternLayout
+</span></span><span style="display:flex;"><span>log4j.appender.myConsole.layout.ConversionPattern<span style="color:#f92672">=</span>%d<span style="color:#f92672">{</span>yy/MM/dd HH:mm:ss<span style="color:#f92672">}</span> %p %c<span style="color:#f92672">{</span>2<span style="color:#f92672">}</span>: %m%n  myConsole
+</span></span></code></pre></div><p>分层的语法略奇葩，而且前面可以用到后面定义的变量。</p>
 <h1 id="java代码调用">java代码调用</h1>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">Log log <span style="color:#f92672">=</span> LogFactory<span style="color:#f92672">.</span><span style="color:#a6e22e">getLog</span><span style="color:#f92672">(</span>Test4log<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">);</span>
-log<span style="color:#f92672">.</span><span style="color:#a6e22e">info</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;test&#34;</span><span style="color:#f92672">);</span>
-</code></pre></div><p>程序会在classpath下查找log4j.properties，因此一般放在src/main/resources文件夹下</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span>Log log <span style="color:#f92672">=</span> LogFactory<span style="color:#f92672">.</span><span style="color:#a6e22e">getLog</span><span style="color:#f92672">(</span>Test4log<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>log<span style="color:#f92672">.</span><span style="color:#a6e22e">info</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;test&#34;</span><span style="color:#f92672">);</span>
+</span></span></code></pre></div><p>程序会在classpath下查找log4j.properties，因此一般放在src/main/resources文件夹下</p>
 
 </div>
 
@@ -396,7 +397,7 @@ log<span style="color:#f92672">.</span><span style="color:#a6e22e">info</span><s
       </li></ul>
   </nav>
 </section><div class='copyright'>
-  <p> &copy; 2018-2021 extendswind </p>
+  <p> &copy; 2018-2022 extendswind </p>
 </div>
 
         </div>

@@ -9,7 +9,7 @@ anonymous_enable=YES # 允许匿名访问 write_enable=YES # 允许写文件 ano
 通过 local_enable 选项能够允许ftp通过本地用户访问，登录之后会访问用户的主目录。当使用匿名用户访问时，vsftpd会将用户名为ftp的用户作为登录用户，进入ftp用户的主目录。
 注意，考虑到安全问题，ftp匿名用户的主目录必须为只读，如果需要上传文件，需要在主目录下新建有写权限的文件夹。
 通常会选择/var/ftp文件夹存放文件而不是用户默认的/home，因此可以修改用户的主目录位置（一般放在/var/ftp），不修改也能用。再次强调，注意主目录对ftp用户的权限必须为只读。
-sudo mkdir /var/ftp # 新建用户文件夹 sudo useradd -d /var/ftp ftp # 新建用户，并指定用户home目录  # 如果ftp用户已经存在，在/etc/passwd文件里改用户目录为/var/ftp sudo mkdir /var/ftp/pub # 新建一个用于写数据的文件夹 sudo chmod 777 /var/ftp/pub # 修改文件夹权限 4. 启动服务
+sudo mkdir /var/ftp # 新建用户文件夹 sudo useradd -d /var/ftp ftp # 新建用户，并指定用户home目录  # 如果ftp用户已经存在，在/etc/passwd文件里改用户目录为/var/ftp  sudo mkdir /var/ftp/pub # 新建一个用于写数据的文件夹 sudo chmod 777 /var/ftp/pub # 修改文件夹权限 4. 启动服务
 systemctl start vsftpd
 其它 防火墙和SELinux如果使用了需要添加响应的通过规则。'>
 <meta name='theme-color' content='#cccccc'>
@@ -22,14 +22,14 @@ anonymous_enable=YES # 允许匿名访问 write_enable=YES # 允许写文件 ano
 通过 local_enable 选项能够允许ftp通过本地用户访问，登录之后会访问用户的主目录。当使用匿名用户访问时，vsftpd会将用户名为ftp的用户作为登录用户，进入ftp用户的主目录。
 注意，考虑到安全问题，ftp匿名用户的主目录必须为只读，如果需要上传文件，需要在主目录下新建有写权限的文件夹。
 通常会选择/var/ftp文件夹存放文件而不是用户默认的/home，因此可以修改用户的主目录位置（一般放在/var/ftp），不修改也能用。再次强调，注意主目录对ftp用户的权限必须为只读。
-sudo mkdir /var/ftp # 新建用户文件夹 sudo useradd -d /var/ftp ftp # 新建用户，并指定用户home目录  # 如果ftp用户已经存在，在/etc/passwd文件里改用户目录为/var/ftp sudo mkdir /var/ftp/pub # 新建一个用于写数据的文件夹 sudo chmod 777 /var/ftp/pub # 修改文件夹权限 4. 启动服务
+sudo mkdir /var/ftp # 新建用户文件夹 sudo useradd -d /var/ftp ftp # 新建用户，并指定用户home目录  # 如果ftp用户已经存在，在/etc/passwd文件里改用户目录为/var/ftp  sudo mkdir /var/ftp/pub # 新建一个用于写数据的文件夹 sudo chmod 777 /var/ftp/pub # 修改文件夹权限 4. 启动服务
 systemctl start vsftpd
 其它 防火墙和SELinux如果使用了需要添加响应的通过规则。'>
 <meta property='og:url' content='https://extendswind.top/posts/technical/vsftpd_configuration/'>
 <meta property='og:site_name' content='A Notebook of Extendswind'>
 <meta property='og:type' content='article'><meta property='article:section' content='posts'><meta property='article:tag' content='software'><meta property='article:published_time' content='2019-10-18T21:59:49&#43;08:00'/><meta property='article:modified_time' content='2019-10-18T21:59:49&#43;08:00'/><meta name='twitter:card' content='summary'>
 
-<meta name="generator" content="Hugo 0.89.4" />
+<meta name="generator" content="Hugo 0.93.2" />
 
   <title>vsftp 匿名访问设置设置 • A Notebook of Extendswind</title>
   <link rel='canonical' href='https://extendswind.top/posts/technical/vsftpd_configuration/'>
@@ -109,6 +109,8 @@ systemctl start vsftpd
         <a href='/tags/linux/' style='font-size:1em'>linux</a>
       </li><li>
         <a href='/tags/log4j/' style='font-size:1em'>log4j</a>
+      </li><li>
+        <a href='/tags/mpi/' style='font-size:1em'>MPI</a>
       </li><li>
         <a href='/tags/python/' style='font-size:1em'>python</a>
       </li><li>
@@ -210,22 +212,22 @@ systemctl start vsftpd
 <h1 id="主要步骤">主要步骤</h1>
 <p><strong>1. 使用包管理器安装 <code>vsftpd</code> 。（apt, yum, pacman等)</strong></p>
 <p><strong>2. 修改配置文件 /etc/vsftpd.conf</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">anonymous_enable<span style="color:#f92672">=</span>YES  <span style="color:#75715e"># 允许匿名访问</span>
-write_enable<span style="color:#f92672">=</span>YES  <span style="color:#75715e"># 允许写文件</span>
-anon_upload_enable<span style="color:#f92672">=</span>YES  <span style="color:#75715e"># 允许匿名用户上传文件</span>
-anon_mkdir_write_enable<span style="color:#f92672">=</span>YES  <span style="color:#75715e"># 允许匿名用户创建目录和写权限</span>
-anon_other_write_enable<span style="color:#f92672">=</span>YES  <span style="color:#75715e"># 允许匿名用户删除、重命名等其它权限  这个在配置文件里默认找不到</span>
-</code></pre></div><p><strong>3. 新建匿名访问的用户和文件夹</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>anonymous_enable<span style="color:#f92672">=</span>YES  <span style="color:#75715e"># 允许匿名访问</span>
+</span></span><span style="display:flex;"><span>write_enable<span style="color:#f92672">=</span>YES  <span style="color:#75715e"># 允许写文件</span>
+</span></span><span style="display:flex;"><span>anon_upload_enable<span style="color:#f92672">=</span>YES  <span style="color:#75715e"># 允许匿名用户上传文件</span>
+</span></span><span style="display:flex;"><span>anon_mkdir_write_enable<span style="color:#f92672">=</span>YES  <span style="color:#75715e"># 允许匿名用户创建目录和写权限</span>
+</span></span><span style="display:flex;"><span>anon_other_write_enable<span style="color:#f92672">=</span>YES  <span style="color:#75715e"># 允许匿名用户删除、重命名等其它权限  这个在配置文件里默认找不到</span>
+</span></span></code></pre></div><p><strong>3. 新建匿名访问的用户和文件夹</strong></p>
 <p>通过 <code>local_enable</code> 选项能够允许ftp通过本地用户访问，登录之后会访问用户的主目录。当使用匿名用户访问时，vsftpd会将用户名为ftp的用户作为登录用户，进入ftp用户的主目录。</p>
 <p><strong>注意，考虑到安全问题，ftp匿名用户的主目录必须为只读</strong>，如果需要上传文件，需要在主目录下新建有写权限的文件夹。</p>
 <p>通常会选择<code>/var/ftp</code>文件夹存放文件而不是用户默认的<code>/home</code>，因此可以修改用户的主目录位置（一般放在/var/ftp），不修改也能用。再次强调，<strong>注意主目录对ftp用户的权限必须为只读</strong>。</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sudo mkdir /var/ftp  <span style="color:#75715e"># 新建用户文件夹</span>
-sudo useradd -d /var/ftp ftp  <span style="color:#75715e"># 新建用户，并指定用户home目录 </span>
-<span style="color:#75715e"># 如果ftp用户已经存在，在/etc/passwd文件里改用户目录为/var/ftp</span>
-
-sudo mkdir /var/ftp/pub  <span style="color:#75715e"># 新建一个用于写数据的文件夹</span>
-sudo chmod <span style="color:#ae81ff">777</span> /var/ftp/pub   <span style="color:#75715e"># 修改文件夹权限</span>
-</code></pre></div><p><strong>4. 启动服务</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo mkdir /var/ftp  <span style="color:#75715e"># 新建用户文件夹</span>
+</span></span><span style="display:flex;"><span>sudo useradd -d /var/ftp ftp  <span style="color:#75715e"># 新建用户，并指定用户home目录 </span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 如果ftp用户已经存在，在/etc/passwd文件里改用户目录为/var/ftp</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>sudo mkdir /var/ftp/pub  <span style="color:#75715e"># 新建一个用于写数据的文件夹</span>
+</span></span><span style="display:flex;"><span>sudo chmod <span style="color:#ae81ff">777</span> /var/ftp/pub   <span style="color:#75715e"># 修改文件夹权限</span>
+</span></span></code></pre></div><p><strong>4. 启动服务</strong></p>
 <p><code>systemctl start vsftpd</code></p>
 <h1 id="其它">其它</h1>
 <p>防火墙和SELinux如果使用了需要添加响应的通过规则。</p>
@@ -308,7 +310,7 @@ sudo chmod <span style="color:#ae81ff">777</span> /var/ftp/pub   <span style="co
       </li></ul>
   </nav>
 </section><div class='copyright'>
-  <p> &copy; 2018-2021 extendswind </p>
+  <p> &copy; 2018-2022 extendswind </p>
 </div>
 
         </div>

@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang='en' dir='auto'><head>
+  <meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<meta name='description' content='对Hadoop前前后后看了更多的设计之后突然碰到这个问题，简单的写写自己的理解。
+MPI MPI（Message Passing Interface）一般和GPU一起作为高性能计算技术的重要组成部分。MPI本身只是一种分布式计算的协议，有OpenMPI、MPICH、MSMPI等实现。协议本身定义了很多分布式计算的进程间的通信函数，其中常用的只用以下6个：
+MPI_Init(…); // 初始化 MPI_Comm_size(…); // 获取进程数量 MPI_Comm_rank(…); // 获取当前进程id MPI_Send(…); // 发送消息给指定进程 MPI_Recv(…); // 接收消息 MPI_Finalize(); // 结束程序 其它的消息定义了一些额外的数据通信方法和细节，如缓冲、同步等，用于更多细节上的操作。
+设计上，MPI更多的是为了处理数据传递中的底层细节，一般假设运行在高性能的集群设备中，没有考虑程序容错、数据存储等特性，传输的消息也默认为二进制流。没太关注底层，估计是直接使用的sockets通信，并且配合了Infiniband一类的高效通信技术。
+有高可用、任务调度一类的场景，可以基于MPI做进一步的设计。
+优点：偏底层效率高。缺点：开发难度更大，在大规模集群中的实现更复杂，容错、数据存储一类的需要开发实现。
+Hadoop Hadoop设计的目标应用场景和MPI相差很大。Hadoop针对的一般为普通服务器（相对于高性能计算的服务器）组成的大集群规模（千级别的节点），在集群的应用中，需要考虑更多资源利用、容错、易用性等方面的问题。当前Hadoop主要由MapReduce计算框架、HDFS分布式文件存储系统、YARN资源管理框架组成，MPI只和MapReduce的作用类似。
+MapReduce的目标是简单易用而且高效的分布式计算框架，让框架底层处理中间可能发生的网络、宕机等错误。使用MapReduce模型的计算一般不用关心计算过程中所涉及的计算资源（有多少个节点等），通常可以很容易的扩展到大规模的集群中高效的执行。和HDFS的结合是MapReduce的一大区别，通过移动计算的方式将计算代码移动到存储数据的数据节点上执行，避免了数据密集型计算应用中的通信开销（在百兆和千兆交换机是主流的时代大集群中存算分离的概念还不明显）。但是为了保证容错性，计算过程中的中间数据写硬盘中临时保存，使发生宕机时能够重新读取，一定程度上影响了计算过程的效率。
+MapReduce优点：框架实现了分布式计算的细节，实现可扩展、容错的程序更为容易，并通过HDFS提高了数据密集型应用的数据本地性。缺点：框架启动以及硬盘写入过程的IO开销过大。
+ps:基于Hadoop的并行计算框架还有Tez，可以看作MapReduce的迭代处理改进，提高了多个MapReduce任务迭代计算的效率，但仍存在硬盘IO写入的效率问题。
+Spark Spark的RDD计算模型为了解决MapReduce过程中为了保证容错性而导致的硬盘IO问题，通过设计基于内存的计算模式，将数据存储在内存中，通过数据的转换关系和checkpoint实现数据出错时的错误任务重新计算，可以看作是一个MapReduce加强版，特别是在迭代计算的应用中比MapReduce的效率高出很多，已经逐渐取代了MapReduce在大多数方面的应用。
+在RDD模型之上，Spark还提供了机器学习、SQL查询、图计算等功能，提供了一套完整的数据分析生态，而非最初只有计算模型。
+RDD模型优点：通过内存模型设计降低了硬盘的IO，并且充分利用内存缓存提高效率。缺点：相对更吃内存。
+对比 应用场景
+MPI由于过于偏底层，在易用性、容错性上比云计算框架明显要差，使应用更多的面向对容错要求不高的计算场景与计算效率上要求较高的应用。通常在少量节点的分布式协同计算和超算中应用，以及一些在云计算框架下实现并不完全的科学计算应用。由于配置和运行较为简单，外加c&#43;&#43;的运行效率较高，在对高可用要求不高的小集群环境里跑分布式计算较为简单。
+RDD和MapReduce更注重大规模集群中的资源利用和计算，扩展到几千节点的集群中有较好的计算效率，并能自动处理宕机等集群常见错误。
+相对来讲，商业环境对程序运行的稳定性和开发效率看得更为重要，所以Hadoop生态的云计算技术使用得更多。实践上，Hadoop虽然简化的分布式计算的模型，但要想高效的执行任务仍需要很多参数的调整。
+底层存储和网络优化
+MPI使用的Infiniband技术提高网络通信能力，没有固定的数据存储技术，靠移动数据的方式实现分布式计算。在数据密集型应用中对效率有一定的影响，但随着网络通信技术提高影响在降低，也可以配合其它的分布式文件系统实现。
+RDD和MapReduce利用了Hadoop的HDFS存储，多副本的存储方式提高了数据的读效率。通信上使用的rpc通信，将通信的对象高效的序列化为二进制数据提高通信效率。'>
+<meta name='theme-color' content='#cccccc'>
+
+<meta property='og:title' content='MPI、Hadoop、Spark的设计对比 • A Notebook of Extendswind'>
+<meta property='og:description' content='对Hadoop前前后后看了更多的设计之后突然碰到这个问题，简单的写写自己的理解。
+MPI MPI（Message Passing Interface）一般和GPU一起作为高性能计算技术的重要组成部分。MPI本身只是一种分布式计算的协议，有OpenMPI、MPICH、MSMPI等实现。协议本身定义了很多分布式计算的进程间的通信函数，其中常用的只用以下6个：
+MPI_Init(…); // 初始化 MPI_Comm_size(…); // 获取进程数量 MPI_Comm_rank(…); // 获取当前进程id MPI_Send(…); // 发送消息给指定进程 MPI_Recv(…); // 接收消息 MPI_Finalize(); // 结束程序 其它的消息定义了一些额外的数据通信方法和细节，如缓冲、同步等，用于更多细节上的操作。
+设计上，MPI更多的是为了处理数据传递中的底层细节，一般假设运行在高性能的集群设备中，没有考虑程序容错、数据存储等特性，传输的消息也默认为二进制流。没太关注底层，估计是直接使用的sockets通信，并且配合了Infiniband一类的高效通信技术。
+有高可用、任务调度一类的场景，可以基于MPI做进一步的设计。
+优点：偏底层效率高。缺点：开发难度更大，在大规模集群中的实现更复杂，容错、数据存储一类的需要开发实现。
+Hadoop Hadoop设计的目标应用场景和MPI相差很大。Hadoop针对的一般为普通服务器（相对于高性能计算的服务器）组成的大集群规模（千级别的节点），在集群的应用中，需要考虑更多资源利用、容错、易用性等方面的问题。当前Hadoop主要由MapReduce计算框架、HDFS分布式文件存储系统、YARN资源管理框架组成，MPI只和MapReduce的作用类似。
+MapReduce的目标是简单易用而且高效的分布式计算框架，让框架底层处理中间可能发生的网络、宕机等错误。使用MapReduce模型的计算一般不用关心计算过程中所涉及的计算资源（有多少个节点等），通常可以很容易的扩展到大规模的集群中高效的执行。和HDFS的结合是MapReduce的一大区别，通过移动计算的方式将计算代码移动到存储数据的数据节点上执行，避免了数据密集型计算应用中的通信开销（在百兆和千兆交换机是主流的时代大集群中存算分离的概念还不明显）。但是为了保证容错性，计算过程中的中间数据写硬盘中临时保存，使发生宕机时能够重新读取，一定程度上影响了计算过程的效率。
+MapReduce优点：框架实现了分布式计算的细节，实现可扩展、容错的程序更为容易，并通过HDFS提高了数据密集型应用的数据本地性。缺点：框架启动以及硬盘写入过程的IO开销过大。
+ps:基于Hadoop的并行计算框架还有Tez，可以看作MapReduce的迭代处理改进，提高了多个MapReduce任务迭代计算的效率，但仍存在硬盘IO写入的效率问题。
+Spark Spark的RDD计算模型为了解决MapReduce过程中为了保证容错性而导致的硬盘IO问题，通过设计基于内存的计算模式，将数据存储在内存中，通过数据的转换关系和checkpoint实现数据出错时的错误任务重新计算，可以看作是一个MapReduce加强版，特别是在迭代计算的应用中比MapReduce的效率高出很多，已经逐渐取代了MapReduce在大多数方面的应用。
+在RDD模型之上，Spark还提供了机器学习、SQL查询、图计算等功能，提供了一套完整的数据分析生态，而非最初只有计算模型。
+RDD模型优点：通过内存模型设计降低了硬盘的IO，并且充分利用内存缓存提高效率。缺点：相对更吃内存。
+对比 应用场景
+MPI由于过于偏底层，在易用性、容错性上比云计算框架明显要差，使应用更多的面向对容错要求不高的计算场景与计算效率上要求较高的应用。通常在少量节点的分布式协同计算和超算中应用，以及一些在云计算框架下实现并不完全的科学计算应用。由于配置和运行较为简单，外加c&#43;&#43;的运行效率较高，在对高可用要求不高的小集群环境里跑分布式计算较为简单。
+RDD和MapReduce更注重大规模集群中的资源利用和计算，扩展到几千节点的集群中有较好的计算效率，并能自动处理宕机等集群常见错误。
+相对来讲，商业环境对程序运行的稳定性和开发效率看得更为重要，所以Hadoop生态的云计算技术使用得更多。实践上，Hadoop虽然简化的分布式计算的模型，但要想高效的执行任务仍需要很多参数的调整。
+底层存储和网络优化
+MPI使用的Infiniband技术提高网络通信能力，没有固定的数据存储技术，靠移动数据的方式实现分布式计算。在数据密集型应用中对效率有一定的影响，但随着网络通信技术提高影响在降低，也可以配合其它的分布式文件系统实现。
+RDD和MapReduce利用了Hadoop的HDFS存储，多副本的存储方式提高了数据的读效率。通信上使用的rpc通信，将通信的对象高效的序列化为二进制数据提高通信效率。'>
+<meta property='og:url' content='https://extendswind.top/posts/technical/mpi_hadoop_spark_comparing/'>
+<meta property='og:site_name' content='A Notebook of Extendswind'>
+<meta property='og:type' content='article'><meta property='article:section' content='posts'><meta property='article:tag' content='hadoop'><meta property='article:tag' content='MPI'><meta name='twitter:card' content='summary'>
+
+<meta name="generator" content="Hugo 0.93.2" />
+
+  <title>MPI、Hadoop、Spark的设计对比 • A Notebook of Extendswind</title>
+  <link rel='canonical' href='https://extendswind.top/posts/technical/mpi_hadoop_spark_comparing/'>
+  
+  
+  <link rel='icon' href='/images/wind.jpeg'>
+<link rel='stylesheet' href='/assets/css/main.ab98e12b.css'><link rel='stylesheet' href='/css/custom.css'><style>
+:root{--color-accent:#cccccc;}
+</style>
+
+  
+
+</head>
+<body class='page type-posts has-sidebar'>
+
+  <div class='site'><div id='sidebar' class='sidebar'>
+  <a class='screen-reader-text' href='#main-menu'>Skip to Main Menu</a>
+
+  <div class='container'><section class='widget widget-about sep-after'>
+  <header>
+    
+    <div class='logo'>
+      <a href='/'>
+        <img src='/images/wind.jpeg'>
+      </a>
+    </div>
+    
+    <h2 class='title site-title '>
+      <a href='/'>
+      extendswind
+      </a>
+    </h2>
+    <div class='desc'>
+    
+    </div>
+  </header>
+
+</section>
+<section class='widget widget-sidebar_menu sep-after'><nav id='sidebar-menu' class='menu sidebar-menu' aria-label='Sidebar Menu'>
+    <div class='container'>
+      <ul><li class='item'>
+  <a href='/'>Home</a></li><li class='item'>
+  <a href='/posts'>Posts</a></li><li class='item'>
+  <a href='/categories'>Categories</a></li><li class='item'>
+  <a href='https://github.com/extendswind'>GitHub</a></li><li class='item'>
+  <a href='https://www.cnblogs.com/fly2wind/'>Cnblog</a></li></ul>
+    </div>
+  </nav>
+
+</section><section class='widget widget-taxonomy_cloud sep-after'>
+  <header>
+    <h4 class='title widget-title'>Tags</h4>
+  </header>
+
+  <div class='container list-container'>
+  <ul class='list taxonomy-cloud'><li>
+        <a href='/tags/blog/' style='font-size:1em'>blog</a>
+      </li><li>
+        <a href='/tags/design-patterns/' style='font-size:1em'>design patterns</a>
+      </li><li>
+        <a href='/tags/geospark/' style='font-size:1em'>GeoSpark</a>
+      </li><li>
+        <a href='/tags/gis/' style='font-size:1em'>GIS</a>
+      </li><li>
+        <a href='/tags/git/' style='font-size:1em'>git</a>
+      </li><li>
+        <a href='/tags/hadoop/' style='font-size:1em'>hadoop</a>
+      </li><li>
+        <a href='/tags/hive/' style='font-size:1em'>hive</a>
+      </li><li>
+        <a href='/tags/iot/' style='font-size:1em'>IoT</a>
+      </li><li>
+        <a href='/tags/java/' style='font-size:1em'>java</a>
+      </li><li>
+        <a href='/tags/life/' style='font-size:1em'>life</a>
+      </li><li>
+        <a href='/tags/linux/' style='font-size:1em'>linux</a>
+      </li><li>
+        <a href='/tags/log4j/' style='font-size:1em'>log4j</a>
+      </li><li>
+        <a href='/tags/mpi/' style='font-size:1em'>MPI</a>
+      </li><li>
+        <a href='/tags/python/' style='font-size:1em'>python</a>
+      </li><li>
+        <a href='/tags/raspberry/' style='font-size:1em'>raspberry</a>
+      </li><li>
+        <a href='/tags/reading/' style='font-size:1em'>reading</a>
+      </li><li>
+        <a href='/tags/software/' style='font-size:1em'>software</a>
+      </li><li>
+        <a href='/tags/spark/' style='font-size:1em'>Spark</a>
+      </li></ul>
+</div>
+
+
+</section>
+<section class='widget widget-search sep-after'>
+  <header>
+    <h4 class='title widget-title'>Search</h4>
+  </header>
+
+  <form action='/search' id='search-form' class='search-form'>
+    <label>
+      <span class='screen-reader-text'>Search</span>
+      <input id='search-term' class='search-term' type='search' name='q' placeholder='Search&hellip;'>
+    </label></form>
+
+</section>
+</div>
+
+  <div class='sidebar-overlay'></div>
+</div><div class='main'><a class='screen-reader-text' href='#content'>Skip to Content</a>
+
+<button id='sidebar-toggler' class='sidebar-toggler' aria-controls='sidebar'>
+  <span class='screen-reader-text'>Toggle Sidebar</span>
+  <span class='open'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="3" y1="12" x2="21" y2="12" />
+  <line x1="3" y1="6" x2="21" y2="6" />
+  <line x1="3" y1="18" x2="21" y2="18" />
+  
+</svg>
+</span>
+  <span class='close'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="18" y1="6" x2="6" y2="18" />
+  <line x1="6" y1="6" x2="18" y2="18" />
+  
+</svg>
+</span>
+</button><div class='header-widgets'>
+        <div class='container'></div>
+      </div>
+
+      <header id='header' class='header site-header'>
+        <div class='container sep-after'>
+          <div class='header-info'><p class='site-title title'>A Notebook of Extendswind</p><p class='desc site-desc'>a simple blog site</p>
+          </div>
+        </div>
+      </header>
+
+      <main id='content'>
+
+
+<article lang='en' class='entry'>
+  <header class='header entry-header'>
+  <div class='container sep-after'>
+    <div class='header-info'>
+      <h1 class='title'>MPI、Hadoop、Spark的设计对比</h1>
+      
+
+    </div>
+    <div class='entry-meta'>
+  <span class='posted-on'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+  <line x1="16" y1="2" x2="16" y2="6"/>
+  <line x1="8" y1="2" x2="8" y2="6"/>
+  <line x1="3" y1="10" x2="21" y2="10"/>
+  
+</svg>
+<span class='screen-reader-text'>Posted on </span>
+  <time class='entry-date' datetime='0001-01-01T00:00:00Z'>0001, Jan 01</time>
+</span>
+
+  
+  
+
+</div>
+
+
+  </div>
+</header>
+
+  
+  
+<details class='container entry-toc' open>
+  <summary class='title'>
+    <span>Table of Contents</span>
+  </summary>
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#mpi">MPI</a></li>
+    <li><a href="#hadoop">Hadoop</a></li>
+    <li><a href="#spark">Spark</a></li>
+    <li><a href="#对比">对比</a></li>
+  </ul>
+</nav>
+</details>
+
+
+  <div class='container entry-content'>
+  <p>对Hadoop前前后后看了更多的设计之后突然碰到这个问题，简单的写写自己的理解。</p>
+<h1 id="mpi">MPI</h1>
+<p>MPI（Message Passing Interface）一般和GPU一起作为高性能计算技术的重要组成部分。MPI本身只是一种分布式计算的协议，有OpenMPI、MPICH、MSMPI等实现。协议本身定义了很多分布式计算的进程间的通信函数，其中常用的只用以下6个：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span>MPI_Init(<span style="color:#960050;background-color:#1e0010">…</span>);  <span style="color:#75715e">// 初始化
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>MPI_Comm_size(<span style="color:#960050;background-color:#1e0010">…</span>);  <span style="color:#75715e">// 获取进程数量
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>MPI_Comm_rank(<span style="color:#960050;background-color:#1e0010">…</span>);  <span style="color:#75715e">// 获取当前进程id
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>MPI_Send(<span style="color:#960050;background-color:#1e0010">…</span>);  <span style="color:#75715e">// 发送消息给指定进程
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>MPI_Recv(<span style="color:#960050;background-color:#1e0010">…</span>);  <span style="color:#75715e">// 接收消息
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>MPI_Finalize();  <span style="color:#75715e">// 结束程序
+</span></span></span></code></pre></div><p>其它的消息定义了一些额外的数据通信方法和细节，如缓冲、同步等，用于更多细节上的操作。</p>
+<p>设计上，MPI更多的是为了处理数据传递中的底层细节，一般假设运行在高性能的集群设备中，没有考虑程序容错、数据存储等特性，传输的消息也默认为二进制流。没太关注底层，估计是直接使用的sockets通信，并且配合了Infiniband一类的高效通信技术。</p>
+<p>有高可用、任务调度一类的场景，可以基于MPI做进一步的设计。</p>
+<p>优点：偏底层效率高。缺点：开发难度更大，在大规模集群中的实现更复杂，容错、数据存储一类的需要开发实现。</p>
+<h1 id="hadoop">Hadoop</h1>
+<p>Hadoop设计的目标应用场景和MPI相差很大。Hadoop针对的一般为普通服务器（相对于高性能计算的服务器）组成的大集群规模（千级别的节点），在集群的应用中，需要考虑更多资源利用、容错、易用性等方面的问题。当前Hadoop主要由MapReduce计算框架、HDFS分布式文件存储系统、YARN资源管理框架组成，MPI只和MapReduce的作用类似。</p>
+<p>MapReduce的目标是简单易用而且高效的分布式计算框架，让框架底层处理中间可能发生的网络、宕机等错误。使用MapReduce模型的计算一般不用关心计算过程中所涉及的计算资源（有多少个节点等），通常可以很容易的扩展到大规模的集群中高效的执行。和HDFS的结合是MapReduce的一大区别，通过移动计算的方式将计算代码移动到存储数据的数据节点上执行，避免了数据密集型计算应用中的通信开销（在百兆和千兆交换机是主流的时代大集群中存算分离的概念还不明显）。但是为了保证容错性，计算过程中的中间数据写硬盘中临时保存，使发生宕机时能够重新读取，一定程度上影响了计算过程的效率。</p>
+<p>MapReduce优点：框架实现了分布式计算的细节，实现可扩展、容错的程序更为容易，并通过HDFS提高了数据密集型应用的数据本地性。缺点：框架启动以及硬盘写入过程的IO开销过大。</p>
+<p>ps:基于Hadoop的并行计算框架还有Tez，可以看作MapReduce的迭代处理改进，提高了多个MapReduce任务迭代计算的效率，但仍存在硬盘IO写入的效率问题。</p>
+<h1 id="spark">Spark</h1>
+<p>Spark的RDD计算模型为了解决MapReduce过程中为了保证容错性而导致的硬盘IO问题，通过设计基于内存的计算模式，将数据存储在内存中，通过数据的转换关系和checkpoint实现数据出错时的错误任务重新计算，可以看作是一个MapReduce加强版，特别是在迭代计算的应用中比MapReduce的效率高出很多，已经逐渐取代了MapReduce在大多数方面的应用。</p>
+<p>在RDD模型之上，Spark还提供了机器学习、SQL查询、图计算等功能，提供了一套完整的数据分析生态，而非最初只有计算模型。</p>
+<p>RDD模型优点：通过内存模型设计降低了硬盘的IO，并且充分利用内存缓存提高效率。缺点：相对更吃内存。</p>
+<h1 id="对比">对比</h1>
+<p><strong>应用场景</strong></p>
+<p>MPI由于过于偏底层，在易用性、容错性上比云计算框架明显要差，使应用更多的面向对容错要求不高的计算场景与计算效率上要求较高的应用。通常在少量节点的分布式协同计算和超算中应用，以及一些在云计算框架下实现并不完全的科学计算应用。由于配置和运行较为简单，外加c++的运行效率较高，在对高可用要求不高的小集群环境里跑分布式计算较为简单。</p>
+<p>RDD和MapReduce更注重大规模集群中的资源利用和计算，扩展到几千节点的集群中有较好的计算效率，并能自动处理宕机等集群常见错误。</p>
+<p>相对来讲，商业环境对程序运行的稳定性和开发效率看得更为重要，所以Hadoop生态的云计算技术使用得更多。实践上，Hadoop虽然简化的分布式计算的模型，但要想高效的执行任务仍需要很多参数的调整。</p>
+<p><strong>底层存储和网络优化</strong></p>
+<p>MPI使用的Infiniband技术提高网络通信能力，没有固定的数据存储技术，靠移动数据的方式实现分布式计算。在数据密集型应用中对效率有一定的影响，但随着网络通信技术提高影响在降低，也可以配合其它的分布式文件系统实现。</p>
+<p>RDD和MapReduce利用了Hadoop的HDFS存储，多副本的存储方式提高了数据的读效率。通信上使用的rpc通信，将通信的对象高效的序列化为二进制数据提高通信效率。</p>
+
+</div>
+
+  
+<footer class='entry-footer'>
+  <div class='container sep-before'><div class='categories'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M22,19a2,2,0,0,1-2,2H4a2,2,0,0,1-2-2V5A2,2,0,0,1,4,3H9l2,3h9a2,2,0,0,1,2,2Z"/>
+  
+</svg>
+<span class='screen-reader-text'>Categories: </span><a class='category' href='/categories/cloud-computing/'>cloud computing</a></div>
+<div class='tags'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M20.59,13.41l-7.17,7.17a2,2,0,0,1-2.83,0L2,12V2H12l8.59,8.59A2,2,0,0,1,20.59,13.41Z"/>
+  <line x1="7" y1="7" x2="7" y2="7"/>
+  
+</svg>
+<span class='screen-reader-text'>Tags: </span><a class='tag' href='/tags/hadoop/'>hadoop</a>, <a class='tag' href='/tags/mpi/'>MPI</a></div>
+
+  </div>
+</footer>
+
+
+</article>
+
+<nav class='entry-nav'>
+  <div class='container'><div class='next-entry sep-before'>
+      <a href='/posts/life/blog_first/'>
+        <span class='screen-reader-text'>Next post: </span>第一篇博客<span aria-hidden='true'>Next <svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="4" y1="12" x2="20" y2="12"/>
+  <polyline points="14 6 20 12 14 18"/>
+  
+</svg>
+</span>
+      </a>
+    </div></div>
+</nav>
+
+
+
+
+      </main>
+
+      <footer id='footer' class='footer'>
+        <div class='container sep-before'><section class='widget widget-social_menu sep-after'><header>
+    <h4 class='title widget-title'>Contact</h4>
+  </header><nav aria-label='Social Menu'>
+    <ul><li>
+        <a href='https://github.com/extendswind' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Open Github account in new tab</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+  
+</svg>
+</a>
+      </li><li>
+        <a href='mailto:extendswind@foxmail.com' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Contact via Email</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+  <polyline points="22,6 12,13 2,6"/>
+  
+</svg>
+</a>
+      </li></ul>
+  </nav>
+</section><div class='copyright'>
+  <p> &copy; 2018-2022 extendswind </p>
+</div>
+
+        </div>
+      </footer>
+
+    </div>
+  </div><script>window.__assets_js_src="/assets/js/"</script>
+
+<script src='/assets/js/main.c3bcf2df.js'></script>
+
+</body>
+
+</html>
+

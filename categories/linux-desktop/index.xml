@@ -105,7 +105,7 @@ GPIO 针脚图 树莓派有多种GPIO的编号方式，使用python等调用需�
 2. 配置系统 上面的烧录后，sd卡会被分为多个分区，其中windows系统下能识别的只有一个名为boot的分区，存储启动相关的配置文件。
 2.1 开启ssh raspbian 系统默认不开启ssh远程访问，在boot分区下新建文件名为SSH的文件（内容为空无后缀），系统启动时检测到此文件会开启ssh进程。
 2.2 配置wifi 在boot分区下新建文件名为wpa_supplicant.conf的文件，添加以下内容：
-country=CN ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev update_config=1 network={ ssid=&amp;quot;yourWifiName&amp;quot; psk=&amp;quot;passwd&amp;quot; key_mgmt=WPA-PSK priority=1 } 修改其中的wifi名和密码（ssid与psk）
+country=CN ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev update_config=1 network={ ssid=&amp;#34;yourWifiName&amp;#34; psk=&amp;#34;passwd&amp;#34; key_mgmt=WPA-PSK priority=1 } 修改其中的wifi名和密码（ssid与psk）
 如果想省事可以直接用网线连上路由器
 3. 远程访问 3.1 查找树莓派ip 此处需要将电脑和树莓派连接在同一路由器下。
 方法一：浏览器上输入192.168.1.1 （根据不同路由器网关不同），进入管理页面查看树莓派ip。
@@ -144,7 +144,7 @@ anki server 的安装 官网的速度爆表，而且有数据安全问题，因�
 2、安装anki或anki-bundled相关的库
 直接使用包管理器安装 sudo pacman -S anki
 如果包管理器里没有anki（如debian），也可以用pip安装anki-bundled相关的库
-$ git submodule update --init # anki-bundled已经加入为submodule，可以先更新 $ cd anki-bundled $ pip install -r requirements.txt # 安装相关的库 3、安装webob</description>
+ $ git submodule update --init # anki-bundled已经加入为submodule，可以先更新  $ cd anki-bundled  $ pip install -r requirements.</description>
     </item>
     
     <item>
@@ -256,7 +256,7 @@ csd-xsettings 主要影响两个地方：1. 启动过程； 2. 在tim内调用�
 可以考虑启动后关闭对tim，可以避免影响系统主题一类的问题，但会导致无法调用外部程序。加上运行后5s关闭的参数即可:
 /usr/lib/cinnamon-settings-daemon/csd-xsettings --exit-time 5 &amp;amp;
 附：使用cinnamon的xsettings的设置 主题的问题在awesome这种环境下略坑，懒得去试gnome上的主题设置需要哪些包，安装整个gnome的包需要800多M，直接安装了cinnamon的基础包（90M左右）。和gnome只是些名字上的区别：
-sudo pacman -S cinnamon # awesome的autorun里加入下面程序使开机运行 /usr/lib/cinnamon-settings-daemon/csd-xsettings 在系统设置里可以下载和更改主题
+sudo pacman -S cinnamon  # awesome的autorun里加入下面程序使开机运行 /usr/lib/cinnamon-settings-daemon/csd-xsettings 在系统设置里可以下载和更改主题
 小坑   tim和qq会在点击好友图像时卡死的情况。原因之一可能是pulseaudio进程，kill掉就行，会影响声音的调整。（千里之外的两个程序不知道为什么会卡一起）</description>
     </item>
     
@@ -273,8 +273,8 @@ http://s1.music.126.net/download/pc/netease-cloud-music_1.0.0-2_amd64_ubuntu16.0
 debian系就直接dpkg -i吧
 arch系通过AUR安装稍麻烦:
  卸载原版本 yaourt -S netease-cloud-music 按y Edit PKGBUILD 将1.1.3的安装包地址替换为1.1.0的安装包地址，并且将对应hash值改为skip，具体如下  改之前：
-source=( &amp;quot;http://packages.deepin.com/deepin/pool/main/n/netease-cloud-music/netease-cloud-music_${pkgver}-${_pkgrel}_amd64.deb&amp;quot; &amp;quot;http://music.163.com/html/web2/service.html&amp;quot; ) md5sums=(&#39;53c47c1bf6797b2a0e455bc59833ab2d&#39; &#39;SKIP&#39;) 改之后
-source=( &amp;quot;http://s1.music.126.net/download/pc/netease-cloud-music_1.0.0-2_amd64_ubuntu16.04.deb&amp;quot; &amp;quot;http://music.163.com/html/web2/service.html&amp;quot; ) md5sums=(&#39;SKIP&#39; &#39;SKIP&#39;) 然后正常安装即可</description>
+source=( &amp;#34;http://packages.deepin.com/deepin/pool/main/n/netease-cloud-music/netease-cloud-music_${pkgver}-${_pkgrel}_amd64.deb&amp;#34; &amp;#34;http://music.163.com/html/web2/service.html&amp;#34; ) md5sums=(&amp;#39;53c47c1bf6797b2a0e455bc59833ab2d&amp;#39; &amp;#39;SKIP&amp;#39;) 改之后
+source=( &amp;#34;http://s1.music.126.net/download/pc/netease-cloud-music_1.0.0-2_amd64_ubuntu16.04.deb&amp;#34; &amp;#34;http://music.163.com/html/web2/service.html&amp;#34; ) md5sums=(&amp;#39;SKIP&amp;#39; &amp;#39;SKIP&amp;#39;) 然后正常安装即可</description>
     </item>
     
     <item>
@@ -290,7 +290,7 @@ source=( &amp;quot;http://s1.music.126.net/download/pc/netease-cloud-music_1.0.0
  AwesomeWM这种平铺的窗口管理器用得很爽，只是基于wine的qq最近又莫名其妙抽风，感觉还是切到deepin-wine上比较靠谱。而deepin-wine在awesome下运行qq会报错X Error of failed request: BadWindow (invalid Window parameter) Major opcode of failed request: 20 (X_GetProperty)，而在Gnome系下运行正常。看到Gnome和Mate能够运行awesomewm，就折腾了一下试试。
 Awesome只是Gnome等桌面管理器的组件之一，gnome系的Mate可以修改默认的窗口管理器。
 具体折腾   安装AwesomeWM、Mate桌面环境与dconf-editor（arch下使用pacman -S）。
-  进入Mate桌面环境后，修改org.mate.session.required-components windowmanager 的值为&amp;rsquo;awesome&#39;，如果不需要桌面上的图标，可以将org.mate.session.required-components的值只留下windowmanager。
+  进入Mate桌面环境后，修改org.mate.session.required-components windowmanager 的值为&amp;rsquo;awesome&amp;rsquo;，如果不需要桌面上的图标，可以将org.mate.session.required-components的值只留下windowmanager。
   上面的设置无法通过命令行打开awesome，需要添加awesome的图标。在/usr/share/applications目录下新建awesome.desktop，内容如下（网上直接粘的，估计有些可以不要，懒得试了）：
   [Desktop Entry] Type=Application Name=awesome Exec=awesome NoDisplay=true # name of loadable control center module X-MATE-WMSettingsModule=awesome # name we put on the WM spec check window X-MATE-WMName=awesome # back compat only X-MateWMSettingsLibrary=awesome X-MATE-Bugzilla-Bugzilla=MATE X-MATE-Bugzilla-Product=awesome X-MATE-Bugzilla-Component=general X-MATE-Autostart-Phase=WindowManager X-MATE-Provides=windowmanager X-MATE-Autostart-Notify=true </description>
     </item>

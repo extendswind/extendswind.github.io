@@ -9,8 +9,8 @@ http://s1.music.126.net/download/pc/netease-cloud-music_1.0.0-2_amd64_ubuntu16.0
 debian系就直接dpkg -i吧
 arch系通过AUR安装稍麻烦:
  卸载原版本 yaourt -S netease-cloud-music 按y Edit PKGBUILD 将1.1.3的安装包地址替换为1.1.0的安装包地址，并且将对应hash值改为skip，具体如下  改之前：
-source=( &quot;http://packages.deepin.com/deepin/pool/main/n/netease-cloud-music/netease-cloud-music_${pkgver}-${_pkgrel}_amd64.deb&quot; &quot;http://music.163.com/html/web2/service.html&quot; ) md5sums=(&#39;53c47c1bf6797b2a0e455bc59833ab2d&#39; &#39;SKIP&#39;) 改之后
-source=( &quot;http://s1.music.126.net/download/pc/netease-cloud-music_1.0.0-2_amd64_ubuntu16.04.deb&quot; &quot;http://music.163.com/html/web2/service.html&quot; ) md5sums=(&#39;SKIP&#39; &#39;SKIP&#39;) 然后正常安装即可'>
+source=( &#34;http://packages.deepin.com/deepin/pool/main/n/netease-cloud-music/netease-cloud-music_${pkgver}-${_pkgrel}_amd64.deb&#34; &#34;http://music.163.com/html/web2/service.html&#34; ) md5sums=(&#39;53c47c1bf6797b2a0e455bc59833ab2d&#39; &#39;SKIP&#39;) 改之后
+source=( &#34;http://s1.music.126.net/download/pc/netease-cloud-music_1.0.0-2_amd64_ubuntu16.04.deb&#34; &#34;http://music.163.com/html/web2/service.html&#34; ) md5sums=(&#39;SKIP&#39; &#39;SKIP&#39;) 然后正常安装即可'>
 <meta name='theme-color' content='#cccccc'>
 
 <meta property='og:title' content='arch linux下网易云音乐运行没反应，只能使用root用户运行 • A Notebook of Extendswind'>
@@ -21,13 +21,13 @@ http://s1.music.126.net/download/pc/netease-cloud-music_1.0.0-2_amd64_ubuntu16.0
 debian系就直接dpkg -i吧
 arch系通过AUR安装稍麻烦:
  卸载原版本 yaourt -S netease-cloud-music 按y Edit PKGBUILD 将1.1.3的安装包地址替换为1.1.0的安装包地址，并且将对应hash值改为skip，具体如下  改之前：
-source=( &quot;http://packages.deepin.com/deepin/pool/main/n/netease-cloud-music/netease-cloud-music_${pkgver}-${_pkgrel}_amd64.deb&quot; &quot;http://music.163.com/html/web2/service.html&quot; ) md5sums=(&#39;53c47c1bf6797b2a0e455bc59833ab2d&#39; &#39;SKIP&#39;) 改之后
-source=( &quot;http://s1.music.126.net/download/pc/netease-cloud-music_1.0.0-2_amd64_ubuntu16.04.deb&quot; &quot;http://music.163.com/html/web2/service.html&quot; ) md5sums=(&#39;SKIP&#39; &#39;SKIP&#39;) 然后正常安装即可'>
+source=( &#34;http://packages.deepin.com/deepin/pool/main/n/netease-cloud-music/netease-cloud-music_${pkgver}-${_pkgrel}_amd64.deb&#34; &#34;http://music.163.com/html/web2/service.html&#34; ) md5sums=(&#39;53c47c1bf6797b2a0e455bc59833ab2d&#39; &#39;SKIP&#39;) 改之后
+source=( &#34;http://s1.music.126.net/download/pc/netease-cloud-music_1.0.0-2_amd64_ubuntu16.04.deb&#34; &#34;http://music.163.com/html/web2/service.html&#34; ) md5sums=(&#39;SKIP&#39; &#39;SKIP&#39;) 然后正常安装即可'>
 <meta property='og:url' content='https://extendswind.top/posts/technical/netease_music_can_not_open/'>
 <meta property='og:site_name' content='A Notebook of Extendswind'>
 <meta property='og:type' content='article'><meta property='article:section' content='posts'><meta property='article:tag' content='linux'><meta property='article:published_time' content='2018-11-20T19:59:49&#43;08:00'/><meta property='article:modified_time' content='2018-11-20T19:59:49&#43;08:00'/><meta name='twitter:card' content='summary'>
 
-<meta name="generator" content="Hugo 0.89.4" />
+<meta name="generator" content="Hugo 0.93.2" />
 
   <title>arch linux下网易云音乐运行没反应，只能使用root用户运行 • A Notebook of Extendswind</title>
   <link rel='canonical' href='https://extendswind.top/posts/technical/netease_music_can_not_open/'>
@@ -107,6 +107,8 @@ source=( &quot;http://s1.music.126.net/download/pc/netease-cloud-music_1.0.0-2_a
         <a href='/tags/linux/' style='font-size:1em'>linux</a>
       </li><li>
         <a href='/tags/log4j/' style='font-size:1em'>log4j</a>
+      </li><li>
+        <a href='/tags/mpi/' style='font-size:1em'>MPI</a>
       </li><li>
         <a href='/tags/python/' style='font-size:1em'>python</a>
       </li><li>
@@ -237,18 +239,18 @@ source=( &quot;http://s1.music.126.net/download/pc/netease-cloud-music_1.0.0-2_a
 </ol>
 <p>改之前：</p>
 <pre tabindex="0"><code>source=(
-	&quot;http://packages.deepin.com/deepin/pool/main/n/netease-cloud-music/netease-cloud-music_${pkgver}-${_pkgrel}_amd64.deb&quot;
-	&quot;http://music.163.com/html/web2/service.html&quot;
+	&#34;http://packages.deepin.com/deepin/pool/main/n/netease-cloud-music/netease-cloud-music_${pkgver}-${_pkgrel}_amd64.deb&#34;
+	&#34;http://music.163.com/html/web2/service.html&#34;
 )
-md5sums=('53c47c1bf6797b2a0e455bc59833ab2d'
-         'SKIP')
+md5sums=(&#39;53c47c1bf6797b2a0e455bc59833ab2d&#39;
+         &#39;SKIP&#39;)
 </code></pre><p>改之后</p>
 <pre tabindex="0"><code>source=(
-  &quot;http://s1.music.126.net/download/pc/netease-cloud-music_1.0.0-2_amd64_ubuntu16.04.deb&quot;
-	&quot;http://music.163.com/html/web2/service.html&quot;
+  &#34;http://s1.music.126.net/download/pc/netease-cloud-music_1.0.0-2_amd64_ubuntu16.04.deb&#34;
+	&#34;http://music.163.com/html/web2/service.html&#34;
 )
-md5sums=('SKIP'
-         'SKIP')
+md5sums=(&#39;SKIP&#39;
+         &#39;SKIP&#39;)
 </code></pre><p>然后正常安装即可</p>
 
 </div>
@@ -328,7 +330,7 @@ md5sums=('SKIP'
       </li></ul>
   </nav>
 </section><div class='copyright'>
-  <p> &copy; 2018-2021 extendswind </p>
+  <p> &copy; 2018-2022 extendswind </p>
 </div>
 
         </div>

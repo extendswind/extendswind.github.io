@@ -8,7 +8,7 @@
 静态代理模式 （static proxy） 静态代理的思想：将被代理类作为代理类的成员，通过代理类调用被代理类的函数，并添加新的控制。包装类与被包装类实现同一接口，使得使用时的代码一致。
 应用：已经有一个日志记录器LoggerSubject，需要对writeLog()函数的前后进行某些操作（如初始化、异常处理等），使用Proxy类间接调用LoggerSubject.writeLog()实现新控制操作的添加。
 实现如下
-interface Logger { void writeLog(); } // 被代理类 class LoggerSubject implements Logger{ @Override public void writeLog(){ System.out.println(&#34;writeLog by LoggerSubject&#34;); } } // 代理类 class Proxy implements Logger{ Logger logger; // 与装饰者模式的主要区别位置  // 代理模式一般要求和原来的类行为一致，因此构造函数不传入对象  Proxy(){ this.logger = new LoggerSubject(); } @Override public void writeLog(){ System.out.println(&#34;logger write before&#34;); logger.writeLog(); System.out.println(&#34;logger write after&#34;); } } public class StaticProxy { private static void write(Logger logger){ logger.'>
+interface Logger {  void writeLog(); }  // 被代理类 class LoggerSubject implements Logger{  @Override  public void writeLog(){  System.out.println(&#34;writeLog by LoggerSubject&#34;);  } }  // 代理类 class Proxy implements Logger{  Logger logger;  // 与装饰者模式的主要区别位置  // 代理模式一般要求和原来的类行为一致，因此构造函数不传入对象  Proxy(){  this.logger = new LoggerSubject();  }  @Override  public void writeLog(){  System.out.println(&#34;logger write before&#34;);  logger.'>
 <meta name='theme-color' content='#cccccc'>
 
 <meta property='og:title' content='设计模式 之 静态代理模式和装饰者模式 • A Notebook of Extendswind'>
@@ -18,12 +18,12 @@ interface Logger { void writeLog(); } // 被代理类 class LoggerSubject implem
 静态代理模式 （static proxy） 静态代理的思想：将被代理类作为代理类的成员，通过代理类调用被代理类的函数，并添加新的控制。包装类与被包装类实现同一接口，使得使用时的代码一致。
 应用：已经有一个日志记录器LoggerSubject，需要对writeLog()函数的前后进行某些操作（如初始化、异常处理等），使用Proxy类间接调用LoggerSubject.writeLog()实现新控制操作的添加。
 实现如下
-interface Logger { void writeLog(); } // 被代理类 class LoggerSubject implements Logger{ @Override public void writeLog(){ System.out.println(&#34;writeLog by LoggerSubject&#34;); } } // 代理类 class Proxy implements Logger{ Logger logger; // 与装饰者模式的主要区别位置  // 代理模式一般要求和原来的类行为一致，因此构造函数不传入对象  Proxy(){ this.logger = new LoggerSubject(); } @Override public void writeLog(){ System.out.println(&#34;logger write before&#34;); logger.writeLog(); System.out.println(&#34;logger write after&#34;); } } public class StaticProxy { private static void write(Logger logger){ logger.'>
+interface Logger {  void writeLog(); }  // 被代理类 class LoggerSubject implements Logger{  @Override  public void writeLog(){  System.out.println(&#34;writeLog by LoggerSubject&#34;);  } }  // 代理类 class Proxy implements Logger{  Logger logger;  // 与装饰者模式的主要区别位置  // 代理模式一般要求和原来的类行为一致，因此构造函数不传入对象  Proxy(){  this.logger = new LoggerSubject();  }  @Override  public void writeLog(){  System.out.println(&#34;logger write before&#34;);  logger.'>
 <meta property='og:url' content='https://extendswind.top/posts/technical/design_patterns_static_proxy_and_decoration/'>
 <meta property='og:site_name' content='A Notebook of Extendswind'>
 <meta property='og:type' content='article'><meta property='article:section' content='posts'><meta property='article:tag' content='design patterns'><meta property='article:published_time' content='2018-06-20T17:25:25&#43;08:00'/><meta property='article:modified_time' content='2018-06-20T17:25:25&#43;08:00'/><meta name='twitter:card' content='summary'>
 
-<meta name="generator" content="Hugo 0.89.4" />
+<meta name="generator" content="Hugo 0.93.2" />
 
   <title>设计模式 之 静态代理模式和装饰者模式 • A Notebook of Extendswind</title>
   <link rel='canonical' href='https://extendswind.top/posts/technical/design_patterns_static_proxy_and_decoration/'>
@@ -103,6 +103,8 @@ interface Logger { void writeLog(); } // 被代理类 class LoggerSubject implem
         <a href='/tags/linux/' style='font-size:1em'>linux</a>
       </li><li>
         <a href='/tags/log4j/' style='font-size:1em'>log4j</a>
+      </li><li>
+        <a href='/tags/mpi/' style='font-size:1em'>MPI</a>
       </li><li>
         <a href='/tags/python/' style='font-size:1em'>python</a>
       </li><li>
@@ -224,97 +226,97 @@ interface Logger { void writeLog(); } // 被代理类 class LoggerSubject implem
 <p>静态代理的思想：将被代理类作为代理类的成员，通过代理类调用被代理类的函数，并添加新的控制。包装类与被包装类实现同一接口，使得使用时的代码一致。</p>
 <p>应用：已经有一个日志记录器LoggerSubject，需要对writeLog()函数的前后进行某些操作（如初始化、异常处理等），使用Proxy类间接调用LoggerSubject.writeLog()实现新控制操作的添加。</p>
 <p>实现如下</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">interface</span> <span style="color:#a6e22e">Logger</span> <span style="color:#f92672">{</span>
-    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">writeLog</span><span style="color:#f92672">();</span>
-<span style="color:#f92672">}</span>
-
-<span style="color:#75715e">// 被代理类
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">LoggerSubject</span> <span style="color:#66d9ef">implements</span> Logger<span style="color:#f92672">{</span>
-    <span style="color:#a6e22e">@Override</span>
-    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">writeLog</span><span style="color:#f92672">(){</span>
-        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;writeLog by LoggerSubject&#34;</span><span style="color:#f92672">);</span>
-    <span style="color:#f92672">}</span>
-<span style="color:#f92672">}</span>
-
-<span style="color:#75715e">// 代理类
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Proxy</span> <span style="color:#66d9ef">implements</span> Logger<span style="color:#f92672">{</span>
-    Logger logger<span style="color:#f92672">;</span>
-    <span style="color:#75715e">// 与装饰者模式的主要区别位置
-</span><span style="color:#75715e"></span>    <span style="color:#75715e">// 代理模式一般要求和原来的类行为一致，因此构造函数不传入对象
-</span><span style="color:#75715e"></span>    Proxy<span style="color:#f92672">(){</span>
-        <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">logger</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> LoggerSubject<span style="color:#f92672">();</span>
-    <span style="color:#f92672">}</span>
-    <span style="color:#a6e22e">@Override</span>
-    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">writeLog</span><span style="color:#f92672">(){</span>
-        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;logger write before&#34;</span><span style="color:#f92672">);</span>
-        logger<span style="color:#f92672">.</span><span style="color:#a6e22e">writeLog</span><span style="color:#f92672">();</span>
-        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;logger write after&#34;</span><span style="color:#f92672">);</span>
-    <span style="color:#f92672">}</span>
-<span style="color:#f92672">}</span>
-
-<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">StaticProxy</span> <span style="color:#f92672">{</span>
-    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">write</span><span style="color:#f92672">(</span>Logger logger<span style="color:#f92672">){</span>
-        logger<span style="color:#f92672">.</span><span style="color:#a6e22e">writeLog</span><span style="color:#f92672">();</span>
-    <span style="color:#f92672">}</span>
-    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span><span style="color:#f92672">(</span>String <span style="color:#f92672">[]</span>argvs<span style="color:#f92672">){</span>
-        Logger logger <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Proxy<span style="color:#f92672">();</span>
-        <span style="color:#75715e">// 还可能出现下面的嵌套
-</span><span style="color:#75715e"></span>        <span style="color:#75715e">//Logger logger = new Logger3(new Proxy(new LoggerSubject()));
-</span><span style="color:#75715e"></span>        write<span style="color:#f92672">(</span>logger<span style="color:#f92672">);</span>
-    <span style="color:#f92672">}</span>
-<span style="color:#f92672">}</span>
-</code></pre></div><h1 id="装饰者模式">装饰者模式</h1>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#66d9ef">interface</span> <span style="color:#a6e22e">Logger</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">writeLog</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 被代理类
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">LoggerSubject</span> <span style="color:#66d9ef">implements</span> Logger<span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@Override</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">writeLog</span><span style="color:#f92672">(){</span>
+</span></span><span style="display:flex;"><span>        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;writeLog by LoggerSubject&#34;</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 代理类
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Proxy</span> <span style="color:#66d9ef">implements</span> Logger<span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    Logger logger<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 与装饰者模式的主要区别位置
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// 代理模式一般要求和原来的类行为一致，因此构造函数不传入对象
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    Proxy<span style="color:#f92672">(){</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">logger</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> LoggerSubject<span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@Override</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">writeLog</span><span style="color:#f92672">(){</span>
+</span></span><span style="display:flex;"><span>        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;logger write before&#34;</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>        logger<span style="color:#f92672">.</span><span style="color:#a6e22e">writeLog</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;logger write after&#34;</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">StaticProxy</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">write</span><span style="color:#f92672">(</span>Logger logger<span style="color:#f92672">){</span>
+</span></span><span style="display:flex;"><span>        logger<span style="color:#f92672">.</span><span style="color:#a6e22e">writeLog</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span><span style="color:#f92672">(</span>String <span style="color:#f92672">[]</span>argvs<span style="color:#f92672">){</span>
+</span></span><span style="display:flex;"><span>        Logger logger <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Proxy<span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// 还可能出现下面的嵌套
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#75715e">//Logger logger = new Logger3(new Proxy(new LoggerSubject()));
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        write<span style="color:#f92672">(</span>logger<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><h1 id="装饰者模式">装饰者模式</h1>
 <p>主要用于给一个类添加新功能</p>
 <p>主要思想：被装饰类作为类成员被调用，为了使装饰类能和被装饰类一样的使用，两者实现相同的接口。</p>
 <p>通过构造函数传入被包装类，能够自由组合装饰，如下面的最后的使用。</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">interface</span> <span style="color:#a6e22e">Logger</span> <span style="color:#f92672">{</span>
-    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">writeLog</span><span style="color:#f92672">();</span>
-<span style="color:#f92672">}</span>
-
-<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">BaseLogger</span> <span style="color:#66d9ef">implements</span> Logger <span style="color:#f92672">{</span>
-    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">writeLog</span><span style="color:#f92672">(){</span>
-        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;writeLog&#34;</span><span style="color:#f92672">);</span>
-    <span style="color:#f92672">}</span>
-<span style="color:#f92672">}</span>
-
-<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">DecorationLogger</span> <span style="color:#66d9ef">implements</span> Logger<span style="color:#f92672">{</span>
-    <span style="color:#66d9ef">private</span> Logger logger<span style="color:#f92672">;</span>
-    DecorationLogger<span style="color:#f92672">(</span>Logger logger<span style="color:#f92672">){</span>
-        <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">logger</span> <span style="color:#f92672">=</span> logger<span style="color:#f92672">;</span>
-    <span style="color:#f92672">}</span>
-    <span style="color:#a6e22e">@Override</span>
-    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">writeLog</span><span style="color:#f92672">(){</span>
-        logger<span style="color:#f92672">.</span><span style="color:#a6e22e">writeLog</span><span style="color:#f92672">();</span>
-        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;Decoration&#34;</span><span style="color:#f92672">);</span>
-    <span style="color:#f92672">}</span>
-<span style="color:#f92672">}</span>
-
-<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">DecorationLogger2</span> <span style="color:#66d9ef">implements</span> Logger<span style="color:#f92672">{</span>
-    <span style="color:#66d9ef">private</span> Logger logger<span style="color:#f92672">;</span>
-    DecorationLogger2<span style="color:#f92672">(</span>Logger logger<span style="color:#f92672">){</span>
-        <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">logger</span> <span style="color:#f92672">=</span> logger<span style="color:#f92672">;</span>
-    <span style="color:#f92672">}</span>
-    <span style="color:#a6e22e">@Override</span>
-    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">writeLog</span><span style="color:#f92672">(){</span>
-        logger<span style="color:#f92672">.</span><span style="color:#a6e22e">writeLog</span><span style="color:#f92672">();</span>
-        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;Decoration2&#34;</span><span style="color:#f92672">);</span>
-    <span style="color:#f92672">}</span>
-<span style="color:#f92672">}</span>
-
-
-<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Decoration</span> <span style="color:#f92672">{</span>
-    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span><span style="color:#f92672">(</span>String <span style="color:#f92672">[]</span>argvs<span style="color:#f92672">){</span>
-        Logger logger <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> DecorationLogger2<span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> DecorationLogger<span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> BaseLogger<span style="color:#f92672">()));</span>
-        logger<span style="color:#f92672">.</span><span style="color:#a6e22e">writeLog</span><span style="color:#f92672">();</span>
-
-        Logger logger1 <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> DecorationLogger<span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> DecorationLogger2<span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> BaseLogger<span style="color:#f92672">()));</span>
-        logger1<span style="color:#f92672">.</span><span style="color:#a6e22e">writeLog</span><span style="color:#f92672">();</span>
-
-        Logger logger2 <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> DecorationLogger<span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> BaseLogger<span style="color:#f92672">());</span>
-        logger2<span style="color:#f92672">.</span><span style="color:#a6e22e">writeLog</span><span style="color:#f92672">();</span>
-    <span style="color:#f92672">}</span>
-<span style="color:#f92672">}</span>
-</code></pre></div><p>缺点和注意：包装的自由组合的灵活性可能导致测试的困难，注意组合可能带来的bug。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#66d9ef">interface</span> <span style="color:#a6e22e">Logger</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">writeLog</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">BaseLogger</span> <span style="color:#66d9ef">implements</span> Logger <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">writeLog</span><span style="color:#f92672">(){</span>
+</span></span><span style="display:flex;"><span>        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;writeLog&#34;</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">DecorationLogger</span> <span style="color:#66d9ef">implements</span> Logger<span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> Logger logger<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>    DecorationLogger<span style="color:#f92672">(</span>Logger logger<span style="color:#f92672">){</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">logger</span> <span style="color:#f92672">=</span> logger<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@Override</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">writeLog</span><span style="color:#f92672">(){</span>
+</span></span><span style="display:flex;"><span>        logger<span style="color:#f92672">.</span><span style="color:#a6e22e">writeLog</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;Decoration&#34;</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">DecorationLogger2</span> <span style="color:#66d9ef">implements</span> Logger<span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> Logger logger<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>    DecorationLogger2<span style="color:#f92672">(</span>Logger logger<span style="color:#f92672">){</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">logger</span> <span style="color:#f92672">=</span> logger<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@Override</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">writeLog</span><span style="color:#f92672">(){</span>
+</span></span><span style="display:flex;"><span>        logger<span style="color:#f92672">.</span><span style="color:#a6e22e">writeLog</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;Decoration2&#34;</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Decoration</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span><span style="color:#f92672">(</span>String <span style="color:#f92672">[]</span>argvs<span style="color:#f92672">){</span>
+</span></span><span style="display:flex;"><span>        Logger logger <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> DecorationLogger2<span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> DecorationLogger<span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> BaseLogger<span style="color:#f92672">()));</span>
+</span></span><span style="display:flex;"><span>        logger<span style="color:#f92672">.</span><span style="color:#a6e22e">writeLog</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        Logger logger1 <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> DecorationLogger<span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> DecorationLogger2<span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> BaseLogger<span style="color:#f92672">()));</span>
+</span></span><span style="display:flex;"><span>        logger1<span style="color:#f92672">.</span><span style="color:#a6e22e">writeLog</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        Logger logger2 <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> DecorationLogger<span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> BaseLogger<span style="color:#f92672">());</span>
+</span></span><span style="display:flex;"><span>        logger2<span style="color:#f92672">.</span><span style="color:#a6e22e">writeLog</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><p>缺点和注意：包装的自由组合的灵活性可能导致测试的困难，注意组合可能带来的bug。</p>
 <h1 id="静态代理与装饰者模式的主要区别">静态代理与装饰者模式的主要区别</h1>
 <ol>
 <li>原则上的区别，代理为了控制对某个函数前后的操作，而装饰着模式是为了添加某一操作（其实目标没差太远）</li>
@@ -403,7 +405,7 @@ Logger logger = new DecorateLogger(new Logger()); // 装饰者模式，还可以
       </li></ul>
   </nav>
 </section><div class='copyright'>
-  <p> &copy; 2018-2021 extendswind </p>
+  <p> &copy; 2018-2022 extendswind </p>
 </div>
 
         </div>

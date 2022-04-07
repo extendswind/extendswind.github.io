@@ -29,8 +29,8 @@ R树常见构建过程 通常R树是针对动态有增删的数据，因此构�
 相比GeoSpark的代码，没有Spark现成的算子可以复用并且要处理文件方面的问题，逻辑上的处理稍复杂一点。
 空间分析任务的提交 SpatialHadoop提供了一个脚本，用于基本的空间处理，如下面的代码生成测试数据。
 sbin/shadoop generate test.rects size:1.gb shape:rect mbr:0,0,1000000,1000000 -overwrite shadoop脚本做的操作不多，直接通过Hadoop的运行命令运行了edu.umn.cs.spatialHadoop.operations.Main类，在类中的Main函数中处理输入参数。
-bin=`dirname &amp;#34;$0&amp;#34;` bin=`cd &amp;#34;$bin&amp;#34; &amp;gt; /dev/null; pwd` # Call Hadoop with the operations.Main as the main class . &amp;#34;$bin&amp;#34;/hadoop edu.umn.cs.spatialHadoop.operations.Main $@ 在Main函数中使用了Hadoop的ProgramDriver运行具体的类对象。首先从配置文件 spatial-operations.yaml 中读取支持的类，然后利用反射机制，读取对应类注释的shortName标签，通过shortName决定参数传递的具体的类。
-public static void main(String[] args) { int exitCode = -1; ProgramDriver pgd = new ProgramDriver(); try { // 这个位置加载配置文件，配置文件spatial-operations.yaml中包含了支持的完整类名  Yaml yaml = new Yaml(); List&amp;lt;String&amp;gt; ops = yaml.load(SpatialSite.class.getResourceAsStream(&amp;#34;/spatial-operations.yaml&amp;#34;)); // 通过反射的机制，提取类对应的源码中的annotation里的shortName，运行时会通过shortname执行对应的类 	// 用在上面的生成随机数据中就是通过generate执行edu.umn.cs.spatialHadoop.operations.RandomSpatialGenerator。  for (String op : ops) { Class&amp;lt;?</description>
+bin=`dirname &amp;#34;$0&amp;#34;` bin=`cd &amp;#34;$bin&amp;#34; &amp;gt; /dev/null; pwd`  # Call Hadoop with the operations.Main as the main class . &amp;#34;$bin&amp;#34;/hadoop edu.umn.cs.spatialHadoop.operations.Main $@ 在Main函数中使用了Hadoop的ProgramDriver运行具体的类对象。首先从配置文件 spatial-operations.yaml 中读取支持的类，然后利用反射机制，读取对应类注释的shortName标签，通过shortName决定参数传递的具体的类。
+public static void main(String[] args) {  int exitCode = -1;  ProgramDriver pgd = new ProgramDriver();  try {  // 这个位置加载配置文件，配置文件spatial-operations.yaml中包含了支持的完整类名  Yaml yaml = new Yaml();  List&amp;lt;String&amp;gt; ops = yaml.</description>
     </item>
     
     <item>
@@ -69,7 +69,7 @@ mvn compile 编译源码 mvn assembly:assembly 代码打包，会在target目录
 cp target/spatialhadoop-2.4.3-SNAPSHOT-bin.tar.gz $HADOOP_HOME/ cd $HADOOP_HOME tar -zxvf spatialhadoop-2.4.3-SNAPSHOT-bin.tar.gz Hadoop目录下运行下面的测试代码，会向HDFS中写入一个随机生成的矩形文件。
 sbin/shadoop generate test.rects size:1.gb shape:rect mbr:0,0,1000000,1000000 -overwrite
 SpatialHadoop运行机制 shadoop 脚本 SpatialHadoop 通过脚本shadoop运行命令，脚本就只有几行代码
-bin=`dirname &amp;#34;$0&amp;#34;` bin=`cd &amp;#34;$bin&amp;#34; &amp;gt; /dev/null; pwd` # Call Hadoop with the operations.Main as the main class . &amp;#34;$bin&amp;#34;/hadoop edu.umn.cs.spatialHadoop.operations.Main $@ 其实只是将spatialhadoop的jar包与相关依赖jar包放入Hadoop的包目录中，然后通过shadoop脚本调用Hadoop脚本调用包中的一个类，向YARN提交MapReduce任务。</description>
+bin=`dirname &amp;#34;$0&amp;#34;` bin=`cd &amp;#34;$bin&amp;#34; &amp;gt; /dev/null; pwd`  # Call Hadoop with the operations.Main as the main class . &amp;#34;$bin&amp;#34;/hadoop edu.umn.cs.spatialHadoop.operations.Main $@ 其实只是将spatialhadoop的jar包与相关依赖jar包放入Hadoop的包目录中，然后通过shadoop脚本调用Hadoop脚本调用包中的一个类，向YARN提交MapReduce任务。</description>
     </item>
     
   </channel>

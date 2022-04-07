@@ -6,8 +6,8 @@
 相比GeoSpark的代码，没有Spark现成的算子可以复用并且要处理文件方面的问题，逻辑上的处理稍复杂一点。
 空间分析任务的提交 SpatialHadoop提供了一个脚本，用于基本的空间处理，如下面的代码生成测试数据。
 sbin/shadoop generate test.rects size:1.gb shape:rect mbr:0,0,1000000,1000000 -overwrite shadoop脚本做的操作不多，直接通过Hadoop的运行命令运行了edu.umn.cs.spatialHadoop.operations.Main类，在类中的Main函数中处理输入参数。
-bin=`dirname &#34;$0&#34;` bin=`cd &#34;$bin&#34; &gt; /dev/null; pwd` # Call Hadoop with the operations.Main as the main class . &#34;$bin&#34;/hadoop edu.umn.cs.spatialHadoop.operations.Main $@ 在Main函数中使用了Hadoop的ProgramDriver运行具体的类对象。首先从配置文件 spatial-operations.yaml 中读取支持的类，然后利用反射机制，读取对应类注释的shortName标签，通过shortName决定参数传递的具体的类。
-public static void main(String[] args) { int exitCode = -1; ProgramDriver pgd = new ProgramDriver(); try { // 这个位置加载配置文件，配置文件spatial-operations.yaml中包含了支持的完整类名  Yaml yaml = new Yaml(); List&lt;String&gt; ops = yaml.load(SpatialSite.class.getResourceAsStream(&#34;/spatial-operations.yaml&#34;)); // 通过反射的机制，提取类对应的源码中的annotation里的shortName，运行时会通过shortname执行对应的类 	// 用在上面的生成随机数据中就是通过generate执行edu.umn.cs.spatialHadoop.operations.RandomSpatialGenerator。  for (String op : ops) { Class&lt;?'>
+bin=`dirname &#34;$0&#34;` bin=`cd &#34;$bin&#34; &gt; /dev/null; pwd`  # Call Hadoop with the operations.Main as the main class . &#34;$bin&#34;/hadoop edu.umn.cs.spatialHadoop.operations.Main $@ 在Main函数中使用了Hadoop的ProgramDriver运行具体的类对象。首先从配置文件 spatial-operations.yaml 中读取支持的类，然后利用反射机制，读取对应类注释的shortName标签，通过shortName决定参数传递的具体的类。
+public static void main(String[] args) {  int exitCode = -1;  ProgramDriver pgd = new ProgramDriver();  try {  // 这个位置加载配置文件，配置文件spatial-operations.yaml中包含了支持的完整类名  Yaml yaml = new Yaml();  List&lt;String&gt; ops = yaml.'>
 <meta name='theme-color' content='#cccccc'>
 
 <meta property='og:title' content='SpatialHadoop二级空间索引机制源码分析 • A Notebook of Extendswind'>
@@ -15,13 +15,13 @@ public static void main(String[] args) { int exitCode = -1; ProgramDriver pgd = 
 相比GeoSpark的代码，没有Spark现成的算子可以复用并且要处理文件方面的问题，逻辑上的处理稍复杂一点。
 空间分析任务的提交 SpatialHadoop提供了一个脚本，用于基本的空间处理，如下面的代码生成测试数据。
 sbin/shadoop generate test.rects size:1.gb shape:rect mbr:0,0,1000000,1000000 -overwrite shadoop脚本做的操作不多，直接通过Hadoop的运行命令运行了edu.umn.cs.spatialHadoop.operations.Main类，在类中的Main函数中处理输入参数。
-bin=`dirname &#34;$0&#34;` bin=`cd &#34;$bin&#34; &gt; /dev/null; pwd` # Call Hadoop with the operations.Main as the main class . &#34;$bin&#34;/hadoop edu.umn.cs.spatialHadoop.operations.Main $@ 在Main函数中使用了Hadoop的ProgramDriver运行具体的类对象。首先从配置文件 spatial-operations.yaml 中读取支持的类，然后利用反射机制，读取对应类注释的shortName标签，通过shortName决定参数传递的具体的类。
-public static void main(String[] args) { int exitCode = -1; ProgramDriver pgd = new ProgramDriver(); try { // 这个位置加载配置文件，配置文件spatial-operations.yaml中包含了支持的完整类名  Yaml yaml = new Yaml(); List&lt;String&gt; ops = yaml.load(SpatialSite.class.getResourceAsStream(&#34;/spatial-operations.yaml&#34;)); // 通过反射的机制，提取类对应的源码中的annotation里的shortName，运行时会通过shortname执行对应的类 	// 用在上面的生成随机数据中就是通过generate执行edu.umn.cs.spatialHadoop.operations.RandomSpatialGenerator。  for (String op : ops) { Class&lt;?'>
+bin=`dirname &#34;$0&#34;` bin=`cd &#34;$bin&#34; &gt; /dev/null; pwd`  # Call Hadoop with the operations.Main as the main class . &#34;$bin&#34;/hadoop edu.umn.cs.spatialHadoop.operations.Main $@ 在Main函数中使用了Hadoop的ProgramDriver运行具体的类对象。首先从配置文件 spatial-operations.yaml 中读取支持的类，然后利用反射机制，读取对应类注释的shortName标签，通过shortName决定参数传递的具体的类。
+public static void main(String[] args) {  int exitCode = -1;  ProgramDriver pgd = new ProgramDriver();  try {  // 这个位置加载配置文件，配置文件spatial-operations.yaml中包含了支持的完整类名  Yaml yaml = new Yaml();  List&lt;String&gt; ops = yaml.'>
 <meta property='og:url' content='https://extendswind.top/posts/technical/spatialhadoop_operation_code_analysis/'>
 <meta property='og:site_name' content='A Notebook of Extendswind'>
 <meta property='og:type' content='article'><meta property='article:section' content='posts'><meta property='article:tag' content='hadoop'><meta property='article:tag' content='GIS'><meta property='article:published_time' content='2020-11-07T10:30:00&#43;08:00'/><meta property='article:modified_time' content='2020-11-07T10:30:00&#43;08:00'/><meta name='twitter:card' content='summary'>
 
-<meta name="generator" content="Hugo 0.89.4" />
+<meta name="generator" content="Hugo 0.93.2" />
 
   <title>SpatialHadoop二级空间索引机制源码分析 • A Notebook of Extendswind</title>
   <link rel='canonical' href='https://extendswind.top/posts/technical/spatialhadoop_operation_code_analysis/'>
@@ -101,6 +101,8 @@ public static void main(String[] args) { int exitCode = -1; ProgramDriver pgd = 
         <a href='/tags/linux/' style='font-size:1em'>linux</a>
       </li><li>
         <a href='/tags/log4j/' style='font-size:1em'>log4j</a>
+      </li><li>
+        <a href='/tags/mpi/' style='font-size:1em'>MPI</a>
       </li><li>
         <a href='/tags/python/' style='font-size:1em'>python</a>
       </li><li>
@@ -215,250 +217,250 @@ public static void main(String[] args) { int exitCode = -1; ProgramDriver pgd = 
 <p>相比GeoSpark的代码，没有Spark现成的算子可以复用并且要处理文件方面的问题，逻辑上的处理稍复杂一点。</p>
 <h1 id="空间分析任务的提交">空间分析任务的提交</h1>
 <p>SpatialHadoop提供了一个脚本，用于基本的空间处理，如下面的代码生成测试数据。</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sbin/shadoop generate test.rects size:1.gb shape:rect mbr:0,0,1000000,1000000 -overwrite
-</code></pre></div><p>shadoop脚本做的操作不多，直接通过Hadoop的运行命令运行了edu.umn.cs.spatialHadoop.operations.Main类，在类中的Main函数中处理输入参数。</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">bin<span style="color:#f92672">=</span><span style="color:#e6db74">`</span>dirname <span style="color:#e6db74">&#34;</span>$0<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">`</span>
-bin<span style="color:#f92672">=</span><span style="color:#e6db74">`</span>cd <span style="color:#e6db74">&#34;</span>$bin<span style="color:#e6db74">&#34;</span> &gt; /dev/null; pwd<span style="color:#e6db74">`</span>
-
-<span style="color:#75715e"># Call Hadoop with the operations.Main as the main class</span>
-. <span style="color:#e6db74">&#34;</span>$bin<span style="color:#e6db74">&#34;</span>/hadoop edu.umn.cs.spatialHadoop.operations.Main $@
-</code></pre></div><p>在Main函数中使用了Hadoop的ProgramDriver运行具体的类对象。首先从配置文件 <code>spatial-operations.yaml</code> 中读取支持的类，然后利用反射机制，读取对应类注释的shortName标签，通过shortName决定参数传递的具体的类。</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span><span style="color:#f92672">(</span>String<span style="color:#f92672">[]</span> args<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-  <span style="color:#66d9ef">int</span> exitCode <span style="color:#f92672">=</span> <span style="color:#f92672">-</span>1<span style="color:#f92672">;</span>
-  ProgramDriver pgd <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ProgramDriver<span style="color:#f92672">();</span>
-  <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
-  <span style="color:#75715e">// 这个位置加载配置文件，配置文件spatial-operations.yaml中包含了支持的完整类名
-</span><span style="color:#75715e"></span>    Yaml yaml <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Yaml<span style="color:#f92672">();</span>
-    List<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">&gt;</span> ops <span style="color:#f92672">=</span> yaml<span style="color:#f92672">.</span><span style="color:#a6e22e">load</span><span style="color:#f92672">(</span>SpatialSite<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">.</span><span style="color:#a6e22e">getResourceAsStream</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;/spatial-operations.yaml&#34;</span><span style="color:#f92672">));</span>
-	<span style="color:#75715e">// 通过反射的机制，提取类对应的源码中的annotation里的shortName，运行时会通过shortname执行对应的类
-</span><span style="color:#75715e"></span>	<span style="color:#75715e">// 用在上面的生成随机数据中就是通过generate执行edu.umn.cs.spatialHadoop.operations.RandomSpatialGenerator。
-</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span>String op <span style="color:#f92672">:</span> ops<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-      Class<span style="color:#f92672">&lt;?&gt;</span> opClass <span style="color:#f92672">=</span> Class<span style="color:#f92672">.</span><span style="color:#a6e22e">forName</span><span style="color:#f92672">(</span>op<span style="color:#f92672">);</span>
-      OperationMetadata opMetadata <span style="color:#f92672">=</span> opClass<span style="color:#f92672">.</span><span style="color:#a6e22e">getAnnotation</span><span style="color:#f92672">(</span>OperationMetadata<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">);</span>
-      pgd<span style="color:#f92672">.</span><span style="color:#a6e22e">addClass</span><span style="color:#f92672">(</span>opMetadata<span style="color:#f92672">.</span><span style="color:#a6e22e">shortName</span><span style="color:#f92672">(),</span> opClass<span style="color:#f92672">,</span> opMetadata<span style="color:#f92672">.</span><span style="color:#a6e22e">description</span><span style="color:#f92672">());</span>
-    <span style="color:#f92672">}</span>
-    pgd<span style="color:#f92672">.</span><span style="color:#a6e22e">driver</span><span style="color:#f92672">(</span>args<span style="color:#f92672">);</span>  <span style="color:#75715e">// 这个函数中调用具体的类执行任务
-</span><span style="color:#75715e"></span>    exitCode <span style="color:#f92672">=</span> 0<span style="color:#f92672">;</span>
-  <span style="color:#f92672">}</span>
-  <span style="color:#66d9ef">catch</span><span style="color:#f92672">(</span>Throwable e<span style="color:#f92672">){</span>
-    e<span style="color:#f92672">.</span><span style="color:#a6e22e">printStackTrace</span><span style="color:#f92672">();</span>
-  <span style="color:#f92672">}</span>
-  System<span style="color:#f92672">.</span><span style="color:#a6e22e">exit</span><span style="color:#f92672">(</span>exitCode<span style="color:#f92672">);</span>
-<span style="color:#f92672">}</span>
-</code></pre></div><h1 id="二级空间索引机制">二级空间索引机制</h1>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">bin/shadoop index &lt;input&gt; &lt;output&gt; shape:&lt;input format&gt; sindex:&lt;index&gt; blocksize:&lt;size&gt; -overwrite
-
-<span style="color:#75715e"># 示例</span>
-shadoop index test.rects test.grid sindex:grid shape:rect 
-</code></pre></div><p>按照上面提到的机制，会调用Indexer类的Main函数，然后在 <code>index(inputPaths, outputPath, params);</code> 函数的调用提交任务。</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> Job <span style="color:#a6e22e">index</span><span style="color:#f92672">(</span>Path<span style="color:#f92672">[]</span> inPaths<span style="color:#f92672">,</span> Path outPath<span style="color:#f92672">,</span> OperationsParams params<span style="color:#f92672">)</span>
-    <span style="color:#66d9ef">throws</span> IOException<span style="color:#f92672">,</span> InterruptedException<span style="color:#f92672">,</span> ClassNotFoundException <span style="color:#f92672">{</span>
-  <span style="color:#75715e">// initiallize主要指定local index对象以及构建全局索引
-</span><span style="color:#75715e"></span>  <span style="color:#75715e">// 索引的方式从params中读取具体的类
-</span><span style="color:#75715e"></span>  <span style="color:#75715e">// 全局索引的构建可以直接基于原数据或采样后的数据
-</span><span style="color:#75715e"></span>  <span style="color:#75715e">// 在这里Partitioner和global index是指向的同一个对象
-</span><span style="color:#75715e"></span>  <span style="color:#75715e">// 对于网格索引，初始化过程只是调用GridPartitioner的构造函数计算了网格大小等基本数据
-</span><span style="color:#75715e"></span>  Partitioner p <span style="color:#f92672">=</span> initializeIndexers<span style="color:#f92672">(</span>inPaths<span style="color:#f92672">,</span> outPath<span style="color:#f92672">,</span> params<span style="color:#f92672">);</span>  引
-  <span style="color:#a6e22e">if</span> <span style="color:#f92672">(</span>OperationsParams<span style="color:#f92672">.</span><span style="color:#a6e22e">isLocal</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> JobConf<span style="color:#f92672">(</span>params<span style="color:#f92672">),</span> inPaths<span style="color:#f92672">))</span> <span style="color:#f92672">{</span>
-    indexLocal<span style="color:#f92672">(</span>inPaths<span style="color:#f92672">,</span> outPath<span style="color:#f92672">,</span> p<span style="color:#f92672">,</span> params<span style="color:#f92672">);</span>
-    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
-  <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#f92672">{</span>
-    <span style="color:#75715e">// 提交MapReduce任务
-</span><span style="color:#75715e"></span>    Job job <span style="color:#f92672">=</span> indexMapReduce<span style="color:#f92672">(</span>inPaths<span style="color:#f92672">,</span> outPath<span style="color:#f92672">,</span> p<span style="color:#f92672">,</span> params<span style="color:#f92672">);</span>
-    <span style="color:#66d9ef">return</span> job<span style="color:#f92672">;</span>
-  <span style="color:#f92672">}</span>
-<span style="color:#f92672">}</span>
-
-<span style="color:#75715e">// MR任务的主要配置如下
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">static</span> Job <span style="color:#a6e22e">indexMapReduce</span><span style="color:#f92672">(</span>Path<span style="color:#f92672">[]</span> inPaths<span style="color:#f92672">,</span> Path outPath<span style="color:#f92672">,</span> Partitioner partitioner<span style="color:#f92672">,</span>
-  OperationsParams paramss<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> IOException<span style="color:#f92672">,</span> InterruptedException<span style="color:#f92672">,</span>
-  ClassNotFoundException <span style="color:#f92672">{</span>
-  <span style="color:#75715e">// ...
-</span><span style="color:#75715e"></span>  <span style="color:#75715e">// Set mapper and reducer
-</span><span style="color:#75715e"></span>  Shape shape <span style="color:#f92672">=</span> OperationsParams<span style="color:#f92672">.</span><span style="color:#a6e22e">getShape</span><span style="color:#f92672">(</span>conf<span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;shape&#34;</span><span style="color:#f92672">);</span>
-  job<span style="color:#f92672">.</span><span style="color:#a6e22e">setMapperClass</span><span style="color:#f92672">(</span>PartitionerMap<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">);</span>
-  job<span style="color:#f92672">.</span><span style="color:#a6e22e">setMapOutputKeyClass</span><span style="color:#f92672">(</span>IntWritable<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">);</span>
-  job<span style="color:#f92672">.</span><span style="color:#a6e22e">setMapOutputValueClass</span><span style="color:#f92672">(</span>shape<span style="color:#f92672">.</span><span style="color:#a6e22e">getClass</span><span style="color:#f92672">());</span>
-  job<span style="color:#f92672">.</span><span style="color:#a6e22e">setReducerClass</span><span style="color:#f92672">(</span>PartitionerReduce<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">);</span>
-  <span style="color:#75715e">// Set input and output
-</span><span style="color:#75715e"></span>  job<span style="color:#f92672">.</span><span style="color:#a6e22e">setInputFormatClass</span><span style="color:#f92672">(</span>SpatialInputFormat3<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">);</span>
-  SpatialInputFormat3<span style="color:#f92672">.</span><span style="color:#a6e22e">setInputPaths</span><span style="color:#f92672">(</span>job<span style="color:#f92672">,</span> inPaths<span style="color:#f92672">);</span>
-  job<span style="color:#f92672">.</span><span style="color:#a6e22e">setOutputFormatClass</span><span style="color:#f92672">(</span>IndexOutputFormat<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">);</span>
-  IndexOutputFormat<span style="color:#f92672">.</span><span style="color:#a6e22e">setOutputPath</span><span style="color:#f92672">(</span>job<span style="color:#f92672">,</span> outPath<span style="color:#f92672">);</span>
-  <span style="color:#75715e">//...
-</span><span style="color:#75715e"></span><span style="color:#f92672">}</span>
-</code></pre></div><p>Hadoop对文件的输入主要通过InputFormat，常见的方式继承FileInputFormat后用类似TextFileInputFormat的方式处理中间的一些细节，如getSplits函数将输入文件切分成多个InputSplit，createRecord函数为每个InputSplit创建一个RecordReader对象读取具体的数据，然后在Map任务中通过RecordReader将InputSplit解析成key-value的形式。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sbin/shadoop generate test.rects size:1.gb shape:rect mbr:0,0,1000000,1000000 -overwrite
+</span></span></code></pre></div><p>shadoop脚本做的操作不多，直接通过Hadoop的运行命令运行了edu.umn.cs.spatialHadoop.operations.Main类，在类中的Main函数中处理输入参数。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>bin<span style="color:#f92672">=</span><span style="color:#e6db74">`</span>dirname <span style="color:#e6db74">&#34;</span>$0<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">`</span>
+</span></span><span style="display:flex;"><span>bin<span style="color:#f92672">=</span><span style="color:#e6db74">`</span>cd <span style="color:#e6db74">&#34;</span>$bin<span style="color:#e6db74">&#34;</span> &gt; /dev/null; pwd<span style="color:#e6db74">`</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Call Hadoop with the operations.Main as the main class</span>
+</span></span><span style="display:flex;"><span>. <span style="color:#e6db74">&#34;</span>$bin<span style="color:#e6db74">&#34;</span>/hadoop edu.umn.cs.spatialHadoop.operations.Main $@
+</span></span></code></pre></div><p>在Main函数中使用了Hadoop的ProgramDriver运行具体的类对象。首先从配置文件 <code>spatial-operations.yaml</code> 中读取支持的类，然后利用反射机制，读取对应类注释的shortName标签，通过shortName决定参数传递的具体的类。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span><span style="color:#f92672">(</span>String<span style="color:#f92672">[]</span> args<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">int</span> exitCode <span style="color:#f92672">=</span> <span style="color:#f92672">-</span>1<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>  ProgramDriver pgd <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ProgramDriver<span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// 这个位置加载配置文件，配置文件spatial-operations.yaml中包含了支持的完整类名
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    Yaml yaml <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Yaml<span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>    List<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">&gt;</span> ops <span style="color:#f92672">=</span> yaml<span style="color:#f92672">.</span><span style="color:#a6e22e">load</span><span style="color:#f92672">(</span>SpatialSite<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">.</span><span style="color:#a6e22e">getResourceAsStream</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;/spatial-operations.yaml&#34;</span><span style="color:#f92672">));</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 通过反射的机制，提取类对应的源码中的annotation里的shortName，运行时会通过shortname执行对应的类
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#75715e">// 用在上面的生成随机数据中就是通过generate执行edu.umn.cs.spatialHadoop.operations.RandomSpatialGenerator。
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span>String op <span style="color:#f92672">:</span> ops<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>      Class<span style="color:#f92672">&lt;?&gt;</span> opClass <span style="color:#f92672">=</span> Class<span style="color:#f92672">.</span><span style="color:#a6e22e">forName</span><span style="color:#f92672">(</span>op<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>      OperationMetadata opMetadata <span style="color:#f92672">=</span> opClass<span style="color:#f92672">.</span><span style="color:#a6e22e">getAnnotation</span><span style="color:#f92672">(</span>OperationMetadata<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>      pgd<span style="color:#f92672">.</span><span style="color:#a6e22e">addClass</span><span style="color:#f92672">(</span>opMetadata<span style="color:#f92672">.</span><span style="color:#a6e22e">shortName</span><span style="color:#f92672">(),</span> opClass<span style="color:#f92672">,</span> opMetadata<span style="color:#f92672">.</span><span style="color:#a6e22e">description</span><span style="color:#f92672">());</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>    pgd<span style="color:#f92672">.</span><span style="color:#a6e22e">driver</span><span style="color:#f92672">(</span>args<span style="color:#f92672">);</span>  <span style="color:#75715e">// 这个函数中调用具体的类执行任务
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    exitCode <span style="color:#f92672">=</span> 0<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">catch</span><span style="color:#f92672">(</span>Throwable e<span style="color:#f92672">){</span>
+</span></span><span style="display:flex;"><span>    e<span style="color:#f92672">.</span><span style="color:#a6e22e">printStackTrace</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>  System<span style="color:#f92672">.</span><span style="color:#a6e22e">exit</span><span style="color:#f92672">(</span>exitCode<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><h1 id="二级空间索引机制">二级空间索引机制</h1>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>bin/shadoop index &lt;input&gt; &lt;output&gt; shape:&lt;input format&gt; sindex:&lt;index&gt; blocksize:&lt;size&gt; -overwrite
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 示例</span>
+</span></span><span style="display:flex;"><span>shadoop index test.rects test.grid sindex:grid shape:rect 
+</span></span></code></pre></div><p>按照上面提到的机制，会调用Indexer类的Main函数，然后在 <code>index(inputPaths, outputPath, params);</code> 函数的调用提交任务。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> Job <span style="color:#a6e22e">index</span><span style="color:#f92672">(</span>Path<span style="color:#f92672">[]</span> inPaths<span style="color:#f92672">,</span> Path outPath<span style="color:#f92672">,</span> OperationsParams params<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">throws</span> IOException<span style="color:#f92672">,</span> InterruptedException<span style="color:#f92672">,</span> ClassNotFoundException <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// initiallize主要指定local index对象以及构建全局索引
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">// 索引的方式从params中读取具体的类
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">// 全局索引的构建可以直接基于原数据或采样后的数据
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">// 在这里Partitioner和global index是指向的同一个对象
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">// 对于网格索引，初始化过程只是调用GridPartitioner的构造函数计算了网格大小等基本数据
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  Partitioner p <span style="color:#f92672">=</span> initializeIndexers<span style="color:#f92672">(</span>inPaths<span style="color:#f92672">,</span> outPath<span style="color:#f92672">,</span> params<span style="color:#f92672">);</span>  引
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">if</span> <span style="color:#f92672">(</span>OperationsParams<span style="color:#f92672">.</span><span style="color:#a6e22e">isLocal</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> JobConf<span style="color:#f92672">(</span>params<span style="color:#f92672">),</span> inPaths<span style="color:#f92672">))</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    indexLocal<span style="color:#f92672">(</span>inPaths<span style="color:#f92672">,</span> outPath<span style="color:#f92672">,</span> p<span style="color:#f92672">,</span> params<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 提交MapReduce任务
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    Job job <span style="color:#f92672">=</span> indexMapReduce<span style="color:#f92672">(</span>inPaths<span style="color:#f92672">,</span> outPath<span style="color:#f92672">,</span> p<span style="color:#f92672">,</span> params<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> job<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// MR任务的主要配置如下
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">static</span> Job <span style="color:#a6e22e">indexMapReduce</span><span style="color:#f92672">(</span>Path<span style="color:#f92672">[]</span> inPaths<span style="color:#f92672">,</span> Path outPath<span style="color:#f92672">,</span> Partitioner partitioner<span style="color:#f92672">,</span>
+</span></span><span style="display:flex;"><span>  OperationsParams paramss<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> IOException<span style="color:#f92672">,</span> InterruptedException<span style="color:#f92672">,</span>
+</span></span><span style="display:flex;"><span>  ClassNotFoundException <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// ...
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">// Set mapper and reducer
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  Shape shape <span style="color:#f92672">=</span> OperationsParams<span style="color:#f92672">.</span><span style="color:#a6e22e">getShape</span><span style="color:#f92672">(</span>conf<span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;shape&#34;</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>  job<span style="color:#f92672">.</span><span style="color:#a6e22e">setMapperClass</span><span style="color:#f92672">(</span>PartitionerMap<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>  job<span style="color:#f92672">.</span><span style="color:#a6e22e">setMapOutputKeyClass</span><span style="color:#f92672">(</span>IntWritable<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>  job<span style="color:#f92672">.</span><span style="color:#a6e22e">setMapOutputValueClass</span><span style="color:#f92672">(</span>shape<span style="color:#f92672">.</span><span style="color:#a6e22e">getClass</span><span style="color:#f92672">());</span>
+</span></span><span style="display:flex;"><span>  job<span style="color:#f92672">.</span><span style="color:#a6e22e">setReducerClass</span><span style="color:#f92672">(</span>PartitionerReduce<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Set input and output
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  job<span style="color:#f92672">.</span><span style="color:#a6e22e">setInputFormatClass</span><span style="color:#f92672">(</span>SpatialInputFormat3<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>  SpatialInputFormat3<span style="color:#f92672">.</span><span style="color:#a6e22e">setInputPaths</span><span style="color:#f92672">(</span>job<span style="color:#f92672">,</span> inPaths<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>  job<span style="color:#f92672">.</span><span style="color:#a6e22e">setOutputFormatClass</span><span style="color:#f92672">(</span>IndexOutputFormat<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>  IndexOutputFormat<span style="color:#f92672">.</span><span style="color:#a6e22e">setOutputPath</span><span style="color:#f92672">(</span>job<span style="color:#f92672">,</span> outPath<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">//...
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><p>Hadoop对文件的输入主要通过InputFormat，常见的方式继承FileInputFormat后用类似TextFileInputFormat的方式处理中间的一些细节，如getSplits函数将输入文件切分成多个InputSplit，createRecord函数为每个InputSplit创建一个RecordReader对象读取具体的数据，然后在Map任务中通过RecordReader将InputSplit解析成key-value的形式。</p>
 <p>对于文件输入的处理，通过SpatialInputFormat3划分数据（为啥后面有个3，没有看到1和2..），继承了FileInputFormat。InputSplit的划分比较常规，基于splitSize将文件划分成多个InputSplit，然后会根据数据本地性做一次合并以降低task的数量。在createRecordReader中，根据InputSplit中文件的后缀判断是否为已经有localIndex的文件，如果有则返回LocalIndexRecordReader，否则返回配置文件中设置的对应后缀的RecordReader（默认为SpatialRecordReader3）。</p>
 <p>RecordReader用于解析整个InputSplit，使用的key-value形式直接为&lt;Partition, Iterable<!-- raw HTML omitted -->&gt;的形式，key对应整个InputSplit，value为解析后的数据迭代器，其中V表示空间数据的类型，继承shape。</p>
 <p>对于没有索引过的文件，直接按行读取文件后，将每行的text转为具体的Shape。</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">protected</span> <span style="color:#66d9ef">boolean</span> <span style="color:#a6e22e">nextShape</span><span style="color:#f92672">(</span>V s<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> IOException <span style="color:#f92672">{</span>
-  <span style="color:#66d9ef">do</span> <span style="color:#f92672">{</span>
-    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(!</span>nextLine<span style="color:#f92672">(</span>tempLine<span style="color:#f92672">))</span>
-      <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span><span style="color:#f92672">;</span>
-    s<span style="color:#f92672">.</span><span style="color:#a6e22e">fromText</span><span style="color:#f92672">(</span>tempLine<span style="color:#f92672">);</span>
-  <span style="color:#f92672">}</span> <span style="color:#66d9ef">while</span> <span style="color:#f92672">(!</span>isMatched<span style="color:#f92672">(</span>s<span style="color:#f92672">));</span>
-  <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">true</span><span style="color:#f92672">;</span>
-<span style="color:#f92672">}</span>
-</code></pre></div><p>map过程的逻辑比较常规，遍历所有的shape，分别判断每个shape与哪些partition相交，以&lt;partitionID, shape&gt;的key-value形式送到reduce过程处理。</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">// 去除了些异常处理的语句
-</span><span style="color:#75715e"></span><span style="color:#a6e22e">@Override</span>
-<span style="color:#66d9ef">protected</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">map</span><span style="color:#f92672">(</span>Rectangle key<span style="color:#f92672">,</span> Iterable<span style="color:#f92672">&lt;?</span> <span style="color:#66d9ef">extends</span> Shape<span style="color:#f92672">&gt;</span> shapes<span style="color:#f92672">,</span>
-    <span style="color:#66d9ef">final</span> Context context<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> IOException<span style="color:#f92672">,</span> InterruptedException <span style="color:#f92672">{</span>
-  <span style="color:#66d9ef">final</span> IntWritable partitionID <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> IntWritable<span style="color:#f92672">();</span>
-  <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">final</span> Shape shape <span style="color:#f92672">:</span> shapes<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-    Rectangle shapeMBR <span style="color:#f92672">=</span> shape<span style="color:#f92672">.</span><span style="color:#a6e22e">getMBR</span><span style="color:#f92672">();</span>
-    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>disjoint<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-	  <span style="color:#75715e">// 这个位置用了个套娃，更方便传类成员
-</span><span style="color:#75715e"></span>      partitioner<span style="color:#f92672">.</span><span style="color:#a6e22e">overlapPartitions</span><span style="color:#f92672">(</span>shape<span style="color:#f92672">,</span> <span style="color:#66d9ef">new</span> ResultCollector<span style="color:#f92672">&lt;</span>Integer<span style="color:#f92672">&gt;()</span> <span style="color:#f92672">{</span>
-        <span style="color:#a6e22e">@Override</span>
-        <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">collect</span><span style="color:#f92672">(</span>Integer r<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-          partitionID<span style="color:#f92672">.</span><span style="color:#a6e22e">set</span><span style="color:#f92672">(</span>r<span style="color:#f92672">);</span>
-          context<span style="color:#f92672">.</span><span style="color:#a6e22e">write</span><span style="color:#f92672">(</span>partitionID<span style="color:#f92672">,</span> shape<span style="color:#f92672">);</span>
-        <span style="color:#f92672">}</span>
-      <span style="color:#f92672">});</span>
-    <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#f92672">{</span>
-      partitionID<span style="color:#f92672">.</span><span style="color:#a6e22e">set</span><span style="color:#f92672">(</span>partitioner<span style="color:#f92672">.</span><span style="color:#a6e22e">overlapPartition</span><span style="color:#f92672">(</span>shape<span style="color:#f92672">));</span>
-      <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>partitionID<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">()</span> <span style="color:#f92672">&gt;=</span> 0<span style="color:#f92672">)</span>
-        context<span style="color:#f92672">.</span><span style="color:#a6e22e">write</span><span style="color:#f92672">(</span>partitionID<span style="color:#f92672">,</span> shape<span style="color:#f92672">);</span>
-    <span style="color:#f92672">}</span>
-    context<span style="color:#f92672">.</span><span style="color:#a6e22e">progress</span><span style="color:#f92672">();</span>
-  <span style="color:#f92672">}</span>
-<span style="color:#f92672">}</span>
-
-<span style="color:#a6e22e">@Override</span>
-<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">overlapPartitions</span><span style="color:#f92672">(</span>Shape shape<span style="color:#f92672">,</span> ResultCollector<span style="color:#f92672">&lt;</span>Integer<span style="color:#f92672">&gt;</span> matcher<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-  <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>shape <span style="color:#f92672">==</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span>
-    <span style="color:#66d9ef">return</span><span style="color:#f92672">;</span>
-  Rectangle shapeMBR <span style="color:#f92672">=</span> shape<span style="color:#f92672">.</span><span style="color:#a6e22e">getMBR</span><span style="color:#f92672">();</span>
-  <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>shapeMBR <span style="color:#f92672">==</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span>
-    <span style="color:#66d9ef">return</span><span style="color:#f92672">;</span>
-  <span style="color:#66d9ef">int</span> col1<span style="color:#f92672">,</span> col2<span style="color:#f92672">,</span> row1<span style="color:#f92672">,</span> row2<span style="color:#f92672">;</span>
-  col1 <span style="color:#f92672">=</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">int</span><span style="color:#f92672">)</span>Math<span style="color:#f92672">.</span><span style="color:#a6e22e">floor</span><span style="color:#f92672">((</span>shapeMBR<span style="color:#f92672">.</span><span style="color:#a6e22e">x1</span> <span style="color:#f92672">-</span> x<span style="color:#f92672">)</span> <span style="color:#f92672">/</span> tileWidth<span style="color:#f92672">);</span>
-  col2 <span style="color:#f92672">=</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">int</span><span style="color:#f92672">)</span>Math<span style="color:#f92672">.</span><span style="color:#a6e22e">ceil</span><span style="color:#f92672">((</span>shapeMBR<span style="color:#f92672">.</span><span style="color:#a6e22e">x2</span> <span style="color:#f92672">-</span> x<span style="color:#f92672">)</span> <span style="color:#f92672">/</span> tileWidth<span style="color:#f92672">);</span>
-  row1 <span style="color:#f92672">=</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">int</span><span style="color:#f92672">)</span>Math<span style="color:#f92672">.</span><span style="color:#a6e22e">floor</span><span style="color:#f92672">((</span>shapeMBR<span style="color:#f92672">.</span><span style="color:#a6e22e">y1</span> <span style="color:#f92672">-</span> y<span style="color:#f92672">)</span> <span style="color:#f92672">/</span> tileHeight<span style="color:#f92672">);</span>
-  row2 <span style="color:#f92672">=</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">int</span><span style="color:#f92672">)</span>Math<span style="color:#f92672">.</span><span style="color:#a6e22e">ceil</span><span style="color:#f92672">((</span>shapeMBR<span style="color:#f92672">.</span><span style="color:#a6e22e">y2</span> <span style="color:#f92672">-</span> y<span style="color:#f92672">)</span> <span style="color:#f92672">/</span> tileHeight<span style="color:#f92672">);</span>
-  
-  <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>col1 <span style="color:#f92672">&lt;</span> 0<span style="color:#f92672">)</span> col1 <span style="color:#f92672">=</span> 0<span style="color:#f92672">;</span>
-  <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>row1 <span style="color:#f92672">&lt;</span> 0<span style="color:#f92672">)</span> row1 <span style="color:#f92672">=</span> 0<span style="color:#f92672">;</span>
-  <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> col <span style="color:#f92672">=</span> col1<span style="color:#f92672">;</span> col <span style="color:#f92672">&lt;</span> col2<span style="color:#f92672">;</span> col<span style="color:#f92672">++)</span>
-    <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> row <span style="color:#f92672">=</span> row1<span style="color:#f92672">;</span> row <span style="color:#f92672">&lt;</span> row2<span style="color:#f92672">;</span> row<span style="color:#f92672">++)</span>
-      matcher<span style="color:#f92672">.</span><span style="color:#a6e22e">collect</span><span style="color:#f92672">(</span>getCellNumber<span style="color:#f92672">(</span>col<span style="color:#f92672">,</span> row<span style="color:#f92672">));</span>
-<span style="color:#f92672">}</span>
-</code></pre></div><p>reduce过程直接以partition_id和对应的shape创建输出流，将对应的数据按行写入到输出流。对于不带索引的文件，直接写入到最终的结果中；带索引的文件会在getOrCreateDataOutput函数中得到一个临时文件的输出流，在写入结束后又把整个文件读到内存中构建局部索引（这一写一读外加文本解析的开销？），最后将结果文件写入到HDFS。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#66d9ef">protected</span> <span style="color:#66d9ef">boolean</span> <span style="color:#a6e22e">nextShape</span><span style="color:#f92672">(</span>V s<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> IOException <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">do</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(!</span>nextLine<span style="color:#f92672">(</span>tempLine<span style="color:#f92672">))</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>    s<span style="color:#f92672">.</span><span style="color:#a6e22e">fromText</span><span style="color:#f92672">(</span>tempLine<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">}</span> <span style="color:#66d9ef">while</span> <span style="color:#f92672">(!</span>isMatched<span style="color:#f92672">(</span>s<span style="color:#f92672">));</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">true</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><p>map过程的逻辑比较常规，遍历所有的shape，分别判断每个shape与哪些partition相交，以&lt;partitionID, shape&gt;的key-value形式送到reduce过程处理。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#75715e">// 去除了些异常处理的语句
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#a6e22e">@Override</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">protected</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">map</span><span style="color:#f92672">(</span>Rectangle key<span style="color:#f92672">,</span> Iterable<span style="color:#f92672">&lt;?</span> <span style="color:#66d9ef">extends</span> Shape<span style="color:#f92672">&gt;</span> shapes<span style="color:#f92672">,</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">final</span> Context context<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> IOException<span style="color:#f92672">,</span> InterruptedException <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">final</span> IntWritable partitionID <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> IntWritable<span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">final</span> Shape shape <span style="color:#f92672">:</span> shapes<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    Rectangle shapeMBR <span style="color:#f92672">=</span> shape<span style="color:#f92672">.</span><span style="color:#a6e22e">getMBR</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>disjoint<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>	  <span style="color:#75715e">// 这个位置用了个套娃，更方便传类成员
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      partitioner<span style="color:#f92672">.</span><span style="color:#a6e22e">overlapPartitions</span><span style="color:#f92672">(</span>shape<span style="color:#f92672">,</span> <span style="color:#66d9ef">new</span> ResultCollector<span style="color:#f92672">&lt;</span>Integer<span style="color:#f92672">&gt;()</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">@Override</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">collect</span><span style="color:#f92672">(</span>Integer r<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>          partitionID<span style="color:#f92672">.</span><span style="color:#a6e22e">set</span><span style="color:#f92672">(</span>r<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>          context<span style="color:#f92672">.</span><span style="color:#a6e22e">write</span><span style="color:#f92672">(</span>partitionID<span style="color:#f92672">,</span> shape<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">});</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>      partitionID<span style="color:#f92672">.</span><span style="color:#a6e22e">set</span><span style="color:#f92672">(</span>partitioner<span style="color:#f92672">.</span><span style="color:#a6e22e">overlapPartition</span><span style="color:#f92672">(</span>shape<span style="color:#f92672">));</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>partitionID<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">()</span> <span style="color:#f92672">&gt;=</span> 0<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>        context<span style="color:#f92672">.</span><span style="color:#a6e22e">write</span><span style="color:#f92672">(</span>partitionID<span style="color:#f92672">,</span> shape<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>    context<span style="color:#f92672">.</span><span style="color:#a6e22e">progress</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@Override</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">overlapPartitions</span><span style="color:#f92672">(</span>Shape shape<span style="color:#f92672">,</span> ResultCollector<span style="color:#f92672">&lt;</span>Integer<span style="color:#f92672">&gt;</span> matcher<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>shape <span style="color:#f92672">==</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>  Rectangle shapeMBR <span style="color:#f92672">=</span> shape<span style="color:#f92672">.</span><span style="color:#a6e22e">getMBR</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>shapeMBR <span style="color:#f92672">==</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">int</span> col1<span style="color:#f92672">,</span> col2<span style="color:#f92672">,</span> row1<span style="color:#f92672">,</span> row2<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>  col1 <span style="color:#f92672">=</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">int</span><span style="color:#f92672">)</span>Math<span style="color:#f92672">.</span><span style="color:#a6e22e">floor</span><span style="color:#f92672">((</span>shapeMBR<span style="color:#f92672">.</span><span style="color:#a6e22e">x1</span> <span style="color:#f92672">-</span> x<span style="color:#f92672">)</span> <span style="color:#f92672">/</span> tileWidth<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>  col2 <span style="color:#f92672">=</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">int</span><span style="color:#f92672">)</span>Math<span style="color:#f92672">.</span><span style="color:#a6e22e">ceil</span><span style="color:#f92672">((</span>shapeMBR<span style="color:#f92672">.</span><span style="color:#a6e22e">x2</span> <span style="color:#f92672">-</span> x<span style="color:#f92672">)</span> <span style="color:#f92672">/</span> tileWidth<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>  row1 <span style="color:#f92672">=</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">int</span><span style="color:#f92672">)</span>Math<span style="color:#f92672">.</span><span style="color:#a6e22e">floor</span><span style="color:#f92672">((</span>shapeMBR<span style="color:#f92672">.</span><span style="color:#a6e22e">y1</span> <span style="color:#f92672">-</span> y<span style="color:#f92672">)</span> <span style="color:#f92672">/</span> tileHeight<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>  row2 <span style="color:#f92672">=</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">int</span><span style="color:#f92672">)</span>Math<span style="color:#f92672">.</span><span style="color:#a6e22e">ceil</span><span style="color:#f92672">((</span>shapeMBR<span style="color:#f92672">.</span><span style="color:#a6e22e">y2</span> <span style="color:#f92672">-</span> y<span style="color:#f92672">)</span> <span style="color:#f92672">/</span> tileHeight<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>  
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>col1 <span style="color:#f92672">&lt;</span> 0<span style="color:#f92672">)</span> col1 <span style="color:#f92672">=</span> 0<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>row1 <span style="color:#f92672">&lt;</span> 0<span style="color:#f92672">)</span> row1 <span style="color:#f92672">=</span> 0<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> col <span style="color:#f92672">=</span> col1<span style="color:#f92672">;</span> col <span style="color:#f92672">&lt;</span> col2<span style="color:#f92672">;</span> col<span style="color:#f92672">++)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> row <span style="color:#f92672">=</span> row1<span style="color:#f92672">;</span> row <span style="color:#f92672">&lt;</span> row2<span style="color:#f92672">;</span> row<span style="color:#f92672">++)</span>
+</span></span><span style="display:flex;"><span>      matcher<span style="color:#f92672">.</span><span style="color:#a6e22e">collect</span><span style="color:#f92672">(</span>getCellNumber<span style="color:#f92672">(</span>col<span style="color:#f92672">,</span> row<span style="color:#f92672">));</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><p>reduce过程直接以partition_id和对应的shape创建输出流，将对应的数据按行写入到输出流。对于不带索引的文件，直接写入到最终的结果中；带索引的文件会在getOrCreateDataOutput函数中得到一个临时文件的输出流，在写入结束后又把整个文件读到内存中构建局部索引（这一写一读外加文本解析的开销？），最后将结果文件写入到HDFS。</p>
 <p>LocalIndex接口被实现的类只有RRStarLocalIndex，本地索引貌似只支持R*树。</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#a6e22e">@Override</span>
-<span style="color:#66d9ef">protected</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">reduce</span><span style="color:#f92672">(</span>IntWritable partitionID<span style="color:#f92672">,</span> Iterable<span style="color:#f92672">&lt;</span>Shape<span style="color:#f92672">&gt;</span> shapes<span style="color:#f92672">,</span>
-    Context context<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> IOException<span style="color:#f92672">,</span> InterruptedException <span style="color:#f92672">{</span>
-  LOG<span style="color:#f92672">.</span><span style="color:#a6e22e">info</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;Working on partition #&#34;</span><span style="color:#f92672">+</span>partitionID<span style="color:#f92672">);</span>
-  <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span>Shape shape <span style="color:#f92672">:</span> shapes<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-    context<span style="color:#f92672">.</span><span style="color:#a6e22e">write</span><span style="color:#f92672">(</span>partitionID<span style="color:#f92672">,</span> shape<span style="color:#f92672">);</span>
-    context<span style="color:#f92672">.</span><span style="color:#a6e22e">progress</span><span style="color:#f92672">();</span>
-  <span style="color:#f92672">}</span>
-  <span style="color:#75715e">// Indicate end of partition to close the file
-</span><span style="color:#75715e"></span>  <span style="color:#75715e">// 在OutputFormat中，发现小于0的id号之后表示数据写入完毕可以关闭输出流
-</span><span style="color:#75715e"></span>  context<span style="color:#f92672">.</span><span style="color:#a6e22e">write</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> IntWritable<span style="color:#f92672">(-</span>partitionID<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">()-</span>1<span style="color:#f92672">),</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">);</span>
-  LOG<span style="color:#f92672">.</span><span style="color:#a6e22e">info</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;Done with partition #&#34;</span><span style="color:#f92672">+</span>partitionID<span style="color:#f92672">);</span>
-<span style="color:#f92672">}</span>
-
-<span style="color:#75715e">// IndexOutputFormat中，将数据写到对应的文件
-</span><span style="color:#75715e">// 看到这里可能会奇怪，LocalIndex去哪了，文件没有被索引。这里有个貌似不太高效的处理，
-</span><span style="color:#75715e">//   需要构建本地索引的文件首先被写入到临时文件，当写入结束（closePartiton函数中）后
-</span><span style="color:#75715e">//   创建了新的线程对临时文件构建本地空间索引后上传
-</span><span style="color:#75715e"></span><span style="color:#a6e22e">@Override</span>
-<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">write</span><span style="color:#f92672">(</span>IntWritable partitionID<span style="color:#f92672">,</span> S value<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> IOException <span style="color:#f92672">{</span>
-  <span style="color:#66d9ef">int</span> id <span style="color:#f92672">=</span> partitionID<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">();</span>
-  <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>id <span style="color:#f92672">&lt;</span> 0<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-    <span style="color:#75715e">// An indicator to close a partition
-</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">int</span> partitionToClose <span style="color:#f92672">=</span> <span style="color:#f92672">-</span>id <span style="color:#f92672">-</span> 1<span style="color:#f92672">;</span>
-    <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">closePartition</span><span style="color:#f92672">(</span>partitionToClose<span style="color:#f92672">);</span>
-  <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#f92672">{</span>
-    <span style="color:#75715e">// An actual object that we need to write
-</span><span style="color:#75715e"></span>    <span style="color:#75715e">// 通过ConcurrentHashMap存id对应的OutputStream
-</span><span style="color:#75715e"></span>    OutputStream output <span style="color:#f92672">=</span> getOrCreateDataOutput<span style="color:#f92672">(</span>id<span style="color:#f92672">);</span>
-    tempText<span style="color:#f92672">.</span><span style="color:#a6e22e">clear</span><span style="color:#f92672">();</span>
-    value<span style="color:#f92672">.</span><span style="color:#a6e22e">toText</span><span style="color:#f92672">(</span>tempText<span style="color:#f92672">);</span>
-    <span style="color:#66d9ef">byte</span><span style="color:#f92672">[]</span> bytes <span style="color:#f92672">=</span> tempText<span style="color:#f92672">.</span><span style="color:#a6e22e">getBytes</span><span style="color:#f92672">();</span>
-    output<span style="color:#f92672">.</span><span style="color:#a6e22e">write</span><span style="color:#f92672">(</span>bytes<span style="color:#f92672">,</span> 0<span style="color:#f92672">,</span> tempText<span style="color:#f92672">.</span><span style="color:#a6e22e">getLength</span><span style="color:#f92672">());</span>
-    output<span style="color:#f92672">.</span><span style="color:#a6e22e">write</span><span style="color:#f92672">(</span>NEW_LINE<span style="color:#f92672">);</span>  <span style="color:#75715e">// 并没有使用二进制的形式存，而是按行存的数据
-</span><span style="color:#75715e"></span>    Partition partition <span style="color:#f92672">=</span> partitionsInfo<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span>id<span style="color:#f92672">);</span>
-    partition<span style="color:#f92672">.</span><span style="color:#a6e22e">recordCount</span><span style="color:#f92672">++;</span>
-    partition<span style="color:#f92672">.</span><span style="color:#a6e22e">size</span> <span style="color:#f92672">+=</span> tempText<span style="color:#f92672">.</span><span style="color:#a6e22e">getLength</span><span style="color:#f92672">()</span> <span style="color:#f92672">+</span> NEW_LINE<span style="color:#f92672">.</span><span style="color:#a6e22e">length</span><span style="color:#f92672">;</span>
-    partition<span style="color:#f92672">.</span><span style="color:#a6e22e">expand</span><span style="color:#f92672">(</span>value<span style="color:#f92672">);</span>
-    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>shape <span style="color:#f92672">==</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span>
-      shape <span style="color:#f92672">=</span> <span style="color:#f92672">(</span>S<span style="color:#f92672">)</span> value<span style="color:#f92672">.</span><span style="color:#a6e22e">clone</span><span style="color:#f92672">();</span>
-  <span style="color:#f92672">}</span>
-<span style="color:#f92672">}</span>
-
-<span style="color:#66d9ef">private</span> OutputStream <span style="color:#a6e22e">getOrCreateDataOutput</span><span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> id<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> IOException <span style="color:#f92672">{</span>
-  OutputStream out <span style="color:#f92672">=</span> partitionsOutput<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span>id<span style="color:#f92672">);</span>
-  <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>out <span style="color:#f92672">==</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-    <span style="color:#75715e">// First time to write in this partition. Store its information
-</span><span style="color:#75715e"></span>    Partition partition <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Partition<span style="color:#f92672">();</span>
-
-    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>localIndexClass <span style="color:#f92672">==</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-      <span style="color:#75715e">// No local index needed. Write to the final file directly
-</span><span style="color:#75715e"></span>      Path path <span style="color:#f92672">=</span> getPartitionFile<span style="color:#f92672">(</span>id<span style="color:#f92672">);</span>
-      out <span style="color:#f92672">=</span> outFS<span style="color:#f92672">.</span><span style="color:#a6e22e">create</span><span style="color:#f92672">(</span>path<span style="color:#f92672">);</span>
-      partition<span style="color:#f92672">.</span><span style="color:#a6e22e">filename</span> <span style="color:#f92672">=</span> path<span style="color:#f92672">.</span><span style="color:#a6e22e">getName</span><span style="color:#f92672">();</span>
-    <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#f92672">{</span>
-      <span style="color:#75715e">// Write to a temporary file that will later get indexed
-</span><span style="color:#75715e"></span>      File tempFile <span style="color:#f92672">=</span> File<span style="color:#f92672">.</span><span style="color:#a6e22e">createTempFile</span><span style="color:#f92672">(</span>String<span style="color:#f92672">.</span><span style="color:#a6e22e">format</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;part-%05d&#34;</span><span style="color:#f92672">,</span> id<span style="color:#f92672">),</span> <span style="color:#e6db74">&#34;lindex&#34;</span><span style="color:#f92672">);</span>
-      out <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> BufferedOutputStream<span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> FileOutputStream<span style="color:#f92672">(</span>tempFile<span style="color:#f92672">));</span>
-      tempFiles<span style="color:#f92672">.</span><span style="color:#a6e22e">put</span><span style="color:#f92672">(</span>id<span style="color:#f92672">,</span> tempFile<span style="color:#f92672">);</span>
-    <span style="color:#f92672">}</span>
-    partition<span style="color:#f92672">.</span><span style="color:#a6e22e">cellId</span> <span style="color:#f92672">=</span> id<span style="color:#f92672">;</span>
-    <span style="color:#75715e">// Set the rectangle to the opposite universe so that we can keep
-</span><span style="color:#75715e"></span>    <span style="color:#75715e">// expanding it to get the MBR of this partition
-</span><span style="color:#75715e"></span>    partition<span style="color:#f92672">.</span><span style="color:#a6e22e">set</span><span style="color:#f92672">(</span>Double<span style="color:#f92672">.</span><span style="color:#a6e22e">MAX_VALUE</span><span style="color:#f92672">,</span> Double<span style="color:#f92672">.</span><span style="color:#a6e22e">MAX_VALUE</span><span style="color:#f92672">,</span>
-        <span style="color:#f92672">-</span>Double<span style="color:#f92672">.</span><span style="color:#a6e22e">MAX_VALUE</span><span style="color:#f92672">,</span> <span style="color:#f92672">-</span>Double<span style="color:#f92672">.</span><span style="color:#a6e22e">MAX_VALUE</span><span style="color:#f92672">);</span>
-    <span style="color:#75715e">// Store in the hashtables for further user
-</span><span style="color:#75715e"></span>    partitionsOutput<span style="color:#f92672">.</span><span style="color:#a6e22e">put</span><span style="color:#f92672">(</span>id<span style="color:#f92672">,</span>  out<span style="color:#f92672">);</span>
-    partitionsInfo<span style="color:#f92672">.</span><span style="color:#a6e22e">put</span><span style="color:#f92672">(</span>id<span style="color:#f92672">,</span> partition<span style="color:#f92672">);</span>
-  <span style="color:#f92672">}</span>
-  <span style="color:#66d9ef">return</span> out<span style="color:#f92672">;</span>
-<span style="color:#f92672">}</span>
-
-
-<span style="color:#75715e">// 省略了一些异常处理
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">private</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">closePartition</span><span style="color:#f92672">(</span><span style="color:#66d9ef">final</span> <span style="color:#66d9ef">int</span> id<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-  <span style="color:#66d9ef">final</span> Partition partitionInfo <span style="color:#f92672">=</span> partitionsInfo<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span>id<span style="color:#f92672">);</span>
-  <span style="color:#66d9ef">final</span> OutputStream outStream <span style="color:#f92672">=</span> partitionsOutput<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span>id<span style="color:#f92672">);</span>
-  <span style="color:#66d9ef">final</span> File tempFile <span style="color:#f92672">=</span> tempFiles<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span>id<span style="color:#f92672">);</span>
-  Thread closeThread <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Thread<span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
-    <span style="color:#a6e22e">@Override</span>
-    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">run</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
-      <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
-        outStream<span style="color:#f92672">.</span><span style="color:#a6e22e">close</span><span style="color:#f92672">();</span>
-        
-        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>localIndexClass <span style="color:#f92672">!=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-          <span style="color:#75715e">// Build a local index for that file
-</span><span style="color:#75715e"></span>          <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
-            LocalIndex<span style="color:#f92672">&lt;</span>S<span style="color:#f92672">&gt;</span> localIndex <span style="color:#f92672">=</span> localIndexClass<span style="color:#f92672">.</span><span style="color:#a6e22e">newInstance</span><span style="color:#f92672">();</span>
-            localIndex<span style="color:#f92672">.</span><span style="color:#a6e22e">setup</span><span style="color:#f92672">(</span>conf<span style="color:#f92672">);</span>
-
-            Path indexedFilePath <span style="color:#f92672">=</span> getPartitionFile<span style="color:#f92672">(</span>id<span style="color:#f92672">);</span>
-            partitionInfo<span style="color:#f92672">.</span><span style="color:#a6e22e">filename</span> <span style="color:#f92672">=</span> indexedFilePath<span style="color:#f92672">.</span><span style="color:#a6e22e">getName</span><span style="color:#f92672">();</span>
-            <span style="color:#75715e">// 这个函数的逻辑见后面
-</span><span style="color:#75715e"></span>			<span style="color:#75715e">// 将tempFile读到内存后解析，通过所有行数据的MBR构建R*树，然后写入HDFS上的索引文件
-</span><span style="color:#75715e"></span>			localIndex<span style="color:#f92672">.</span><span style="color:#a6e22e">buildLocalIndex</span><span style="color:#f92672">(</span>tempFile<span style="color:#f92672">,</span> indexedFilePath<span style="color:#f92672">,</span> shape<span style="color:#f92672">);</span>
-            <span style="color:#75715e">// Temporary file no longer needed
-</span><span style="color:#75715e"></span>            tempFile<span style="color:#f92672">.</span><span style="color:#a6e22e">delete</span><span style="color:#f92672">();</span>
-          <span style="color:#f92672">}</span>
-        <span style="color:#f92672">}</span>
-        
-        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>disjoint<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-          <span style="color:#75715e">// If data is replicated, we need to shrink down the size of the
-</span><span style="color:#75715e"></span>          <span style="color:#75715e">// partition to keep partitions disjoint
-</span><span style="color:#75715e"></span>          partitionInfo<span style="color:#f92672">.</span><span style="color:#a6e22e">set</span><span style="color:#f92672">(</span>partitionInfo<span style="color:#f92672">.</span><span style="color:#a6e22e">getIntersection</span><span style="color:#f92672">(</span>partitioner<span style="color:#f92672">.</span><span style="color:#a6e22e">getPartition</span><span style="color:#f92672">(</span>id<span style="color:#f92672">)));</span>
-        <span style="color:#f92672">}</span>
-        Text partitionText <span style="color:#f92672">=</span> partitionInfo<span style="color:#f92672">.</span><span style="color:#a6e22e">toText</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> Text<span style="color:#f92672">());</span>
-        <span style="color:#66d9ef">synchronized</span> <span style="color:#f92672">(</span>masterFile<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-          <span style="color:#75715e">// Write partition information to the master file
-</span><span style="color:#75715e"></span>          masterFile<span style="color:#f92672">.</span><span style="color:#a6e22e">write</span><span style="color:#f92672">(</span>partitionText<span style="color:#f92672">.</span><span style="color:#a6e22e">getBytes</span><span style="color:#f92672">(),</span> 0<span style="color:#f92672">,</span> partitionText<span style="color:#f92672">.</span><span style="color:#a6e22e">getLength</span><span style="color:#f92672">());</span>
-          masterFile<span style="color:#f92672">.</span><span style="color:#a6e22e">write</span><span style="color:#f92672">(</span>NEW_LINE<span style="color:#f92672">);</span>
-        <span style="color:#f92672">}</span>
-      <span style="color:#f92672">}</span> 
-</code></pre></div><h1 id="空间索引文件的组织形式">空间索引文件的组织形式</h1>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#a6e22e">@Override</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">protected</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">reduce</span><span style="color:#f92672">(</span>IntWritable partitionID<span style="color:#f92672">,</span> Iterable<span style="color:#f92672">&lt;</span>Shape<span style="color:#f92672">&gt;</span> shapes<span style="color:#f92672">,</span>
+</span></span><span style="display:flex;"><span>    Context context<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> IOException<span style="color:#f92672">,</span> InterruptedException <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>  LOG<span style="color:#f92672">.</span><span style="color:#a6e22e">info</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;Working on partition #&#34;</span><span style="color:#f92672">+</span>partitionID<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span>Shape shape <span style="color:#f92672">:</span> shapes<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    context<span style="color:#f92672">.</span><span style="color:#a6e22e">write</span><span style="color:#f92672">(</span>partitionID<span style="color:#f92672">,</span> shape<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>    context<span style="color:#f92672">.</span><span style="color:#a6e22e">progress</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Indicate end of partition to close the file
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">// 在OutputFormat中，发现小于0的id号之后表示数据写入完毕可以关闭输出流
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  context<span style="color:#f92672">.</span><span style="color:#a6e22e">write</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> IntWritable<span style="color:#f92672">(-</span>partitionID<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">()-</span>1<span style="color:#f92672">),</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>  LOG<span style="color:#f92672">.</span><span style="color:#a6e22e">info</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;Done with partition #&#34;</span><span style="color:#f92672">+</span>partitionID<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// IndexOutputFormat中，将数据写到对应的文件
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// 看到这里可能会奇怪，LocalIndex去哪了，文件没有被索引。这里有个貌似不太高效的处理，
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">//   需要构建本地索引的文件首先被写入到临时文件，当写入结束（closePartiton函数中）后
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">//   创建了新的线程对临时文件构建本地空间索引后上传
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#a6e22e">@Override</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">write</span><span style="color:#f92672">(</span>IntWritable partitionID<span style="color:#f92672">,</span> S value<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> IOException <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">int</span> id <span style="color:#f92672">=</span> partitionID<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>id <span style="color:#f92672">&lt;</span> 0<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// An indicator to close a partition
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">int</span> partitionToClose <span style="color:#f92672">=</span> <span style="color:#f92672">-</span>id <span style="color:#f92672">-</span> 1<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">closePartition</span><span style="color:#f92672">(</span>partitionToClose<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// An actual object that we need to write
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// 通过ConcurrentHashMap存id对应的OutputStream
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    OutputStream output <span style="color:#f92672">=</span> getOrCreateDataOutput<span style="color:#f92672">(</span>id<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>    tempText<span style="color:#f92672">.</span><span style="color:#a6e22e">clear</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>    value<span style="color:#f92672">.</span><span style="color:#a6e22e">toText</span><span style="color:#f92672">(</span>tempText<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">byte</span><span style="color:#f92672">[]</span> bytes <span style="color:#f92672">=</span> tempText<span style="color:#f92672">.</span><span style="color:#a6e22e">getBytes</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>    output<span style="color:#f92672">.</span><span style="color:#a6e22e">write</span><span style="color:#f92672">(</span>bytes<span style="color:#f92672">,</span> 0<span style="color:#f92672">,</span> tempText<span style="color:#f92672">.</span><span style="color:#a6e22e">getLength</span><span style="color:#f92672">());</span>
+</span></span><span style="display:flex;"><span>    output<span style="color:#f92672">.</span><span style="color:#a6e22e">write</span><span style="color:#f92672">(</span>NEW_LINE<span style="color:#f92672">);</span>  <span style="color:#75715e">// 并没有使用二进制的形式存，而是按行存的数据
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    Partition partition <span style="color:#f92672">=</span> partitionsInfo<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span>id<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>    partition<span style="color:#f92672">.</span><span style="color:#a6e22e">recordCount</span><span style="color:#f92672">++;</span>
+</span></span><span style="display:flex;"><span>    partition<span style="color:#f92672">.</span><span style="color:#a6e22e">size</span> <span style="color:#f92672">+=</span> tempText<span style="color:#f92672">.</span><span style="color:#a6e22e">getLength</span><span style="color:#f92672">()</span> <span style="color:#f92672">+</span> NEW_LINE<span style="color:#f92672">.</span><span style="color:#a6e22e">length</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>    partition<span style="color:#f92672">.</span><span style="color:#a6e22e">expand</span><span style="color:#f92672">(</span>value<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>shape <span style="color:#f92672">==</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>      shape <span style="color:#f92672">=</span> <span style="color:#f92672">(</span>S<span style="color:#f92672">)</span> value<span style="color:#f92672">.</span><span style="color:#a6e22e">clone</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">private</span> OutputStream <span style="color:#a6e22e">getOrCreateDataOutput</span><span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> id<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> IOException <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>  OutputStream out <span style="color:#f92672">=</span> partitionsOutput<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span>id<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>out <span style="color:#f92672">==</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// First time to write in this partition. Store its information
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    Partition partition <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Partition<span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>localIndexClass <span style="color:#f92672">==</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">// No local index needed. Write to the final file directly
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      Path path <span style="color:#f92672">=</span> getPartitionFile<span style="color:#f92672">(</span>id<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>      out <span style="color:#f92672">=</span> outFS<span style="color:#f92672">.</span><span style="color:#a6e22e">create</span><span style="color:#f92672">(</span>path<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>      partition<span style="color:#f92672">.</span><span style="color:#a6e22e">filename</span> <span style="color:#f92672">=</span> path<span style="color:#f92672">.</span><span style="color:#a6e22e">getName</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">// Write to a temporary file that will later get indexed
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      File tempFile <span style="color:#f92672">=</span> File<span style="color:#f92672">.</span><span style="color:#a6e22e">createTempFile</span><span style="color:#f92672">(</span>String<span style="color:#f92672">.</span><span style="color:#a6e22e">format</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;part-%05d&#34;</span><span style="color:#f92672">,</span> id<span style="color:#f92672">),</span> <span style="color:#e6db74">&#34;lindex&#34;</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>      out <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> BufferedOutputStream<span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> FileOutputStream<span style="color:#f92672">(</span>tempFile<span style="color:#f92672">));</span>
+</span></span><span style="display:flex;"><span>      tempFiles<span style="color:#f92672">.</span><span style="color:#a6e22e">put</span><span style="color:#f92672">(</span>id<span style="color:#f92672">,</span> tempFile<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>    partition<span style="color:#f92672">.</span><span style="color:#a6e22e">cellId</span> <span style="color:#f92672">=</span> id<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Set the rectangle to the opposite universe so that we can keep
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// expanding it to get the MBR of this partition
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    partition<span style="color:#f92672">.</span><span style="color:#a6e22e">set</span><span style="color:#f92672">(</span>Double<span style="color:#f92672">.</span><span style="color:#a6e22e">MAX_VALUE</span><span style="color:#f92672">,</span> Double<span style="color:#f92672">.</span><span style="color:#a6e22e">MAX_VALUE</span><span style="color:#f92672">,</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">-</span>Double<span style="color:#f92672">.</span><span style="color:#a6e22e">MAX_VALUE</span><span style="color:#f92672">,</span> <span style="color:#f92672">-</span>Double<span style="color:#f92672">.</span><span style="color:#a6e22e">MAX_VALUE</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Store in the hashtables for further user
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    partitionsOutput<span style="color:#f92672">.</span><span style="color:#a6e22e">put</span><span style="color:#f92672">(</span>id<span style="color:#f92672">,</span>  out<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>    partitionsInfo<span style="color:#f92672">.</span><span style="color:#a6e22e">put</span><span style="color:#f92672">(</span>id<span style="color:#f92672">,</span> partition<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">return</span> out<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 省略了一些异常处理
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">private</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">closePartition</span><span style="color:#f92672">(</span><span style="color:#66d9ef">final</span> <span style="color:#66d9ef">int</span> id<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">final</span> Partition partitionInfo <span style="color:#f92672">=</span> partitionsInfo<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span>id<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">final</span> OutputStream outStream <span style="color:#f92672">=</span> partitionsOutput<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span>id<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">final</span> File tempFile <span style="color:#f92672">=</span> tempFiles<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span>id<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>  Thread closeThread <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Thread<span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@Override</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">run</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>        outStream<span style="color:#f92672">.</span><span style="color:#a6e22e">close</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>localIndexClass <span style="color:#f92672">!=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>          <span style="color:#75715e">// Build a local index for that file
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>          <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>            LocalIndex<span style="color:#f92672">&lt;</span>S<span style="color:#f92672">&gt;</span> localIndex <span style="color:#f92672">=</span> localIndexClass<span style="color:#f92672">.</span><span style="color:#a6e22e">newInstance</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>            localIndex<span style="color:#f92672">.</span><span style="color:#a6e22e">setup</span><span style="color:#f92672">(</span>conf<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            Path indexedFilePath <span style="color:#f92672">=</span> getPartitionFile<span style="color:#f92672">(</span>id<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>            partitionInfo<span style="color:#f92672">.</span><span style="color:#a6e22e">filename</span> <span style="color:#f92672">=</span> indexedFilePath<span style="color:#f92672">.</span><span style="color:#a6e22e">getName</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// 这个函数的逻辑见后面
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>			<span style="color:#75715e">// 将tempFile读到内存后解析，通过所有行数据的MBR构建R*树，然后写入HDFS上的索引文件
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>			localIndex<span style="color:#f92672">.</span><span style="color:#a6e22e">buildLocalIndex</span><span style="color:#f92672">(</span>tempFile<span style="color:#f92672">,</span> indexedFilePath<span style="color:#f92672">,</span> shape<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// Temporary file no longer needed
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            tempFile<span style="color:#f92672">.</span><span style="color:#a6e22e">delete</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>disjoint<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>          <span style="color:#75715e">// If data is replicated, we need to shrink down the size of the
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>          <span style="color:#75715e">// partition to keep partitions disjoint
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>          partitionInfo<span style="color:#f92672">.</span><span style="color:#a6e22e">set</span><span style="color:#f92672">(</span>partitionInfo<span style="color:#f92672">.</span><span style="color:#a6e22e">getIntersection</span><span style="color:#f92672">(</span>partitioner<span style="color:#f92672">.</span><span style="color:#a6e22e">getPartition</span><span style="color:#f92672">(</span>id<span style="color:#f92672">)));</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>        Text partitionText <span style="color:#f92672">=</span> partitionInfo<span style="color:#f92672">.</span><span style="color:#a6e22e">toText</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> Text<span style="color:#f92672">());</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">synchronized</span> <span style="color:#f92672">(</span>masterFile<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>          <span style="color:#75715e">// Write partition information to the master file
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>          masterFile<span style="color:#f92672">.</span><span style="color:#a6e22e">write</span><span style="color:#f92672">(</span>partitionText<span style="color:#f92672">.</span><span style="color:#a6e22e">getBytes</span><span style="color:#f92672">(),</span> 0<span style="color:#f92672">,</span> partitionText<span style="color:#f92672">.</span><span style="color:#a6e22e">getLength</span><span style="color:#f92672">());</span>
+</span></span><span style="display:flex;"><span>          masterFile<span style="color:#f92672">.</span><span style="color:#a6e22e">write</span><span style="color:#f92672">(</span>NEW_LINE<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">}</span> 
+</span></span></code></pre></div><h1 id="空间索引文件的组织形式">空间索引文件的组织形式</h1>
 <p>R*树存储到文件的过程。实现中并没有像常规的R树，做一套支持动态添加删除功能的访问，而只是实现了一套类似序列化的存储方式。R树的实现并没有使用树的指针形式，而是用的数组。因此序列化过程重点分成3部分：</p>
 <ol>
 <li>写入具体的空间数据</li>
@@ -466,129 +468,129 @@ shadoop index test.rects test.grid sindex:grid shape:rect
 <li>写入元数据</li>
 </ol>
 <p>这个元数据放文件末尾的方式略微有点非主流。可以参考单元测试中的LocalIndexRecordReaderTest，涉及了对空间文件构建索引后存入文件，然后调用LocalIndexRecordReader读取文件。</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">/**
-</span><span style="color:#75715e"> * &lt;ul&gt;
-</span><span style="color:#75715e"> *   &lt;li&gt;
-</span><span style="color:#75715e"> *     Data Entries: First, all data entries are written in an order that is consistent
-</span><span style="color:#75715e"> *   with the R-tree structure. This order will guarantee that all data entries
-</span><span style="color:#75715e"> *   under any node (from the root to leaves) will be adjacent in that order.
-</span><span style="color:#75715e"> *   &lt;/li&gt;
-</span><span style="color:#75715e"> *   &lt;li&gt;
-</span><span style="color:#75715e"> *     Tree structure: This part contains the structure of the tree represented
-</span><span style="color:#75715e"> *   by its nodes. The nodes are stored in a level order traversal. This guarantees
-</span><span style="color:#75715e"> *   that the root will always be the first node and that all siblings will be
-</span><span style="color:#75715e"> *   stored consecutively. Each node contains the following information:
-</span><span style="color:#75715e"> *   (1) (n) Number of children as a 32-bit integer,
-</span><span style="color:#75715e"> *   (2) n Pairs of (child offset, MBR=(x1, y1, x2, y2). The child offset is
-</span><span style="color:#75715e"> *   the offset of the beginning of the child data (node or data entry) in the
-</span><span style="color:#75715e"> *   tree where 0 is the offset of the first data entry.
-</span><span style="color:#75715e"> *   &lt;/li&gt;
-</span><span style="color:#75715e"> *   &lt;li&gt;
-</span><span style="color:#75715e"> *     Tree footer: This section contains some meta data about the tree as
-</span><span style="color:#75715e"> *     follows. All integers are 32-bits.
-</span><span style="color:#75715e"> *     (1) MBR of the root as (x1, y1, x2, y2),
-</span><span style="color:#75715e"> *     (2) Number of data entries,
-</span><span style="color:#75715e"> *     (3) Number of non-leaf nodes,
-</span><span style="color:#75715e"> *     (4) Number of leaf nodes,
-</span><span style="color:#75715e"> *     (5) Tree structure offset: offset of the beginning of the tree structure section
-</span><span style="color:#75715e"> *     (6) Footer offset: offset of the beginning of the footer as a 32-bit integer.
-</span><span style="color:#75715e"> *     (7) Tree size: Total tree size in bytes including data+structure+footer
-</span><span style="color:#75715e"> *   &lt;/li&gt;
-</span><span style="color:#75715e"> *
-</span><span style="color:#75715e"> * &lt;/ul&gt;
-</span><span style="color:#75715e"> * @param out
-</span><span style="color:#75715e"> * @throws IOException
-</span><span style="color:#75715e"> */</span>
-<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">write</span><span style="color:#f92672">(</span>DataOutput out<span style="color:#f92672">,</span> Serializer ser<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> IOException <span style="color:#f92672">{</span>
-  <span style="color:#75715e">// Tree data: write the data entries in the tree order
-</span><span style="color:#75715e"></span>  <span style="color:#75715e">// Since we write the data first, we will have to traverse the tree twice
-</span><span style="color:#75715e"></span>  <span style="color:#75715e">// first time to visit and write the data entries in the tree order,
-</span><span style="color:#75715e"></span>  <span style="color:#75715e">// and second time to visit and write the tree nodes in the tree order.
-</span><span style="color:#75715e"></span>  Deque<span style="color:#f92672">&lt;</span>Integer<span style="color:#f92672">&gt;</span> nodesToVisit <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ArrayDeque<span style="color:#f92672">&lt;</span>Integer<span style="color:#f92672">&gt;();</span>
-  nodesToVisit<span style="color:#f92672">.</span><span style="color:#a6e22e">add</span><span style="color:#f92672">(</span>root<span style="color:#f92672">);</span>
-  <span style="color:#66d9ef">int</span><span style="color:#f92672">[]</span> objectOffsets <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#66d9ef">int</span><span style="color:#f92672">[</span>numOfDataEntries<span style="color:#f92672">()</span> <span style="color:#f92672">+</span> numOfNodes<span style="color:#f92672">()];</span>
-  <span style="color:#75715e">// Keep track of the offset of each data object from the beginning of the
-</span><span style="color:#75715e"></span>  <span style="color:#75715e">// data section
-</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">int</span> dataOffset <span style="color:#f92672">=</span> 0<span style="color:#f92672">;</span>
-  <span style="color:#75715e">// Keep track of the offset of each node from the beginning of the tree
-</span><span style="color:#75715e"></span>  <span style="color:#75715e">// structure section
-</span><span style="color:#75715e"></span>  <span style="color:#75715e">// 看起来是一波广度优先遍历，按层处理结点
-</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">int</span> nodeOffset <span style="color:#f92672">=</span> 0<span style="color:#f92672">;</span>
-  <span style="color:#66d9ef">while</span> <span style="color:#f92672">(!</span>nodesToVisit<span style="color:#f92672">.</span><span style="color:#a6e22e">isEmpty</span><span style="color:#f92672">())</span> <span style="color:#f92672">{</span>
-    <span style="color:#66d9ef">int</span> node <span style="color:#f92672">=</span> nodesToVisit<span style="color:#f92672">.</span><span style="color:#a6e22e">removeFirst</span><span style="color:#f92672">();</span>
-    <span style="color:#75715e">// The node is supposed to be written in this order.
-</span><span style="color:#75715e"></span>    <span style="color:#75715e">// Measure its offset and accumulate its size
-</span><span style="color:#75715e"></span>    objectOffsets<span style="color:#f92672">[</span>node<span style="color:#f92672">]</span> <span style="color:#f92672">=</span> nodeOffset<span style="color:#f92672">;</span>
-    nodeOffset <span style="color:#f92672">+=</span> 4 <span style="color:#f92672">+</span> <span style="color:#f92672">(</span>4 <span style="color:#f92672">+</span> 8 <span style="color:#f92672">*</span> 4<span style="color:#f92672">)</span> <span style="color:#f92672">*</span> Node_size<span style="color:#f92672">(</span>node<span style="color:#f92672">);</span>
-
-    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>isLeaf<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span>node<span style="color:#f92672">))</span> <span style="color:#f92672">{</span>
-      <span style="color:#75715e">// Leaf node, write the data entries in order
-</span><span style="color:#75715e"></span>      <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> child <span style="color:#f92672">:</span> children<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span>node<span style="color:#f92672">))</span> <span style="color:#f92672">{</span>
-        objectOffsets<span style="color:#f92672">[</span>child<span style="color:#f92672">]</span> <span style="color:#f92672">=</span> dataOffset<span style="color:#f92672">;</span>
-        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>ser <span style="color:#f92672">!=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span>
-          dataOffset <span style="color:#f92672">+=</span> ser<span style="color:#f92672">.</span><span style="color:#a6e22e">serialize</span><span style="color:#f92672">(</span>out<span style="color:#f92672">,</span> child<span style="color:#f92672">);</span>
-      <span style="color:#f92672">}</span>
-    <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#f92672">{</span>
-      <span style="color:#75715e">// Internal node, recursively traverse its children
-</span><span style="color:#75715e"></span>      <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> child <span style="color:#f92672">:</span> children<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span>node<span style="color:#f92672">))</span>
-        nodesToVisit<span style="color:#f92672">.</span><span style="color:#a6e22e">addLast</span><span style="color:#f92672">(</span>child<span style="color:#f92672">);</span>
-    <span style="color:#f92672">}</span>
-  <span style="color:#f92672">}</span>
-  <span style="color:#75715e">// Update node offsets as they are written after the data entries
-</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> 0<span style="color:#f92672">;</span> i <span style="color:#f92672">&lt;</span> numNodes<span style="color:#f92672">;</span> i<span style="color:#f92672">++)</span>
-    objectOffsets<span style="color:#f92672">[</span>i <span style="color:#f92672">+</span> numEntries<span style="color:#f92672">]</span> <span style="color:#f92672">+=</span> dataOffset<span style="color:#f92672">;</span>
-
-  <span style="color:#75715e">// Tree structure: Write the nodes in tree order
-</span><span style="color:#75715e"></span>  nodesToVisit<span style="color:#f92672">.</span><span style="color:#a6e22e">add</span><span style="color:#f92672">(</span>root<span style="color:#f92672">);</span>
-  <span style="color:#66d9ef">while</span> <span style="color:#f92672">(!</span>nodesToVisit<span style="color:#f92672">.</span><span style="color:#a6e22e">isEmpty</span><span style="color:#f92672">())</span> <span style="color:#f92672">{</span>
-    <span style="color:#66d9ef">int</span> node <span style="color:#f92672">=</span> nodesToVisit<span style="color:#f92672">.</span><span style="color:#a6e22e">removeFirst</span><span style="color:#f92672">();</span>
-    <span style="color:#75715e">// (1) Number of children
-</span><span style="color:#75715e"></span>    out<span style="color:#f92672">.</span><span style="color:#a6e22e">writeInt</span><span style="color:#f92672">(</span>Node_size<span style="color:#f92672">(</span>node<span style="color:#f92672">));</span>
-    <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> child <span style="color:#f92672">:</span> children<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span>node<span style="color:#f92672">))</span> <span style="color:#f92672">{</span>
-      <span style="color:#75715e">// (2) Write the offset of the child
-</span><span style="color:#75715e"></span>      out<span style="color:#f92672">.</span><span style="color:#a6e22e">writeInt</span><span style="color:#f92672">(</span>objectOffsets<span style="color:#f92672">[</span>child<span style="color:#f92672">]);</span>
-      <span style="color:#75715e">// (3) Write the MBR of each child
-</span><span style="color:#75715e"></span>      out<span style="color:#f92672">.</span><span style="color:#a6e22e">writeDouble</span><span style="color:#f92672">(</span>x1s<span style="color:#f92672">[</span>child<span style="color:#f92672">]);</span>
-      out<span style="color:#f92672">.</span><span style="color:#a6e22e">writeDouble</span><span style="color:#f92672">(</span>y1s<span style="color:#f92672">[</span>child<span style="color:#f92672">]);</span>
-      out<span style="color:#f92672">.</span><span style="color:#a6e22e">writeDouble</span><span style="color:#f92672">(</span>x2s<span style="color:#f92672">[</span>child<span style="color:#f92672">]);</span>
-      out<span style="color:#f92672">.</span><span style="color:#a6e22e">writeDouble</span><span style="color:#f92672">(</span>y2s<span style="color:#f92672">[</span>child<span style="color:#f92672">]);</span>
-    <span style="color:#f92672">}</span>
-    <span style="color:#75715e">// If node is internal, add its children to the nodes to be visited
-</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(!</span>isLeaf<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span>node<span style="color:#f92672">))</span> <span style="color:#f92672">{</span>
-      <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> child <span style="color:#f92672">:</span> children<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span>node<span style="color:#f92672">))</span>
-        nodesToVisit<span style="color:#f92672">.</span><span style="color:#a6e22e">addLast</span><span style="color:#f92672">(</span>child<span style="color:#f92672">);</span>
-    <span style="color:#f92672">}</span>
-  <span style="color:#f92672">}</span>
-
-  <span style="color:#75715e">// Tree footer
-</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">int</span> footerOffset <span style="color:#f92672">=</span> dataOffset <span style="color:#f92672">+</span> nodeOffset<span style="color:#f92672">;</span>
-  <span style="color:#75715e">// (1) MBR of the root
-</span><span style="color:#75715e"></span>  out<span style="color:#f92672">.</span><span style="color:#a6e22e">writeDouble</span><span style="color:#f92672">(</span>x1s<span style="color:#f92672">[</span>root<span style="color:#f92672">]);</span>
-  out<span style="color:#f92672">.</span><span style="color:#a6e22e">writeDouble</span><span style="color:#f92672">(</span>y1s<span style="color:#f92672">[</span>root<span style="color:#f92672">]);</span>
-  out<span style="color:#f92672">.</span><span style="color:#a6e22e">writeDouble</span><span style="color:#f92672">(</span>x2s<span style="color:#f92672">[</span>root<span style="color:#f92672">]);</span>
-  out<span style="color:#f92672">.</span><span style="color:#a6e22e">writeDouble</span><span style="color:#f92672">(</span>y2s<span style="color:#f92672">[</span>root<span style="color:#f92672">]);</span>
-  <span style="color:#75715e">// (2) Number of data entries
-</span><span style="color:#75715e"></span>  out<span style="color:#f92672">.</span><span style="color:#a6e22e">writeInt</span><span style="color:#f92672">(</span>numOfDataEntries<span style="color:#f92672">());</span>
-  <span style="color:#75715e">// (3) Number of non-leaf nodes
-</span><span style="color:#75715e"></span>  out<span style="color:#f92672">.</span><span style="color:#a6e22e">writeInt</span><span style="color:#f92672">((</span><span style="color:#66d9ef">int</span><span style="color:#f92672">)</span> <span style="color:#f92672">(</span>numOfNodes<span style="color:#f92672">()</span> <span style="color:#f92672">-</span> isLeaf<span style="color:#f92672">.</span><span style="color:#a6e22e">countOnes</span><span style="color:#f92672">()));</span>
-  <span style="color:#75715e">// (4) Number of leaf nodes
-</span><span style="color:#75715e"></span>  out<span style="color:#f92672">.</span><span style="color:#a6e22e">writeInt</span><span style="color:#f92672">((</span><span style="color:#66d9ef">int</span><span style="color:#f92672">)</span> isLeaf<span style="color:#f92672">.</span><span style="color:#a6e22e">countOnes</span><span style="color:#f92672">());</span>
-  <span style="color:#75715e">// (5) Offset of the tree structure section
-</span><span style="color:#75715e"></span>  out<span style="color:#f92672">.</span><span style="color:#a6e22e">writeInt</span><span style="color:#f92672">(</span>dataOffset<span style="color:#f92672">);</span>
-  <span style="color:#75715e">// (6) Offset of the footer
-</span><span style="color:#75715e"></span>  out<span style="color:#f92672">.</span><span style="color:#a6e22e">writeInt</span><span style="color:#f92672">(</span>footerOffset<span style="color:#f92672">);</span>
-  <span style="color:#75715e">// (7) Size of the entire tree
-</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">int</span> footerSize <span style="color:#f92672">=</span> 4 <span style="color:#f92672">*</span> 8 <span style="color:#f92672">+</span> 6 <span style="color:#f92672">*</span> 4<span style="color:#f92672">;</span>
-  out<span style="color:#f92672">.</span><span style="color:#a6e22e">writeInt</span><span style="color:#f92672">(</span>footerOffset <span style="color:#f92672">+</span> footerSize<span style="color:#f92672">);</span>
-<span style="color:#f92672">}</span>
-</code></pre></div><p>以数组形式组织的R树，在读取时直接按文件顺序读取到数组中即可。对于元数据文件放在了文件尾，LocalIndexRecordReader用了一个这样的操作，seek到文件末尾的位置读取数据：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">in<span style="color:#f92672">.</span><span style="color:#a6e22e">seek</span><span style="color:#f92672">(</span>indexEnd <span style="color:#f92672">-</span> 4<span style="color:#f92672">);</span>
-<span style="color:#66d9ef">int</span> indexSize <span style="color:#f92672">=</span> in<span style="color:#f92672">.</span><span style="color:#a6e22e">readInt</span><span style="color:#f92672">();</span>
-<span style="color:#66d9ef">long</span> indexStart <span style="color:#f92672">=</span> indexEnd <span style="color:#f92672">-</span> indexSize <span style="color:#f92672">-</span> 4<span style="color:#f92672">;</span>
-<span style="color:#75715e">// ...
-</span><span style="color:#75715e"></span>in<span style="color:#f92672">.</span><span style="color:#a6e22e">seek</span><span style="color:#f92672">(</span>indexStart<span style="color:#f92672">);</span>
-localIndex<span style="color:#f92672">.</span><span style="color:#a6e22e">read</span><span style="color:#f92672">(</span>in<span style="color:#f92672">,</span> indexStart<span style="color:#f92672">,</span> indexEnd<span style="color:#f92672">,</span> stockShape<span style="color:#f92672">);</span>  <span style="color:#75715e">// 读取并构建R树（相当于反序列化）
-</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#75715e">/**
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> * &lt;ul&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> *   &lt;li&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> *     Data Entries: First, all data entries are written in an order that is consistent
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> *   with the R-tree structure. This order will guarantee that all data entries
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> *   under any node (from the root to leaves) will be adjacent in that order.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> *   &lt;/li&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> *   &lt;li&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> *     Tree structure: This part contains the structure of the tree represented
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> *   by its nodes. The nodes are stored in a level order traversal. This guarantees
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> *   that the root will always be the first node and that all siblings will be
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> *   stored consecutively. Each node contains the following information:
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> *   (1) (n) Number of children as a 32-bit integer,
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> *   (2) n Pairs of (child offset, MBR=(x1, y1, x2, y2). The child offset is
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> *   the offset of the beginning of the child data (node or data entry) in the
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> *   tree where 0 is the offset of the first data entry.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> *   &lt;/li&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> *   &lt;li&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> *     Tree footer: This section contains some meta data about the tree as
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> *     follows. All integers are 32-bits.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> *     (1) MBR of the root as (x1, y1, x2, y2),
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> *     (2) Number of data entries,
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> *     (3) Number of non-leaf nodes,
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> *     (4) Number of leaf nodes,
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> *     (5) Tree structure offset: offset of the beginning of the tree structure section
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> *     (6) Footer offset: offset of the beginning of the footer as a 32-bit integer.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> *     (7) Tree size: Total tree size in bytes including data+structure+footer
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> *   &lt;/li&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> *
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> * &lt;/ul&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> * @param out
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> * @throws IOException
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> */</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">write</span><span style="color:#f92672">(</span>DataOutput out<span style="color:#f92672">,</span> Serializer ser<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> IOException <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Tree data: write the data entries in the tree order
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">// Since we write the data first, we will have to traverse the tree twice
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">// first time to visit and write the data entries in the tree order,
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">// and second time to visit and write the tree nodes in the tree order.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  Deque<span style="color:#f92672">&lt;</span>Integer<span style="color:#f92672">&gt;</span> nodesToVisit <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ArrayDeque<span style="color:#f92672">&lt;</span>Integer<span style="color:#f92672">&gt;();</span>
+</span></span><span style="display:flex;"><span>  nodesToVisit<span style="color:#f92672">.</span><span style="color:#a6e22e">add</span><span style="color:#f92672">(</span>root<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">int</span><span style="color:#f92672">[]</span> objectOffsets <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#66d9ef">int</span><span style="color:#f92672">[</span>numOfDataEntries<span style="color:#f92672">()</span> <span style="color:#f92672">+</span> numOfNodes<span style="color:#f92672">()];</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Keep track of the offset of each data object from the beginning of the
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">// data section
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">int</span> dataOffset <span style="color:#f92672">=</span> 0<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Keep track of the offset of each node from the beginning of the tree
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">// structure section
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">// 看起来是一波广度优先遍历，按层处理结点
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">int</span> nodeOffset <span style="color:#f92672">=</span> 0<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">while</span> <span style="color:#f92672">(!</span>nodesToVisit<span style="color:#f92672">.</span><span style="color:#a6e22e">isEmpty</span><span style="color:#f92672">())</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> node <span style="color:#f92672">=</span> nodesToVisit<span style="color:#f92672">.</span><span style="color:#a6e22e">removeFirst</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// The node is supposed to be written in this order.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// Measure its offset and accumulate its size
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    objectOffsets<span style="color:#f92672">[</span>node<span style="color:#f92672">]</span> <span style="color:#f92672">=</span> nodeOffset<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>    nodeOffset <span style="color:#f92672">+=</span> 4 <span style="color:#f92672">+</span> <span style="color:#f92672">(</span>4 <span style="color:#f92672">+</span> 8 <span style="color:#f92672">*</span> 4<span style="color:#f92672">)</span> <span style="color:#f92672">*</span> Node_size<span style="color:#f92672">(</span>node<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>isLeaf<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span>node<span style="color:#f92672">))</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">// Leaf node, write the data entries in order
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> child <span style="color:#f92672">:</span> children<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span>node<span style="color:#f92672">))</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>        objectOffsets<span style="color:#f92672">[</span>child<span style="color:#f92672">]</span> <span style="color:#f92672">=</span> dataOffset<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>ser <span style="color:#f92672">!=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>          dataOffset <span style="color:#f92672">+=</span> ser<span style="color:#f92672">.</span><span style="color:#a6e22e">serialize</span><span style="color:#f92672">(</span>out<span style="color:#f92672">,</span> child<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">// Internal node, recursively traverse its children
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> child <span style="color:#f92672">:</span> children<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span>node<span style="color:#f92672">))</span>
+</span></span><span style="display:flex;"><span>        nodesToVisit<span style="color:#f92672">.</span><span style="color:#a6e22e">addLast</span><span style="color:#f92672">(</span>child<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Update node offsets as they are written after the data entries
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> 0<span style="color:#f92672">;</span> i <span style="color:#f92672">&lt;</span> numNodes<span style="color:#f92672">;</span> i<span style="color:#f92672">++)</span>
+</span></span><span style="display:flex;"><span>    objectOffsets<span style="color:#f92672">[</span>i <span style="color:#f92672">+</span> numEntries<span style="color:#f92672">]</span> <span style="color:#f92672">+=</span> dataOffset<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Tree structure: Write the nodes in tree order
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  nodesToVisit<span style="color:#f92672">.</span><span style="color:#a6e22e">add</span><span style="color:#f92672">(</span>root<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">while</span> <span style="color:#f92672">(!</span>nodesToVisit<span style="color:#f92672">.</span><span style="color:#a6e22e">isEmpty</span><span style="color:#f92672">())</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> node <span style="color:#f92672">=</span> nodesToVisit<span style="color:#f92672">.</span><span style="color:#a6e22e">removeFirst</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// (1) Number of children
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    out<span style="color:#f92672">.</span><span style="color:#a6e22e">writeInt</span><span style="color:#f92672">(</span>Node_size<span style="color:#f92672">(</span>node<span style="color:#f92672">));</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> child <span style="color:#f92672">:</span> children<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span>node<span style="color:#f92672">))</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">// (2) Write the offset of the child
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      out<span style="color:#f92672">.</span><span style="color:#a6e22e">writeInt</span><span style="color:#f92672">(</span>objectOffsets<span style="color:#f92672">[</span>child<span style="color:#f92672">]);</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">// (3) Write the MBR of each child
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      out<span style="color:#f92672">.</span><span style="color:#a6e22e">writeDouble</span><span style="color:#f92672">(</span>x1s<span style="color:#f92672">[</span>child<span style="color:#f92672">]);</span>
+</span></span><span style="display:flex;"><span>      out<span style="color:#f92672">.</span><span style="color:#a6e22e">writeDouble</span><span style="color:#f92672">(</span>y1s<span style="color:#f92672">[</span>child<span style="color:#f92672">]);</span>
+</span></span><span style="display:flex;"><span>      out<span style="color:#f92672">.</span><span style="color:#a6e22e">writeDouble</span><span style="color:#f92672">(</span>x2s<span style="color:#f92672">[</span>child<span style="color:#f92672">]);</span>
+</span></span><span style="display:flex;"><span>      out<span style="color:#f92672">.</span><span style="color:#a6e22e">writeDouble</span><span style="color:#f92672">(</span>y2s<span style="color:#f92672">[</span>child<span style="color:#f92672">]);</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// If node is internal, add its children to the nodes to be visited
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(!</span>isLeaf<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span>node<span style="color:#f92672">))</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> child <span style="color:#f92672">:</span> children<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span>node<span style="color:#f92672">))</span>
+</span></span><span style="display:flex;"><span>        nodesToVisit<span style="color:#f92672">.</span><span style="color:#a6e22e">addLast</span><span style="color:#f92672">(</span>child<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Tree footer
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">int</span> footerOffset <span style="color:#f92672">=</span> dataOffset <span style="color:#f92672">+</span> nodeOffset<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// (1) MBR of the root
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  out<span style="color:#f92672">.</span><span style="color:#a6e22e">writeDouble</span><span style="color:#f92672">(</span>x1s<span style="color:#f92672">[</span>root<span style="color:#f92672">]);</span>
+</span></span><span style="display:flex;"><span>  out<span style="color:#f92672">.</span><span style="color:#a6e22e">writeDouble</span><span style="color:#f92672">(</span>y1s<span style="color:#f92672">[</span>root<span style="color:#f92672">]);</span>
+</span></span><span style="display:flex;"><span>  out<span style="color:#f92672">.</span><span style="color:#a6e22e">writeDouble</span><span style="color:#f92672">(</span>x2s<span style="color:#f92672">[</span>root<span style="color:#f92672">]);</span>
+</span></span><span style="display:flex;"><span>  out<span style="color:#f92672">.</span><span style="color:#a6e22e">writeDouble</span><span style="color:#f92672">(</span>y2s<span style="color:#f92672">[</span>root<span style="color:#f92672">]);</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// (2) Number of data entries
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  out<span style="color:#f92672">.</span><span style="color:#a6e22e">writeInt</span><span style="color:#f92672">(</span>numOfDataEntries<span style="color:#f92672">());</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// (3) Number of non-leaf nodes
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  out<span style="color:#f92672">.</span><span style="color:#a6e22e">writeInt</span><span style="color:#f92672">((</span><span style="color:#66d9ef">int</span><span style="color:#f92672">)</span> <span style="color:#f92672">(</span>numOfNodes<span style="color:#f92672">()</span> <span style="color:#f92672">-</span> isLeaf<span style="color:#f92672">.</span><span style="color:#a6e22e">countOnes</span><span style="color:#f92672">()));</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// (4) Number of leaf nodes
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  out<span style="color:#f92672">.</span><span style="color:#a6e22e">writeInt</span><span style="color:#f92672">((</span><span style="color:#66d9ef">int</span><span style="color:#f92672">)</span> isLeaf<span style="color:#f92672">.</span><span style="color:#a6e22e">countOnes</span><span style="color:#f92672">());</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// (5) Offset of the tree structure section
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  out<span style="color:#f92672">.</span><span style="color:#a6e22e">writeInt</span><span style="color:#f92672">(</span>dataOffset<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// (6) Offset of the footer
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  out<span style="color:#f92672">.</span><span style="color:#a6e22e">writeInt</span><span style="color:#f92672">(</span>footerOffset<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// (7) Size of the entire tree
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">int</span> footerSize <span style="color:#f92672">=</span> 4 <span style="color:#f92672">*</span> 8 <span style="color:#f92672">+</span> 6 <span style="color:#f92672">*</span> 4<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>  out<span style="color:#f92672">.</span><span style="color:#a6e22e">writeInt</span><span style="color:#f92672">(</span>footerOffset <span style="color:#f92672">+</span> footerSize<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><p>以数组形式组织的R树，在读取时直接按文件顺序读取到数组中即可。对于元数据文件放在了文件尾，LocalIndexRecordReader用了一个这样的操作，seek到文件末尾的位置读取数据：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span>in<span style="color:#f92672">.</span><span style="color:#a6e22e">seek</span><span style="color:#f92672">(</span>indexEnd <span style="color:#f92672">-</span> 4<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> indexSize <span style="color:#f92672">=</span> in<span style="color:#f92672">.</span><span style="color:#a6e22e">readInt</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">long</span> indexStart <span style="color:#f92672">=</span> indexEnd <span style="color:#f92672">-</span> indexSize <span style="color:#f92672">-</span> 4<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// ...
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>in<span style="color:#f92672">.</span><span style="color:#a6e22e">seek</span><span style="color:#f92672">(</span>indexStart<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>localIndex<span style="color:#f92672">.</span><span style="color:#a6e22e">read</span><span style="color:#f92672">(</span>in<span style="color:#f92672">,</span> indexStart<span style="color:#f92672">,</span> indexEnd<span style="color:#f92672">,</span> stockShape<span style="color:#f92672">);</span>  <span style="color:#75715e">// 读取并构建R树（相当于反序列化）
+</span></span></span></code></pre></div>
 </div>
 
   
@@ -666,7 +668,7 @@ localIndex<span style="color:#f92672">.</span><span style="color:#a6e22e">read</
       </li></ul>
   </nav>
 </section><div class='copyright'>
-  <p> &copy; 2018-2021 extendswind </p>
+  <p> &copy; 2018-2022 extendswind </p>
 </div>
 
         </div>

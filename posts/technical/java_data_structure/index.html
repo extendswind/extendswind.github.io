@@ -8,7 +8,7 @@
 retainAll(Collection&lt;?&gt; c)求两个集合的交集。
 实现时接口与实现分离。使用时用满足需要的接口（如队列使用Queue），针对具体的场景new合适的实现。当需要自行实现对应的功能，为了降低实现接口中过多函数的复杂程度，可以直接扩展对应的Abastract类（如AbstractQueue），这种抽象接口加抽象类的方式在集合设计中经常遇到。
 集合类只能容纳对象句柄。集合在存储基本类型时，会通过封装器（Integer等）将基本类型转换成普通类，因此在处理效率上不如数组（直接存储基本类型）。
-迭代器 Iterator public interface Iterator&lt;E&gt;{ E next(); boolean hasNext(); void remove(); } // 并没有一个函数直接返回迭代器指向位置的值  public interface Iterable&lt;E&gt;{ Iterator&lt;E&gt; iterator(); } for each循环可以针对任何实现了Iterable的对象（由编译器直接翻译成Iterator对应的代码）。for (String e: c){&hellip;}
+迭代器 Iterator public interface Iterator&lt;E&gt;{  E next();  boolean hasNext();  void remove(); } // 并没有一个函数直接返回迭代器指向位置的值  public interface Iterable&lt;E&gt;{  Iterator&lt;E&gt; iterator(); } for each循环可以针对任何实现了Iterable的对象（由编译器直接翻译成Iterator对应的代码）。for (String e: c){&hellip;}
 Collection接口实现了Iterable接口，可以返回遍历元素的迭代器。
 通过迭代器，能够用一套代码访问不同的容器类。
 和C&#43;&#43;的迭代器指向具体位置的设计不同，java的迭代器指向的位置可以看作是两个元素的中间。当调用next时，迭代器会跳过下一个元素，并返回被跳过元素的引用。不能像C&#43;&#43;那样直接取当前位置的元素。对于remove函数，删除的是上一次next函数返回的位置（由于经常需要通过此位置的值判断是否删除）。也因此，每次调用remove函数前必须调用一次next方法，因此连续调用两次remove会出错。
@@ -16,13 +16,12 @@ List ArrayList相当于dynamic array，随机访问快，随机插入慢。类�
 LinkedList，双向链表，随机访问慢，随机插入快。LinkedList比较特殊，除了List接口还是了双端队列的Deque接口。
 LinkedList无法获取到node的指针，但可以通过获取ListIterator控制前后的位置（相对于Iterator，添加了previous等向前访问的函数）。
 LikedList并没有缓存指针的位置，因此get(n)等随机访问和修改的操作效率不高。
-public class LinkedList&lt;E&gt; extends AbstractSequentialList&lt;E&gt; implements List&lt;E&gt;, Deque&lt;E&gt;, Cloneable, java.io.Serializable Map 《java核心技术》中将Map的介绍放在了Set之后，但是Hashset的实现直接使用了HashMap，此处先写写Map的实现。
+public class LinkedList&lt;E&gt;  extends AbstractSequentialList&lt;E&gt;  implements List&lt;E&gt;, Deque&lt;E&gt;, Cloneable, java.io.Serializable Map 《java核心技术》中将Map的介绍放在了Set之后，但是Hashset的实现直接使用了HashMap，此处先写写Map的实现。
 HashMap （下面的默认参数取自openjdk11源码）
 实现常量时间的数据get和put。
 HashMap用hashcode结合链表的实现。使用了桶（bucket）机制，将hashcode取余后放入一个链表，当一个桶中的数据达到8个时，会通过treeifyBin函数将链表的形式转成红黑树存储以加快检索效率。
 在构造函数中设置了两个参数。threshold（默认为16）和loadFactor（默认为0.75），初始化时桶的数量会用threshold，往后threshold会等于 桶的数量×loadFactor。添加元素时，HashMap中的元素个数达到threshold时会调用resize让桶的数量翻倍，此时会遍历先前的所有元素添加到扩容之后的数组中（rehash过程）。
-通过一个名为table的数组存储桶的节点，默认情况下的初始化桶的个数为16，每次会增加为之前的2倍，最大为Int型的最大值。
-transient Node&lt;K,V&gt;[] table; static class Node&lt;K,V&gt; implements Entry&lt;K,V&gt; { final int hash; final K key; V value; Node&lt;K,V&gt; next; // .'>
+通过一个名为table的数组存储桶的节点，默认情况下的初始化桶的个数为16，每次会增加为之前的2倍，最大为Int型的最大值。'>
 <meta name='theme-color' content='#cccccc'>
 
 <meta property='og:title' content='Java数据结构笔记 • A Notebook of Extendswind'>
@@ -32,7 +31,7 @@ transient Node&lt;K,V&gt;[] table; static class Node&lt;K,V&gt; implements Entry
 retainAll(Collection&lt;?&gt; c)求两个集合的交集。
 实现时接口与实现分离。使用时用满足需要的接口（如队列使用Queue），针对具体的场景new合适的实现。当需要自行实现对应的功能，为了降低实现接口中过多函数的复杂程度，可以直接扩展对应的Abastract类（如AbstractQueue），这种抽象接口加抽象类的方式在集合设计中经常遇到。
 集合类只能容纳对象句柄。集合在存储基本类型时，会通过封装器（Integer等）将基本类型转换成普通类，因此在处理效率上不如数组（直接存储基本类型）。
-迭代器 Iterator public interface Iterator&lt;E&gt;{ E next(); boolean hasNext(); void remove(); } // 并没有一个函数直接返回迭代器指向位置的值  public interface Iterable&lt;E&gt;{ Iterator&lt;E&gt; iterator(); } for each循环可以针对任何实现了Iterable的对象（由编译器直接翻译成Iterator对应的代码）。for (String e: c){&hellip;}
+迭代器 Iterator public interface Iterator&lt;E&gt;{  E next();  boolean hasNext();  void remove(); } // 并没有一个函数直接返回迭代器指向位置的值  public interface Iterable&lt;E&gt;{  Iterator&lt;E&gt; iterator(); } for each循环可以针对任何实现了Iterable的对象（由编译器直接翻译成Iterator对应的代码）。for (String e: c){&hellip;}
 Collection接口实现了Iterable接口，可以返回遍历元素的迭代器。
 通过迭代器，能够用一套代码访问不同的容器类。
 和C&#43;&#43;的迭代器指向具体位置的设计不同，java的迭代器指向的位置可以看作是两个元素的中间。当调用next时，迭代器会跳过下一个元素，并返回被跳过元素的引用。不能像C&#43;&#43;那样直接取当前位置的元素。对于remove函数，删除的是上一次next函数返回的位置（由于经常需要通过此位置的值判断是否删除）。也因此，每次调用remove函数前必须调用一次next方法，因此连续调用两次remove会出错。
@@ -40,18 +39,17 @@ List ArrayList相当于dynamic array，随机访问快，随机插入慢。类�
 LinkedList，双向链表，随机访问慢，随机插入快。LinkedList比较特殊，除了List接口还是了双端队列的Deque接口。
 LinkedList无法获取到node的指针，但可以通过获取ListIterator控制前后的位置（相对于Iterator，添加了previous等向前访问的函数）。
 LikedList并没有缓存指针的位置，因此get(n)等随机访问和修改的操作效率不高。
-public class LinkedList&lt;E&gt; extends AbstractSequentialList&lt;E&gt; implements List&lt;E&gt;, Deque&lt;E&gt;, Cloneable, java.io.Serializable Map 《java核心技术》中将Map的介绍放在了Set之后，但是Hashset的实现直接使用了HashMap，此处先写写Map的实现。
+public class LinkedList&lt;E&gt;  extends AbstractSequentialList&lt;E&gt;  implements List&lt;E&gt;, Deque&lt;E&gt;, Cloneable, java.io.Serializable Map 《java核心技术》中将Map的介绍放在了Set之后，但是Hashset的实现直接使用了HashMap，此处先写写Map的实现。
 HashMap （下面的默认参数取自openjdk11源码）
 实现常量时间的数据get和put。
 HashMap用hashcode结合链表的实现。使用了桶（bucket）机制，将hashcode取余后放入一个链表，当一个桶中的数据达到8个时，会通过treeifyBin函数将链表的形式转成红黑树存储以加快检索效率。
 在构造函数中设置了两个参数。threshold（默认为16）和loadFactor（默认为0.75），初始化时桶的数量会用threshold，往后threshold会等于 桶的数量×loadFactor。添加元素时，HashMap中的元素个数达到threshold时会调用resize让桶的数量翻倍，此时会遍历先前的所有元素添加到扩容之后的数组中（rehash过程）。
-通过一个名为table的数组存储桶的节点，默认情况下的初始化桶的个数为16，每次会增加为之前的2倍，最大为Int型的最大值。
-transient Node&lt;K,V&gt;[] table; static class Node&lt;K,V&gt; implements Entry&lt;K,V&gt; { final int hash; final K key; V value; Node&lt;K,V&gt; next; // .'>
+通过一个名为table的数组存储桶的节点，默认情况下的初始化桶的个数为16，每次会增加为之前的2倍，最大为Int型的最大值。'>
 <meta property='og:url' content='https://extendswind.top/posts/technical/java_data_structure/'>
 <meta property='og:site_name' content='A Notebook of Extendswind'>
 <meta property='og:type' content='article'><meta property='article:section' content='posts'><meta property='article:tag' content='java'><meta property='article:published_time' content='2020-07-25T10:30:00&#43;08:00'/><meta property='article:modified_time' content='2020-07-25T10:30:00&#43;08:00'/><meta name='twitter:card' content='summary'>
 
-<meta name="generator" content="Hugo 0.89.4" />
+<meta name="generator" content="Hugo 0.93.2" />
 
   <title>Java数据结构笔记 • A Notebook of Extendswind</title>
   <link rel='canonical' href='https://extendswind.top/posts/technical/java_data_structure/'>
@@ -131,6 +129,8 @@ transient Node&lt;K,V&gt;[] table; static class Node&lt;K,V&gt; implements Entry
         <a href='/tags/linux/' style='font-size:1em'>linux</a>
       </li><li>
         <a href='/tags/log4j/' style='font-size:1em'>log4j</a>
+      </li><li>
+        <a href='/tags/mpi/' style='font-size:1em'>MPI</a>
       </li><li>
         <a href='/tags/python/' style='font-size:1em'>python</a>
       </li><li>
@@ -281,17 +281,17 @@ transient Node&lt;K,V&gt;[] table; static class Node&lt;K,V&gt; implements Entry
 <p>实现时接口与实现分离。使用时用满足需要的接口（如队列使用Queue），针对具体的场景new合适的实现。当需要自行实现对应的功能，为了降低实现接口中过多函数的复杂程度，可以直接扩展对应的Abastract类（如AbstractQueue），这种抽象接口加抽象类的方式在集合设计中经常遇到。</p>
 <p>集合类只能容纳对象句柄。集合在存储基本类型时，会通过封装器（Integer等）将基本类型转换成普通类，因此在处理效率上不如数组（直接存储基本类型）。</p>
 <h1 id="迭代器-iterator">迭代器 Iterator</h1>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">interface</span> <span style="color:#a6e22e">Iterator</span><span style="color:#f92672">&lt;</span>E<span style="color:#f92672">&gt;{</span>
-  E <span style="color:#a6e22e">next</span><span style="color:#f92672">();</span>
-  <span style="color:#66d9ef">boolean</span> <span style="color:#a6e22e">hasNext</span><span style="color:#f92672">();</span>
-  <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">remove</span><span style="color:#f92672">();</span>
-<span style="color:#f92672">}</span>
-<span style="color:#75715e">// 并没有一个函数直接返回迭代器指向位置的值
-</span><span style="color:#75715e"></span>
-<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">interface</span> <span style="color:#a6e22e">Iterable</span><span style="color:#f92672">&lt;</span>E<span style="color:#f92672">&gt;{</span>
-  Iterator<span style="color:#f92672">&lt;</span>E<span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">iterator</span><span style="color:#f92672">();</span>
-<span style="color:#f92672">}</span>
-</code></pre></div><p>for each循环可以针对任何实现了Iterable的对象（由编译器直接翻译成Iterator对应的代码）。for (String e: c){&hellip;}</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">interface</span> <span style="color:#a6e22e">Iterator</span><span style="color:#f92672">&lt;</span>E<span style="color:#f92672">&gt;{</span>
+</span></span><span style="display:flex;"><span>  E <span style="color:#a6e22e">next</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">boolean</span> <span style="color:#a6e22e">hasNext</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">remove</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 并没有一个函数直接返回迭代器指向位置的值
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">interface</span> <span style="color:#a6e22e">Iterable</span><span style="color:#f92672">&lt;</span>E<span style="color:#f92672">&gt;{</span>
+</span></span><span style="display:flex;"><span>  Iterator<span style="color:#f92672">&lt;</span>E<span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">iterator</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><p>for each循环可以针对任何实现了Iterable的对象（由编译器直接翻译成Iterator对应的代码）。for (String e: c){&hellip;}</p>
 <p>Collection接口实现了Iterable接口，可以返回遍历元素的迭代器。</p>
 <p>通过迭代器，能够用一套代码访问不同的容器类。</p>
 <p>和C++的迭代器指向具体位置的设计不同，java的迭代器指向的位置可以看作是两个元素的中间。当调用next时，迭代器会跳过下一个元素，并返回被跳过元素的引用。不能像C++那样直接取当前位置的元素。对于remove函数，删除的是上一次next函数返回的位置（由于经常需要通过此位置的值判断是否删除）。也因此，每次调用remove函数前必须调用一次next方法，因此连续调用两次remove会出错。</p>
@@ -300,10 +300,10 @@ transient Node&lt;K,V&gt;[] table; static class Node&lt;K,V&gt; implements Entry
 <p>LinkedList，双向链表，随机访问慢，随机插入快。LinkedList比较特殊，除了List接口还是了双端队列的Deque接口。</p>
 <p>LinkedList无法获取到node的指针，但可以通过获取ListIterator控制前后的位置（相对于Iterator，添加了previous等向前访问的函数）。</p>
 <p>LikedList并没有缓存指针的位置，因此get(n)等随机访问和修改的操作效率不高。</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">LinkedList</span><span style="color:#f92672">&lt;</span>E<span style="color:#f92672">&gt;</span>
-    <span style="color:#66d9ef">extends</span> AbstractSequentialList<span style="color:#f92672">&lt;</span>E<span style="color:#f92672">&gt;</span>
-    <span style="color:#66d9ef">implements</span> List<span style="color:#f92672">&lt;</span>E<span style="color:#f92672">&gt;,</span> Deque<span style="color:#f92672">&lt;</span>E<span style="color:#f92672">&gt;,</span> Cloneable<span style="color:#f92672">,</span> java<span style="color:#f92672">.</span><span style="color:#a6e22e">io</span><span style="color:#f92672">.</span><span style="color:#a6e22e">Serializable</span>
-</code></pre></div><h2 id="map">Map</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">LinkedList</span><span style="color:#f92672">&lt;</span>E<span style="color:#f92672">&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">extends</span> AbstractSequentialList<span style="color:#f92672">&lt;</span>E<span style="color:#f92672">&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">implements</span> List<span style="color:#f92672">&lt;</span>E<span style="color:#f92672">&gt;,</span> Deque<span style="color:#f92672">&lt;</span>E<span style="color:#f92672">&gt;,</span> Cloneable<span style="color:#f92672">,</span> java<span style="color:#f92672">.</span><span style="color:#a6e22e">io</span><span style="color:#f92672">.</span><span style="color:#a6e22e">Serializable</span>
+</span></span></code></pre></div><h2 id="map">Map</h2>
 <p>《java核心技术》中将Map的介绍放在了Set之后，但是Hashset的实现直接使用了HashMap，此处先写写Map的实现。</p>
 <h3 id="hashmap">HashMap</h3>
 <p>（下面的默认参数取自openjdk11源码）</p>
@@ -311,16 +311,16 @@ transient Node&lt;K,V&gt;[] table; static class Node&lt;K,V&gt; implements Entry
 <p>HashMap用hashcode结合链表的实现。使用了桶（bucket）机制，将hashcode取余后放入一个链表，当一个桶中的数据达到8个时，会通过treeifyBin函数将链表的形式转成红黑树存储以加快检索效率。</p>
 <p>在构造函数中设置了两个参数。threshold（默认为16）和loadFactor（默认为0.75），初始化时桶的数量会用threshold，往后threshold会等于 <code>桶的数量×loadFactor</code>。添加元素时，HashMap中的元素个数达到threshold时会调用resize让桶的数量翻倍，此时会遍历先前的所有元素添加到扩容之后的数组中（rehash过程）。</p>
 <p>通过一个名为table的数组存储桶的节点，默认情况下的初始化桶的个数为16，每次会增加为之前的2倍，最大为Int型的最大值。</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">transient</span> Node<span style="color:#f92672">&lt;</span>K<span style="color:#f92672">,</span>V<span style="color:#f92672">&gt;[]</span> table<span style="color:#f92672">;</span>
-
-<span style="color:#66d9ef">static</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Node</span><span style="color:#f92672">&lt;</span>K<span style="color:#f92672">,</span>V<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">implements</span> Entry<span style="color:#f92672">&lt;</span>K<span style="color:#f92672">,</span>V<span style="color:#f92672">&gt;</span> <span style="color:#f92672">{</span>
- <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">int</span> hash<span style="color:#f92672">;</span>
- <span style="color:#66d9ef">final</span> K key<span style="color:#f92672">;</span>
- V value<span style="color:#f92672">;</span>
- Node<span style="color:#f92672">&lt;</span>K<span style="color:#f92672">,</span>V<span style="color:#f92672">&gt;</span> next<span style="color:#f92672">;</span>
- <span style="color:#75715e">// ...
-</span><span style="color:#75715e"></span><span style="color:#f92672">}</span>
-</code></pre></div><p>resize过程使用的头插入（新的table数组中插入的元素插入到链表头部，避免遍历到尾部的开销）。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#66d9ef">transient</span> Node<span style="color:#f92672">&lt;</span>K<span style="color:#f92672">,</span>V<span style="color:#f92672">&gt;[]</span> table<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">static</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Node</span><span style="color:#f92672">&lt;</span>K<span style="color:#f92672">,</span>V<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">implements</span> Entry<span style="color:#f92672">&lt;</span>K<span style="color:#f92672">,</span>V<span style="color:#f92672">&gt;</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span> <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">int</span> hash<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span> <span style="color:#66d9ef">final</span> K key<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span> V value<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span> Node<span style="color:#f92672">&lt;</span>K<span style="color:#f92672">,</span>V<span style="color:#f92672">&gt;</span> next<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span> <span style="color:#75715e">// ...
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><p>resize过程使用的头插入（新的table数组中插入的元素插入到链表头部，避免遍历到尾部的开销）。</p>
 <p>当一个桶中的数据达到TREEIFY_THRESHOLD（8）个，并且桶的数量超过MIN_TREEIFY_CAPACITY（64）时，会在treeifyBin函数中将每个桶中的数据从链表转换成红黑树。</p>
 <p>通过hashCode()函数得到hash值，通过equal()函数判断对象是否相等。</p>
 <p>并发访问中，HashMap的实现中并没有考虑多线程的问题，在多线程结构化（structurally）修改HashMap时可能会出问题（结构化主要指添加和删除，修改某个key对应的值不算结构化修改）。</p>
@@ -328,77 +328,77 @@ transient Node&lt;K,V&gt;[] table; static class Node&lt;K,V&gt; implements Entry
 <p>基于红黑树实现的Map，对于获取键值、插入、删除的操作时间复杂度为log(n)。put时将数据插入红黑树，get时从树中取数据。</p>
 <p>由于数据存储在红黑树有序排列，获得排序后的数据较快。</p>
 <p>将key-value键值对做为节点插入到红黑树中，由于需要排序，通过Comparator&lt;? super K&gt;接口让插入的键值可比较。</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">static</span> <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Entry</span><span style="color:#f92672">&lt;</span>K<span style="color:#f92672">,</span>V<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">implements</span> Map<span style="color:#f92672">.</span><span style="color:#a6e22e">Entry</span><span style="color:#f92672">&lt;</span>K<span style="color:#f92672">,</span>V<span style="color:#f92672">&gt;</span> <span style="color:#f92672">{</span>
-    K key<span style="color:#f92672">;</span>
-    V value<span style="color:#f92672">;</span>
-    Entry<span style="color:#f92672">&lt;</span>K<span style="color:#f92672">,</span>V<span style="color:#f92672">&gt;</span> left<span style="color:#f92672">;</span>
-    Entry<span style="color:#f92672">&lt;</span>K<span style="color:#f92672">,</span>V<span style="color:#f92672">&gt;</span> right<span style="color:#f92672">;</span>
-    Entry<span style="color:#f92672">&lt;</span>K<span style="color:#f92672">,</span>V<span style="color:#f92672">&gt;</span> parent<span style="color:#f92672">;</span>
-    <span style="color:#66d9ef">boolean</span> color <span style="color:#f92672">=</span> BLACK<span style="color:#f92672">;</span>
-	<span style="color:#75715e">// ...
-</span><span style="color:#75715e"></span><span style="color:#f92672">}</span>
-</code></pre></div><p>当类默认的比较函数不能满足需要时，可以另外定义新的comparator传入TreeMap。</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#a6e22e">TreeMap</span><span style="color:#f92672">(</span>Comparator<span style="color:#f92672">&lt;?</span> <span style="color:#66d9ef">super</span> K<span style="color:#f92672">&gt;</span> comparator<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-    <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">comparator</span> <span style="color:#f92672">=</span> comparator<span style="color:#f92672">;</span>
-<span style="color:#f92672">}</span>
-</code></pre></div><h3 id="enummap-用于枚举类型">EnumMap 用于枚举类型</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#66d9ef">static</span> <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Entry</span><span style="color:#f92672">&lt;</span>K<span style="color:#f92672">,</span>V<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">implements</span> Map<span style="color:#f92672">.</span><span style="color:#a6e22e">Entry</span><span style="color:#f92672">&lt;</span>K<span style="color:#f92672">,</span>V<span style="color:#f92672">&gt;</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    K key<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>    V value<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>    Entry<span style="color:#f92672">&lt;</span>K<span style="color:#f92672">,</span>V<span style="color:#f92672">&gt;</span> left<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>    Entry<span style="color:#f92672">&lt;</span>K<span style="color:#f92672">,</span>V<span style="color:#f92672">&gt;</span> right<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>    Entry<span style="color:#f92672">&lt;</span>K<span style="color:#f92672">,</span>V<span style="color:#f92672">&gt;</span> parent<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">boolean</span> color <span style="color:#f92672">=</span> BLACK<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// ...
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><p>当类默认的比较函数不能满足需要时，可以另外定义新的comparator传入TreeMap。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#a6e22e">TreeMap</span><span style="color:#f92672">(</span>Comparator<span style="color:#f92672">&lt;?</span> <span style="color:#66d9ef">super</span> K<span style="color:#f92672">&gt;</span> comparator<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">comparator</span> <span style="color:#f92672">=</span> comparator<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><h3 id="enummap-用于枚举类型">EnumMap 用于枚举类型</h3>
 <p>所有的key必须是同一个enum类型中。内部通过数组的方式表达。每个类型对应数组中的一个元素。</p>
 <p>put时直接获取key对应的enum位置，直接对数组中的此位置赋值。</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">private</span> <span style="color:#66d9ef">transient</span> K<span style="color:#f92672">[]</span> keyUniverse<span style="color:#f92672">;</span>
-<span style="color:#66d9ef">private</span> <span style="color:#66d9ef">transient</span> Object<span style="color:#f92672">[]</span> vals<span style="color:#f92672">;</span>
-
-<span style="color:#66d9ef">public</span> V <span style="color:#a6e22e">put</span><span style="color:#f92672">(</span>K key<span style="color:#f92672">,</span> V value<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-    typeCheck<span style="color:#f92672">(</span>key<span style="color:#f92672">);</span>
-    <span style="color:#66d9ef">int</span> index <span style="color:#f92672">=</span> key<span style="color:#f92672">.</span><span style="color:#a6e22e">ordinal</span><span style="color:#f92672">();</span>
-    Object oldValue <span style="color:#f92672">=</span> vals<span style="color:#f92672">[</span>index<span style="color:#f92672">];</span>
-    vals<span style="color:#f92672">[</span>index<span style="color:#f92672">]</span> <span style="color:#f92672">=</span> maskNull<span style="color:#f92672">(</span>value<span style="color:#f92672">);</span>
-    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>oldValue <span style="color:#f92672">==</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span>
-        size<span style="color:#f92672">++;</span>
-    <span style="color:#66d9ef">return</span> unmaskNull<span style="color:#f92672">(</span>oldValue<span style="color:#f92672">);</span>
-<span style="color:#f92672">}</span>
-</code></pre></div><p>在put函数中，直接获取key对应的enum索引位置</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#66d9ef">private</span> <span style="color:#66d9ef">transient</span> K<span style="color:#f92672">[]</span> keyUniverse<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">private</span> <span style="color:#66d9ef">transient</span> Object<span style="color:#f92672">[]</span> vals<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> V <span style="color:#a6e22e">put</span><span style="color:#f92672">(</span>K key<span style="color:#f92672">,</span> V value<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    typeCheck<span style="color:#f92672">(</span>key<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> index <span style="color:#f92672">=</span> key<span style="color:#f92672">.</span><span style="color:#a6e22e">ordinal</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>    Object oldValue <span style="color:#f92672">=</span> vals<span style="color:#f92672">[</span>index<span style="color:#f92672">];</span>
+</span></span><span style="display:flex;"><span>    vals<span style="color:#f92672">[</span>index<span style="color:#f92672">]</span> <span style="color:#f92672">=</span> maskNull<span style="color:#f92672">(</span>value<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>oldValue <span style="color:#f92672">==</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>        size<span style="color:#f92672">++;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> unmaskNull<span style="color:#f92672">(</span>oldValue<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><p>在put函数中，直接获取key对应的enum索引位置</p>
 <h3 id="linkedhashmap实现原理">LinkedHashMap实现原理</h3>
 <p>LinkedHashMap通过一个额外的双向链表链接所有的元素，通过构造函数中的参数accessOrder决定记录元素添加顺序还是元素访问顺序。</p>
 <p>可以用来copy一个map，使新的map中的元素顺序与被赋值的map顺序相同（如下）。也适用于LRU cache类似的场景。</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">foo</span><span style="color:#f92672">(</span>Map m<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-  Map copy <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> LinkedHashMap<span style="color:#f92672">(</span>m<span style="color:#f92672">);</span>
-  <span style="color:#75715e">// ...
-</span><span style="color:#75715e"></span><span style="color:#f92672">}</span>
-</code></pre></div><h4 id="源码实现">源码实现</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">foo</span><span style="color:#f92672">(</span>Map m<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>  Map copy <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> LinkedHashMap<span style="color:#f92672">(</span>m<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// ...
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><h4 id="源码实现">源码实现</h4>
 <p>总体逻辑为，每次添加新的元素，都回加入到链表的尾部。每次访问节点时，如果accessOrder为true（链表按照访问顺序），则将当前访问的节点放到链表尾部；当accessOrder为false（链表按照插入顺序），则不对链表操作。</p>
 <p>通过两个指针可以获得所有元素的链表。</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">// The head (eldest) of the doubly linked list.
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">transient</span> LinkedHashMap<span style="color:#f92672">.</span><span style="color:#a6e22e">Entry</span><span style="color:#f92672">&lt;</span>K<span style="color:#f92672">,</span>V<span style="color:#f92672">&gt;</span> head<span style="color:#f92672">;</span>
-
-<span style="color:#75715e">// The tail (youngest) of the doubly linked list.
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">transient</span> LinkedHashMap<span style="color:#f92672">.</span><span style="color:#a6e22e">Entry</span><span style="color:#f92672">&lt;</span>K<span style="color:#f92672">,</span>V<span style="color:#f92672">&gt;</span> tail<span style="color:#f92672">;</span>
-</code></pre></div><p>jdk11的实现上略微有点跳，不同于jdk8直接重写了关键函数，jdk11通过多态的形式插入了一些和HashMap不同的操作。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#75715e">// The head (eldest) of the doubly linked list.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">transient</span> LinkedHashMap<span style="color:#f92672">.</span><span style="color:#a6e22e">Entry</span><span style="color:#f92672">&lt;</span>K<span style="color:#f92672">,</span>V<span style="color:#f92672">&gt;</span> head<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// The tail (youngest) of the doubly linked list.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">transient</span> LinkedHashMap<span style="color:#f92672">.</span><span style="color:#a6e22e">Entry</span><span style="color:#f92672">&lt;</span>K<span style="color:#f92672">,</span>V<span style="color:#f92672">&gt;</span> tail<span style="color:#f92672">;</span>
+</span></span></code></pre></div><p>jdk11的实现上略微有点跳，不同于jdk8直接重写了关键函数，jdk11通过多态的形式插入了一些和HashMap不同的操作。</p>
 <p>想象中的让链表记录元素插入顺序的方式，直接在put新的元素后，直接将新的元素加入到链表（记录元素访问顺序在get函数中类似）。jdk11在实现时，在HashMap类中定义了三个空函数用于在LinkedHashMap中实现：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">// Callbacks to allow LinkedHashMap post-actions
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">afterNodeAccess</span><span style="color:#f92672">(</span>Node<span style="color:#f92672">&lt;</span>K<span style="color:#f92672">,</span>V<span style="color:#f92672">&gt;</span> p<span style="color:#f92672">)</span> <span style="color:#f92672">{</span> <span style="color:#f92672">}</span>
-<span style="color:#66d9ef">void</span> <span style="color:#a6e22e">afterNodeInsertion</span><span style="color:#f92672">(</span><span style="color:#66d9ef">boolean</span> evict<span style="color:#f92672">)</span> <span style="color:#f92672">{</span> <span style="color:#f92672">}</span>
-<span style="color:#66d9ef">void</span> <span style="color:#a6e22e">afterNodeRemoval</span><span style="color:#f92672">(</span>Node<span style="color:#f92672">&lt;</span>K<span style="color:#f92672">,</span>V<span style="color:#f92672">&gt;</span> p<span style="color:#f92672">)</span> <span style="color:#f92672">{</span> <span style="color:#f92672">}</span>
-</code></pre></div><p>三个函数分别在Node的访问、插入、删除三种情况后被调用，在HashMap中为空函数，LinkedHashMap中具体实现。 但是，链表的插入顺序并没有直接放在afterNodeInsertion函数中，而是重写了创建新节点的newNode函数：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">Node<span style="color:#f92672">&lt;</span>K<span style="color:#f92672">,</span>V<span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">newNode</span><span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> hash<span style="color:#f92672">,</span> K key<span style="color:#f92672">,</span> V value<span style="color:#f92672">,</span> Node<span style="color:#f92672">&lt;</span>K<span style="color:#f92672">,</span>V<span style="color:#f92672">&gt;</span> e<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-     Entry<span style="color:#f92672">&lt;</span>K<span style="color:#f92672">,</span>V<span style="color:#f92672">&gt;</span> p <span style="color:#f92672">=</span>
-         <span style="color:#66d9ef">new</span> Entry<span style="color:#f92672">&lt;&gt;(</span>hash<span style="color:#f92672">,</span> key<span style="color:#f92672">,</span> value<span style="color:#f92672">,</span> e<span style="color:#f92672">);</span>
-     linkNodeLast<span style="color:#f92672">(</span>p<span style="color:#f92672">);</span> <span style="color:#75715e">// 将p节点通过tail指针添加到链表尾部
-</span><span style="color:#75715e"></span>     <span style="color:#66d9ef">return</span> p<span style="color:#f92672">;</span>
-<span style="color:#f92672">}</span>
-</code></pre></div><h3 id="其它map">其它Map</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#75715e">// Callbacks to allow LinkedHashMap post-actions
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">afterNodeAccess</span><span style="color:#f92672">(</span>Node<span style="color:#f92672">&lt;</span>K<span style="color:#f92672">,</span>V<span style="color:#f92672">&gt;</span> p<span style="color:#f92672">)</span> <span style="color:#f92672">{</span> <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">afterNodeInsertion</span><span style="color:#f92672">(</span><span style="color:#66d9ef">boolean</span> evict<span style="color:#f92672">)</span> <span style="color:#f92672">{</span> <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">afterNodeRemoval</span><span style="color:#f92672">(</span>Node<span style="color:#f92672">&lt;</span>K<span style="color:#f92672">,</span>V<span style="color:#f92672">&gt;</span> p<span style="color:#f92672">)</span> <span style="color:#f92672">{</span> <span style="color:#f92672">}</span>
+</span></span></code></pre></div><p>三个函数分别在Node的访问、插入、删除三种情况后被调用，在HashMap中为空函数，LinkedHashMap中具体实现。 但是，链表的插入顺序并没有直接放在afterNodeInsertion函数中，而是重写了创建新节点的newNode函数：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span>Node<span style="color:#f92672">&lt;</span>K<span style="color:#f92672">,</span>V<span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">newNode</span><span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> hash<span style="color:#f92672">,</span> K key<span style="color:#f92672">,</span> V value<span style="color:#f92672">,</span> Node<span style="color:#f92672">&lt;</span>K<span style="color:#f92672">,</span>V<span style="color:#f92672">&gt;</span> e<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>     Entry<span style="color:#f92672">&lt;</span>K<span style="color:#f92672">,</span>V<span style="color:#f92672">&gt;</span> p <span style="color:#f92672">=</span>
+</span></span><span style="display:flex;"><span>         <span style="color:#66d9ef">new</span> Entry<span style="color:#f92672">&lt;&gt;(</span>hash<span style="color:#f92672">,</span> key<span style="color:#f92672">,</span> value<span style="color:#f92672">,</span> e<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>     linkNodeLast<span style="color:#f92672">(</span>p<span style="color:#f92672">);</span> <span style="color:#75715e">// 将p节点通过tail指针添加到链表尾部
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>     <span style="color:#66d9ef">return</span> p<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><h3 id="其它map">其它Map</h3>
 <p>WeakHashMap  值不用后会被回收，利用了GC机制中的标记。</p>
 <p>IdentityHashMap  用==而非equals比较键值。</p>
 <h2 id="set">Set</h2>
 <p>接口和Colection基本相同，除了java9加了几个针对不可变集合的函数。</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">interface</span> <span style="color:#a6e22e">Set</span><span style="color:#f92672">&lt;</span>E<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">extends</span> Collection<span style="color:#f92672">&lt;</span>E<span style="color:#f92672">&gt;</span> <span style="color:#f92672">{...}</span>
-</code></pre></div><p>Set的内部很多都直接使用上面的Map实现，如HashSet内部直接使用了HashMap做为存储，在添加元素时，将加入的元素作为key，用一个常量作为value。</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">private</span> <span style="color:#66d9ef">transient</span> HashMap<span style="color:#f92672">&lt;</span>E<span style="color:#f92672">,</span>Object<span style="color:#f92672">&gt;</span> map<span style="color:#f92672">;</span> 
-<span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">final</span> Object PRESENT <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Object<span style="color:#f92672">();</span>
-
-<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">boolean</span> <span style="color:#a6e22e">add</span><span style="color:#f92672">(</span>E e<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-    <span style="color:#66d9ef">return</span> map<span style="color:#f92672">.</span><span style="color:#a6e22e">put</span><span style="color:#f92672">(</span>e<span style="color:#f92672">,</span> PRESENT<span style="color:#f92672">)==</span><span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
-<span style="color:#f92672">}</span>
-</code></pre></div><p>LinkedHashSet 记录了插入的顺序。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">interface</span> <span style="color:#a6e22e">Set</span><span style="color:#f92672">&lt;</span>E<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">extends</span> Collection<span style="color:#f92672">&lt;</span>E<span style="color:#f92672">&gt;</span> <span style="color:#f92672">{...}</span>
+</span></span></code></pre></div><p>Set的内部很多都直接使用上面的Map实现，如HashSet内部直接使用了HashMap做为存储，在添加元素时，将加入的元素作为key，用一个常量作为value。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#66d9ef">private</span> <span style="color:#66d9ef">transient</span> HashMap<span style="color:#f92672">&lt;</span>E<span style="color:#f92672">,</span>Object<span style="color:#f92672">&gt;</span> map<span style="color:#f92672">;</span> 
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">final</span> Object PRESENT <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Object<span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">boolean</span> <span style="color:#a6e22e">add</span><span style="color:#f92672">(</span>E e<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> map<span style="color:#f92672">.</span><span style="color:#a6e22e">put</span><span style="color:#f92672">(</span>e<span style="color:#f92672">,</span> PRESENT<span style="color:#f92672">)==</span><span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><p>LinkedHashSet 记录了插入的顺序。</p>
 <p>TreeSet使用了TreeMap，通过红黑树适用于需要排序的数据。</p>
 <p>EnumSet包含枚举类型</p>
 <h2 id="queue">Queue</h2>
@@ -406,40 +406,40 @@ transient Node&lt;K,V&gt;[] table; static class Node&lt;K,V&gt; implements Entry
 <p>Deque(double-ended queue）双端队列，发音为|deck|。</p>
 <p>常见的队列主要有ArrayDeque（数组实现的双端循环队列）和 LinkedList（链表实现的双端队列），其中LinkedList虽然名字是List，但实现了Queue的函数，定义如下）。</p>
 <p>通常情况下ArrayDeque的数组型实现效率会高于LinkedList的指针型实现。</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">LinkedList</span><span style="color:#f92672">&lt;</span>E<span style="color:#f92672">&gt;</span>
-    <span style="color:#66d9ef">extends</span> AbstractSequentialList<span style="color:#f92672">&lt;</span>E<span style="color:#f92672">&gt;</span>
-    <span style="color:#66d9ef">implements</span> List<span style="color:#f92672">&lt;</span>E<span style="color:#f92672">&gt;,</span> Deque<span style="color:#f92672">&lt;</span>E<span style="color:#f92672">&gt;,</span> Cloneable<span style="color:#f92672">,</span> java<span style="color:#f92672">.</span><span style="color:#a6e22e">io</span><span style="color:#f92672">.</span><span style="color:#a6e22e">Serializable</span><span style="color:#f92672">{</span>
-	<span style="color:#75715e">//...
-</span><span style="color:#75715e"></span><span style="color:#f92672">}</span>
-</code></pre></div><p>双端循环队列的addFirst函数实现如下</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">// 其中Deque表示“double end queue”，发音为deck
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">interface</span> <span style="color:#a6e22e">Deque</span><span style="color:#f92672">&lt;</span>E<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">extends</span> Queue<span style="color:#f92672">&lt;</span>E<span style="color:#f92672">&gt;</span> <span style="color:#f92672">{...}</span>
-
-<span style="color:#75715e">// ArrayDeque使用的是循环队列
-</span><span style="color:#75715e">// addFirst函数会向队列头部加入一个新的元素
-</span><span style="color:#75715e">// 当头部为0时，会通过dec函数将head指针移到数组尾部对应的位置
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">addFirst</span><span style="color:#f92672">(</span>E e<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>e <span style="color:#f92672">==</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span>
-        <span style="color:#66d9ef">throw</span> <span style="color:#66d9ef">new</span> NullPointerException<span style="color:#f92672">();</span>
-    <span style="color:#66d9ef">final</span> Object<span style="color:#f92672">[]</span> es <span style="color:#f92672">=</span> elements<span style="color:#f92672">;</span>
-    es<span style="color:#f92672">[</span>head <span style="color:#f92672">=</span> dec<span style="color:#f92672">(</span>head<span style="color:#f92672">,</span> es<span style="color:#f92672">.</span><span style="color:#a6e22e">length</span><span style="color:#f92672">)]</span> <span style="color:#f92672">=</span> e<span style="color:#f92672">;</span>
-    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>head <span style="color:#f92672">==</span> tail<span style="color:#f92672">)</span>
-        grow<span style="color:#f92672">(</span>1<span style="color:#f92672">);</span>
-<span style="color:#f92672">}</span>
-
-<span style="color:#66d9ef">static</span> <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">int</span> <span style="color:#a6e22e">dec</span><span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> i<span style="color:#f92672">,</span> <span style="color:#66d9ef">int</span> modulus<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(--</span>i <span style="color:#f92672">&lt;</span> 0<span style="color:#f92672">)</span> i <span style="color:#f92672">=</span> modulus <span style="color:#f92672">-</span> 1<span style="color:#f92672">;</span>
-    <span style="color:#66d9ef">return</span> i<span style="color:#f92672">;</span>
-<span style="color:#f92672">}</span>
-</code></pre></div><h3 id="priorityqueue">PriorityQueue</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">LinkedList</span><span style="color:#f92672">&lt;</span>E<span style="color:#f92672">&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">extends</span> AbstractSequentialList<span style="color:#f92672">&lt;</span>E<span style="color:#f92672">&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">implements</span> List<span style="color:#f92672">&lt;</span>E<span style="color:#f92672">&gt;,</span> Deque<span style="color:#f92672">&lt;</span>E<span style="color:#f92672">&gt;,</span> Cloneable<span style="color:#f92672">,</span> java<span style="color:#f92672">.</span><span style="color:#a6e22e">io</span><span style="color:#f92672">.</span><span style="color:#a6e22e">Serializable</span><span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">//...
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><p>双端循环队列的addFirst函数实现如下</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#75715e">// 其中Deque表示“double end queue”，发音为deck
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">interface</span> <span style="color:#a6e22e">Deque</span><span style="color:#f92672">&lt;</span>E<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">extends</span> Queue<span style="color:#f92672">&lt;</span>E<span style="color:#f92672">&gt;</span> <span style="color:#f92672">{...}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// ArrayDeque使用的是循环队列
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// addFirst函数会向队列头部加入一个新的元素
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// 当头部为0时，会通过dec函数将head指针移到数组尾部对应的位置
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">addFirst</span><span style="color:#f92672">(</span>E e<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>e <span style="color:#f92672">==</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">throw</span> <span style="color:#66d9ef">new</span> NullPointerException<span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">final</span> Object<span style="color:#f92672">[]</span> es <span style="color:#f92672">=</span> elements<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>    es<span style="color:#f92672">[</span>head <span style="color:#f92672">=</span> dec<span style="color:#f92672">(</span>head<span style="color:#f92672">,</span> es<span style="color:#f92672">.</span><span style="color:#a6e22e">length</span><span style="color:#f92672">)]</span> <span style="color:#f92672">=</span> e<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>head <span style="color:#f92672">==</span> tail<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>        grow<span style="color:#f92672">(</span>1<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">static</span> <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">int</span> <span style="color:#a6e22e">dec</span><span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> i<span style="color:#f92672">,</span> <span style="color:#66d9ef">int</span> modulus<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(--</span>i <span style="color:#f92672">&lt;</span> 0<span style="color:#f92672">)</span> i <span style="color:#f92672">=</span> modulus <span style="color:#f92672">-</span> 1<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> i<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><h3 id="priorityqueue">PriorityQueue</h3>
 <p>通过一个数组形式的堆实现最小优先队列，<code>transient Object[] queue;</code>，默认将最小值放在堆顶，peek()函数返回堆中最小值。没有直接的更改顺序的方式，如果需要将最大值放在堆顶需要传入Comparator接口的实现。</p>
 <p>满足堆的性质，poll()函数返回队列中的最小值或者最大值O(log(n))。</p>
 <h2 id="stack">Stack</h2>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Stack</span><span style="color:#f92672">&lt;</span>E<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">extends</span> Vector<span style="color:#f92672">&lt;</span>E<span style="color:#f92672">&gt;</span> <span style="color:#f92672">{...}</span>
-
-<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Vector</span><span style="color:#f92672">&lt;</span>E<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">extends</span> AbstractList<span style="color:#f92672">&lt;</span>E<span style="color:#f92672">&gt;</span>
-    <span style="color:#66d9ef">implements</span> List<span style="color:#f92672">&lt;</span>E<span style="color:#f92672">&gt;,</span> RandomAccess<span style="color:#f92672">,</span> Cloneable<span style="color:#f92672">,</span> java<span style="color:#f92672">.</span><span style="color:#a6e22e">io</span><span style="color:#f92672">.</span><span style="color:#a6e22e">Serializable</span> <span style="color:#f92672">{}</span>
-</code></pre></div><p>LIFO (后进先出）</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Stack</span><span style="color:#f92672">&lt;</span>E<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">extends</span> Vector<span style="color:#f92672">&lt;</span>E<span style="color:#f92672">&gt;</span> <span style="color:#f92672">{...}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Vector</span><span style="color:#f92672">&lt;</span>E<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">extends</span> AbstractList<span style="color:#f92672">&lt;</span>E<span style="color:#f92672">&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">implements</span> List<span style="color:#f92672">&lt;</span>E<span style="color:#f92672">&gt;,</span> RandomAccess<span style="color:#f92672">,</span> Cloneable<span style="color:#f92672">,</span> java<span style="color:#f92672">.</span><span style="color:#a6e22e">io</span><span style="color:#f92672">.</span><span style="color:#a6e22e">Serializable</span> <span style="color:#f92672">{}</span>
+</span></span></code></pre></div><p>LIFO (后进先出）</p>
 <h1 id="源码中的一些操作">源码中的一些操作</h1>
 <h2 id="位操作">位操作</h2>
 <h3 id="用按位与操作提高取余效率">用按位与操作提高取余效率</h3>
@@ -459,14 +459,14 @@ transient Node&lt;K,V&gt;[] table; static class Node&lt;K,V&gt; implements Entry
 <h3 id="通过-1向右移位">通过-1向右移位&raquo;&gt;</h3>
 <p>对于8位的byte，-1 的源码为 10000001，因此可以通过&raquo;&gt;得到一个00010000的2^n的数。</p>
 <p>在HashMap中，hash桶的数量只能为2^n。下面的函数能够获取最小的n使2^n &gt; cap。</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">/**
-</span><span style="color:#75715e"> * Returns a power of two size for the given target capacity.
-</span><span style="color:#75715e"> */</span>
-<span style="color:#66d9ef">static</span> <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">int</span> <span style="color:#a6e22e">tableSizeFor</span><span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> cap<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-    <span style="color:#66d9ef">int</span> n <span style="color:#f92672">=</span> <span style="color:#f92672">-</span>1 <span style="color:#f92672">&gt;&gt;&gt;</span> Integer<span style="color:#f92672">.</span><span style="color:#a6e22e">numberOfLeadingZeros</span><span style="color:#f92672">(</span>cap <span style="color:#f92672">-</span> 1<span style="color:#f92672">);</span>
-    <span style="color:#66d9ef">return</span> <span style="color:#f92672">(</span>n <span style="color:#f92672">&lt;</span> 0<span style="color:#f92672">)</span> <span style="color:#f92672">?</span> 1 <span style="color:#f92672">:</span> <span style="color:#f92672">(</span>n <span style="color:#f92672">&gt;=</span> MAXIMUM_CAPACITY<span style="color:#f92672">)</span> <span style="color:#f92672">?</span> MAXIMUM_CAPACITY <span style="color:#f92672">:</span> n <span style="color:#f92672">+</span> 1<span style="color:#f92672">;</span>
-<span style="color:#f92672">}</span>
-</code></pre></div>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#75715e">/**
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> * Returns a power of two size for the given target capacity.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> */</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">static</span> <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">int</span> <span style="color:#a6e22e">tableSizeFor</span><span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> cap<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> n <span style="color:#f92672">=</span> <span style="color:#f92672">-</span>1 <span style="color:#f92672">&gt;&gt;&gt;</span> Integer<span style="color:#f92672">.</span><span style="color:#a6e22e">numberOfLeadingZeros</span><span style="color:#f92672">(</span>cap <span style="color:#f92672">-</span> 1<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#f92672">(</span>n <span style="color:#f92672">&lt;</span> 0<span style="color:#f92672">)</span> <span style="color:#f92672">?</span> 1 <span style="color:#f92672">:</span> <span style="color:#f92672">(</span>n <span style="color:#f92672">&gt;=</span> MAXIMUM_CAPACITY<span style="color:#f92672">)</span> <span style="color:#f92672">?</span> MAXIMUM_CAPACITY <span style="color:#f92672">:</span> n <span style="color:#f92672">+</span> 1<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span></code></pre></div>
 </div>
 
   
@@ -544,7 +544,7 @@ transient Node&lt;K,V&gt;[] table; static class Node&lt;K,V&gt; implements Entry
       </li></ul>
   </nav>
 </section><div class='copyright'>
-  <p> &copy; 2018-2021 extendswind </p>
+  <p> &copy; 2018-2022 extendswind </p>
 </div>
 
         </div>

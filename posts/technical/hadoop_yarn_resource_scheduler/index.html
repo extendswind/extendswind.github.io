@@ -8,11 +8,11 @@ CapacityScheduler首先将所有资源分配到hierarchical queue中，每个任
 Fair Scheduler 会在第一个任务运行时分配当前同级队列的所有资源，当有其它任务运行时，回收前面任务运行时的部分资源（一般为运行完成的Container）用于其它任务。
 至于FIFO，源码里都没有描述，可能就是一般的先进先出了。
 YARN默认使用CapacityScheduler，通过下面的属性配置：
-&lt;property&gt; &lt;name&gt;yarn.resourcemanager.scheduler.class&lt;/name&gt; &lt;value&gt;org.apache.hadoop.yarn.server.resourcemanager.scheduler.fair.FairScheduler&lt;/value&gt; &lt;/property&gt; YARN 动态资源分配 YARN 能够动态申请资源，如MapReduce中reduce的container会在map过程结束后申请。但Spark On YARN的机制为申请固定的executor，而不动态改变已申请的资源。
+&lt;property&gt;  &lt;name&gt;yarn.resourcemanager.scheduler.class&lt;/name&gt;  &lt;value&gt;org.apache.hadoop.yarn.server.resourcemanager.scheduler.fair.FairScheduler&lt;/value&gt; &lt;/property&gt; YARN 动态资源分配 YARN 能够动态申请资源，如MapReduce中reduce的container会在map过程结束后申请。但Spark On YARN的机制为申请固定的executor，而不动态改变已申请的资源。
 YARN上新运行的任务能够使用已运行任务回收的资源(如运行完Map task的container)，甚至还能够通过强行结束先前任务的container抢占资源。
 Capacity Scheduler CapacityScheduler重点解决多个组织共享集群资源，并保证每个组织自己的资源使用量。当自己的资源不足时能够使用其它组织的空闲资源。
 资源通过层级队列（hierarchical queues）的形式进行组织，配置在etc/hadoop/capacity-scheduler.xml.
-&lt;!-- 队列结构设置 --&gt; &lt;property&gt; &lt;name&gt;yarn.scheduler.capacity.root.queues&lt;/name&gt; &lt;value&gt;a,b&lt;/value&gt; &lt;description&gt;The queues at the this level (root is the root queue). &lt;/description&gt; &lt;/property&gt; &lt;property&gt; &lt;name&gt;yarn.scheduler.capacity.root.a.queues&lt;/name&gt; &lt;value&gt;a1,a2&lt;/value&gt; &lt;description&gt;The queues at the this level (root is the root queue).'>
+&lt;!-- 队列结构设置 --&gt; &lt;property&gt;  &lt;name&gt;yarn.scheduler.capacity.root.queues&lt;/name&gt;  &lt;value&gt;a,b&lt;/value&gt;  &lt;description&gt;The queues at the this level (root is the root queue).  &lt;/description&gt; &lt;/property&gt;  &lt;property&gt;  &lt;name&gt;yarn.scheduler.capacity.root.a.queues&lt;/name&gt;  &lt;value&gt;a1,a2&lt;/value&gt;  &lt;description&gt;The queues at the this level (root is the root queue).'>
 <meta name='theme-color' content='#cccccc'>
 
 <meta property='og:title' content='Hadoop YARN 调度器（scheduler） —— 资源调度策略 • A Notebook of Extendswind'>
@@ -22,16 +22,16 @@ CapacityScheduler首先将所有资源分配到hierarchical queue中，每个任
 Fair Scheduler 会在第一个任务运行时分配当前同级队列的所有资源，当有其它任务运行时，回收前面任务运行时的部分资源（一般为运行完成的Container）用于其它任务。
 至于FIFO，源码里都没有描述，可能就是一般的先进先出了。
 YARN默认使用CapacityScheduler，通过下面的属性配置：
-&lt;property&gt; &lt;name&gt;yarn.resourcemanager.scheduler.class&lt;/name&gt; &lt;value&gt;org.apache.hadoop.yarn.server.resourcemanager.scheduler.fair.FairScheduler&lt;/value&gt; &lt;/property&gt; YARN 动态资源分配 YARN 能够动态申请资源，如MapReduce中reduce的container会在map过程结束后申请。但Spark On YARN的机制为申请固定的executor，而不动态改变已申请的资源。
+&lt;property&gt;  &lt;name&gt;yarn.resourcemanager.scheduler.class&lt;/name&gt;  &lt;value&gt;org.apache.hadoop.yarn.server.resourcemanager.scheduler.fair.FairScheduler&lt;/value&gt; &lt;/property&gt; YARN 动态资源分配 YARN 能够动态申请资源，如MapReduce中reduce的container会在map过程结束后申请。但Spark On YARN的机制为申请固定的executor，而不动态改变已申请的资源。
 YARN上新运行的任务能够使用已运行任务回收的资源(如运行完Map task的container)，甚至还能够通过强行结束先前任务的container抢占资源。
 Capacity Scheduler CapacityScheduler重点解决多个组织共享集群资源，并保证每个组织自己的资源使用量。当自己的资源不足时能够使用其它组织的空闲资源。
 资源通过层级队列（hierarchical queues）的形式进行组织，配置在etc/hadoop/capacity-scheduler.xml.
-&lt;!-- 队列结构设置 --&gt; &lt;property&gt; &lt;name&gt;yarn.scheduler.capacity.root.queues&lt;/name&gt; &lt;value&gt;a,b&lt;/value&gt; &lt;description&gt;The queues at the this level (root is the root queue). &lt;/description&gt; &lt;/property&gt; &lt;property&gt; &lt;name&gt;yarn.scheduler.capacity.root.a.queues&lt;/name&gt; &lt;value&gt;a1,a2&lt;/value&gt; &lt;description&gt;The queues at the this level (root is the root queue).'>
+&lt;!-- 队列结构设置 --&gt; &lt;property&gt;  &lt;name&gt;yarn.scheduler.capacity.root.queues&lt;/name&gt;  &lt;value&gt;a,b&lt;/value&gt;  &lt;description&gt;The queues at the this level (root is the root queue).  &lt;/description&gt; &lt;/property&gt;  &lt;property&gt;  &lt;name&gt;yarn.scheduler.capacity.root.a.queues&lt;/name&gt;  &lt;value&gt;a1,a2&lt;/value&gt;  &lt;description&gt;The queues at the this level (root is the root queue).'>
 <meta property='og:url' content='https://extendswind.top/posts/technical/hadoop_yarn_resource_scheduler/'>
 <meta property='og:site_name' content='A Notebook of Extendswind'>
 <meta property='og:type' content='article'><meta property='article:section' content='posts'><meta property='article:tag' content='hadoop'><meta property='article:published_time' content='2018-09-04T10:30:00&#43;08:00'/><meta property='article:modified_time' content='2018-09-04T10:30:00&#43;08:00'/><meta name='twitter:card' content='summary'>
 
-<meta name="generator" content="Hugo 0.89.4" />
+<meta name="generator" content="Hugo 0.93.2" />
 
   <title>Hadoop YARN 调度器（scheduler） —— 资源调度策略 • A Notebook of Extendswind</title>
   <link rel='canonical' href='https://extendswind.top/posts/technical/hadoop_yarn_resource_scheduler/'>
@@ -111,6 +111,8 @@ Capacity Scheduler CapacityScheduler重点解决多个组织共享集群资源�
         <a href='/tags/linux/' style='font-size:1em'>linux</a>
       </li><li>
         <a href='/tags/log4j/' style='font-size:1em'>log4j</a>
+      </li><li>
+        <a href='/tags/mpi/' style='font-size:1em'>MPI</a>
       </li><li>
         <a href='/tags/python/' style='font-size:1em'>python</a>
       </li><li>
@@ -242,58 +244,58 @@ Capacity Scheduler CapacityScheduler重点解决多个组织共享集群资源�
 <p>Fair Scheduler 会在第一个任务运行时分配当前同级队列的所有资源，当有其它任务运行时，回收前面任务运行时的部分资源（一般为运行完成的Container）用于其它任务。</p>
 <p>至于FIFO，源码里都没有描述，可能就是一般的先进先出了。</p>
 <p>YARN默认使用CapacityScheduler，通过下面的属性配置：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#f92672">&lt;property&gt;</span>
-  <span style="color:#f92672">&lt;name&gt;</span>yarn.resourcemanager.scheduler.class<span style="color:#f92672">&lt;/name&gt;</span>
-  <span style="color:#f92672">&lt;value&gt;</span>org.apache.hadoop.yarn.server.resourcemanager.scheduler.fair.FairScheduler<span style="color:#f92672">&lt;/value&gt;</span>
-<span style="color:#f92672">&lt;/property&gt;</span>
-</code></pre></div><h2 id="yarn-动态资源分配">YARN 动态资源分配</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-xml" data-lang="xml"><span style="display:flex;"><span><span style="color:#f92672">&lt;property&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;name&gt;</span>yarn.resourcemanager.scheduler.class<span style="color:#f92672">&lt;/name&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;value&gt;</span>org.apache.hadoop.yarn.server.resourcemanager.scheduler.fair.FairScheduler<span style="color:#f92672">&lt;/value&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&lt;/property&gt;</span>
+</span></span></code></pre></div><h2 id="yarn-动态资源分配">YARN 动态资源分配</h2>
 <p>YARN 能够动态申请资源，如MapReduce中reduce的container会在map过程结束后申请。但Spark On YARN的机制为申请固定的executor，而不动态改变已申请的资源。</p>
 <p>YARN上新运行的任务能够使用已运行任务回收的资源(如运行完Map task的container)，甚至还能够通过强行结束先前任务的container抢占资源。</p>
 <h1 id="capacity-scheduler">Capacity Scheduler</h1>
 <p>CapacityScheduler重点解决多个组织共享集群资源，并保证每个组织自己的资源使用量。当自己的资源不足时能够使用其它组织的空闲资源。</p>
 <p>资源通过层级队列（hierarchical queues）的形式进行组织，配置在etc/hadoop/capacity-scheduler.xml.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#75715e">&lt;!-- 队列结构设置 --&gt;</span>
-<span style="color:#f92672">&lt;property&gt;</span>
-  <span style="color:#f92672">&lt;name&gt;</span>yarn.scheduler.capacity.root.queues<span style="color:#f92672">&lt;/name&gt;</span>
-  <span style="color:#f92672">&lt;value&gt;</span>a,b<span style="color:#f92672">&lt;/value&gt;</span>
-  <span style="color:#f92672">&lt;description&gt;</span>The queues at the this level (root is the root queue).
-  <span style="color:#f92672">&lt;/description&gt;</span>
-<span style="color:#f92672">&lt;/property&gt;</span>
-
-<span style="color:#f92672">&lt;property&gt;</span>
-  <span style="color:#f92672">&lt;name&gt;</span>yarn.scheduler.capacity.root.a.queues<span style="color:#f92672">&lt;/name&gt;</span>
-  <span style="color:#f92672">&lt;value&gt;</span>a1,a2<span style="color:#f92672">&lt;/value&gt;</span>
-  <span style="color:#f92672">&lt;description&gt;</span>The queues at the this level (root is the root queue).
-  <span style="color:#f92672">&lt;/description&gt;</span>
-<span style="color:#f92672">&lt;/property&gt;</span>
-
-<span style="color:#75715e">&lt;!-- 队列能力设置 --&gt;</span>
-<span style="color:#f92672">&lt;property&gt;</span>
-  <span style="color:#f92672">&lt;name&gt;</span>yarn.scheduler.capacity.root.a.capacity<span style="color:#f92672">&lt;/name&gt;</span>
-  <span style="color:#f92672">&lt;value&gt;</span>40<span style="color:#f92672">&lt;/value&gt;</span>
-<span style="color:#f92672">&lt;/property&gt;</span>
-
-<span style="color:#f92672">&lt;property&gt;</span>
-  <span style="color:#f92672">&lt;name&gt;</span>yarn.scheduler.capacity.root.b.capacity<span style="color:#f92672">&lt;/name&gt;</span>
-  <span style="color:#f92672">&lt;value&gt;</span>60<span style="color:#f92672">&lt;/value&gt;</span>
-<span style="color:#f92672">&lt;/property&gt;</span>
-
-<span style="color:#f92672">&lt;property&gt;</span>
-  <span style="color:#f92672">&lt;name&gt;</span>yarn.scheduler.capacity.root.a.a1.capacity<span style="color:#f92672">&lt;/name&gt;</span>
-  <span style="color:#f92672">&lt;value&gt;</span>50<span style="color:#f92672">&lt;/value&gt;</span>
-<span style="color:#f92672">&lt;/property&gt;</span>
-
-<span style="color:#f92672">&lt;property&gt;</span>
-  <span style="color:#f92672">&lt;name&gt;</span>yarn.scheduler.capacity.root.a.a2.capacity<span style="color:#f92672">&lt;/name&gt;</span>
-  <span style="color:#f92672">&lt;value&gt;</span>50<span style="color:#f92672">&lt;/value&gt;</span>
-<span style="color:#f92672">&lt;/property&gt;</span>
-
-<span style="color:#75715e">&lt;!-- 最大能力占用 --&gt;</span>
-<span style="color:#f92672">&lt;property&gt;</span>
-  <span style="color:#f92672">&lt;name&gt;</span>yarn.scheduler.capacity.root.a.maximum-capacity<span style="color:#f92672">&lt;/name&gt;</span>
-  <span style="color:#f92672">&lt;value&gt;</span>75<span style="color:#f92672">&lt;/value&gt;</span>
-<span style="color:#f92672">&lt;/property&gt;</span>
-</code></pre></div><pre tabindex="0"><code>root  
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-xml" data-lang="xml"><span style="display:flex;"><span><span style="color:#75715e">&lt;!-- 队列结构设置 --&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&lt;property&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;name&gt;</span>yarn.scheduler.capacity.root.queues<span style="color:#f92672">&lt;/name&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;value&gt;</span>a,b<span style="color:#f92672">&lt;/value&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;description&gt;</span>The queues at the this level (root is the root queue).
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;/description&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&lt;/property&gt;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&lt;property&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;name&gt;</span>yarn.scheduler.capacity.root.a.queues<span style="color:#f92672">&lt;/name&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;value&gt;</span>a1,a2<span style="color:#f92672">&lt;/value&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;description&gt;</span>The queues at the this level (root is the root queue).
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;/description&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&lt;/property&gt;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">&lt;!-- 队列能力设置 --&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&lt;property&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;name&gt;</span>yarn.scheduler.capacity.root.a.capacity<span style="color:#f92672">&lt;/name&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;value&gt;</span>40<span style="color:#f92672">&lt;/value&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&lt;/property&gt;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&lt;property&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;name&gt;</span>yarn.scheduler.capacity.root.b.capacity<span style="color:#f92672">&lt;/name&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;value&gt;</span>60<span style="color:#f92672">&lt;/value&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&lt;/property&gt;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&lt;property&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;name&gt;</span>yarn.scheduler.capacity.root.a.a1.capacity<span style="color:#f92672">&lt;/name&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;value&gt;</span>50<span style="color:#f92672">&lt;/value&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&lt;/property&gt;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&lt;property&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;name&gt;</span>yarn.scheduler.capacity.root.a.a2.capacity<span style="color:#f92672">&lt;/name&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;value&gt;</span>50<span style="color:#f92672">&lt;/value&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&lt;/property&gt;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">&lt;!-- 最大能力占用 --&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&lt;property&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;name&gt;</span>yarn.scheduler.capacity.root.a.maximum-capacity<span style="color:#f92672">&lt;/name&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;value&gt;</span>75<span style="color:#f92672">&lt;/value&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&lt;/property&gt;</span>
+</span></span></code></pre></div><pre tabindex="0"><code>root  
 ├── a 40%  
 |   ├── a1 50%  
 |   └── a2 50%  
@@ -309,24 +311,24 @@ Capacity Scheduler CapacityScheduler重点解决多个组织共享集群资源�
 </ul>
 <h1 id="fair-scheduler-公平调度器">Fair Scheduler （公平调度器）</h1>
 <p>对比CapacityScheduler的主要区别： 任务提交时占用同一层队列所有的资源 (Capacity Scheduler中只使用maximum-capacity限制下的其它队列闲置的资源），另一个任务提交时，会回收先前任务的部分资源。</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#f92672">&lt;allocations&gt;</span>
-  <span style="color:#f92672">&lt;defaultQueueSchedulingPolicy&gt;</span>fair<span style="color:#f92672">&lt;/defaultQueueSchedulingPolicy&gt;</span>
-  <span style="color:#f92672">&lt;queue</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;a&#34;</span><span style="color:#f92672">&gt;</span>
-    <span style="color:#f92672">&lt;weight&gt;</span>4<span style="color:#f92672">&lt;/weight&gt;</span>
-    <span style="color:#f92672">&lt;schedulingPolicy&gt;</span>fifo<span style="color:#f92672">&lt;/schedulingPolicy&gt;</span>
-    <span style="color:#f92672">&lt;queue</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;a1&#34;</span> <span style="color:#f92672">/&gt;</span>
-    <span style="color:#f92672">&lt;queue</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;a2&#34;</span> <span style="color:#f92672">/&gt;</span>
-  <span style="color:#f92672">&lt;/queue&gt;</span>
-  <span style="color:#f92672">&lt;queue</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;b&#34;</span><span style="color:#f92672">&gt;</span>
-    <span style="color:#f92672">&lt;weight&gt;</span>6<span style="color:#f92672">&lt;/weight&gt;</span>
-  <span style="color:#f92672">&lt;/queue&gt;</span>
-  <span style="color:#f92672">&lt;queuePlacementPolicy&gt;</span>
-    <span style="color:#f92672">&lt;rule</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;specified&#34;</span> <span style="color:#a6e22e">create=</span><span style="color:#e6db74">&#34;false&#34;</span> <span style="color:#f92672">/&gt;</span>
-    <span style="color:#f92672">&lt;rule</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;primaryGroup&#34;</span> <span style="color:#a6e22e">create=</span><span style="color:#e6db74">&#34;false&#34;</span> <span style="color:#f92672">/&gt;</span>
-    <span style="color:#f92672">&lt;rule</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;default&#34;</span> <span style="color:#a6e22e">queue=</span><span style="color:#e6db74">&#34;a.a1&#34;</span> <span style="color:#f92672">/&gt;</span>
-  <span style="color:#f92672">&lt;/queuePlacementPolicy&gt;</span>
-<span style="color:#f92672">&lt;/allocations&gt;</span>
-</code></pre></div><p>上面的配置文件给出了一个如下图的层级队列。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-xml" data-lang="xml"><span style="display:flex;"><span><span style="color:#f92672">&lt;allocations&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;defaultQueueSchedulingPolicy&gt;</span>fair<span style="color:#f92672">&lt;/defaultQueueSchedulingPolicy&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;queue</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;a&#34;</span><span style="color:#f92672">&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;weight&gt;</span>4<span style="color:#f92672">&lt;/weight&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;schedulingPolicy&gt;</span>fifo<span style="color:#f92672">&lt;/schedulingPolicy&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;queue</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;a1&#34;</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;queue</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;a2&#34;</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;/queue&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;queue</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;b&#34;</span><span style="color:#f92672">&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;weight&gt;</span>6<span style="color:#f92672">&lt;/weight&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;/queue&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;queuePlacementPolicy&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;rule</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;specified&#34;</span> <span style="color:#a6e22e">create=</span><span style="color:#e6db74">&#34;false&#34;</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;rule</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;primaryGroup&#34;</span> <span style="color:#a6e22e">create=</span><span style="color:#e6db74">&#34;false&#34;</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;rule</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;default&#34;</span> <span style="color:#a6e22e">queue=</span><span style="color:#e6db74">&#34;a.a1&#34;</span> <span style="color:#f92672">/&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;/queuePlacementPolicy&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&lt;/allocations&gt;</span>
+</span></span></code></pre></div><p>上面的配置文件给出了一个如下图的层级队列。</p>
 <pre tabindex="0"><code>root 
 ├── a (权重4 因此占用总体40%的资源）
 |   ├── a1  没有指定权重，因此与a2队列平分a队列40%的资源；队列内部的多个应用使用fifo策略。 
@@ -418,7 +420,7 @@ Capacity Scheduler CapacityScheduler重点解决多个组织共享集群资源�
       </li></ul>
   </nav>
 </section><div class='copyright'>
-  <p> &copy; 2018-2021 extendswind </p>
+  <p> &copy; 2018-2022 extendswind </p>
 </div>
 
         </div>

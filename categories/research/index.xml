@@ -21,7 +21,7 @@
   此时此前附件中的绝对路径/mnt/data/...会变成attachments：catagory1/test1.pdf 类似的相对路径。
 方法二：直接操作sqllite数据库来改 下面的语句供参考，建议稍了解后操作，使用update导致数据丢失会很麻烦。
 把下面路径中的/home/fly/public_download/改成自己数据库里的路径即可。
-update itemAttachments set path=replace(path, &#39;/home/fly/public_download/&#39;, &#39;attachments:&#39;) where path like &#39;/home/fly/public_download%&#39; 最后 跨操作系统或者跨目录直接设置到相同的目录即可。</description>
+update itemAttachments set path=replace(path, &amp;#39;/home/fly/public_download/&amp;#39;, &amp;#39;attachments:&amp;#39;) where path like &amp;#39;/home/fly/public_download%&amp;#39; 最后 跨操作系统或者跨目录直接设置到相同的目录即可。</description>
     </item>
     
   </channel>
