@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang='en' dir='auto'><head>
+  <meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<meta name='description' content='最近参加的面试，一面问了HDFS写文件流程，完了之后把《Hadoop权威指南》上的流程配合源码简单的看了一遍。二面又问到了这个问题，一些细节还是漏了，对这部分还是专门记个笔记吧。稍微梳理了一下，发现感觉这个问题确实太适合作为面试题了，有细节还适合引申到其它的点。
+写数据流程 大体流程如图（来自《Hadoop权威指南》）
+ 客户端通过DistributedFileSystem的create()创建文件，中间会对namenode创建RPC调用（namenode.create)，namenode在检查权限等问题后新建文件。 创建完文件后会返回FSDataOutputStream，在DFSOutputStream上的一层包装，用于处理写入数据所需要的namenode和datanode之间的通信。 在数据写入过程中，DFSOutputStream会将数据划分为packets，并放入data queue，由DataStreamer处理（向namenode申请分配新的block）。 被选择的datanode连起来构成pipeline，DataStreamer流式的将packets发送到第一个datanode，第一个datanode每次收到packet后存储并转发到pipeline上下一个datanode。 DFSOutputStream还维护了一个ack queue，当所有的datanode都应答后对应的packet会被移除。  源码分析 以下代码来自Hadoop 2.7.7。
+FileSystem.get()通过URI返回对应的DistributedFileSystem，调用create函数在namenode上创建文件，返回输出流。
+Configuration conf = new Configuration(); FileSystem hdfs = FileSystem.get(URI.create(hdfsDirectory), conf); FSDataOutputStream outputStream = hdfs.create(new Path(hdfsDirectory)); outputStream.writeInt(1); outputStream.close(); DistributedFileSystem的create()中，通过DFSClient的对象dfs，调用dfs.create()。中间使用了FileSystemLinkResolver类，当doCall函数中抛出UnresolvedLinkException时（解析Path路径失败），会重新解析路径得到合适的FileSystem和Path传入next()。总体上相当于给定的路径解析失败时，重新解析后再次调用create函数。创建完成后对返回的DFSOutputStream外套了一层FSDataOutputStream用于写结果。
+final DFSOutputStream out = dfs.create(getPathName(f), permission,  overwrite ? EnumSet.of(CreateFlag.CREATE, CreateFlag.OVERWRITE)  : EnumSet.of(CreateFlag.CREATE),  true, replication, blockSize, progress, bufferSize, null,  favoredNodes); return dfs.createWrappedOutputStream(out, statistics); dfs.create() 调用了DFSOutputStream.newStreamForCreate(&hellip;)。
+ public DFSOutputStream create(String src, 	//...  InetSocketAddress[] favoredNodes) throws IOException {  //.'>
+<meta name='theme-color' content='#cccccc'>
+
+<meta property='og:title' content='HDFS写文件源码分析 • A Notebook of Extendswind'>
+<meta property='og:description' content='最近参加的面试，一面问了HDFS写文件流程，完了之后把《Hadoop权威指南》上的流程配合源码简单的看了一遍。二面又问到了这个问题，一些细节还是漏了，对这部分还是专门记个笔记吧。稍微梳理了一下，发现感觉这个问题确实太适合作为面试题了，有细节还适合引申到其它的点。
+写数据流程 大体流程如图（来自《Hadoop权威指南》）
+ 客户端通过DistributedFileSystem的create()创建文件，中间会对namenode创建RPC调用（namenode.create)，namenode在检查权限等问题后新建文件。 创建完文件后会返回FSDataOutputStream，在DFSOutputStream上的一层包装，用于处理写入数据所需要的namenode和datanode之间的通信。 在数据写入过程中，DFSOutputStream会将数据划分为packets，并放入data queue，由DataStreamer处理（向namenode申请分配新的block）。 被选择的datanode连起来构成pipeline，DataStreamer流式的将packets发送到第一个datanode，第一个datanode每次收到packet后存储并转发到pipeline上下一个datanode。 DFSOutputStream还维护了一个ack queue，当所有的datanode都应答后对应的packet会被移除。  源码分析 以下代码来自Hadoop 2.7.7。
+FileSystem.get()通过URI返回对应的DistributedFileSystem，调用create函数在namenode上创建文件，返回输出流。
+Configuration conf = new Configuration(); FileSystem hdfs = FileSystem.get(URI.create(hdfsDirectory), conf); FSDataOutputStream outputStream = hdfs.create(new Path(hdfsDirectory)); outputStream.writeInt(1); outputStream.close(); DistributedFileSystem的create()中，通过DFSClient的对象dfs，调用dfs.create()。中间使用了FileSystemLinkResolver类，当doCall函数中抛出UnresolvedLinkException时（解析Path路径失败），会重新解析路径得到合适的FileSystem和Path传入next()。总体上相当于给定的路径解析失败时，重新解析后再次调用create函数。创建完成后对返回的DFSOutputStream外套了一层FSDataOutputStream用于写结果。
+final DFSOutputStream out = dfs.create(getPathName(f), permission,  overwrite ? EnumSet.of(CreateFlag.CREATE, CreateFlag.OVERWRITE)  : EnumSet.of(CreateFlag.CREATE),  true, replication, blockSize, progress, bufferSize, null,  favoredNodes); return dfs.createWrappedOutputStream(out, statistics); dfs.create() 调用了DFSOutputStream.newStreamForCreate(&hellip;)。
+ public DFSOutputStream create(String src, 	//...  InetSocketAddress[] favoredNodes) throws IOException {  //.'>
+<meta property='og:url' content='https://extendswind.top/posts/technical/hadoop_hdfs_write_analysis/'>
+<meta property='og:site_name' content='A Notebook of Extendswind'>
+<meta property='og:type' content='article'><meta property='article:section' content='posts'><meta property='article:tag' content='hadoop'><meta property='article:published_time' content='2018-12-11T21:30:00&#43;08:00'/><meta property='article:modified_time' content='2018-12-11T21:30:00&#43;08:00'/><meta name='twitter:card' content='summary'>
+
+<meta name="generator" content="Hugo 0.93.2" />
+
+  <title>HDFS写文件源码分析 • A Notebook of Extendswind</title>
+  <link rel='canonical' href='https://extendswind.top/posts/technical/hadoop_hdfs_write_analysis/'>
+  
+  
+  <link rel='icon' href='/images/wind.jpeg'>
+<link rel='stylesheet' href='/assets/css/main.ab98e12b.css'><link rel='stylesheet' href='/css/custom.css'><style>
+:root{--color-accent:#cccccc;}
+</style>
+
+  
+
+</head>
+<body class='page type-posts has-sidebar'>
+
+  <div class='site'><div id='sidebar' class='sidebar'>
+  <a class='screen-reader-text' href='#main-menu'>Skip to Main Menu</a>
+
+  <div class='container'><section class='widget widget-about sep-after'>
+  <header>
+    
+    <div class='logo'>
+      <a href='/'>
+        <img src='/images/wind.jpeg'>
+      </a>
+    </div>
+    
+    <h2 class='title site-title '>
+      <a href='/'>
+      extendswind
+      </a>
+    </h2>
+    <div class='desc'>
+    
+    </div>
+  </header>
+
+</section>
+<section class='widget widget-sidebar_menu sep-after'><nav id='sidebar-menu' class='menu sidebar-menu' aria-label='Sidebar Menu'>
+    <div class='container'>
+      <ul><li class='item'>
+  <a href='/'>Home</a></li><li class='item'>
+  <a href='/posts'>Posts</a></li><li class='item'>
+  <a href='/categories'>Categories</a></li><li class='item'>
+  <a href='https://github.com/extendswind'>GitHub</a></li><li class='item'>
+  <a href='https://www.cnblogs.com/fly2wind/'>Cnblog</a></li></ul>
+    </div>
+  </nav>
+
+</section><section class='widget widget-taxonomy_cloud sep-after'>
+  <header>
+    <h4 class='title widget-title'>Tags</h4>
+  </header>
+
+  <div class='container list-container'>
+  <ul class='list taxonomy-cloud'><li>
+        <a href='/tags/blog/' style='font-size:1em'>blog</a>
+      </li><li>
+        <a href='/tags/design-patterns/' style='font-size:1em'>design patterns</a>
+      </li><li>
+        <a href='/tags/geospark/' style='font-size:1em'>GeoSpark</a>
+      </li><li>
+        <a href='/tags/gis/' style='font-size:1em'>GIS</a>
+      </li><li>
+        <a href='/tags/git/' style='font-size:1em'>git</a>
+      </li><li>
+        <a href='/tags/hadoop/' style='font-size:1em'>hadoop</a>
+      </li><li>
+        <a href='/tags/hive/' style='font-size:1em'>hive</a>
+      </li><li>
+        <a href='/tags/iot/' style='font-size:1em'>IoT</a>
+      </li><li>
+        <a href='/tags/java/' style='font-size:1em'>java</a>
+      </li><li>
+        <a href='/tags/life/' style='font-size:1em'>life</a>
+      </li><li>
+        <a href='/tags/linux/' style='font-size:1em'>linux</a>
+      </li><li>
+        <a href='/tags/log4j/' style='font-size:1em'>log4j</a>
+      </li><li>
+        <a href='/tags/mpi/' style='font-size:1em'>MPI</a>
+      </li><li>
+        <a href='/tags/python/' style='font-size:1em'>python</a>
+      </li><li>
+        <a href='/tags/raspberry/' style='font-size:1em'>raspberry</a>
+      </li><li>
+        <a href='/tags/reading/' style='font-size:1em'>reading</a>
+      </li><li>
+        <a href='/tags/software/' style='font-size:1em'>software</a>
+      </li><li>
+        <a href='/tags/spark/' style='font-size:1em'>Spark</a>
+      </li></ul>
+</div>
+
+
+</section>
+<section class='widget widget-search sep-after'>
+  <header>
+    <h4 class='title widget-title'>Search</h4>
+  </header>
+
+  <form action='/search' id='search-form' class='search-form'>
+    <label>
+      <span class='screen-reader-text'>Search</span>
+      <input id='search-term' class='search-term' type='search' name='q' placeholder='Search&hellip;'>
+    </label></form>
+
+</section>
+</div>
+
+  <div class='sidebar-overlay'></div>
+</div><div class='main'><a class='screen-reader-text' href='#content'>Skip to Content</a>
+
+<button id='sidebar-toggler' class='sidebar-toggler' aria-controls='sidebar'>
+  <span class='screen-reader-text'>Toggle Sidebar</span>
+  <span class='open'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="3" y1="12" x2="21" y2="12" />
+  <line x1="3" y1="6" x2="21" y2="6" />
+  <line x1="3" y1="18" x2="21" y2="18" />
+  
+</svg>
+</span>
+  <span class='close'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="18" y1="6" x2="6" y2="18" />
+  <line x1="6" y1="6" x2="18" y2="18" />
+  
+</svg>
+</span>
+</button><div class='header-widgets'>
+        <div class='container'></div>
+      </div>
+
+      <header id='header' class='header site-header'>
+        <div class='container sep-after'>
+          <div class='header-info'><p class='site-title title'>A Notebook of Extendswind</p><p class='desc site-desc'>a simple blog site</p>
+          </div>
+        </div>
+      </header>
+
+      <main id='content'>
+
+
+<article lang='en' class='entry'>
+  <header class='header entry-header'>
+  <div class='container sep-after'>
+    <div class='header-info'>
+      <h1 class='title'>HDFS写文件源码分析</h1>
+      
+
+    </div>
+    <div class='entry-meta'>
+  <span class='posted-on'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+  <line x1="16" y1="2" x2="16" y2="6"/>
+  <line x1="8" y1="2" x2="8" y2="6"/>
+  <line x1="3" y1="10" x2="21" y2="10"/>
+  
+</svg>
+<span class='screen-reader-text'>Posted on </span>
+  <time class='entry-date' datetime='2018-12-11T21:30:00&#43;08:00'>2018, Dec 11</time>
+</span>
+
+  
+  
+
+</div>
+
+
+  </div>
+</header>
+
+  
+  
+<details class='container entry-toc' open>
+  <summary class='title'>
+    <span>Table of Contents</span>
+  </summary>
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#写数据流程">写数据流程</a>
+      <ul>
+        <li><a href="#源码分析">源码分析</a></li>
+      </ul>
+    </li>
+    <li><a href="#写数据失败的处理">写数据失败的处理</a></li>
+    <li><a href="#一致性模型">一致性模型</a></li>
+  </ul>
+</nav>
+</details>
+
+
+  <div class='container entry-content'>
+  <p>最近参加的面试，一面问了HDFS写文件流程，完了之后把《Hadoop权威指南》上的流程配合源码简单的看了一遍。二面又问到了这个问题，一些细节还是漏了，对这部分还是专门记个笔记吧。稍微梳理了一下，发现感觉这个问题确实太适合作为面试题了，有细节还适合引申到其它的点。</p>
+<h1 id="写数据流程">写数据流程</h1>
+<p>大体流程如图（来自《Hadoop权威指南》）</p>
+<p><img src="a_client_writing_data_to_hdfs.png" alt="HDFS数据写流程"></p>
+<ol>
+<li>客户端通过DistributedFileSystem的create()创建文件，中间会对namenode创建RPC调用（namenode.create)，namenode在检查权限等问题后新建文件。</li>
+<li>创建完文件后会返回FSDataOutputStream，在DFSOutputStream上的一层包装，用于处理写入数据所需要的namenode和datanode之间的通信。</li>
+<li>在数据写入过程中，DFSOutputStream会将数据划分为packets，并放入data queue，由DataStreamer处理（向namenode申请分配新的block）。</li>
+<li>被选择的datanode连起来构成pipeline，DataStreamer流式的将packets发送到第一个datanode，第一个datanode每次收到packet后存储并转发到pipeline上下一个datanode。</li>
+<li>DFSOutputStream还维护了一个ack queue，当所有的datanode都应答后对应的packet会被移除。</li>
+</ol>
+<h2 id="源码分析">源码分析</h2>
+<p>以下代码来自Hadoop 2.7.7。</p>
+<p>FileSystem.get()通过URI返回对应的DistributedFileSystem，调用create函数在namenode上创建文件，返回输出流。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span>Configuration conf <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Configuration<span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>FileSystem hdfs <span style="color:#f92672">=</span> FileSystem<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span>URI<span style="color:#f92672">.</span><span style="color:#a6e22e">create</span><span style="color:#f92672">(</span>hdfsDirectory<span style="color:#f92672">),</span> conf<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>FSDataOutputStream outputStream <span style="color:#f92672">=</span> hdfs<span style="color:#f92672">.</span><span style="color:#a6e22e">create</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> Path<span style="color:#f92672">(</span>hdfsDirectory<span style="color:#f92672">));</span>
+</span></span><span style="display:flex;"><span>outputStream<span style="color:#f92672">.</span><span style="color:#a6e22e">writeInt</span><span style="color:#f92672">(</span>1<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>outputStream<span style="color:#f92672">.</span><span style="color:#a6e22e">close</span><span style="color:#f92672">();</span>
+</span></span></code></pre></div><p>DistributedFileSystem的create()中，通过DFSClient的对象dfs，调用dfs.create()。中间使用了FileSystemLinkResolver<!-- raw HTML omitted -->类，当doCall函数中抛出UnresolvedLinkException时（解析Path路径失败），会重新解析路径得到合适的FileSystem和Path传入next()。总体上相当于给定的路径解析失败时，重新解析后再次调用create函数。创建完成后对返回的DFSOutputStream外套了一层FSDataOutputStream用于写结果。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#66d9ef">final</span> DFSOutputStream out <span style="color:#f92672">=</span> dfs<span style="color:#f92672">.</span><span style="color:#a6e22e">create</span><span style="color:#f92672">(</span>getPathName<span style="color:#f92672">(</span>f<span style="color:#f92672">),</span> permission<span style="color:#f92672">,</span>
+</span></span><span style="display:flex;"><span>    overwrite <span style="color:#f92672">?</span> EnumSet<span style="color:#f92672">.</span><span style="color:#a6e22e">of</span><span style="color:#f92672">(</span>CreateFlag<span style="color:#f92672">.</span><span style="color:#a6e22e">CREATE</span><span style="color:#f92672">,</span> CreateFlag<span style="color:#f92672">.</span><span style="color:#a6e22e">OVERWRITE</span><span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">:</span> EnumSet<span style="color:#f92672">.</span><span style="color:#a6e22e">of</span><span style="color:#f92672">(</span>CreateFlag<span style="color:#f92672">.</span><span style="color:#a6e22e">CREATE</span><span style="color:#f92672">),</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">true</span><span style="color:#f92672">,</span> replication<span style="color:#f92672">,</span> blockSize<span style="color:#f92672">,</span> progress<span style="color:#f92672">,</span> bufferSize<span style="color:#f92672">,</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">,</span>
+</span></span><span style="display:flex;"><span>    favoredNodes<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">return</span> dfs<span style="color:#f92672">.</span><span style="color:#a6e22e">createWrappedOutputStream</span><span style="color:#f92672">(</span>out<span style="color:#f92672">,</span> statistics<span style="color:#f92672">);</span>
+</span></span></code></pre></div><p>dfs.create() 调用了DFSOutputStream.newStreamForCreate(&hellip;)。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span>  <span style="color:#66d9ef">public</span> DFSOutputStream <span style="color:#a6e22e">create</span><span style="color:#f92672">(</span>String src<span style="color:#f92672">,</span> 
+</span></span><span style="display:flex;"><span>	                        <span style="color:#75715e">//...
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                            InetSocketAddress<span style="color:#f92672">[]</span> favoredNodes<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> IOException <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">//...
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">final</span> DFSOutputStream result <span style="color:#f92672">=</span> DFSOutputStream<span style="color:#f92672">.</span><span style="color:#a6e22e">newStreamForCreate</span><span style="color:#f92672">(</span><span style="color:#66d9ef">this</span><span style="color:#f92672">,</span>
+</span></span><span style="display:flex;"><span>        src<span style="color:#f92672">,</span> masked<span style="color:#f92672">,</span> flag<span style="color:#f92672">,</span> createParent<span style="color:#f92672">,</span> replication<span style="color:#f92672">,</span> blockSize<span style="color:#f92672">,</span> progress<span style="color:#f92672">,</span>
+</span></span><span style="display:flex;"><span>        buffersize<span style="color:#f92672">,</span> dfsClientConf<span style="color:#f92672">.</span><span style="color:#a6e22e">createChecksum</span><span style="color:#f92672">(</span>checksumOpt<span style="color:#f92672">),</span>
+</span></span><span style="display:flex;"><span>        getFavoredNodesStr<span style="color:#f92672">(</span>favoredNodes<span style="color:#f92672">));</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// ...
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">return</span> result<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">}</span>
+</span></span></code></pre></div><p>DFSOutputStream.newStreamForCreate(&hellip;)。首先通过RPC到namenode上调用create函数(dfsClient.namenode.create)，然后new DFSOutputStream并启动。此时，文件在namenode上的创建完成，可以开始写入。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#66d9ef">static</span> DFSOutputStream <span style="color:#a6e22e">newStreamForCreate</span><span style="color:#f92672">(</span>DFSClient dfsClient<span style="color:#f92672">,</span> String src<span style="color:#f92672">,</span>
+</span></span><span style="display:flex;"><span>    FsPermission masked<span style="color:#f92672">,</span> EnumSet<span style="color:#f92672">&lt;</span>CreateFlag<span style="color:#f92672">&gt;</span> flag<span style="color:#f92672">,</span> <span style="color:#66d9ef">boolean</span> createParent<span style="color:#f92672">,</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">short</span> replication<span style="color:#f92672">,</span> <span style="color:#66d9ef">long</span> blockSize<span style="color:#f92672">,</span> Progressable progress<span style="color:#f92672">,</span> <span style="color:#66d9ef">int</span> buffersize<span style="color:#f92672">,</span>
+</span></span><span style="display:flex;"><span>    DataChecksum checksum<span style="color:#f92672">,</span> String<span style="color:#f92672">[]</span> favoredNodes<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> IOException <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// ...
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>       stat <span style="color:#f92672">=</span> dfsClient<span style="color:#f92672">.</span><span style="color:#a6e22e">namenode</span><span style="color:#f92672">.</span><span style="color:#a6e22e">create</span><span style="color:#f92672">(</span>src<span style="color:#f92672">,</span> masked<span style="color:#f92672">,</span> dfsClient<span style="color:#f92672">.</span><span style="color:#a6e22e">clientName</span><span style="color:#f92672">,</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">new</span> EnumSetWritable<span style="color:#f92672">&lt;</span>CreateFlag<span style="color:#f92672">&gt;(</span>flag<span style="color:#f92672">),</span> createParent<span style="color:#f92672">,</span> replication<span style="color:#f92672">,</span>
+</span></span><span style="display:flex;"><span>            blockSize<span style="color:#f92672">,</span> SUPPORTED_CRYPTO_VERSIONS<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// ... 
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// ...
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">final</span> DFSOutputStream out <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> DFSOutputStream<span style="color:#f92672">(</span>dfsClient<span style="color:#f92672">,</span> src<span style="color:#f92672">,</span> stat<span style="color:#f92672">,</span>
+</span></span><span style="display:flex;"><span>        flag<span style="color:#f92672">,</span> progress<span style="color:#f92672">,</span> checksum<span style="color:#f92672">,</span> favoredNodes<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>    out<span style="color:#f92672">.</span><span style="color:#a6e22e">start</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> out<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><p>有了DFSOutputStream后的代码不能直接跳，DFSOutputStream的写数据会进入类中覆盖的writeChunk()，在writeChunkImpl()中实现具体的逻辑。主要过程为：当currentPacket为空时，创建一个新的DFSPacket，然后写入checkSum、data等信息，在DFSPacket里的chunk数量或者大小达到一定值时，会将当前的DFSPacket放入dataQueue队列中。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span>  <span style="color:#a6e22e">@Override</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">protected</span> <span style="color:#66d9ef">synchronized</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">writeChunk</span><span style="color:#f92672">(</span><span style="color:#66d9ef">byte</span><span style="color:#f92672">[]</span> b<span style="color:#f92672">,</span> <span style="color:#66d9ef">int</span> offset<span style="color:#f92672">,</span> <span style="color:#66d9ef">int</span> len<span style="color:#f92672">,</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">byte</span><span style="color:#f92672">[]</span> checksum<span style="color:#f92672">,</span> <span style="color:#66d9ef">int</span> ckoff<span style="color:#f92672">,</span> <span style="color:#66d9ef">int</span> cklen<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> IOException <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    TraceScope scope <span style="color:#f92672">=</span>
+</span></span><span style="display:flex;"><span>        dfsClient<span style="color:#f92672">.</span><span style="color:#a6e22e">getPathTraceScope</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;DFSOutputStream#writeChunk&#34;</span><span style="color:#f92672">,</span> src<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>      writeChunkImpl<span style="color:#f92672">(</span>b<span style="color:#f92672">,</span> offset<span style="color:#f92672">,</span> len<span style="color:#f92672">,</span> checksum<span style="color:#f92672">,</span> ckoff<span style="color:#f92672">,</span> cklen<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span> <span style="color:#66d9ef">finally</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>      scope<span style="color:#f92672">.</span><span style="color:#a6e22e">close</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">synchronized</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">writeChunkImpl</span><span style="color:#f92672">(</span><span style="color:#66d9ef">byte</span><span style="color:#f92672">[]</span> b<span style="color:#f92672">,</span> <span style="color:#66d9ef">int</span> offset<span style="color:#f92672">,</span> <span style="color:#66d9ef">int</span> len<span style="color:#f92672">,</span>
+</span></span><span style="display:flex;"><span>          <span style="color:#66d9ef">byte</span><span style="color:#f92672">[]</span> checksum<span style="color:#f92672">,</span> <span style="color:#66d9ef">int</span> ckoff<span style="color:#f92672">,</span> <span style="color:#66d9ef">int</span> cklen<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> IOException <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">//...
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>currentPacket <span style="color:#f92672">==</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>      currentPacket <span style="color:#f92672">=</span> createPacket<span style="color:#f92672">(</span>packetSize<span style="color:#f92672">,</span> chunksPerPacket<span style="color:#f92672">,</span> 
+</span></span><span style="display:flex;"><span>          bytesCurBlock<span style="color:#f92672">,</span> currentSeqno<span style="color:#f92672">++,</span> <span style="color:#66d9ef">false</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">//...
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>    currentPacket<span style="color:#f92672">.</span><span style="color:#a6e22e">writeChecksum</span><span style="color:#f92672">(</span>checksum<span style="color:#f92672">,</span> ckoff<span style="color:#f92672">,</span> cklen<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>    currentPacket<span style="color:#f92672">.</span><span style="color:#a6e22e">writeData</span><span style="color:#f92672">(</span>b<span style="color:#f92672">,</span> offset<span style="color:#f92672">,</span> len<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>    currentPacket<span style="color:#f92672">.</span><span style="color:#a6e22e">incNumChunks</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>    bytesCurBlock <span style="color:#f92672">+=</span> len<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// If packet is full, enqueue it for transmission
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">//
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>currentPacket<span style="color:#f92672">.</span><span style="color:#a6e22e">getNumChunks</span><span style="color:#f92672">()</span> <span style="color:#f92672">==</span> currentPacket<span style="color:#f92672">.</span><span style="color:#a6e22e">getMaxChunks</span><span style="color:#f92672">()</span> <span style="color:#f92672">||</span>
+</span></span><span style="display:flex;"><span>        bytesCurBlock <span style="color:#f92672">==</span> blockSize<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>	  <span style="color:#75715e">//...
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      waitAndQueueCurrentPacket<span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>      adjustChunkBoundary<span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">// if encountering a block boundary, send an empty packet to 
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      <span style="color:#75715e">// indicate the end of block and reset bytesCurBlock.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      <span style="color:#75715e">//
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>bytesCurBlock <span style="color:#f92672">==</span> blockSize<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>        currentPacket <span style="color:#f92672">=</span> createPacket<span style="color:#f92672">(</span>0<span style="color:#f92672">,</span> 0<span style="color:#f92672">,</span> bytesCurBlock<span style="color:#f92672">,</span> currentSeqno<span style="color:#f92672">++,</span> <span style="color:#66d9ef">true</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>        currentPacket<span style="color:#f92672">.</span><span style="color:#a6e22e">setSyncBlock</span><span style="color:#f92672">(</span>shouldSyncBlock<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>        waitAndQueueCurrentPacket<span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>        bytesCurBlock <span style="color:#f92672">=</span> 0<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>        lastFlushOffset <span style="color:#f92672">=</span> 0<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">}</span>
+</span></span></code></pre></div><p>DFSOutputStream并没有直接在writeChunk()中将数据写入datanode，而是创建了DFSPacket写入到dataQueue中。DataStreamer在另外的一个线程将dataQueue中的数据写入到datanode。</p>
+<p>DataStreamer的写入流程，主要在其线程函数run()中。这个地方在《Hadoop权威指南》里没有特别的提，代码流程主要如下：</p>
+<ol>
+<li>等待当前packet发送完毕后，从dataQueue中取一个新的packet；</li>
+<li>如果当前stage状态为PIPLINE_SETUP_CREATE
+2.1 rpc到namenode添加新的block，向pipline中第一个datanode建立socket连接，构建输出流并发送WRITE_BLOCK指令；
+2.2 启动新的ResposeProcesser，并将当前的stage状态改为PIPLINE_STREAMING;</li>
+<li>判断当前的packet是否为当前block中的最后一个packet，如果是则将stage状态改为PIPLINE_CLOSE；</li>
+<li>将当前的packet从dataQueue中移除，并放入ackQueue，向输出流中写入packet；</li>
+<li>如果是当前block的最后一个packet，则结束当前的输出流（关闭response、关闭输出流、删除pipline信息、设置状态为PIPLINE_SETUP_CREATE）。</li>
+</ol>
+<p>DFSClient与datanode的通信（写数据）并非用的RPC，而是直接用NetUtils.createSocketAddr()连接到datanode，然后向datanode发送Op.WRITE_BLOCK指令告诉datanode执行写block的命令。</p>
+<p>ResponseProcessor在单独的线程中处理datanode回复的ack（每个block会新建一个ResponseProcessor，对应一个新线程），当成功的收到datanode的ack时，会将ackQueue中对应的packet移除。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span> <span style="color:#75715e">//
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">// The DataStreamer class is responsible for sending data packets to the
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">// datanodes in the pipeline. It retrieves a new blockid and block locations
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">// from the namenode, and starts streaming packets to the pipeline of
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">// Datanodes. Every packet has a sequence number associated with
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">// it. When all the packets for a block are sent out and acks for each
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">// if them are received, the DataStreamer closes the current block.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">//
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">DataStreamer</span> <span style="color:#66d9ef">extends</span> Daemon <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">//...
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">/*
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">     * streamer thread is the only thread that opens streams to datanode, 
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">     * and closes them. Any error recovery is also done by this thread.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">     */</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@Override</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">run</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// ...
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        DFSPacket one<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>		  <span style="color:#75715e">// ...
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>          <span style="color:#66d9ef">synchronized</span> <span style="color:#f92672">(</span>dataQueue<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// wait for a packet to be sent.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>dataQueue<span style="color:#f92672">.</span><span style="color:#a6e22e">isEmpty</span><span style="color:#f92672">())</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>              one <span style="color:#f92672">=</span> createHeartbeatPacket<span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>              <span style="color:#66d9ef">assert</span> one <span style="color:#f92672">!=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>              one <span style="color:#f92672">=</span> dataQueue<span style="color:#f92672">.</span><span style="color:#a6e22e">getFirst</span><span style="color:#f92672">();</span> <span style="color:#75715e">// regular data packet
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>          <span style="color:#75715e">// get new block from namenode.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>          <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>stage <span style="color:#f92672">==</span> BlockConstructionStage<span style="color:#f92672">.</span><span style="color:#a6e22e">PIPELINE_SETUP_CREATE</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>            setPipeline<span style="color:#f92672">(</span>nextBlockOutputStream<span style="color:#f92672">());</span> 
+</span></span><span style="display:flex;"><span>			<span style="color:#75715e">// nextBlockOutputStream 中会调用namenode的rpc添加新的block
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>			<span style="color:#75715e">// 然后建立与pipline中第一个Datanode的socket连接，并写入指令告诉Datanode进入block写模式
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>            initDataStreaming<span style="color:#f92672">();</span> <span style="color:#75715e">// 启动ResposeProcesser对应的线程，并将当前的状态改为PIPELINE_STREAMING
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>          <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>stage <span style="color:#f92672">==</span> BlockConstructionStage<span style="color:#f92672">.</span><span style="color:#a6e22e">PIPELINE_SETUP_APPEND</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>		  <span style="color:#75715e">// 对block的append模式
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>            setupPipelineForAppendOrRecovery<span style="color:#f92672">();</span>  <span style="color:#75715e">// 此过程会调用namenode的RPC更新block
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>			<span style="color:#75715e">// LocatedBlock lb = dfsClient.namenode.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>			<span style="color:#75715e">//                 updateBlockForPipeline(block.getCurrentBlock(), dfsClient.clientName);
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>            initDataStreaming<span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	      <span style="color:#66d9ef">long</span> lastByteOffsetInBlock <span style="color:#f92672">=</span> one<span style="color:#f92672">.</span><span style="color:#a6e22e">getLastByteOffsetBlock</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>          <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>lastByteOffsetInBlock <span style="color:#f92672">&gt;</span> blockSize<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">throw</span> <span style="color:#66d9ef">new</span> IOException<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;BlockSize &#34;</span> <span style="color:#f92672">+</span> blockSize <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#34; is smaller than data size. &#34;</span> <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#34; Offset of packet in block &#34;</span> <span style="color:#f92672">+</span> 
+</span></span><span style="display:flex;"><span>                lastByteOffsetInBlock <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#34; Aborting file &#34;</span> <span style="color:#f92672">+</span> src<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>          <span style="color:#75715e">// 当前packet(one)是block中的最后一个packet时
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>          <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>one<span style="color:#f92672">.</span><span style="color:#a6e22e">isLastPacketInBlock</span><span style="color:#f92672">())</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// wait for all data packets have been successfully acked
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            <span style="color:#66d9ef">synchronized</span> <span style="color:#f92672">(</span>dataQueue<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>              <span style="color:#66d9ef">while</span> <span style="color:#f92672">(!</span>streamerClosed <span style="color:#f92672">&amp;&amp;</span> <span style="color:#f92672">!</span>hasError <span style="color:#f92672">&amp;&amp;</span> 
+</span></span><span style="display:flex;"><span>                  ackQueue<span style="color:#f92672">.</span><span style="color:#a6e22e">size</span><span style="color:#f92672">()</span> <span style="color:#f92672">!=</span> 0 <span style="color:#f92672">&amp;&amp;</span> dfsClient<span style="color:#f92672">.</span><span style="color:#a6e22e">clientRunning</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>                  <span style="color:#75715e">// wait for acks to arrive from datanodes
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                  dataQueue<span style="color:#f92672">.</span><span style="color:#a6e22e">wait</span><span style="color:#f92672">(</span>1000<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>InterruptedException  e<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>                  DFSClient<span style="color:#f92672">.</span><span style="color:#a6e22e">LOG</span><span style="color:#f92672">.</span><span style="color:#a6e22e">warn</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;Caught exception &#34;</span><span style="color:#f92672">,</span> e<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>              <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>streamerClosed <span style="color:#f92672">||</span> hasError <span style="color:#f92672">||</span> <span style="color:#f92672">!</span>dfsClient<span style="color:#f92672">.</span><span style="color:#a6e22e">clientRunning</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>              <span style="color:#66d9ef">continue</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>            stage <span style="color:#f92672">=</span> BlockConstructionStage<span style="color:#f92672">.</span><span style="color:#a6e22e">PIPELINE_CLOSE</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>          
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>          Span span <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>          <span style="color:#66d9ef">synchronized</span> <span style="color:#f92672">(</span>dataQueue<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// move packet from dataQueue to ackQueue
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            <span style="color:#66d9ef">if</span> <span style="color:#f92672">(!</span>one<span style="color:#f92672">.</span><span style="color:#a6e22e">isHeartbeatPacket</span><span style="color:#f92672">())</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>              span <span style="color:#f92672">=</span> scope<span style="color:#f92672">.</span><span style="color:#a6e22e">detach</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>              one<span style="color:#f92672">.</span><span style="color:#a6e22e">setTraceSpan</span><span style="color:#f92672">(</span>span<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>              dataQueue<span style="color:#f92672">.</span><span style="color:#a6e22e">removeFirst</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>              ackQueue<span style="color:#f92672">.</span><span style="color:#a6e22e">addLast</span><span style="color:#f92672">(</span>one<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>              dataQueue<span style="color:#f92672">.</span><span style="color:#a6e22e">notifyAll</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>          <span style="color:#75715e">//  这里才到了向第一个数据节点写数据的地方
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>		  <span style="color:#75715e">// write out data to remote datanode
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>          TraceScope writeScope <span style="color:#f92672">=</span> Trace<span style="color:#f92672">.</span><span style="color:#a6e22e">startSpan</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;writeTo&#34;</span><span style="color:#f92672">,</span> span<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>          <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>            one<span style="color:#f92672">.</span><span style="color:#a6e22e">writeTo</span><span style="color:#f92672">(</span>blockStream<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>            blockStream<span style="color:#f92672">.</span><span style="color:#a6e22e">flush</span><span style="color:#f92672">();</span>   
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>IOException e<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// HDFS-3398 treat primary DN is down since client is unable to 
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            <span style="color:#75715e">// write to primary DN. If a failed or restarting node has already
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            <span style="color:#75715e">// been recorded by the responder, the following call will have no 
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            <span style="color:#75715e">// effect. Pipeline recovery can handle only one node error at a
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            <span style="color:#75715e">// time. If the primary node fails again during the recovery, it
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            <span style="color:#75715e">// will be taken out then.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            tryMarkPrimaryDatanodeFailed<span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">throw</span> e<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">}</span> <span style="color:#66d9ef">finally</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>            writeScope<span style="color:#f92672">.</span><span style="color:#a6e22e">close</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>          lastPacket <span style="color:#f92672">=</span> Time<span style="color:#f92672">.</span><span style="color:#a6e22e">monotonicNow</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>          
+</span></span><span style="display:flex;"><span>          <span style="color:#75715e">// update bytesSent
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>          <span style="color:#66d9ef">long</span> tmpBytesSent <span style="color:#f92672">=</span> one<span style="color:#f92672">.</span><span style="color:#a6e22e">getLastByteOffsetBlock</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>          <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>bytesSent <span style="color:#f92672">&lt;</span> tmpBytesSent<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>            bytesSent <span style="color:#f92672">=</span> tmpBytesSent<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>          <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>streamerClosed <span style="color:#f92672">||</span> hasError <span style="color:#f92672">||</span> <span style="color:#f92672">!</span>dfsClient<span style="color:#f92672">.</span><span style="color:#a6e22e">clientRunning</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">continue</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	      <span style="color:#75715e">// 当最后一个packet写完后结束当前的block写过程
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>          <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>one<span style="color:#f92672">.</span><span style="color:#a6e22e">isLastPacketInBlock</span><span style="color:#f92672">())</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// wait for the close packet has been acked
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            <span style="color:#66d9ef">synchronized</span> <span style="color:#f92672">(</span>dataQueue<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>              <span style="color:#66d9ef">while</span> <span style="color:#f92672">(!</span>streamerClosed <span style="color:#f92672">&amp;&amp;</span> <span style="color:#f92672">!</span>hasError <span style="color:#f92672">&amp;&amp;</span> 
+</span></span><span style="display:flex;"><span>                  ackQueue<span style="color:#f92672">.</span><span style="color:#a6e22e">size</span><span style="color:#f92672">()</span> <span style="color:#f92672">!=</span> 0 <span style="color:#f92672">&amp;&amp;</span> dfsClient<span style="color:#f92672">.</span><span style="color:#a6e22e">clientRunning</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>                dataQueue<span style="color:#f92672">.</span><span style="color:#a6e22e">wait</span><span style="color:#f92672">(</span>1000<span style="color:#f92672">);</span><span style="color:#75715e">// wait for acks to arrive from datanodes
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>              <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>streamerClosed <span style="color:#f92672">||</span> hasError <span style="color:#f92672">||</span> <span style="color:#f92672">!</span>dfsClient<span style="color:#f92672">.</span><span style="color:#a6e22e">clientRunning</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>              <span style="color:#66d9ef">continue</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>            endBlock<span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>          <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>progress <span style="color:#f92672">!=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span> progress<span style="color:#f92672">.</span><span style="color:#a6e22e">progress</span><span style="color:#f92672">();</span> <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>          <span style="color:#75715e">// This is used by unit test to trigger race conditions.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>          <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>artificialSlowdown <span style="color:#f92672">!=</span> 0 <span style="color:#f92672">&amp;&amp;</span> dfsClient<span style="color:#f92672">.</span><span style="color:#a6e22e">clientRunning</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>            Thread<span style="color:#f92672">.</span><span style="color:#a6e22e">sleep</span><span style="color:#f92672">(</span>artificialSlowdown<span style="color:#f92672">);</span> 
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>		  
+</span></span><span style="display:flex;"><span>		  
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">ResponseProcessor</span> <span style="color:#66d9ef">extends</span> Daemon <span style="color:#f92672">{</span> 
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>    
+</span></span></code></pre></div><h1 id="写数据失败的处理">写数据失败的处理</h1>
+<p>当datanode写入数据失败。pipeline会被关闭，ack queue中的所有packet会被添加到data queue的头部，未发生故障的datanode会将当前的block标记后发送给namenode，使namenode能够正确的删除发生故障的datanode上未完成的block。发生问题的datanode会从pipeline中移除，然后由剩下的datanode完成pipeline的数据传输。namenode在发现replica的数量不够时，会选择新的节点放置block。</p>
+<p>可能会存在多个datanode同时失败的情况，但在写入过程中，只要有dfs.namenode.replication.min个副本写入到结果中就会被认为写入成功。其它的block会在集群中异步的复制直到达到要求的副本数。</p>
+<p>写文件需要注意Hadoop对写可能存在失败，hflush hsync能够以更高开销为代价保证数据的安全。</p>
+<h1 id="一致性模型">一致性模型</h1>
+<p>A coherency model for a filesystem describes the data visibility of reads and writes for a file.</p>
+<p>为了保证效率，HDFS的一致性并不满足组POSIX。主要表现在下面几个方面。</p>
+<p>文件在创建后，对于文件系统是可见的，如下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span>Path p <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Path<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;p&#34;</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>fs<span style="color:#f92672">.</span><span style="color:#a6e22e">create</span><span style="color:#f92672">(</span>p<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>assertThat<span style="color:#f92672">(</span>fs<span style="color:#f92672">.</span><span style="color:#a6e22e">exists</span><span style="color:#f92672">(</span>p<span style="color:#f92672">),</span> is<span style="color:#f92672">(</span><span style="color:#66d9ef">true</span><span style="color:#f92672">));</span>
+</span></span></code></pre></div><p>但是，文件的写入不一定是可见的，如下面的代码，即使已经flush到了文件，在马上获取文件内容时，得到的结果还是会为0。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span>Path p <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Path<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;p&#34;</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>OutputStream out <span style="color:#f92672">=</span> fs<span style="color:#f92672">.</span><span style="color:#a6e22e">create</span><span style="color:#f92672">(</span>p<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>out<span style="color:#f92672">.</span><span style="color:#a6e22e">write</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;content&#34;</span><span style="color:#f92672">.</span><span style="color:#a6e22e">getBytes</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;UTF-8&#34;</span><span style="color:#f92672">));</span>
+</span></span><span style="display:flex;"><span>out<span style="color:#f92672">.</span><span style="color:#a6e22e">flush</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>assertThat<span style="color:#f92672">(</span>fs<span style="color:#f92672">.</span><span style="color:#a6e22e">getFileStatus</span><span style="color:#f92672">(</span>p<span style="color:#f92672">).</span><span style="color:#a6e22e">getLen</span><span style="color:#f92672">(),</span> is<span style="color:#f92672">(</span>0L<span style="color:#f92672">));</span>
+</span></span></code></pre></div><p>在超过一个block写完后，第一个block会变为可见。</p>
+<p>HDFS提供了一种机制强制写入，将上面的out.flush()换成out.hflush()时，HDFS会确定数据已经送到了所有datanode，此时所有数据会对Reader可见。调用close()时会调用hflush。</p>
+<p>但是，hflush并不保证数据被写入到磁盘，而只是保证数据在datanode的内存中，要想有更强的保证，需要使用hsync()。</p>
+<p>从安全性上看，没有调用hflush()和hsync()时，某些客户端或者系统的错误会导致数据的丢失。因此，这两个函数的调用与否，是在数据安全和吞吐量两方面的tradeoff。</p>
+
+</div>
+
+  
+<footer class='entry-footer'>
+  <div class='container sep-before'><div class='categories'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M22,19a2,2,0,0,1-2,2H4a2,2,0,0,1-2-2V5A2,2,0,0,1,4,3H9l2,3h9a2,2,0,0,1,2,2Z"/>
+  
+</svg>
+<span class='screen-reader-text'>Categories: </span><a class='category' href='/categories/cloud-computing/'>cloud computing</a></div>
+<div class='tags'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M20.59,13.41l-7.17,7.17a2,2,0,0,1-2.83,0L2,12V2H12l8.59,8.59A2,2,0,0,1,20.59,13.41Z"/>
+  <line x1="7" y1="7" x2="7" y2="7"/>
+  
+</svg>
+<span class='screen-reader-text'>Tags: </span><a class='tag' href='/tags/hadoop/'>hadoop</a></div>
+
+  </div>
+</footer>
+
+
+</article>
+
+<nav class='entry-nav'>
+  <div class='container'><div class='prev-entry sep-before'>
+      <a href='/posts/technical/netease_music_can_not_open/'>
+        <span aria-hidden='true'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="20" y1="12" x2="4" y2="12"/>
+  <polyline points="10 18 4 12 10 6"/>
+  
+</svg>
+ Previous</span>
+        <span class='screen-reader-text'>Previous post: </span>arch linux下网易云音乐运行没反应，只能使用root用户运行</a>
+    </div><div class='next-entry sep-before'>
+      <a href='/posts/technical/hadoop_block_placement_policy/'>
+        <span class='screen-reader-text'>Next post: </span>Hadoop 副本放置策略的源码阅读和设置<span aria-hidden='true'>Next <svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="4" y1="12" x2="20" y2="12"/>
+  <polyline points="14 6 20 12 14 18"/>
+  
+</svg>
+</span>
+      </a>
+    </div></div>
+</nav>
+
+
+
+
+      </main>
+
+      <footer id='footer' class='footer'>
+        <div class='container sep-before'><section class='widget widget-social_menu sep-after'><header>
+    <h4 class='title widget-title'>Contact</h4>
+  </header><nav aria-label='Social Menu'>
+    <ul><li>
+        <a href='https://github.com/extendswind' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Open Github account in new tab</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+  
+</svg>
+</a>
+      </li><li>
+        <a href='mailto:extendswind@foxmail.com' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Contact via Email</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+  <polyline points="22,6 12,13 2,6"/>
+  
+</svg>
+</a>
+      </li></ul>
+  </nav>
+</section><div class='copyright'>
+  <p> &copy; 2018-2022 extendswind </p>
+</div>
+
+        </div>
+      </footer>
+
+    </div>
+  </div><script>window.__assets_js_src="/assets/js/"</script>
+
+<script src='/assets/js/main.c3bcf2df.js'></script>
+
+</body>
+
+</html>
+
