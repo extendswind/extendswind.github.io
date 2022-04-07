@@ -1,0 +1,1 @@
+../../../myNote/./technical/cloud_computing/mpi_hadoop_spark_comparing.md

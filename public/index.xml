@@ -16,8 +16,8 @@
 总体上从beeline脚本执行，调用了类Beeline.java，将终端的命令读入后通过rpc发送给driver处理。driver调用SemanticAnalyzer将SQL语句编译为可以执行的tasks，然后给每个task创建一个线程执行，在task中调用Tez等并行框架处理。
 脚本执行 以beeline脚本执行为例，跳了两个脚本后执行了etx/beeline.sh中的beeline()执行对应的java类。
 bin/beeline 脚本的执行会跳到 bin/hive 脚本，并传递service参数。
-# beeline 脚本 bin=`dirname &amp;#34;$0&amp;#34;` bin=`cd &amp;#34;$bin&amp;#34;; pwd` . &amp;#34;$bin&amp;#34;/hive --service beeline &amp;#34;$@&amp;#34; 在 bin/hive 脚本中，首先从$bin/ext/*.sh以及$bin/ext/util/*.sh目录下执行所有脚本，脚本中定了一个和service名相同的函数，并且把service名加入到SERVICE_LIST变量。然后根据SREVICE名称运行对应脚本中的函数。
-# bin/hive 省略了大部分代码 SERVICE_LIST=&amp;#34;&amp;#34; for i in &amp;#34;$bin&amp;#34;/ext/*.sh ; do . $i done for i in &amp;#34;$bin&amp;#34;/ext/util/*.sh ; do . $i done TORUN=&amp;#34;&amp;#34; for j in $SERVICE_LIST ; do if [ &amp;#34;$j&amp;#34; = &amp;#34;$SERVICE&amp;#34; ] ; then TORUN=${j}$HELP fi done if [ &amp;#34;$TORUN&amp;#34; = &amp;#34;&amp;#34; ] ; then echo &amp;#34;Service $SERVICEnot found&amp;#34; echo &amp;#34;Available Services: $SERVICE_LIST&amp;#34; exit 7 else set -- &amp;#34;${SERVICE_ARGS[@]}&amp;#34; $TORUN &amp;#34;$@&amp;#34; fi 对应执行bin/ext/beeline.</description>
+# beeline 脚本  bin=`dirname &amp;#34;$0&amp;#34;` bin=`cd &amp;#34;$bin&amp;#34;; pwd`  . &amp;#34;$bin&amp;#34;/hive --service beeline &amp;#34;$@&amp;#34; 在 bin/hive 脚本中，首先从$bin/ext/*.sh以及$bin/ext/util/*.sh目录下执行所有脚本，脚本中定了一个和service名相同的函数，并且把service名加入到SERVICE_LIST变量。然后根据SREVICE名称运行对应脚本中的函数。
+# bin/hive 省略了大部分代码  SERVICE_LIST=&amp;#34;&amp;#34;  for i in &amp;#34;$bin&amp;#34;/ext/*.sh ; do  . $i done  for i in &amp;#34;$bin&amp;#34;/ext/util/*.sh ; do  . $i done  TORUN=&amp;#34;&amp;#34; for j in $SERVICE_LIST ; do  if [ &amp;#34;$j&amp;#34; = &amp;#34;$SERVICE&amp;#34; ] ; then  TORUN=${j}$HELP  fi done  if [ &amp;#34;$TORUN&amp;#34; = &amp;#34;&amp;#34; ] ; then  echo &amp;#34;Service $SERVICEnot found&amp;#34;  echo &amp;#34;Available Services: $SERVICE_LIST&amp;#34;  exit 7 else  set -- &amp;#34;${SERVICE_ARGS[@]}&amp;#34;  $TORUN &amp;#34;$@&amp;#34; fi 对应执行bin/ext/beeline.</description>
     </item>
     
     <item>
@@ -31,7 +31,7 @@ bin/beeline 脚本的执行会跳到 bin/hive 脚本，并传递service参数。
 hdfs配置中的几个参数：
  dfs.heartbeat.interval，Hadoop心跳检测间隔，默认为3s。 dfs.namenode.stale.datanode.minimum.interval，datanode标记为stale状态的需要丢失的最小心跳次数，默认为3。 dfs.namenode.stale.datanode.interval，Hadoop datanode超时范围，超过此时间没收到心跳检测会被标记为stale状态，默认为30s，大小必须超过前面两个参数的乘积。  接收心跳消息 Hadoop的datanode心跳检测通过rpc的形式发送，rpc函数通过参数传递数据节点统计信息，返回namenode需要对数据节点的命令。
 datanode在通过rpc发送消息时，namenode首先在rpc server处理，交给NameSystem。NameNodeRpcServer中的处理：
-@Override // DatanodeProtocol public HeartbeatResponse sendHeartbeat(DatanodeRegistration nodeReg, StorageReport[] report, long dnCacheCapacity, long dnCacheUsed, int xmitsInProgress, int xceiverCount, int failedVolumes, VolumeFailureSummary volumeFailureSummary, boolean requestFullBlockReportLease, @Nonnull SlowPeerReports slowPeers, @Nonnull SlowDiskReports slowDisks) throws IOException { checkNNStartup(); verifyRequest(nodeReg); return namesystem.handleHeartbeat(nodeReg, report, dnCacheCapacity, dnCacheUsed, xceiverCount, xmitsInProgress, failedVolumes, volumeFailureSummary, requestFullBlockReportLease, slowPeers, slowDisks); } namesystem的类型为FSNamesystem，负责name-space state的相关管理（is a container of both transient and persisted name-space state, and does all the book-keeping work on a NameNode），是BlockManager, DatanodeManager, DelegationTokens, LeaseManager等服务的容器。在handleHeartbeat函数中，通过blockManager获取的DatanodeManager进行了处理：</description>
+@Override // DatanodeProtocol public HeartbeatResponse sendHeartbeat(DatanodeRegistration nodeReg,  StorageReport[] report, long dnCacheCapacity, long dnCacheUsed,  int xmitsInProgress, int xceiverCount,  int failedVolumes, VolumeFailureSummary volumeFailureSummary,  boolean requestFullBlockReportLease,  @Nonnull SlowPeerReports slowPeers,  @Nonnull SlowDiskReports slowDisks) throws IOException {  checkNNStartup();  verifyRequest(nodeReg);  return namesystem.handleHeartbeat(nodeReg, report,  dnCacheCapacity, dnCacheUsed, xceiverCount, xmitsInProgress,  failedVolumes, volumeFailureSummary, requestFullBlockReportLease,  slowPeers, slowDisks); } namesystem的类型为FSNamesystem，负责name-space state的相关管理（is a container of both transient and persisted name-space state, and does all the book-keeping work on a NameNode），是BlockManager, DatanodeManager, DelegationTokens, LeaseManager等服务的容器。在handleHeartbeat函数中，通过blockManager获取的DatanodeManager进行了处理：</description>
     </item>
     
     <item>
@@ -87,8 +87,8 @@ Please make sure you have the correct access rights and the repository exists.
       <description>写了一个脚本，想挂后台运行，又想避免重复运行，需要检测后台是否有已经运行的脚本。实现目标：python脚本只运行一次，第二次运行时直接退出。
 在linux上比较合适的做法是创建一个systemd控制的service，有时候就临时用一用，还有考虑跨设备运行的时候也有点麻烦。
 找了两个比较简单的方案。
-1. 使用tendo import tendo.singleton single = tendo.singleton.SingleInstance() # 测试代码 import time while(True): print(&amp;#34;test&amp;#34;) time.sleep(2) 2. 使用pidfile from pid import PidFile # 会对with中的代码块加锁 with PidFile(): import time while(True): print(&amp;#34;test&amp;#34;) time.sleep(2) 或者
-from pid.decorator import pidfile @pidfile def main(): # 被pidfile标签装饰的函数只能运行一次 # running code 基本原理 最常见的基本操作都差不多，在运行到需要只能执行一次的代码时，在某个路径下创建一个pidfile的文件，第二次执行时如果检测到路径下有pidfile就报错跳过执行。代码执行完成后删除pidfile。
+1. 使用tendo import tendo.singleton  single = tendo.singleton.SingleInstance()  # 测试代码 import time while(True):  print(&amp;#34;test&amp;#34;)  time.sleep(2) 2. 使用pidfile from pid import PidFile  # 会对with中的代码块加锁 with PidFile():  import time  while(True):  print(&amp;#34;test&amp;#34;)  time.sleep(2) 或者
+from pid.decorator import pidfile  @pidfile def main():  # 被pidfile标签装饰的函数只能运行一次  # running code 基本原理 最常见的基本操作都差不多，在运行到需要只能执行一次的代码时，在某个路径下创建一个pidfile的文件，第二次执行时如果检测到路径下有pidfile就报错跳过执行。代码执行完成后删除pidfile。
 为了避免pidfile在某些特殊情况下退出未执行，通过atexit等库处理退出时的情况。
 类似的做法还有创建一个linux的socket，退出时删除。以及基于ps等linux脚本命令查看运行的进程名。
 参考链接 https://stackoverflow.com/questions/788411/check-to-see-if-python-script-is-running/7758075#7758075
@@ -109,11 +109,11 @@ https://pypi.org/project/pid/</description>
 公网环境下建议将配置文件中的默认端口1883改为其它端口，避免被直接扫描。
 一些安全方面的设置也建议加上。
 客户端 subscriber
-#!/bin/python import paho.mqtt.subscribe as subscribe # 当调用这个函数时，程序会堵塞在这里，直到有一条消息发送到 topics/topic1 主题 msg = subscribe.simple(&amp;#34;topics/topic1&amp;#34;, hostname=&amp;#34;your ip&amp;#34;, port=yourport, retained=False, client_id=&amp;#34;youid&amp;#34;, clean_session=False, qos=1) print(f&amp;#34;{msg.topic}{msg.payload}&amp;#34;) hostname和port需要改为正确的参数。
+#!/bin/python import paho.mqtt.subscribe as subscribe  # 当调用这个函数时，程序会堵塞在这里，直到有一条消息发送到 topics/topic1 主题 msg = subscribe.simple(&amp;#34;topics/topic1&amp;#34;, hostname=&amp;#34;your ip&amp;#34;, port=yourport,  retained=False, client_id=&amp;#34;youid&amp;#34;, clean_session=False, qos=1) print(f&amp;#34;{msg.topic}{msg.payload}&amp;#34;) hostname和port需要改为正确的参数。
 其中，网络环境好并且不需要离线接收消息时，可以不设置clean_session、client_id、qos三个参数。
 publisher
 发送一条消息
-#!/bin/python import paho.mqtt.publish as publish publish.single(&amp;#34;topics/topic1&amp;#34;, &amp;#34;a message&amp;#34;, hostname=&amp;#34;your ip&amp;#34;, port=yourport, qos=1) 其它 MQTT 几个基本概念 通常由3部分构成：subscriber订阅客户端、publisher发布消息客户端、Server服务器。
+#!/bin/python  import paho.mqtt.publish as publish  publish.single(&amp;#34;topics/topic1&amp;#34;, &amp;#34;a message&amp;#34;, hostname=&amp;#34;your ip&amp;#34;, port=yourport, qos=1) 其它 MQTT 几个基本概念 通常由3部分构成：subscriber订阅客户端、publisher发布消息客户端、Server服务器。
 主题topic，类似一连串消息的标识符。
 Message，具体的消息，对应于每个topic。
 publisher向服务器指定主题发送消息。
@@ -147,8 +147,8 @@ R树常见构建过程 通常R树是针对动态有增删的数据，因此构�
 相比GeoSpark的代码，没有Spark现成的算子可以复用并且要处理文件方面的问题，逻辑上的处理稍复杂一点。
 空间分析任务的提交 SpatialHadoop提供了一个脚本，用于基本的空间处理，如下面的代码生成测试数据。
 sbin/shadoop generate test.rects size:1.gb shape:rect mbr:0,0,1000000,1000000 -overwrite shadoop脚本做的操作不多，直接通过Hadoop的运行命令运行了edu.umn.cs.spatialHadoop.operations.Main类，在类中的Main函数中处理输入参数。
-bin=`dirname &amp;#34;$0&amp;#34;` bin=`cd &amp;#34;$bin&amp;#34; &amp;gt; /dev/null; pwd` # Call Hadoop with the operations.Main as the main class . &amp;#34;$bin&amp;#34;/hadoop edu.umn.cs.spatialHadoop.operations.Main $@ 在Main函数中使用了Hadoop的ProgramDriver运行具体的类对象。首先从配置文件 spatial-operations.yaml 中读取支持的类，然后利用反射机制，读取对应类注释的shortName标签，通过shortName决定参数传递的具体的类。
-public static void main(String[] args) { int exitCode = -1; ProgramDriver pgd = new ProgramDriver(); try { // 这个位置加载配置文件，配置文件spatial-operations.yaml中包含了支持的完整类名  Yaml yaml = new Yaml(); List&amp;lt;String&amp;gt; ops = yaml.load(SpatialSite.class.getResourceAsStream(&amp;#34;/spatial-operations.yaml&amp;#34;)); // 通过反射的机制，提取类对应的源码中的annotation里的shortName，运行时会通过shortname执行对应的类 	// 用在上面的生成随机数据中就是通过generate执行edu.umn.cs.spatialHadoop.operations.RandomSpatialGenerator。  for (String op : ops) { Class&amp;lt;?</description>
+bin=`dirname &amp;#34;$0&amp;#34;` bin=`cd &amp;#34;$bin&amp;#34; &amp;gt; /dev/null; pwd`  # Call Hadoop with the operations.Main as the main class . &amp;#34;$bin&amp;#34;/hadoop edu.umn.cs.spatialHadoop.operations.Main $@ 在Main函数中使用了Hadoop的ProgramDriver运行具体的类对象。首先从配置文件 spatial-operations.yaml 中读取支持的类，然后利用反射机制，读取对应类注释的shortName标签，通过shortName决定参数传递的具体的类。
+public static void main(String[] args) {  int exitCode = -1;  ProgramDriver pgd = new ProgramDriver();  try {  // 这个位置加载配置文件，配置文件spatial-operations.yaml中包含了支持的完整类名  Yaml yaml = new Yaml();  List&amp;lt;String&amp;gt; ops = yaml.</description>
     </item>
     
     <item>
@@ -180,7 +180,7 @@ This file has three columns and corresponding offsets(Column IDs) are 0, 1, 2. U
 retainAll(Collection&amp;lt;?&amp;gt; c)求两个集合的交集。
 实现时接口与实现分离。使用时用满足需要的接口（如队列使用Queue），针对具体的场景new合适的实现。当需要自行实现对应的功能，为了降低实现接口中过多函数的复杂程度，可以直接扩展对应的Abastract类（如AbstractQueue），这种抽象接口加抽象类的方式在集合设计中经常遇到。
 集合类只能容纳对象句柄。集合在存储基本类型时，会通过封装器（Integer等）将基本类型转换成普通类，因此在处理效率上不如数组（直接存储基本类型）。
-迭代器 Iterator public interface Iterator&amp;lt;E&amp;gt;{ E next(); boolean hasNext(); void remove(); } // 并没有一个函数直接返回迭代器指向位置的值  public interface Iterable&amp;lt;E&amp;gt;{ Iterator&amp;lt;E&amp;gt; iterator(); } for each循环可以针对任何实现了Iterable的对象（由编译器直接翻译成Iterator对应的代码）。for (String e: c){&amp;hellip;}
+迭代器 Iterator public interface Iterator&amp;lt;E&amp;gt;{  E next();  boolean hasNext();  void remove(); } // 并没有一个函数直接返回迭代器指向位置的值  public interface Iterable&amp;lt;E&amp;gt;{  Iterator&amp;lt;E&amp;gt; iterator(); } for each循环可以针对任何实现了Iterable的对象（由编译器直接翻译成Iterator对应的代码）。for (String e: c){&amp;hellip;}
 Collection接口实现了Iterable接口，可以返回遍历元素的迭代器。
 通过迭代器，能够用一套代码访问不同的容器类。
 和C++的迭代器指向具体位置的设计不同，java的迭代器指向的位置可以看作是两个元素的中间。当调用next时，迭代器会跳过下一个元素，并返回被跳过元素的引用。不能像C++那样直接取当前位置的元素。对于remove函数，删除的是上一次next函数返回的位置（由于经常需要通过此位置的值判断是否删除）。也因此，每次调用remove函数前必须调用一次next方法，因此连续调用两次remove会出错。
@@ -188,13 +188,12 @@ List ArrayList相当于dynamic array，随机访问快，随机插入慢。类�
 LinkedList，双向链表，随机访问慢，随机插入快。LinkedList比较特殊，除了List接口还是了双端队列的Deque接口。
 LinkedList无法获取到node的指针，但可以通过获取ListIterator控制前后的位置（相对于Iterator，添加了previous等向前访问的函数）。
 LikedList并没有缓存指针的位置，因此get(n)等随机访问和修改的操作效率不高。
-public class LinkedList&amp;lt;E&amp;gt; extends AbstractSequentialList&amp;lt;E&amp;gt; implements List&amp;lt;E&amp;gt;, Deque&amp;lt;E&amp;gt;, Cloneable, java.io.Serializable Map 《java核心技术》中将Map的介绍放在了Set之后，但是Hashset的实现直接使用了HashMap，此处先写写Map的实现。
+public class LinkedList&amp;lt;E&amp;gt;  extends AbstractSequentialList&amp;lt;E&amp;gt;  implements List&amp;lt;E&amp;gt;, Deque&amp;lt;E&amp;gt;, Cloneable, java.io.Serializable Map 《java核心技术》中将Map的介绍放在了Set之后，但是Hashset的实现直接使用了HashMap，此处先写写Map的实现。
 HashMap （下面的默认参数取自openjdk11源码）
 实现常量时间的数据get和put。
 HashMap用hashcode结合链表的实现。使用了桶（bucket）机制，将hashcode取余后放入一个链表，当一个桶中的数据达到8个时，会通过treeifyBin函数将链表的形式转成红黑树存储以加快检索效率。
 在构造函数中设置了两个参数。threshold（默认为16）和loadFactor（默认为0.75），初始化时桶的数量会用threshold，往后threshold会等于 桶的数量×loadFactor。添加元素时，HashMap中的元素个数达到threshold时会调用resize让桶的数量翻倍，此时会遍历先前的所有元素添加到扩容之后的数组中（rehash过程）。
-通过一个名为table的数组存储桶的节点，默认情况下的初始化桶的个数为16，每次会增加为之前的2倍，最大为Int型的最大值。
-transient Node&amp;lt;K,V&amp;gt;[] table; static class Node&amp;lt;K,V&amp;gt; implements Entry&amp;lt;K,V&amp;gt; { final int hash; final K key; V value; Node&amp;lt;K,V&amp;gt; next; // .</description>
+通过一个名为table的数组存储桶的节点，默认情况下的初始化桶的个数为16，每次会增加为之前的2倍，最大为Int型的最大值。</description>
     </item>
     
     <item>
@@ -264,9 +263,9 @@ Gitlab 仓库 philm提到了manjaro在gitlab上编译内核的仓库。https://g
 主要涉及：
  ArrayList的toArray函数使用 为什么不直接定义函数 T[] toArray() 泛型数组的创建的两种常用方法 在泛型中创建具体的类实例  (部分代码没有运行过）
 ArrayList的toArray函数使用 将ArrayList转为数组，提供了两个函数
-Object[] toArray(); &amp;lt;T&amp;gt; T[] toArray(T[] a); // 后面考虑一个Integer类型的ArrayList ArrayList&amp;lt;Integer&amp;gt; aa = new ArrayList&amp;lt;&amp;gt;(); aa.add(1); aa.add(3); Object[] toArray(); 第一个函数是直接将ArrayList转换成Object的数组，可以用Object[] bb = aa.toArray()，在具体使用时对每个对象进行强制类型转换，如System.out.println((Integer)bb[1])。（java不支持数组之间的强制类型转换）
+Object[] toArray(); &amp;lt;T&amp;gt; T[] toArray(T[] a);  // 后面考虑一个Integer类型的ArrayList ArrayList&amp;lt;Integer&amp;gt; aa = new ArrayList&amp;lt;&amp;gt;(); aa.add(1); aa.add(3); Object[] toArray(); 第一个函数是直接将ArrayList转换成Object的数组，可以用Object[] bb = aa.toArray()，在具体使用时对每个对象进行强制类型转换，如System.out.println((Integer)bb[1])。（java不支持数组之间的强制类型转换）
 T[] toArray(T[] a); 第二个函数能够直接得到T类型的数组，当传入的T[] a能放下ArrayList时，会将ArrayList中的内容复制到a中（a的size较大时会a[size]=null）。否则，将构建一个新的数组并返回。具体实现如下:
-public &amp;lt;T&amp;gt; T[] toArray(T[] a) { if (a.length &amp;lt; size) // Make a new array of a&amp;#39;s runtime type, but my contents:  return (T[]) Arrays.copyOf(elementData, size, a.getClass()); System.arraycopy(elementData, 0, a, 0, size); if (a.</description>
+public &amp;lt;T&amp;gt; T[] toArray(T[] a) {  if (a.length &amp;lt; size)  // Make a new array of a&amp;#39;s runtime type, but my contents:  return (T[]) Arrays.copyOf(elementData, size, a.</description>
     </item>
     
     <item>
@@ -324,7 +323,7 @@ GPIO 针脚图 树莓派有多种GPIO的编号方式，使用python等调用需�
 2. 配置系统 上面的烧录后，sd卡会被分为多个分区，其中windows系统下能识别的只有一个名为boot的分区，存储启动相关的配置文件。
 2.1 开启ssh raspbian 系统默认不开启ssh远程访问，在boot分区下新建文件名为SSH的文件（内容为空无后缀），系统启动时检测到此文件会开启ssh进程。
 2.2 配置wifi 在boot分区下新建文件名为wpa_supplicant.conf的文件，添加以下内容：
-country=CN ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev update_config=1 network={ ssid=&amp;quot;yourWifiName&amp;quot; psk=&amp;quot;passwd&amp;quot; key_mgmt=WPA-PSK priority=1 } 修改其中的wifi名和密码（ssid与psk）
+country=CN ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev update_config=1 network={ ssid=&amp;#34;yourWifiName&amp;#34; psk=&amp;#34;passwd&amp;#34; key_mgmt=WPA-PSK priority=1 } 修改其中的wifi名和密码（ssid与psk）
 如果想省事可以直接用网线连上路由器
 3. 远程访问 3.1 查找树莓派ip 此处需要将电脑和树莓派连接在同一路由器下。
 方法一：浏览器上输入192.168.1.1 （根据不同路由器网关不同），进入管理页面查看树莓派ip。
@@ -352,7 +351,7 @@ anonymous_enable=YES # 允许匿名访问 write_enable=YES # 允许写文件 ano
 通过 local_enable 选项能够允许ftp通过本地用户访问，登录之后会访问用户的主目录。当使用匿名用户访问时，vsftpd会将用户名为ftp的用户作为登录用户，进入ftp用户的主目录。
 注意，考虑到安全问题，ftp匿名用户的主目录必须为只读，如果需要上传文件，需要在主目录下新建有写权限的文件夹。
 通常会选择/var/ftp文件夹存放文件而不是用户默认的/home，因此可以修改用户的主目录位置（一般放在/var/ftp），不修改也能用。再次强调，注意主目录对ftp用户的权限必须为只读。
-sudo mkdir /var/ftp # 新建用户文件夹 sudo useradd -d /var/ftp ftp # 新建用户，并指定用户home目录  # 如果ftp用户已经存在，在/etc/passwd文件里改用户目录为/var/ftp sudo mkdir /var/ftp/pub # 新建一个用于写数据的文件夹 sudo chmod 777 /var/ftp/pub # 修改文件夹权限 4. 启动服务
+sudo mkdir /var/ftp # 新建用户文件夹 sudo useradd -d /var/ftp ftp # 新建用户，并指定用户home目录  # 如果ftp用户已经存在，在/etc/passwd文件里改用户目录为/var/ftp  sudo mkdir /var/ftp/pub # 新建一个用于写数据的文件夹 sudo chmod 777 /var/ftp/pub # 修改文件夹权限 4. 启动服务
 systemctl start vsftpd
 其它 防火墙和SELinux如果使用了需要添加响应的通过规则。</description>
     </item>
@@ -424,7 +423,7 @@ anki server 的安装 官网的速度爆表，而且有数据安全问题，因�
 2、安装anki或anki-bundled相关的库
 直接使用包管理器安装 sudo pacman -S anki
 如果包管理器里没有anki（如debian），也可以用pip安装anki-bundled相关的库
-$ git submodule update --init # anki-bundled已经加入为submodule，可以先更新 $ cd anki-bundled $ pip install -r requirements.txt # 安装相关的库 3、安装webob</description>
+ $ git submodule update --init # anki-bundled已经加入为submodule，可以先更新  $ cd anki-bundled  $ pip install -r requirements.</description>
     </item>
     
     <item>
@@ -536,7 +535,7 @@ csd-xsettings 主要影响两个地方：1. 启动过程； 2. 在tim内调用�
 可以考虑启动后关闭对tim，可以避免影响系统主题一类的问题，但会导致无法调用外部程序。加上运行后5s关闭的参数即可:
 /usr/lib/cinnamon-settings-daemon/csd-xsettings --exit-time 5 &amp;amp;
 附：使用cinnamon的xsettings的设置 主题的问题在awesome这种环境下略坑，懒得去试gnome上的主题设置需要哪些包，安装整个gnome的包需要800多M，直接安装了cinnamon的基础包（90M左右）。和gnome只是些名字上的区别：
-sudo pacman -S cinnamon # awesome的autorun里加入下面程序使开机运行 /usr/lib/cinnamon-settings-daemon/csd-xsettings 在系统设置里可以下载和更改主题
+sudo pacman -S cinnamon  # awesome的autorun里加入下面程序使开机运行 /usr/lib/cinnamon-settings-daemon/csd-xsettings 在系统设置里可以下载和更改主题
 小坑   tim和qq会在点击好友图像时卡死的情况。原因之一可能是pulseaudio进程，kill掉就行，会影响声音的调整。（千里之外的两个程序不知道为什么会卡一起）</description>
     </item>
     
@@ -555,7 +554,7 @@ sudo pacman -S cinnamon # awesome的autorun里加入下面程序使开机运行 
   此时此前附件中的绝对路径/mnt/data/...会变成attachments：catagory1/test1.pdf 类似的相对路径。
 方法二：直接操作sqllite数据库来改 下面的语句供参考，建议稍了解后操作，使用update导致数据丢失会很麻烦。
 把下面路径中的/home/fly/public_download/改成自己数据库里的路径即可。
-update itemAttachments set path=replace(path, &#39;/home/fly/public_download/&#39;, &#39;attachments:&#39;) where path like &#39;/home/fly/public_download%&#39; 最后 跨操作系统或者跨目录直接设置到相同的目录即可。</description>
+update itemAttachments set path=replace(path, &amp;#39;/home/fly/public_download/&amp;#39;, &amp;#39;attachments:&amp;#39;) where path like &amp;#39;/home/fly/public_download%&amp;#39; 最后 跨操作系统或者跨目录直接设置到相同的目录即可。</description>
     </item>
     
     <item>
@@ -567,12 +566,12 @@ update itemAttachments set path=replace(path, &#39;/home/fly/public_download/&#3
       <description>Spark提供了HDFS上一般的文件文件读取接口 sc.textFile()，但在某些情况下HDFS中需要存储自定义格式的文件，需要更加灵活的读取方式。
 使用KeyValueTextInputFormat Hadoop的MapReduce框架下提供了一些InputFormat的实现，其中MapReduce2的接口(org.apache.hadoop.mapreduce下)与先前MapReduce1(org.apache.hadoop.mapred下)有区别，对应于newAPIHadoopFile函数。
 使用KeyValueTextInputFormat的文件读取如下
-import org.apache.hadoop.mapreduce.lib.input.KeyValueTextInputFormat import org.apache.hadoop.io.Text val hFile = sc.newAPIHadoopFile(&amp;#34;hdfs://hadoopmaster:9000/user/sparkl/README.md&amp;#34;, classOf[KeyValueTextInputFormat], classOf[Text], classOf[Text]) hFile.collect 使用自定义InputFormat InputFormat是MapReduce框架下将输入的文件解析成字符串的组件，Spark对HDFS中的文件实现自定义读写需要通过InputFormat的子类实现。下面只写简单的思路，具体的可以参考InputFormat和MapReduce相关资料。
+ import org.apache.hadoop.mapreduce.lib.input.KeyValueTextInputFormat import org.apache.hadoop.io.Text  val hFile = sc.newAPIHadoopFile(&amp;#34;hdfs://hadoopmaster:9000/user/sparkl/README.md&amp;#34;,  classOf[KeyValueTextInputFormat], classOf[Text], classOf[Text])  hFile.collect 使用自定义InputFormat InputFormat是MapReduce框架下将输入的文件解析成字符串的组件，Spark对HDFS中的文件实现自定义读写需要通过InputFormat的子类实现。下面只写简单的思路，具体的可以参考InputFormat和MapReduce相关资料。
 InputFormat的修改可以参考TextInputFormat，继承FileInputFormat后，重载createRecordReader返回一个新的继承RecordReader的类，通过新的RecordReader读取数据返回键值对。
 打包后注意上传时将jar包一起上传：
 `./spark-shell &amp;ndash;jars newInputFormat.jar
 运行的代码和上面差不多，import相关的包后
-val hFile = sc.newAPIHadoopFile(&amp;#34;hdfs://hadoopmaster:9000/user/sparkl/README.md&amp;#34;, classOf[NewTextInputFormat], classOf[Text], classOf[Text]) 一些坑 序列化问题 在读取文件后使用first或者collect时，出现下面的错误
+val hFile = sc.newAPIHadoopFile(&amp;#34;hdfs://hadoopmaster:9000/user/sparkl/README.md&amp;#34;,  classOf[NewTextInputFormat], classOf[Text], classOf[Text]) 一些坑 序列化问题 在读取文件后使用first或者collect时，出现下面的错误
   ERROR scheduler.TaskSetManager: Task 0.0 in stage 2.0 (TID 18) had a not serializable result: org.apache.hadoop.io.IntWritable Serialization stack: - object not serializable (class: org.apache.hadoop.io.IntWritable, value: 35) - element of array (index: 0) - array (class [Lorg.</description>
     </item>
     
@@ -588,7 +587,7 @@ val hFile = sc.newAPIHadoopFile(&amp;#34;hdfs://hadoopmaster:9000/user/sparkl/RE
 其实只是Hadoop会调用脚本，将多个Datanode的ip作为输入，每次最多输入的ip数设置在net.topology.script.number.args，将输入的ip转换成/rack-num的形式(以/开头的字符串)，用标准输出流（如Python的print）输出结果。
 具体操作 编写脚本 下面的脚本在输入
 192.168.3.1 192.168.3.4 时，会输出
-/rack1 /rack4 #!/bin/python3 import sys # 第一个参数是脚本路径，直接pop掉 sys.argv.pop(0) # 0-3 rack0 # 4-7 rack1 # 8-11 rack2 # ... # 其它的参数里每个参数都是一个ip，此处直接取ip的最后一位除以4作为Racknum # 实践上可以读文件确定ip的对应关系 for ip in sys.argv: hostNum = int(ip.split(&amp;#34;.&amp;#34;)[3]) print(&amp;#34;/rack&amp;#34; + str(int(hostNum/4))) 设置配置参数 &amp;lt;property&amp;gt; &amp;lt;name&amp;gt;net.topology.script.file.name&amp;lt;/name&amp;gt; &amp;lt;value&amp;gt;/home/sparkl/hadoop/etc/hadoop/topology.py&amp;lt;/value&amp;gt; &amp;lt;/property&amp;gt; 重启集群即可
+/rack1 /rack4  #!/bin/python3 import sys  # 第一个参数是脚本路径，直接pop掉 sys.argv.pop(0)  # 0-3 rack0 # 4-7 rack1 # 8-11 rack2 # ...  # 其它的参数里每个参数都是一个ip，此处直接取ip的最后一位除以4作为Racknum # 实践上可以读文件确定ip的对应关系 for ip in sys.argv:  hostNum = int(ip.split(&amp;#34;.&amp;#34;)[3])  print(&amp;#34;/rack&amp;#34; + str(int(hostNum/4))) 设置配置参数 &amp;lt;property&amp;gt;  &amp;lt;name&amp;gt;net.topology.script.file.name&amp;lt;/name&amp;gt;  &amp;lt;value&amp;gt;/home/sparkl/hadoop/etc/hadoop/topology.py&amp;lt;/value&amp;gt; &amp;lt;/property&amp;gt; 重启集群即可
 验证结果 以下命令能够直接获取某一个文件的分布状态，以及总的rack数量：
 hdfs fsck /readme.md -files -blocks -racks
 貌似没有直接以树状的形式输出集群拓扑的命令，namenode的日志中能看到datanode在连接时的拓扑位置。</description>
@@ -603,7 +602,7 @@ hdfs fsck /readme.md -files -blocks -racks
       <description>大多数的叫法都是副本放置策略，实质上是HDFS对所有数据的位置放置策略，并非只是针对数据的副本。因此Hadoop的源码里有block replicator(configuration)、 BlockPlacementPolicy(具体逻辑源码)两种叫法。
 主要用途：上传文件时决定文件在HDFS上存储的位置（具体到datanode上的具体存储介质，如具体到存储在哪块硬盘）；rebalance、datanode退出集群、副本数量更改等导致数据移动的操作中，数据移动的具体位置。
 BlockPlacementPolicy BlockPlacementPolicy 作为虚基类提供了基本的接口，具体的子类重点实现下面 选择副本 、 验证副本放置是否满足要求 、 选择能够删除的副本 三个函数：
-/** * 核心的副本放置策略实现，返回副本放置数量的存储位置 * **如果有效节点数量不够（少于副本数），返回尽可能多的节点，而非失败** * * @param srcPath 上传文件的路径 * @param numOfReplicas 除下面chosen参数里已经选择的datanode，还需要的副本数量 * @param writer 写数据的机器, null if not in the cluster. 一般用于放置第一个副本以降低网络通信 * @param chosen 已经选择的节点 * @param returnChosenNodes 返回结果里是否包含chosen的datanode * @param excludedNodes 不选的节点 * @param blocksize 块大小 * @return 排序好的选择结果 */ public abstract DatanodeStorageInfo[] chooseTarget(String srcPath, int numOfReplicas, Node writer, List&amp;lt;DatanodeStorageInfo&amp;gt; chosen, boolean returnChosenNodes, Set&amp;lt;Node&amp;gt; excludedNodes, long blocksize, BlockStoragePolicy storagePolicy); /** * 判断传入的放置方式是否符合要求 */ abstract public BlockPlacementStatus verifyBlockPlacement( DatanodeInfo[] locs, int numOfReplicas); /** * 当副本数量较多时，选择需要删除的节点 */ abstract public List&amp;lt;DatanodeStorageInfo&amp;gt; chooseReplicasToDelete( Collection&amp;lt;DatanodeStorageInfo&amp;gt; candidates, int expectedNumOfReplicas, List&amp;lt;StorageType&amp;gt; excessTypes, DatanodeDescriptor addedNode, DatanodeDescriptor delNodeHint); Hadoop 提供的 BlockPlacementPolicy 实现 Hadoop提供了BlockPlacementPolicyDefault、BlockPlacementPolicyWithNodeGroup、AvailableSpaceBlockPlacementPolicy三种实现（hadoop 2.</description>
+ /** * 核心的副本放置策略实现，返回副本放置数量的存储位置 * **如果有效节点数量不够（少于副本数），返回尽可能多的节点，而非失败** * * @param srcPath 上传文件的路径 * @param numOfReplicas 除下面chosen参数里已经选择的datanode，还需要的副本数量 * @param writer 写数据的机器, null if not in the cluster. 一般用于放置第一个副本以降低网络通信 * @param chosen 已经选择的节点 * @param returnChosenNodes 返回结果里是否包含chosen的datanode * @param excludedNodes 不选的节点 * @param blocksize 块大小 * @return 排序好的选择结果 */  public abstract DatanodeStorageInfo[] chooseTarget(String srcPath,  int numOfReplicas,  Node writer,  List&amp;lt;DatanodeStorageInfo&amp;gt; chosen,  boolean returnChosenNodes,  Set&amp;lt;Node&amp;gt; excludedNodes,  long blocksize,  BlockStoragePolicy storagePolicy);    /** * 判断传入的放置方式是否符合要求 */  abstract public BlockPlacementStatus verifyBlockPlacement(  DatanodeInfo[] locs, int numOfReplicas);    /** * 当副本数量较多时，选择需要删除的节点 */  abstract public List&amp;lt;DatanodeStorageInfo&amp;gt; chooseReplicasToDelete(  Collection&amp;lt;DatanodeStorageInfo&amp;gt; candidates, int expectedNumOfReplicas,  List&amp;lt;StorageType&amp;gt; excessTypes, DatanodeDescriptor addedNode,  DatanodeDescriptor delNodeHint); Hadoop 提供的 BlockPlacementPolicy 实现 Hadoop提供了BlockPlacementPolicyDefault、BlockPlacementPolicyWithNodeGroup、AvailableSpaceBlockPlacementPolicy三种实现（hadoop 2.</description>
     </item>
     
     <item>
@@ -619,8 +618,8 @@ http://s1.music.126.net/download/pc/netease-cloud-music_1.0.0-2_amd64_ubuntu16.0
 debian系就直接dpkg -i吧
 arch系通过AUR安装稍麻烦:
  卸载原版本 yaourt -S netease-cloud-music 按y Edit PKGBUILD 将1.1.3的安装包地址替换为1.1.0的安装包地址，并且将对应hash值改为skip，具体如下  改之前：
-source=( &amp;quot;http://packages.deepin.com/deepin/pool/main/n/netease-cloud-music/netease-cloud-music_${pkgver}-${_pkgrel}_amd64.deb&amp;quot; &amp;quot;http://music.163.com/html/web2/service.html&amp;quot; ) md5sums=(&#39;53c47c1bf6797b2a0e455bc59833ab2d&#39; &#39;SKIP&#39;) 改之后
-source=( &amp;quot;http://s1.music.126.net/download/pc/netease-cloud-music_1.0.0-2_amd64_ubuntu16.04.deb&amp;quot; &amp;quot;http://music.163.com/html/web2/service.html&amp;quot; ) md5sums=(&#39;SKIP&#39; &#39;SKIP&#39;) 然后正常安装即可</description>
+source=( &amp;#34;http://packages.deepin.com/deepin/pool/main/n/netease-cloud-music/netease-cloud-music_${pkgver}-${_pkgrel}_amd64.deb&amp;#34; &amp;#34;http://music.163.com/html/web2/service.html&amp;#34; ) md5sums=(&amp;#39;53c47c1bf6797b2a0e455bc59833ab2d&amp;#39; &amp;#39;SKIP&amp;#39;) 改之后
+source=( &amp;#34;http://s1.music.126.net/download/pc/netease-cloud-music_1.0.0-2_amd64_ubuntu16.04.deb&amp;#34; &amp;#34;http://music.163.com/html/web2/service.html&amp;#34; ) md5sums=(&amp;#39;SKIP&amp;#39; &amp;#39;SKIP&amp;#39;) 然后正常安装即可</description>
     </item>
     
     <item>
@@ -645,7 +644,7 @@ source=( &amp;quot;http://s1.music.126.net/download/pc/netease-cloud-music_1.0.0
  AwesomeWM这种平铺的窗口管理器用得很爽，只是基于wine的qq最近又莫名其妙抽风，感觉还是切到deepin-wine上比较靠谱。而deepin-wine在awesome下运行qq会报错X Error of failed request: BadWindow (invalid Window parameter) Major opcode of failed request: 20 (X_GetProperty)，而在Gnome系下运行正常。看到Gnome和Mate能够运行awesomewm，就折腾了一下试试。
 Awesome只是Gnome等桌面管理器的组件之一，gnome系的Mate可以修改默认的窗口管理器。
 具体折腾   安装AwesomeWM、Mate桌面环境与dconf-editor（arch下使用pacman -S）。
-  进入Mate桌面环境后，修改org.mate.session.required-components windowmanager 的值为&amp;rsquo;awesome&#39;，如果不需要桌面上的图标，可以将org.mate.session.required-components的值只留下windowmanager。
+  进入Mate桌面环境后，修改org.mate.session.required-components windowmanager 的值为&amp;rsquo;awesome&amp;rsquo;，如果不需要桌面上的图标，可以将org.mate.session.required-components的值只留下windowmanager。
   上面的设置无法通过命令行打开awesome，需要添加awesome的图标。在/usr/share/applications目录下新建awesome.desktop，内容如下（网上直接粘的，估计有些可以不要，懒得试了）：
   [Desktop Entry] Type=Application Name=awesome Exec=awesome NoDisplay=true # name of loadable control center module X-MATE-WMSettingsModule=awesome # name we put on the WM spec check window X-MATE-WMName=awesome # back compat only X-MateWMSettingsLibrary=awesome X-MATE-Bugzilla-Bugzilla=MATE X-MATE-Bugzilla-Product=awesome X-MATE-Bugzilla-Component=general X-MATE-Autostart-Phase=WindowManager X-MATE-Provides=windowmanager X-MATE-Autostart-Notify=true </description>
     </item>
@@ -719,7 +718,7 @@ mvn compile 编译源码 mvn assembly:assembly 代码打包，会在target目录
 cp target/spatialhadoop-2.4.3-SNAPSHOT-bin.tar.gz $HADOOP_HOME/ cd $HADOOP_HOME tar -zxvf spatialhadoop-2.4.3-SNAPSHOT-bin.tar.gz Hadoop目录下运行下面的测试代码，会向HDFS中写入一个随机生成的矩形文件。
 sbin/shadoop generate test.rects size:1.gb shape:rect mbr:0,0,1000000,1000000 -overwrite
 SpatialHadoop运行机制 shadoop 脚本 SpatialHadoop 通过脚本shadoop运行命令，脚本就只有几行代码
-bin=`dirname &amp;#34;$0&amp;#34;` bin=`cd &amp;#34;$bin&amp;#34; &amp;gt; /dev/null; pwd` # Call Hadoop with the operations.Main as the main class . &amp;#34;$bin&amp;#34;/hadoop edu.umn.cs.spatialHadoop.operations.Main $@ 其实只是将spatialhadoop的jar包与相关依赖jar包放入Hadoop的包目录中，然后通过shadoop脚本调用Hadoop脚本调用包中的一个类，向YARN提交MapReduce任务。</description>
+bin=`dirname &amp;#34;$0&amp;#34;` bin=`cd &amp;#34;$bin&amp;#34; &amp;gt; /dev/null; pwd`  # Call Hadoop with the operations.Main as the main class . &amp;#34;$bin&amp;#34;/hadoop edu.umn.cs.spatialHadoop.operations.Main $@ 其实只是将spatialhadoop的jar包与相关依赖jar包放入Hadoop的包目录中，然后通过shadoop脚本调用Hadoop脚本调用包中的一个类，向YARN提交MapReduce任务。</description>
     </item>
     
     <item>
@@ -734,11 +733,11 @@ CapacityScheduler首先将所有资源分配到hierarchical queue中，每个任
 Fair Scheduler 会在第一个任务运行时分配当前同级队列的所有资源，当有其它任务运行时，回收前面任务运行时的部分资源（一般为运行完成的Container）用于其它任务。
 至于FIFO，源码里都没有描述，可能就是一般的先进先出了。
 YARN默认使用CapacityScheduler，通过下面的属性配置：
-&amp;lt;property&amp;gt; &amp;lt;name&amp;gt;yarn.resourcemanager.scheduler.class&amp;lt;/name&amp;gt; &amp;lt;value&amp;gt;org.apache.hadoop.yarn.server.resourcemanager.scheduler.fair.FairScheduler&amp;lt;/value&amp;gt; &amp;lt;/property&amp;gt; YARN 动态资源分配 YARN 能够动态申请资源，如MapReduce中reduce的container会在map过程结束后申请。但Spark On YARN的机制为申请固定的executor，而不动态改变已申请的资源。
+&amp;lt;property&amp;gt;  &amp;lt;name&amp;gt;yarn.resourcemanager.scheduler.class&amp;lt;/name&amp;gt;  &amp;lt;value&amp;gt;org.apache.hadoop.yarn.server.resourcemanager.scheduler.fair.FairScheduler&amp;lt;/value&amp;gt; &amp;lt;/property&amp;gt; YARN 动态资源分配 YARN 能够动态申请资源，如MapReduce中reduce的container会在map过程结束后申请。但Spark On YARN的机制为申请固定的executor，而不动态改变已申请的资源。
 YARN上新运行的任务能够使用已运行任务回收的资源(如运行完Map task的container)，甚至还能够通过强行结束先前任务的container抢占资源。
 Capacity Scheduler CapacityScheduler重点解决多个组织共享集群资源，并保证每个组织自己的资源使用量。当自己的资源不足时能够使用其它组织的空闲资源。
 资源通过层级队列（hierarchical queues）的形式进行组织，配置在etc/hadoop/capacity-scheduler.xml.
-&amp;lt;!-- 队列结构设置 --&amp;gt; &amp;lt;property&amp;gt; &amp;lt;name&amp;gt;yarn.scheduler.capacity.root.queues&amp;lt;/name&amp;gt; &amp;lt;value&amp;gt;a,b&amp;lt;/value&amp;gt; &amp;lt;description&amp;gt;The queues at the this level (root is the root queue). &amp;lt;/description&amp;gt; &amp;lt;/property&amp;gt; &amp;lt;property&amp;gt; &amp;lt;name&amp;gt;yarn.scheduler.capacity.root.a.queues&amp;lt;/name&amp;gt; &amp;lt;value&amp;gt;a1,a2&amp;lt;/value&amp;gt; &amp;lt;description&amp;gt;The queues at the this level (root is the root queue).</description>
+&amp;lt;!-- 队列结构设置 --&amp;gt; &amp;lt;property&amp;gt;  &amp;lt;name&amp;gt;yarn.scheduler.capacity.root.queues&amp;lt;/name&amp;gt;  &amp;lt;value&amp;gt;a,b&amp;lt;/value&amp;gt;  &amp;lt;description&amp;gt;The queues at the this level (root is the root queue).  &amp;lt;/description&amp;gt; &amp;lt;/property&amp;gt;  &amp;lt;property&amp;gt;  &amp;lt;name&amp;gt;yarn.scheduler.capacity.root.a.queues&amp;lt;/name&amp;gt;  &amp;lt;value&amp;gt;a1,a2&amp;lt;/value&amp;gt;  &amp;lt;description&amp;gt;The queues at the this level (root is the root queue).</description>
     </item>
     
     <item>
@@ -751,7 +750,7 @@ Capacity Scheduler CapacityScheduler重点解决多个组织共享集群资源�
 貌似CSDN已经关闭了metawebblog接口，只在博客园上测试。
 Python发博客的主要方案  通过xmlprc的metaweblog接口（首选） CSDN和博客园的api（定位不是用来发博客的，申请key和调接口略麻烦） 使用抓包的技术模拟浏览器登录发博客（没悬念更折腾）  代码 对于支持metaweblog的博客平台，只要提供用户名、密码和博客相关信息。
 python2 需要将后面的xmlrpc.client改为xmlrpclib，并且import xmlrpclib
-#!/bin/python3 import xmlrpc.client username = &amp;#39;&amp;#39; # TODO your username passwd = &amp;#39;&amp;#39; # TODO your passwd # url = &amp;#39;http://www.cnblogs.com/&amp;#39; + username + &amp;#39;/services/metaweblog.aspx&amp;#39; # 此链接已挂 url = &amp;#39;https://rpc.cnblogs.com/metaweblog/&amp;#39; + username title = &amp;#34;helloWorld&amp;#34; content = &amp;#34;&amp;lt;p&amp;gt; test &amp;lt;p&amp;gt;&amp;#34; tags = &amp;#34;tag1, tag2&amp;#34; blogProxy = xmlrpc.client.ServerProxy(url) # 获取最近博客列表 print(blogProxy.metaWeblog.getRecentPosts(&amp;#39;&amp;#39;, username, passwd, 1)) # 发布博客 blogProxy.metaWeblog.newPost(&amp;#39;&amp;#39;, username, passwd, dict(title=title, description=content, mt_keywords=tags), True) 参考 https://rpc.</description>
+#!/bin/python3  import xmlrpc.client  username = &amp;#39;&amp;#39; # TODO your username passwd = &amp;#39;&amp;#39; # TODO your passwd # url = &amp;#39;http://www.cnblogs.com/&amp;#39; + username + &amp;#39;/services/metaweblog.aspx&amp;#39; # 此链接已挂 url = &amp;#39;https://rpc.cnblogs.com/metaweblog/&amp;#39; + username  title = &amp;#34;helloWorld&amp;#34; content = &amp;#34;&amp;lt;p&amp;gt; test &amp;lt;p&amp;gt;&amp;#34; tags = &amp;#34;tag1, tag2&amp;#34;  blogProxy = xmlrpc.client.ServerProxy(url)  # 获取最近博客列表 print(blogProxy.metaWeblog.getRecentPosts(&amp;#39;&amp;#39;, username, passwd, 1))  # 发布博客 blogProxy.</description>
     </item>
     
     <item>
@@ -850,7 +849,7 @@ linux是用来折腾的，更是用来解决问题的。</description>
  对象的复制只需要在每个类中实现一个clone函数即可 使用工厂模式相关思想获取具体的clone对象  java实现的clone操作 下面的实现基于java，如c++一类的语言对于每个对象的复制需要自行处理。
 java的所有类都继承于Object，Object类中定义了native实现的clone函数，但需要实现Cloneable接口才能调用。通过clone函数能够直接复制内存中的对象而不用调用构造函数。
 注意，java Object的clone函数为 浅拷贝，只会复制类成员对象地址而不创建新的对象。需要根据实际情况判读是否做相应的深拷贝修改。 吐槽：很多博客和书上的示例实质上就下面这一段，然后加个实例里n个成员变量和函数凑出十几到几十行，实现个Cloneable接口加个clone函数就算完了&amp;hellip;.
-class Prototype implements Cloneable{ int attr; public Prototype clone(){ Prototype prototype = null; try { prototype = (Prototype)super.clone(); } catch (CloneNotSupportedException e) { e.printStackTrace(); } return prototype; } } 一个不使用java特性的简单实现 class Prototype{ int attr; public Prototype clone(){ Prototype clone = new Prototype(); clone.attr = this.attr; return clone; } } 同上，注意深拷贝和浅拷贝问题。</description>
+class Prototype implements Cloneable{  int attr;  public Prototype clone(){  Prototype prototype = null;  try {  prototype = (Prototype)super.clone();  } catch (CloneNotSupportedException e) {  e.printStackTrace();  }  return prototype;  } } 一个不使用java特性的简单实现 class Prototype{  int attr;  public Prototype clone(){  Prototype clone = new Prototype();  clone.</description>
     </item>
     
     <item>
@@ -865,7 +864,7 @@ class Prototype implements Cloneable{ int attr; public Prototype clone(){ Protot
 主要麻烦在于：
  多线程环境下getInstance方法的调用可能产生多个对象 使用synchronized关键字可能降低高并发效率  单例模式有很多种，大多用于解决多线程环境下的效率问题，高并发场景通常使用某些固定方案（java常用内部类机制），一般情况下思想比较简单，从应用的角度感觉不必深究。
 （后面懒得用实际例子命名了，Log4j中获取的logger对象就使用了单例模式）
-/** * 简单实现 * * 存在的问题： * * 当创建过程需要时间时，连续调用getInstance方法会导致创建多个对象，特别是涉及多线程时容易出问题。 */ class Singleton_problem { private static Singleton_problem m_singletonProblem = null; private Singleton_problem(){ // ...  } public static Singleton_problem getInstance(){ if (m_singletonProblem == null) m_singletonProblem = new Singleton_problem(); return m_singletonProblem; } } /** * 解决方案一： eager initialization * * 缺点在于没有lazy loading机制 */ class Singleton_eager{ private static final Singleton_eager m_singleton = new Singleton_eager(); private Singleton_eager(){ // .</description>
+ /** * 简单实现 * * 存在的问题： * * 当创建过程需要时间时，连续调用getInstance方法会导致创建多个对象，特别是涉及多线程时容易出问题。 */ class Singleton_problem {  private static Singleton_problem m_singletonProblem = null;  private Singleton_problem(){  // ...  }  public static Singleton_problem getInstance(){  if (m_singletonProblem == null)  m_singletonProblem = new Singleton_problem();  return m_singletonProblem;  } }   /** * 解决方案一： eager initialization * * 缺点在于没有lazy loading机制 */ class Singleton_eager{  private static final Singleton_eager m_singleton = new Singleton_eager();  private Singleton_eager(){  // .</description>
     </item>
     
     <item>
@@ -901,7 +900,7 @@ linux发行版 一般的linux发行版包括：Linux内核，一些GNU程序库�
 而在今天看，更多的为孤独而孤独而忧郁而已。理解了这个社会便不再愤青，而所谓的不被理解，只是没有表达而已。中学时代的几个同学或许难有不理解，而大学里，更是庆幸有很多能交心的好友以及曾经想象的那种志同道合。
 想着想着，突然都想用工科思维给孤独下个严格的定义，但还是算了吧&amp;hellip;
 记得曾经还相信绝大多数人的青春都会陷入孤独，而之后才慢慢承认，不是所有的人都会庸人自扰。
- 经常考虑这个话题，所以想写写。
+ 曾经经常考虑这个话题，所以想写写。
 现在，不孤独，并喜欢独处，感受一个人的宁静与轻松。
 仍就欣赏当年的洒脱：
  追逐天边最冷的北风
@@ -924,7 +923,7 @@ linux发行版 一般的linux发行版包括：Linux内核，一些GNU程序库�
 静态代理模式 （static proxy） 静态代理的思想：将被代理类作为代理类的成员，通过代理类调用被代理类的函数，并添加新的控制。包装类与被包装类实现同一接口，使得使用时的代码一致。
 应用：已经有一个日志记录器LoggerSubject，需要对writeLog()函数的前后进行某些操作（如初始化、异常处理等），使用Proxy类间接调用LoggerSubject.writeLog()实现新控制操作的添加。
 实现如下
-interface Logger { void writeLog(); } // 被代理类 class LoggerSubject implements Logger{ @Override public void writeLog(){ System.out.println(&amp;#34;writeLog by LoggerSubject&amp;#34;); } } // 代理类 class Proxy implements Logger{ Logger logger; // 与装饰者模式的主要区别位置  // 代理模式一般要求和原来的类行为一致，因此构造函数不传入对象  Proxy(){ this.logger = new LoggerSubject(); } @Override public void writeLog(){ System.out.println(&amp;#34;logger write before&amp;#34;); logger.writeLog(); System.out.println(&amp;#34;logger write after&amp;#34;); } } public class StaticProxy { private static void write(Logger logger){ logger.</description>
+interface Logger {  void writeLog(); }  // 被代理类 class LoggerSubject implements Logger{  @Override  public void writeLog(){  System.out.println(&amp;#34;writeLog by LoggerSubject&amp;#34;);  } }  // 代理类 class Proxy implements Logger{  Logger logger;  // 与装饰者模式的主要区别位置  // 代理模式一般要求和原来的类行为一致，因此构造函数不传入对象  Proxy(){  this.logger = new LoggerSubject();  }  @Override  public void writeLog(){  System.out.println(&amp;#34;logger write before&amp;#34;);  logger.</description>
     </item>
     
     <item>
@@ -941,7 +940,7 @@ interface Logger { void writeLog(); } // 被代理类 class LoggerSubject implem
 存在多种不同的主题，每个主题都有不同的Button和Text的实现逻辑，因此每个主题都有Button和Text控件的派生类，导致类的初始化较多。
 容易添加新的主题
 不应用工厂模式的一般实现 （FactoryProblem.java）  logger 基类实现通用的日志记录功能，子类实现各自的特有功能 使用时根据配置文件中的类型，new相应的子类  类的实现：
-abstract class Logger { public void writeLog(){ System.out.println(&amp;#34;writeLog by Logger&amp;#34;); } // 可添加公共实现 } class FileLogger extends Logger { @Override public void writeLog(){ System.out.println(&amp;#34;writeLog by the FileLogger&amp;#34;); } } class DataBaseLogger extends Logger { @Override public void writeLog(){ System.</description>
+abstract class Logger {  public void writeLog(){  System.out.println(&amp;#34;writeLog by Logger&amp;#34;);  }  // 可添加公共实现 }  class FileLogger extends Logger {  @Override  public void writeLog(){  System.</description>
     </item>
     
     <item>
@@ -998,6 +997,34 @@ life isn&amp;rsquo;t about how to get through a storm, but how to dance in the r
 搞个博客能干啥，最近发现自己一直违背了高效工作必备的“要事优先”原则，博客园、简书、豆瓣等不折腾平台还是够用了。不过还是有点折腾博客的理由：不想多个平台换；感觉博客这东西应该用git一类的工具管理；吐槽学术界大部分方向的封闭；一键上传；说不定写写小说好用；看到很多人用；反正就是折腾了。
 作为一个还在学术界又不确定以后会不会在学术界的半个researcher，准备先走走技术流，有个博客记录总是好的。
 聊聊技术，谈谈学术，写写人生。</description>
+    </item>
+    
+    <item>
+      <title>MPI、Hadoop、Spark的设计对比</title>
+      <link>https://extendswind.top/posts/technical/mpi_hadoop_spark_comparing/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://extendswind.top/posts/technical/mpi_hadoop_spark_comparing/</guid>
+      <description>对Hadoop前前后后看了更多的设计之后突然碰到这个问题，简单的写写自己的理解。
+MPI MPI（Message Passing Interface）一般和GPU一起作为高性能计算技术的重要组成部分。MPI本身只是一种分布式计算的协议，有OpenMPI、MPICH、MSMPI等实现。协议本身定义了很多分布式计算的进程间的通信函数，其中常用的只用以下6个：
+MPI_Init(…); // 初始化 MPI_Comm_size(…); // 获取进程数量 MPI_Comm_rank(…); // 获取当前进程id MPI_Send(…); // 发送消息给指定进程 MPI_Recv(…); // 接收消息 MPI_Finalize(); // 结束程序 其它的消息定义了一些额外的数据通信方法和细节，如缓冲、同步等，用于更多细节上的操作。
+设计上，MPI更多的是为了处理数据传递中的底层细节，一般假设运行在高性能的集群设备中，没有考虑程序容错、数据存储等特性，传输的消息也默认为二进制流。没太关注底层，估计是直接使用的sockets通信，并且配合了Infiniband一类的高效通信技术。
+有高可用、任务调度一类的场景，可以基于MPI做进一步的设计。
+优点：偏底层效率高。缺点：开发难度更大，在大规模集群中的实现更复杂，容错、数据存储一类的需要开发实现。
+Hadoop Hadoop设计的目标应用场景和MPI相差很大。Hadoop针对的一般为普通服务器（相对于高性能计算的服务器）组成的大集群规模（千级别的节点），在集群的应用中，需要考虑更多资源利用、容错、易用性等方面的问题。当前Hadoop主要由MapReduce计算框架、HDFS分布式文件存储系统、YARN资源管理框架组成，MPI只和MapReduce的作用类似。
+MapReduce的目标是简单易用而且高效的分布式计算框架，让框架底层处理中间可能发生的网络、宕机等错误。使用MapReduce模型的计算一般不用关心计算过程中所涉及的计算资源（有多少个节点等），通常可以很容易的扩展到大规模的集群中高效的执行。和HDFS的结合是MapReduce的一大区别，通过移动计算的方式将计算代码移动到存储数据的数据节点上执行，避免了数据密集型计算应用中的通信开销（在百兆和千兆交换机是主流的时代大集群中存算分离的概念还不明显）。但是为了保证容错性，计算过程中的中间数据写硬盘中临时保存，使发生宕机时能够重新读取，一定程度上影响了计算过程的效率。
+MapReduce优点：框架实现了分布式计算的细节，实现可扩展、容错的程序更为容易，并通过HDFS提高了数据密集型应用的数据本地性。缺点：框架启动以及硬盘写入过程的IO开销过大。
+ps:基于Hadoop的并行计算框架还有Tez，可以看作MapReduce的迭代处理改进，提高了多个MapReduce任务迭代计算的效率，但仍存在硬盘IO写入的效率问题。
+Spark Spark的RDD计算模型为了解决MapReduce过程中为了保证容错性而导致的硬盘IO问题，通过设计基于内存的计算模式，将数据存储在内存中，通过数据的转换关系和checkpoint实现数据出错时的错误任务重新计算，可以看作是一个MapReduce加强版，特别是在迭代计算的应用中比MapReduce的效率高出很多，已经逐渐取代了MapReduce在大多数方面的应用。
+在RDD模型之上，Spark还提供了机器学习、SQL查询、图计算等功能，提供了一套完整的数据分析生态，而非最初只有计算模型。
+RDD模型优点：通过内存模型设计降低了硬盘的IO，并且充分利用内存缓存提高效率。缺点：相对更吃内存。
+对比 应用场景
+MPI由于过于偏底层，在易用性、容错性上比云计算框架明显要差，使应用更多的面向对容错要求不高的计算场景与计算效率上要求较高的应用。通常在少量节点的分布式协同计算和超算中应用，以及一些在云计算框架下实现并不完全的科学计算应用。由于配置和运行较为简单，外加c++的运行效率较高，在对高可用要求不高的小集群环境里跑分布式计算较为简单。
+RDD和MapReduce更注重大规模集群中的资源利用和计算，扩展到几千节点的集群中有较好的计算效率，并能自动处理宕机等集群常见错误。
+相对来讲，商业环境对程序运行的稳定性和开发效率看得更为重要，所以Hadoop生态的云计算技术使用得更多。实践上，Hadoop虽然简化的分布式计算的模型，但要想高效的执行任务仍需要很多参数的调整。
+底层存储和网络优化
+MPI使用的Infiniband技术提高网络通信能力，没有固定的数据存储技术，靠移动数据的方式实现分布式计算。在数据密集型应用中对效率有一定的影响，但随着网络通信技术提高影响在降低，也可以配合其它的分布式文件系统实现。
+RDD和MapReduce利用了Hadoop的HDFS存储，多副本的存储方式提高了数据的读效率。通信上使用的rpc通信，将通信的对象高效的序列化为二进制数据提高通信效率。</description>
     </item>
     
     <item>

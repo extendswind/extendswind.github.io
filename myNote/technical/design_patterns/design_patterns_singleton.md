@@ -89,9 +89,9 @@ class Singleton_lazy{
  * 降低方案二中的等待用时，当对象创建后就不用通过锁判断，创建后没有效率问题。
  */
 class Singleton_lazy_double_lock{
-    private static Singleton_lazy_double_lock m_singleton = null;
+    private static volatile Singleton_lazy_double_lock m_singleton = null;
     // 线程锁，加锁的位置每次只能运行一个线程
-    public static synchronized Singleton_lazy_double_lock getInstance(){
+    public static Singleton_lazy_double_lock getInstance(){
         //第一重判断
         if (m_singleton == null) { //锁定代码块
             synchronized (Singleton_lazy_double_lock.class) { //第二重判断

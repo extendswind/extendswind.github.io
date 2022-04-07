@@ -89,7 +89,7 @@ objectRDD.spatialPartitioning(GridType.KDBTREE)
 queryWindowRDD.spatialPartitioning(objectRDD.getPartitioner)
 ```
 
-GeoSpark提供了KDB-tree、R-tree、维诺图等多种划分方式，总体上的逻辑差不多。为了降低总体的计算量，GeoSpark并没有直接在元数据上进行空间划分，而是通过采样的方式首先提取一定比例的数据构建空间划分。然后用了三个Spark算子，flatMapToPair将rawSpatialRDD中的每条数据转成（分区id，空间对象）的形式，partitionBy将数据按照分区id重新划分，最后mapPartitions将（分区id，空间对象）提取为空间对象。
+GeoSpark提供了KDB-tree、R-tree、维诺图等多种划分方式，总体上的逻辑差不多。为了降低总体的计算量，GeoSpark并没有直接在原数据上进行空间划分，而是通过采样的方式首先提取一定比例的数据构建空间划分。然后用了三个Spark算子，flatMapToPair将rawSpatialRDD中的每条数据转成（分区id，空间对象）的形式，partitionBy将数据按照分区id重新划分，最后mapPartitions将（分区id，空间对象）提取为空间对象。
 
 # 具体源码分析
 
