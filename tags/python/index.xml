@@ -5,6 +5,7 @@
     <link>https://extendswind.top/tags/python/</link>
     <description>Recent content in python on A Notebook of Extendswind</description>
     <generator>Hugo -- gohugo.io</generator>
+    <copyright>本站原创文章遵循CC-BY 4.0版权协议，转载注明出处即可</copyright>
     <lastBuildDate>Wed, 01 Sep 2021 08:30:00 +0800</lastBuildDate><atom:link href="https://extendswind.top/tags/python/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>python脚本避免被多次执行</title>

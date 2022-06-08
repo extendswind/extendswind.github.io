@@ -5,6 +5,7 @@
     <link>https://extendswind.top/</link>
     <description>Recent content in Home on A Notebook of Extendswind</description>
     <generator>Hugo -- gohugo.io</generator>
+    <copyright>本站原创文章遵循CC-BY 4.0版权协议，转载注明出处即可</copyright>
     <lastBuildDate>Fri, 17 Dec 2021 19:30:00 +0800</lastBuildDate><atom:link href="https://extendswind.top/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Apache Hive代码阅读 -- SQL语句执行流程</title>
@@ -177,7 +178,7 @@ This file has three columns and corresponding offsets(Column IDs) are 0, 1, 2. U
       <description>系统的看一下Java支持的数据结构，记一下从数据结构到java实现的一些基础笔记。以下内容主要参考《java核心技术》与jdk11源码。
 用于保存对象的数据结构一般称作容器类，也称作泛型集合（generic collection，由于容易和Collection接口混淆，因此有些书直接叫做容器类container library）。主要分为Collection和Map两种，Collection用于存储独立的元素，而Map用于存储“键值对”对象。
 一些细节 在查找元素、查找位置、移除等操作中，判断对象是否相同的方式是调用equal函数。
-retainAll(Collection&amp;lt;?&amp;gt; c)求两个集合的交集。
+retainAll(Collectionc)求两个集合的交集。
 实现时接口与实现分离。使用时用满足需要的接口（如队列使用Queue），针对具体的场景new合适的实现。当需要自行实现对应的功能，为了降低实现接口中过多函数的复杂程度，可以直接扩展对应的Abastract类（如AbstractQueue），这种抽象接口加抽象类的方式在集合设计中经常遇到。
 集合类只能容纳对象句柄。集合在存储基本类型时，会通过封装器（Integer等）将基本类型转换成普通类，因此在处理效率上不如数组（直接存储基本类型）。
 迭代器 Iterator public interface Iterator&amp;lt;E&amp;gt;{  E next();  boolean hasNext();  void remove(); } // 并没有一个函数直接返回迭代器指向位置的值  public interface Iterable&amp;lt;E&amp;gt;{  Iterator&amp;lt;E&amp;gt; iterator(); } for each循环可以针对任何实现了Iterable的对象（由编译器直接翻译成Iterator对应的代码）。for (String e: c){&amp;hellip;}
@@ -193,7 +194,8 @@ HashMap （下面的默认参数取自openjdk11源码）
 实现常量时间的数据get和put。
 HashMap用hashcode结合链表的实现。使用了桶（bucket）机制，将hashcode取余后放入一个链表，当一个桶中的数据达到8个时，会通过treeifyBin函数将链表的形式转成红黑树存储以加快检索效率。
 在构造函数中设置了两个参数。threshold（默认为16）和loadFactor（默认为0.75），初始化时桶的数量会用threshold，往后threshold会等于 桶的数量×loadFactor。添加元素时，HashMap中的元素个数达到threshold时会调用resize让桶的数量翻倍，此时会遍历先前的所有元素添加到扩容之后的数组中（rehash过程）。
-通过一个名为table的数组存储桶的节点，默认情况下的初始化桶的个数为16，每次会增加为之前的2倍，最大为Int型的最大值。</description>
+通过一个名为table的数组存储桶的节点，默认情况下的初始化桶的个数为16，每次会增加为之前的2倍，最大为Int型的最大值。
+transient Node&amp;lt;K,V&amp;gt;[] table;  static class Node&amp;lt;K,V&amp;gt; implements Entry&amp;lt;K,V&amp;gt; {  final int hash;  final K key;  V value;  Node&amp;lt;K,V&amp;gt; next;  // .</description>
     </item>
     
     <item>
