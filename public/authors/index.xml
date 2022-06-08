@@ -4,6 +4,7 @@
     <title>Authors on A Notebook of Extendswind</title>
     <link>https://extendswind.top/authors/</link>
     <description>Recent content in Authors on A Notebook of Extendswind</description>
-    <generator>Hugo -- gohugo.io</generator><atom:link href="https://extendswind.top/authors/index.xml" rel="self" type="application/rss+xml" />
+    <generator>Hugo -- gohugo.io</generator>
+    <copyright>本站原创文章遵循CC-BY 4.0版权协议，转载注明出处即可</copyright><atom:link href="https://extendswind.top/authors/index.xml" rel="self" type="application/rss+xml" />
   </channel>
 </rss>

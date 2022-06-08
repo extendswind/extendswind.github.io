@@ -3,7 +3,7 @@ baseURL = "https://extendswind.top"
 title = "A Notebook of Extendswind"
 
 # for smart copyright line, leave this blank and check [params.copyright]
-copyright = ""
+copyright = "本站原创文章遵循CC-BY 4.0版权协议，转载注明出处即可"
 
 theme = "minimo"
 #theme = "hugo-icarus-theme"
@@ -46,11 +46,11 @@ customCSS = ["css/custom.css"]
 gopher = "" # used in 404 template ( Generator: https://gopherize.me )
 
 
-[params.copyright]
-prefix = ""
-holder = "extendswind"
-startYear = "2018"
-suffix = ""
+# [params.copyright]
+# prefix = ""
+# holder = "extendswind"
+# startYear = "2018"
+# suffix = "本站原创文章遵循CC-BY 4.0版权协议，转载注明出处即可"
 
 [params.settings]
 # date & time format: https://golang.org/pkg/time/
