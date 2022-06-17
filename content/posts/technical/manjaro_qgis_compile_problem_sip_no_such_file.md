@@ -1,0 +1,1 @@
+../../../myNote/./technical/gis/manjaro_qgis_compile_problem_sip_no_such_file.md
