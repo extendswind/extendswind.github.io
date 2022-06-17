@@ -6,7 +6,19 @@
     <description>Recent content in GIS on A Notebook of Extendswind</description>
     <generator>Hugo -- gohugo.io</generator>
     <copyright>本站原创文章遵循CC-BY 4.0版权协议，转载注明出处即可</copyright>
-    <lastBuildDate>Wed, 18 Nov 2020 10:30:00 +0800</lastBuildDate><atom:link href="https://extendswind.top/tags/gis/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 17 Jun 2022 15:30:00 +0800</lastBuildDate><atom:link href="https://extendswind.top/tags/gis/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Manjaro上编译QGIS时出现的/usr/bin/sip: No such file or directory错误</title>
+      <link>https://extendswind.top/posts/technical/manjaro_qgis_compile_problem_sip_no_such_file/</link>
+      <pubDate>Fri, 17 Jun 2022 15:30:00 +0800</pubDate>
+      
+      <guid>https://extendswind.top/posts/technical/manjaro_qgis_compile_problem_sip_no_such_file/</guid>
+      <description>解决方案:
+sudo pacman -S sip4
+sip库的默认版本比较新，/usr/bin/sip文件在sip4库中。（估计是旧版和新版的sip使用方式不一样吧，sip4的包里是sip可执行文件和一个头文件，默认安装的sip包是python的包。）
+# sip包中的文件： sip /usr/bin/sip-build sip /usr/bin/sip-distinfo sip /usr/bin/sip-install sip /usr/bin/sip-module sip /usr/bin/sip-sdist sip /usr/bin/sip-wheel sip /usr/lib/python3.10/site-packages/... # 还有一些python包文件   # sip4包中的文件： sip4 /usr/bin/sip sip4 /usr/include/sip.h sip4 /usr/share/licenses/sip4/LICENSE </description>
+    </item>
+    
     <item>
       <title>STR树 —— R-tree的构建方案之一</title>
       <link>https://extendswind.top/posts/technical/str_tree_rtree_construction/</link>

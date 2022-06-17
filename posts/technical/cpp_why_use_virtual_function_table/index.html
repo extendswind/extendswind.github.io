@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang='en' dir='auto'><head>
+  <meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<meta name='description' content='虚函数表是C&#43;&#43;面试常考问题之一了，看了下《深度探索C&#43;&#43;对象模型》，个人感觉了解虚函数表对理解C&#43;&#43;对象在内存中的存储有一定帮助，但是对提高代码质量的意义貌似仅仅在于关注对象中虚函数指针的存在。
+面向对象中的多态与运行时捆绑 多态 多态是面向对象编程的基本特征之一，在C&#43;&#43;中表现为通过虚函数和继承，实现基类指针的调用实现不同的行为，如下例。
+Logger为作为接口的基类，只有一个函数log()用于日志的记录，子类FileLogger和DataBaseLogger分别实现将日志写入到文件和数据库两种行为，代码如下。
+ // 基类接口，调用log函数记录日志 class Logger{  public:  virtual void log(string str) = 0; }  class FileLogger{  public:  void log(string str){ /* 日志写入文件的实现 */ } }  class DataBaseLogger{  public:  void log(string str){ /* 日志写入数据库的实现 */}; } 通过传入不同的对象，可以实现不同的行为，如下面的代码：
+void writeLog(Logger *logger){  logger.log(); }  // 仅举例，省略内存管理 Logger *logger = new FileLogger(); writeLog(logger); Logger *logger2 = new FileLogger(); writeLog(logger2); 运行时捆绑（runtime binding） 在一个典型的工厂模式中，可以通过 Logger *logger = LoggerFactory.'>
+<meta name='theme-color' content='#cccccc'>
+
+<meta property='og:title' content='谈谈C&#43;&#43;为什么使用虚函数表的个人理解 • A Notebook of Extendswind'>
+<meta property='og:description' content='虚函数表是C&#43;&#43;面试常考问题之一了，看了下《深度探索C&#43;&#43;对象模型》，个人感觉了解虚函数表对理解C&#43;&#43;对象在内存中的存储有一定帮助，但是对提高代码质量的意义貌似仅仅在于关注对象中虚函数指针的存在。
+面向对象中的多态与运行时捆绑 多态 多态是面向对象编程的基本特征之一，在C&#43;&#43;中表现为通过虚函数和继承，实现基类指针的调用实现不同的行为，如下例。
+Logger为作为接口的基类，只有一个函数log()用于日志的记录，子类FileLogger和DataBaseLogger分别实现将日志写入到文件和数据库两种行为，代码如下。
+ // 基类接口，调用log函数记录日志 class Logger{  public:  virtual void log(string str) = 0; }  class FileLogger{  public:  void log(string str){ /* 日志写入文件的实现 */ } }  class DataBaseLogger{  public:  void log(string str){ /* 日志写入数据库的实现 */}; } 通过传入不同的对象，可以实现不同的行为，如下面的代码：
+void writeLog(Logger *logger){  logger.log(); }  // 仅举例，省略内存管理 Logger *logger = new FileLogger(); writeLog(logger); Logger *logger2 = new FileLogger(); writeLog(logger2); 运行时捆绑（runtime binding） 在一个典型的工厂模式中，可以通过 Logger *logger = LoggerFactory.'>
+<meta property='og:url' content='https://extendswind.top/posts/technical/cpp_why_use_virtual_function_table/'>
+<meta property='og:site_name' content='A Notebook of Extendswind'>
+<meta property='og:type' content='article'><meta property='article:section' content='posts'><meta property='article:tag' content='c&#43;&#43;'><meta property='article:tag' content='重学编程基础'><meta property='article:published_time' content='2022-06-15T19:30:00&#43;08:00'/><meta property='article:modified_time' content='2022-06-15T19:30:00&#43;08:00'/><meta name='twitter:card' content='summary'>
+
+<meta name="generator" content="Hugo 0.99.1" />
+
+  <title>谈谈C&#43;&#43;为什么使用虚函数表的个人理解 • A Notebook of Extendswind</title>
+  <link rel='canonical' href='https://extendswind.top/posts/technical/cpp_why_use_virtual_function_table/'>
+  
+  
+  <link rel='icon' href='/images/wind.jpeg'>
+<link rel='stylesheet' href='/assets/css/main.ab98e12b.css'><link rel='stylesheet' href='/css/custom.css'><style>
+:root{--color-accent:#cccccc;}
+</style>
+
+  
+
+</head>
+<body class='page type-posts has-sidebar'>
+
+  <div class='site'><div id='sidebar' class='sidebar'>
+  <a class='screen-reader-text' href='#main-menu'>Skip to Main Menu</a>
+
+  <div class='container'><section class='widget widget-about sep-after'>
+  <header>
+    
+    <div class='logo'>
+      <a href='/'>
+        <img src='/images/wind.jpeg'>
+      </a>
+    </div>
+    
+    <h2 class='title site-title '>
+      <a href='/'>
+      extendswind
+      </a>
+    </h2>
+    <div class='desc'>
+    
+    </div>
+  </header>
+
+</section>
+<section class='widget widget-sidebar_menu sep-after'><nav id='sidebar-menu' class='menu sidebar-menu' aria-label='Sidebar Menu'>
+    <div class='container'>
+      <ul><li class='item'>
+  <a href='/'>Home</a></li><li class='item'>
+  <a href='/posts'>Posts</a></li><li class='item'>
+  <a href='/categories'>Categories</a></li><li class='item'>
+  <a href='https://github.com/extendswind'>GitHub</a></li><li class='item'>
+  <a href='https://www.cnblogs.com/fly2wind/'>Cnblog</a></li></ul>
+    </div>
+  </nav>
+
+</section><section class='widget widget-taxonomy_cloud sep-after'>
+  <header>
+    <h4 class='title widget-title'>Tags</h4>
+  </header>
+
+  <div class='container list-container'>
+  <ul class='list taxonomy-cloud'><li>
+        <a href='/tags/blog/' style='font-size:1em'>blog</a>
+      </li><li>
+        <a href='/tags/c&#43;&#43;/' style='font-size:1em'>c&#43;&#43;</a>
+      </li><li>
+        <a href='/tags/design-patterns/' style='font-size:1em'>design patterns</a>
+      </li><li>
+        <a href='/tags/geospark/' style='font-size:1em'>GeoSpark</a>
+      </li><li>
+        <a href='/tags/gis/' style='font-size:1em'>GIS</a>
+      </li><li>
+        <a href='/tags/git/' style='font-size:1em'>git</a>
+      </li><li>
+        <a href='/tags/hadoop/' style='font-size:1em'>hadoop</a>
+      </li><li>
+        <a href='/tags/hive/' style='font-size:1em'>hive</a>
+      </li><li>
+        <a href='/tags/iot/' style='font-size:1em'>IoT</a>
+      </li><li>
+        <a href='/tags/java/' style='font-size:1em'>java</a>
+      </li><li>
+        <a href='/tags/life/' style='font-size:1em'>life</a>
+      </li><li>
+        <a href='/tags/linux/' style='font-size:1em'>linux</a>
+      </li><li>
+        <a href='/tags/log4j/' style='font-size:1em'>log4j</a>
+      </li><li>
+        <a href='/tags/mpi/' style='font-size:1em'>MPI</a>
+      </li><li>
+        <a href='/tags/python/' style='font-size:1em'>python</a>
+      </li><li>
+        <a href='/tags/qgis/' style='font-size:1em'>QGIS</a>
+      </li><li>
+        <a href='/tags/raspberry/' style='font-size:1em'>raspberry</a>
+      </li><li>
+        <a href='/tags/reading/' style='font-size:1em'>reading</a>
+      </li><li>
+        <a href='/tags/software/' style='font-size:1em'>software</a>
+      </li><li>
+        <a href='/tags/spark/' style='font-size:1em'>Spark</a>
+      </li><li>
+        <a href='/tags/%E9%87%8D%E5%AD%A6%E7%BC%96%E7%A8%8B%E5%9F%BA%E7%A1%80/' style='font-size:1em'>重学编程基础</a>
+      </li></ul>
+</div>
+
+
+</section>
+<section class='widget widget-search sep-after'>
+  <header>
+    <h4 class='title widget-title'>Search</h4>
+  </header>
+
+  <form action='/search' id='search-form' class='search-form'>
+    <label>
+      <span class='screen-reader-text'>Search</span>
+      <input id='search-term' class='search-term' type='search' name='q' placeholder='Search&hellip;'>
+    </label></form>
+
+</section>
+</div>
+
+  <div class='sidebar-overlay'></div>
+</div><div class='main'><a class='screen-reader-text' href='#content'>Skip to Content</a>
+
+<button id='sidebar-toggler' class='sidebar-toggler' aria-controls='sidebar'>
+  <span class='screen-reader-text'>Toggle Sidebar</span>
+  <span class='open'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="3" y1="12" x2="21" y2="12" />
+  <line x1="3" y1="6" x2="21" y2="6" />
+  <line x1="3" y1="18" x2="21" y2="18" />
+  
+</svg>
+</span>
+  <span class='close'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="18" y1="6" x2="6" y2="18" />
+  <line x1="6" y1="6" x2="18" y2="18" />
+  
+</svg>
+</span>
+</button><div class='header-widgets'>
+        <div class='container'></div>
+      </div>
+
+      <header id='header' class='header site-header'>
+        <div class='container sep-after'>
+          <div class='header-info'><p class='site-title title'>A Notebook of Extendswind</p><p class='desc site-desc'>a simple blog site</p>
+          </div>
+        </div>
+      </header>
+
+      <main id='content'>
+
+
+<article lang='en' class='entry'>
+  <header class='header entry-header'>
+  <div class='container sep-after'>
+    <div class='header-info'>
+      <h1 class='title'>谈谈C&#43;&#43;为什么使用虚函数表的个人理解</h1>
+      
+
+    </div>
+    <div class='entry-meta'>
+  <span class='posted-on'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+  <line x1="16" y1="2" x2="16" y2="6"/>
+  <line x1="8" y1="2" x2="8" y2="6"/>
+  <line x1="3" y1="10" x2="21" y2="10"/>
+  
+</svg>
+<span class='screen-reader-text'>Posted on </span>
+  <time class='entry-date' datetime='2022-06-15T19:30:00&#43;08:00'>2022, Jun 15</time>
+</span>
+
+  
+  
+
+</div>
+
+
+  </div>
+</header>
+
+  
+  
+<details class='container entry-toc' open>
+  <summary class='title'>
+    <span>Table of Contents</span>
+  </summary>
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#面向对象中的多态与运行时捆绑">面向对象中的多态与运行时捆绑</a>
+      <ul>
+        <li><a href="#多态">多态</a></li>
+        <li><a href="#运行时捆绑runtime-binding">运行时捆绑（runtime binding）</a></li>
+      </ul>
+    </li>
+    <li><a href="#c类对象在内存中的存储">C++类对象在内存中的存储</a>
+      <ul>
+        <li><a href="#简单类存储">简单类存储</a></li>
+        <li><a href="#虚函数的存储问题">虚函数的存储问题</a></li>
+        <li><a href="#虚函数表的存储方式">虚函数表的存储方式</a></li>
+        <li><a href="#虚函数表的优点和缺点">虚函数表的优点和缺点</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+</details>
+
+
+  <div class='container entry-content'>
+  <p>虚函数表是C++面试常考问题之一了，看了下《深度探索C++对象模型》，个人感觉了解虚函数表对理解C++对象在内存中的存储有一定帮助，但是对提高代码质量的意义貌似仅仅在于关注对象中虚函数指针的存在。</p>
+<h1 id="面向对象中的多态与运行时捆绑">面向对象中的多态与运行时捆绑</h1>
+<h2 id="多态">多态</h2>
+<p>多态是面向对象编程的基本特征之一，在C++中表现为通过虚函数和继承，实现基类指针的调用实现不同的行为，如下例。</p>
+<p>Logger为作为接口的基类，只有一个函数log()用于日志的记录，子类FileLogger和DataBaseLogger分别实现将日志写入到文件和数据库两种行为，代码如下。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 基类接口，调用log函数记录日志
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Logger</span>{
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">virtual</span> <span style="color:#66d9ef">void</span> log(string str) <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">FileLogger</span>{
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">void</span> log(string str){ <span style="color:#75715e">/* 日志写入文件的实现 */</span> }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">DataBaseLogger</span>{
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">void</span> log(string str){ <span style="color:#75715e">/* 日志写入数据库的实现 */</span>};
+</span></span><span style="display:flex;"><span>}    
+</span></span></code></pre></div><p>通过传入不同的对象，可以实现不同的行为，如下面的代码：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">writeLog</span>(Logger <span style="color:#f92672">*</span>logger){
+</span></span><span style="display:flex;"><span>  logger.log();
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 仅举例，省略内存管理
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>Logger <span style="color:#f92672">*</span>logger <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> FileLogger();
+</span></span><span style="display:flex;"><span>writeLog(logger);
+</span></span><span style="display:flex;"><span>Logger <span style="color:#f92672">*</span>logger2 <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> FileLogger();
+</span></span><span style="display:flex;"><span>writeLog(logger2);
+</span></span></code></pre></div><h2 id="运行时捆绑runtime-binding">运行时捆绑（runtime binding）</h2>
+<p>在一个典型的工厂模式中，可以通过 <code>Logger *logger = LoggerFactory.getLogger()</code> 的方式，在工厂类中根据具体的需要创建对象。</p>
+<p>比如：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">LoggerFactory</span>{
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 忽略内存管理，通过loggerId获取对应的子类对象
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">static</span> Logger<span style="color:#f92672">*</span> getLogger(<span style="color:#66d9ef">int</span> loggerId <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>){
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">if</span>(loggerId <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">new</span> FileLogger();
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">else</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">DataBaseLogger</span>();
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Logger <span style="color:#f92672">*</span>logger <span style="color:#f92672">=</span> LoggerFactory.getLogger();
+</span></span><span style="display:flex;"><span>writeLog(logger);
+</span></span></code></pre></div><p>例子中的getLogger()直接使用了默认的参数，**而实际的工程代码可以通过配置文件或其它的输入方式得到，也就是在代码的编译器无法预测具体绑定的子类类型。**这种情况可以被看作是运行时捆绑。</p>
+<p>使用运行时捆绑在代码实现上的优点主要在于代码可以将基类和子类的编译作为不同的模块分开，子类通过基类接口实现基本的代码逻辑后单独编译，子类的修改不会导致基类的重新编译（但基类的修改仍会导致子类的重新编译）。并且在具体的实现中可以通过修改配置文件等方式修改具体的实现逻辑，而不需要像早捆绑（early binding）那样重新编译代码。在大的工程项目中，这两种模块化隔离的方式成为很大的优势。</p>
+<h1 id="c类对象在内存中的存储">C++类对象在内存中的存储</h1>
+<h2 id="简单类存储">简单类存储</h2>
+<p>一个简单的类如下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">A</span>{
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">int</span> m;
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">fun</span>(){cout<span style="color:#f92672">&lt;&lt;</span>m<span style="color:#f92672">&lt;&lt;</span>endl;}
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>对于对象<code>A a1 = new A()</code>，在内存中怎么存储？</p>
+<p>假设基于A类型new了a1、a2、a3个对象，每个对象中存储的m都相对独立，因此m肯定需要单独存储。fun()函数在每个对象中执行的方式相同，因此可以共用。C++使用了这一存储方式，类A的每一个对象在内存中都只存储1个int类型的值（忽略字节对齐），成员函数作为共用的对象和static对象存储一次。</p>
+<h2 id="虚函数的存储问题">虚函数的存储问题</h2>
+<p>上面的简单类A中没有包含虚函数，不需要考虑多态的问题，使用到的对象成员变量和成员函数编译器都能明确得到分配的地址。而在前文提到的<code>writeLog(Logger logger)</code>函数实现中，由于运行时绑定的要求，编译器需要在不知道子类实现的情况下编译这部分代码，编译器只能通过参数中的logger地址得到具体的实现过程。注解代码如下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#75715e">// 为了满足运行时绑定要求，这一函数需要能在不知道子类的情况下单独编译
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">writeLog</span>(Logger <span style="color:#f92672">*</span>logger){
+</span></span><span style="display:flex;"><span>  logger.log(<span style="color:#e6db74">&#34;a log&#34;</span>);  
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// 这个地方由于Logger类中的log函数标记为virtual类型，会调用子类的函数
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">// 而此处的子类类型只能在运行时获取，编译器独立编译此模块时并不知道具体的子类实现
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">// 因此编译器需要通过logger这一对象的地址得到子类对应的虚函数实现
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>}
+</span></span></code></pre></div><h2 id="虚函数表的存储方式">虚函数表的存储方式</h2>
+<p>c++的标准里并没有定义具体的实现方式，虚函数表只是大多数c++编译器选择的实现方式之一。</p>
+<p>如果通过上面的简单类存储方法，每个类对象在内存中只存储成员变量，在获取对象地址后仅通过成员变量值显然无法得到具体的子类函数或子类类型。c++通过虚函数表（virtual table，vtbl）的形式实现，当类中涉及虚函数时，每个对象会额外存储一个虚函数指针（vptr）。vptr在对象构建时赋值，指向每个类的虚函数表存储在内存中的地址。</p>
+<p><code>logger.log(&quot;a log&quot;)</code> 调用时，会通过logger指向的子类对象获取对象的vptr，得到虚函数表所在的地址，然后在虚函数表中通过偏移量找到需要调用的具体函数地址。</p>
+<h2 id="虚函数表的优点和缺点">虚函数表的优点和缺点</h2>
+<p>通过虚函数表的方式实现多态，主要优点在于上面的运行时绑定，实现程序在运行时根据具体的需要选择具体的实现子类，并且避免了子类的改变导致整个代码的重新编译。</p>
+<p>付出的开销也很明显，对虚函数的调用需要额外的一次寻址，并且在每个包含虚函数的对象里都需要额外的存储一个指针。当不使用多态时，成员函数的调用可以在编译器直接得到成员函数的地址，因此在函数调用中可以直接跳到对应的位置；而虚函数表的方式，需要先读取vptr中的地址，跳到对应的函数地址，增加了一次寻址开销。</p>
+
+</div>
+
+  
+<footer class='entry-footer'>
+  <div class='container sep-before'><div class='categories'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M22,19a2,2,0,0,1-2,2H4a2,2,0,0,1-2-2V5A2,2,0,0,1,4,3H9l2,3h9a2,2,0,0,1,2,2Z"/>
+  
+</svg>
+<span class='screen-reader-text'>Categories: </span><a class='category' href='/categories/programming-basic/'>programming basic</a></div>
+<div class='tags'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M20.59,13.41l-7.17,7.17a2,2,0,0,1-2.83,0L2,12V2H12l8.59,8.59A2,2,0,0,1,20.59,13.41Z"/>
+  <line x1="7" y1="7" x2="7" y2="7"/>
+  
+</svg>
+<span class='screen-reader-text'>Tags: </span><a class='tag' href='/tags/c&#43;&#43;/'>c&#43;&#43;</a>, <a class='tag' href='/tags/%E9%87%8D%E5%AD%A6%E7%BC%96%E7%A8%8B%E5%9F%BA%E7%A1%80/'>重学编程基础</a></div>
+
+  </div>
+</footer>
+
+
+</article>
+
+<nav class='entry-nav'>
+  <div class='container'><div class='prev-entry sep-before'>
+      <a href='/posts/technical/hive_hadoop_sql_simple_execute_src_read/'>
+        <span aria-hidden='true'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="20" y1="12" x2="4" y2="12"/>
+  <polyline points="10 18 4 12 10 6"/>
+  
+</svg>
+ Previous</span>
+        <span class='screen-reader-text'>Previous post: </span>Apache Hive代码阅读 -- SQL语句执行流程</a>
+    </div><div class='next-entry sep-before'>
+      <a href='/posts/technical/manjaro_qgis_compile_problem_sip_no_such_file/'>
+        <span class='screen-reader-text'>Next post: </span>Manjaro上编译QGIS时出现的/usr/bin/sip: No such file or directory错误<span aria-hidden='true'>Next <svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="4" y1="12" x2="20" y2="12"/>
+  <polyline points="14 6 20 12 14 18"/>
+  
+</svg>
+</span>
+      </a>
+    </div></div>
+</nav>
+
+
+
+
+      </main>
+
+      <footer id='footer' class='footer'>
+        <div class='container sep-before'><section class='widget widget-social_menu sep-after'><header>
+    <h4 class='title widget-title'>Contact</h4>
+  </header><nav aria-label='Social Menu'>
+    <ul><li>
+        <a href='https://github.com/extendswind' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Open Github account in new tab</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+  
+</svg>
+</a>
+      </li><li>
+        <a href='mailto:extendswind@foxmail.com' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Contact via Email</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+  <polyline points="22,6 12,13 2,6"/>
+  
+</svg>
+</a>
+      </li></ul>
+  </nav>
+</section><div class='copyright'>
+  <p>本站原创文章遵循CC-BY 4.0版权协议，转载注明出处即可</p>
+</div>
+
+        </div>
+      </footer>
+
+    </div>
+  </div><script>window.__assets_js_src="/assets/js/"</script>
+
+<script src='/assets/js/main.c3bcf2df.js'></script>
+
+</body>
+
+</html>
+

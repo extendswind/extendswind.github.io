@@ -6,7 +6,20 @@
     <description>Recent content in programming basic on A Notebook of Extendswind</description>
     <generator>Hugo -- gohugo.io</generator>
     <copyright>本站原创文章遵循CC-BY 4.0版权协议，转载注明出处即可</copyright>
-    <lastBuildDate>Fri, 03 Dec 2021 16:00:48 +0800</lastBuildDate><atom:link href="https://extendswind.top/categories/programming-basic/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 15 Jun 2022 19:30:00 +0800</lastBuildDate><atom:link href="https://extendswind.top/categories/programming-basic/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>谈谈C&#43;&#43;为什么使用虚函数表的个人理解</title>
+      <link>https://extendswind.top/posts/technical/cpp_why_use_virtual_function_table/</link>
+      <pubDate>Wed, 15 Jun 2022 19:30:00 +0800</pubDate>
+      
+      <guid>https://extendswind.top/posts/technical/cpp_why_use_virtual_function_table/</guid>
+      <description>虚函数表是C++面试常考问题之一了，看了下《深度探索C++对象模型》，个人感觉了解虚函数表对理解C++对象在内存中的存储有一定帮助，但是对提高代码质量的意义貌似仅仅在于关注对象中虚函数指针的存在。
+面向对象中的多态与运行时捆绑 多态 多态是面向对象编程的基本特征之一，在C++中表现为通过虚函数和继承，实现基类指针的调用实现不同的行为，如下例。
+Logger为作为接口的基类，只有一个函数log()用于日志的记录，子类FileLogger和DataBaseLogger分别实现将日志写入到文件和数据库两种行为，代码如下。
+ // 基类接口，调用log函数记录日志 class Logger{  public:  virtual void log(string str) = 0; }  class FileLogger{  public:  void log(string str){ /* 日志写入文件的实现 */ } }  class DataBaseLogger{  public:  void log(string str){ /* 日志写入数据库的实现 */}; } 通过传入不同的对象，可以实现不同的行为，如下面的代码：
+void writeLog(Logger *logger){  logger.log(); }  // 仅举例，省略内存管理 Logger *logger = new FileLogger(); writeLog(logger); Logger *logger2 = new FileLogger(); writeLog(logger2); 运行时捆绑（runtime binding） 在一个典型的工厂模式中，可以通过 Logger *logger = LoggerFactory.</description>
+    </item>
+    
     <item>
       <title>git push时提示错误 sign_and_send_pubkey: no mutual signature supported</title>
       <link>https://extendswind.top/posts/technical/git_push_sign_and_send_pubkey/</link>
