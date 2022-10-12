@@ -4,10 +4,10 @@ date: 2020-11-05T10:30:00+08:00
 toc: true
 
 categories:
-- "cloud computing"
+- "GIS"
 
 tags:
-- "hadoop"
+- "Hadoop"
 - "GIS"
 - "GeoSpark"
 - "Spark"

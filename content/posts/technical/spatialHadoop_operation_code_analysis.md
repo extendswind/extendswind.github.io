@@ -1,1 +1,1 @@
-../../../myNote/./technical/cloud_computing/spatialHadoop_operation_code_analysis.md
+../../../myNote/./technical/gis/spatialHadoop_operation_code_analysis.md

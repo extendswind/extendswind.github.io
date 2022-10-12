@@ -130,6 +130,8 @@ body {
 p {
     margin: 0 0 1em;
     font-family:"PingFang SC","Microsoft YaHei",'Source Code Pro',sans-serif;
+	text-align: justify;
+	text-justify: inter-character;
 
 /*    text-indent: 2em; */
 }
@@ -212,4 +214,10 @@ code {
     word-break: break-all;
     line-height:1;
     font-size:0.8em;
+}
+
+/* 图片居中 */
+img {
+	display: block;
+	margin: auto;
 }

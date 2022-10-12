@@ -1,0 +1,1 @@
+../../../myNote/./technical/gis/qgis_vector_data_type_structure.md

@@ -1,0 +1,1 @@
+../../../myNote/./technical/cloud_computing/hadoop_hdfs_write_analysis.md

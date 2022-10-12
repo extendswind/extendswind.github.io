@@ -6,7 +6,53 @@
     <description>Recent content in Home on A Notebook of Extendswind</description>
     <generator>Hugo -- gohugo.io</generator>
     <copyright>本站原创文章遵循CC-BY 4.0版权协议，转载注明出处即可</copyright>
-    <lastBuildDate>Fri, 17 Jun 2022 15:30:00 +0800</lastBuildDate><atom:link href="https://extendswind.top/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 11 Oct 2022 20:30:00 +0800</lastBuildDate><atom:link href="https://extendswind.top/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Sedona空间数据可视化源码分析</title>
+      <link>https://extendswind.top/posts/technical/sedona_spatial_big_data_visualization/</link>
+      <pubDate>Tue, 11 Oct 2022 20:30:00 +0800</pubDate>
+      
+      <guid>https://extendswind.top/posts/technical/sedona_spatial_big_data_visualization/</guid>
+      <description>Sedona (GeoSpark) 空间数据可视化过程不太复杂，主要是每个空间对象向对应栅格空间的映射，和矢量转栅格类似。直接上代码：
+// 已经通过Sedona创建了类型为LineStringRDD的slineRDD对象 import org.apache.sedona.viz.core.ImageGenerator import org.apache.sedona.viz.extension.visualizationEffect.ScatterPlot import org.apache.sedona.viz.utils.ImageType import java.awt.Color // 创建新的对象 var visualizationOperator = new ScatterPlot(10000, 10000, slineRDD.boundaryEnvelope, false) visualizationOperator.CustomizeColor(255, 255, 255, 255, Color.blue, true) // 具体的可视化过程实现 visualizationOperator.Visualize(sc, slineRDD) // 将结果保存为PNG图像 var imageGenerator = new ImageGenerator imageGenerator.SaveRasterImageAsLocalFile(visualizationOperator.rasterImage, &amp;#34;/home/sparkl/visual&amp;#34;, ImageType.PNG) 其中具体的可视化操作在visualizationOperator.Visualize(sc, slineRDD)函数中，分为visualize、colorize和renderImage三步，具体操作如下：
+public boolean Visualize(JavaSparkContext sparkContext, SpatialRDD spatialRDD) throws Exception { // 返回值为JavaPairRDD&amp;lt;Pixel, Double&amp;gt; // 栅格图中的每个像素对应一个Pixel，包含x、y信息，Double和属性值相关 this.Rasterize(sparkContext, spatialRDD, true); // 修改value的值，通过value值赋颜色 this.Colorize(); this.RenderImage(sparkContext); return true; } Rasterize Rasterize函数是最主要的矢量向栅格的转换函数，先通过flatMapToPair算子计算每个空间对象对应的像素位置和像素值，然后filter掉超出范围的像素值。Sedona的实现中value没有考虑空间实体的属性，每个像素点的value直接赋值的1.</description>
+    </item>
+    
+    <item>
+      <title>Geotools的点类型简单要素创建以及大数据量下的效率问题</title>
+      <link>https://extendswind.top/posts/technical/geotools_simple_feature_create/</link>
+      <pubDate>Wed, 28 Sep 2022 17:30:00 +0800</pubDate>
+      
+      <guid>https://extendswind.top/posts/technical/geotools_simple_feature_create/</guid>
+      <description>GeoTools使用JTS处理空间索引、查询、几何分析等操作，在此基础上增加了空间对象属性相关的处理。通过SimpleFeatureImpl类包装处理，由于每个空间要素实体对象中增加了很多其它的对象，外加java类包装的额外开销，以至于原本的空间数据在内存中的存储空间增加了很多倍，当属性字段较少时，甚至可以多出一个量级。
+创建简单要素 // -- 首先创建SimpleFeatureType 一个点和一个类型为Integer的number字段 SimpleFeatureTypeBuilder b = new SimpleFeatureTypeBuilder(); b.setName( &amp;#34;TestFields&amp;#34; ); // type name b.add( &amp;#34;location&amp;#34;, Point.class ); // 增加一个点字段 b.add( &amp;#34;number&amp;#34;, Integer.class); // 增加一个属性字段 b.setCRS( DefaultGeographicCRS.WGS84); SimpleFeatureType type = b.buildFeatureType(); // -- 使用SimpleFeatureBuilder创建SimpleFeature SimpleFeatureBuilder builder = new SimpleFeatureBuilder(type); // 用于创建JTS Point的工厂类 GeometryFactory geometryFactory = JTSFactoryFinder.getGeometryFactory(); Point point = geometryFactory.createPoint(new Coordinate(longitude, latitude)); builder.add(point); builder.add(i); SimpleFeature feature = builder.buildFeature(null); // 参数为Feature id，为null时会赋默认值 SimpleFeatureImpl实现 GeoTools的SimpleFeature是一个Java接口，没有直接使用基类具体实现，定义了对简单要素的函数操作，主要包括获取ID、Type、FeatureType，以及获取和设置Attribute、DefaultGeometry等。
+SimpleFeatureImpl实现了SimpleFeature接口，主要包括以下数据：
+public class SimpleFeatureImpl implements SimpleFeature { protected FeatureId id; protected SimpleFeatureType featureType; /** The actual values held by this feature */ protected Object[] values; /** The attribute name -&amp;gt; position index */ protected Map&amp;lt;String, Integer&amp;gt; index; /** The set of user data attached to the feature (lazily created) */ protected Map&amp;lt;Object, Object&amp;gt; userData; /** The set of user data attached to each attribute (lazily created) */ protected Map&amp;lt;Object, Object&amp;gt;[] attributeUserData; /** Whether this feature is self validating or not */ protected boolean validating; // .</description>
+    </item>
+    
+    <item>
+      <title>从QGIS源码看GIS矢量数据的组织形式</title>
+      <link>https://extendswind.top/posts/technical/qgis_vector_data_type_structure.md/</link>
+      <pubDate>Tue, 27 Sep 2022 15:30:00 +0800</pubDate>
+      
+      <guid>https://extendswind.top/posts/technical/qgis_vector_data_type_structure.md/</guid>
+      <description>矢量数据在内存中的操作需要面对不同的属性字段，想到c++没有java的Object类作为不同数据类型的基类支撑，对c++动态处理属性字段比较疑惑，看了一下QGIS的相关实现。没有像猜测中直接使用指针操作，动态属性字段使用Qt的Variant类实现，通过QVector的方式存储不同的属性数据。
+QGIS的矢量数据的组织和OGC的简单要素类（Simple Feature）的实现标准类似，每个矢量数据空间实体使用QgsFeature类的一个对象存储，每个OgsFeature对象有四个主要类成员：
+Q_PROPERTY( QgsGeometry geometry READ geometry WRITE setGeometry ) // Feature的几何字段 Q_PROPERTY( QgsFeatureId id READ id WRITE setId ) // Feature的id Q_PROPERTY( QgsAttributes attributes READ attributes WRITE setAttributes ) // Feature的属性值 Q_PROPERTY( QgsFields fields READ fields WRITE setFields ) // Feature的属性字段 其中QgsGeometry是空间信息的存储方式，负载点线面等空间对象的管理。内部的数据通过私有成员 QgsGeometryPrivate *d 存储，内部包含一个QgsAbstractGeometry智能指针 std::unique_ptr&amp;lt; QgsAbstractGeometry &amp;gt; geometry。QgsAbstractgeometry是几何对象的基类，其子类有QgsCurve、QgsPoint、QgsSurface以及存储多对象的QgsGeometryCollection，如下图：
+QgsFields负责属性字段的管理，通常包含多个QgsField，每个QgsField包括以下属性：
+Q_PROPERTY( bool isNumeric READ isNumeric ) Q_PROPERTY( bool isDateOrTime READ isDateOrTime ) Q_PROPERTY( int length READ length WRITE setLength ) Q_PROPERTY( int precision READ precision WRITE setPrecision ) Q_PROPERTY( QVariant::Type type READ type WRITE setType ) Q_PROPERTY( QString comment READ comment WRITE setComment ) Q_PROPERTY( QString name READ name WRITE setName ) Q_PROPERTY( QString alias READ alias WRITE setAlias ) Q_PROPERTY( QgsDefaultValue defaultValueDefinition READ defaultValueDefinition WRITE setDefaultValueDefinition ) Q_PROPERTY( QgsFieldConstraints constraints READ constraints WRITE setConstraints ) Q_PROPERTY( ConfigurationFlags configurationFlags READ configurationFlags WRITE setConfigurationFlags ) Q_PROPERTY( bool isReadOnly READ isReadOnly WRITE setReadOnly ) QgsAttributes负责具体的属性存储，为了支持动态数据类型（c++对属性字段的数量和类型不事先定义），直接继承了QVecter类型，如下。其中QVariant是数据类型的基类，可以存放Qt的各种数据类型，不同于Object基类，QVariant可以看作Qt提供的对不同数据类型的一种包装，提供了各种类型数据的管理和转换操作。</description>
+    </item>
+    
+    <item>
+      <title>qtcreator更新后搜狗输入法（fcitx）不能用</title>
+      <link>https://extendswind.top/posts/technical/qtcreator_update_make_fcitx_failed/</link>
+      <pubDate>Thu, 07 Jul 2022 20:59:49 +0800</pubDate>
+      
+      <guid>https://extendswind.top/posts/technical/qtcreator_update_make_fcitx_failed/</guid>
+      <description>manjaro上的qtcreator更新到使用qt6了，需要安装fcitx对应的qt6的包：
+pacman -S fcitx-qt6 </description>
+    </item>
+    
     <item>
       <title>Manjaro上编译QGIS时出现的/usr/bin/sip: No such file or directory错误</title>
       <link>https://extendswind.top/posts/technical/manjaro_qgis_compile_problem_sip_no_such_file/</link>
@@ -16,7 +62,7 @@
       <description>解决方案:
 sudo pacman -S sip4
 sip库的默认版本比较新，/usr/bin/sip文件在sip4库中。（估计是旧版和新版的sip使用方式不一样吧，sip4的包里是sip可执行文件和一个头文件，默认安装的sip包是python的包。）
-# sip包中的文件： sip /usr/bin/sip-build sip /usr/bin/sip-distinfo sip /usr/bin/sip-install sip /usr/bin/sip-module sip /usr/bin/sip-sdist sip /usr/bin/sip-wheel sip /usr/lib/python3.10/site-packages/... # 还有一些python包文件   # sip4包中的文件： sip4 /usr/bin/sip sip4 /usr/include/sip.h sip4 /usr/share/licenses/sip4/LICENSE </description>
+# sip包中的文件： sip /usr/bin/sip-build sip /usr/bin/sip-distinfo sip /usr/bin/sip-install sip /usr/bin/sip-module sip /usr/bin/sip-sdist sip /usr/bin/sip-wheel sip /usr/lib/python3.10/site-packages/... # 还有一些python包文件 # sip4包中的文件： sip4 /usr/bin/sip sip4 /usr/include/sip.h sip4 /usr/share/licenses/sip4/LICENSE </description>
     </item>
     
     <item>
@@ -28,8 +74,10 @@ sip库的默认版本比较新，/usr/bin/sip文件在sip4库中。（估计是�
       <description>虚函数表是C++面试常考问题之一了，看了下《深度探索C++对象模型》，个人感觉了解虚函数表对理解C++对象在内存中的存储有一定帮助，但是对提高代码质量的意义貌似仅仅在于关注对象中虚函数指针的存在。
 面向对象中的多态与运行时捆绑 多态 多态是面向对象编程的基本特征之一，在C++中表现为通过虚函数和继承，实现基类指针的调用实现不同的行为，如下例。
 Logger为作为接口的基类，只有一个函数log()用于日志的记录，子类FileLogger和DataBaseLogger分别实现将日志写入到文件和数据库两种行为，代码如下。
- // 基类接口，调用log函数记录日志 class Logger{  public:  virtual void log(string str) = 0; }  class FileLogger{  public:  void log(string str){ /* 日志写入文件的实现 */ } }  class DataBaseLogger{  public:  void log(string str){ /* 日志写入数据库的实现 */}; } 通过传入不同的对象，可以实现不同的行为，如下面的代码：
-void writeLog(Logger *logger){  logger.log(); }  // 仅举例，省略内存管理 Logger *logger = new FileLogger(); writeLog(logger); Logger *logger2 = new FileLogger(); writeLog(logger2); 运行时捆绑（runtime binding） 在一个典型的工厂模式中，可以通过 Logger *logger = LoggerFactory.</description>
+// 基类接口，调用log函数记录日志 class Logger{ public: virtual void log(string str) = 0; } class FileLogger{ public: void log(string str){ /* 日志写入文件的实现 */ } } class DataBaseLogger{ public: void log(string str){ /* 日志写入数据库的实现 */}; } 通过传入不同的对象，可以实现不同的行为，如下面的代码：
+void writeLog(Logger *logger){ logger.log(); } // 仅举例，省略内存管理 Logger *logger = new FileLogger(); writeLog(logger); Logger *logger2 = new FileLogger(); writeLog(logger2); 运行时捆绑（runtime binding） 在一个典型的工厂模式中，可以通过 Logger *logger = LoggerFactory.getLogger() 的方式，在工厂类中根据具体的需要创建对象。
+比如：
+class LoggerFactory{ public: // 忽略内存管理，通过loggerId获取对应的子类对象 static Logger* getLogger(int loggerId = 0){ if(loggerId == 0) return new FileLogger(); else return new DataBaseLogger(); } } Logger *logger = LoggerFactory.</description>
     </item>
     
     <item>
@@ -42,8 +90,8 @@ void writeLog(Logger *logger){  logger.log(); }  // 仅举例，省略内存管�
 总体上从beeline脚本执行，调用了类Beeline.java，将终端的命令读入后通过rpc发送给driver处理。driver调用SemanticAnalyzer将SQL语句编译为可以执行的tasks，然后给每个task创建一个线程执行，在task中调用Tez等并行框架处理。
 脚本执行 以beeline脚本执行为例，跳了两个脚本后执行了etx/beeline.sh中的beeline()执行对应的java类。
 bin/beeline 脚本的执行会跳到 bin/hive 脚本，并传递service参数。
-# beeline 脚本  bin=`dirname &amp;#34;$0&amp;#34;` bin=`cd &amp;#34;$bin&amp;#34;; pwd`  . &amp;#34;$bin&amp;#34;/hive --service beeline &amp;#34;$@&amp;#34; 在 bin/hive 脚本中，首先从$bin/ext/*.sh以及$bin/ext/util/*.sh目录下执行所有脚本，脚本中定了一个和service名相同的函数，并且把service名加入到SERVICE_LIST变量。然后根据SREVICE名称运行对应脚本中的函数。
-# bin/hive 省略了大部分代码  SERVICE_LIST=&amp;#34;&amp;#34;  for i in &amp;#34;$bin&amp;#34;/ext/*.sh ; do  . $i done  for i in &amp;#34;$bin&amp;#34;/ext/util/*.sh ; do  . $i done  TORUN=&amp;#34;&amp;#34; for j in $SERVICE_LIST ; do  if [ &amp;#34;$j&amp;#34; = &amp;#34;$SERVICE&amp;#34; ] ; then  TORUN=${j}$HELP  fi done  if [ &amp;#34;$TORUN&amp;#34; = &amp;#34;&amp;#34; ] ; then  echo &amp;#34;Service $SERVICEnot found&amp;#34;  echo &amp;#34;Available Services: $SERVICE_LIST&amp;#34;  exit 7 else  set -- &amp;#34;${SERVICE_ARGS[@]}&amp;#34;  $TORUN &amp;#34;$@&amp;#34; fi 对应执行bin/ext/beeline.</description>
+# beeline 脚本 bin=`dirname &amp;#34;$0&amp;#34;` bin=`cd &amp;#34;$bin&amp;#34;; pwd` . &amp;#34;$bin&amp;#34;/hive --service beeline &amp;#34;$@&amp;#34; 在 bin/hive 脚本中，首先从$bin/ext/*.sh以及$bin/ext/util/*.sh目录下执行所有脚本，脚本中定了一个和service名相同的函数，并且把service名加入到SERVICE_LIST变量。然后根据SREVICE名称运行对应脚本中的函数。
+# bin/hive 省略了大部分代码 SERVICE_LIST=&amp;#34;&amp;#34; for i in &amp;#34;$bin&amp;#34;/ext/*.sh ; do . $i done for i in &amp;#34;$bin&amp;#34;/ext/util/*.sh ; do . $i done TORUN=&amp;#34;&amp;#34; for j in $SERVICE_LIST ; do if [ &amp;#34;$j&amp;#34; = &amp;#34;$SERVICE&amp;#34; ] ; then TORUN=${j}$HELP fi done if [ &amp;#34;$TORUN&amp;#34; = &amp;#34;&amp;#34; ] ; then echo &amp;#34;Service $SERVICE not found&amp;#34; echo &amp;#34;Available Services: $SERVICE_LIST&amp;#34; exit 7 else set -- &amp;#34;${SERVICE_ARGS[@]}&amp;#34; $TORUN &amp;#34;$@&amp;#34; fi 对应执行bin/ext/beeline.</description>
     </item>
     
     <item>
@@ -55,9 +103,9 @@ bin/beeline 脚本的执行会跳到 bin/hive 脚本，并传递service参数。
       <description>总体上涉及了心跳检测、副本移除线程、副本恢复线程。当datanode发生宕机或者datanode中的某个storage（如一块硬盘）发生的错误时，namenode会根据datanode发送的心跳进行检测。但namenode并没有在心跳检测的汇报中进行即时反应，而是先记录对应的心跳信息，由另一个定期检测线程移除DatanodeManager和BlockManager中对应的block信息，并记录需要恢复的数据。对于数据的恢复，又新建了一个线程进行定期扫描，分配恢复副本需要的源数据节点和目标数据节点，在datanode的下一轮心跳检测中转换为对应的命令返回给datanode。
 宕机的心跳检测 datanode会定时向namenode发送心跳数据包汇报当前的运行状态。namenode在一定时间内没收到数据节点的心跳时会标记为stale状态，然后转移该数据节点中的block到其它的数据节点。
 hdfs配置中的几个参数：
- dfs.heartbeat.interval，Hadoop心跳检测间隔，默认为3s。 dfs.namenode.stale.datanode.minimum.interval，datanode标记为stale状态的需要丢失的最小心跳次数，默认为3。 dfs.namenode.stale.datanode.interval，Hadoop datanode超时范围，超过此时间没收到心跳检测会被标记为stale状态，默认为30s，大小必须超过前面两个参数的乘积。  接收心跳消息 Hadoop的datanode心跳检测通过rpc的形式发送，rpc函数通过参数传递数据节点统计信息，返回namenode需要对数据节点的命令。
+dfs.heartbeat.interval，Hadoop心跳检测间隔，默认为3s。 dfs.namenode.stale.datanode.minimum.interval，datanode标记为stale状态的需要丢失的最小心跳次数，默认为3。 dfs.namenode.stale.datanode.interval，Hadoop datanode超时范围，超过此时间没收到心跳检测会被标记为stale状态，默认为30s，大小必须超过前面两个参数的乘积。 接收心跳消息 Hadoop的datanode心跳检测通过rpc的形式发送，rpc函数通过参数传递数据节点统计信息，返回namenode需要对数据节点的命令。
 datanode在通过rpc发送消息时，namenode首先在rpc server处理，交给NameSystem。NameNodeRpcServer中的处理：
-@Override // DatanodeProtocol public HeartbeatResponse sendHeartbeat(DatanodeRegistration nodeReg,  StorageReport[] report, long dnCacheCapacity, long dnCacheUsed,  int xmitsInProgress, int xceiverCount,  int failedVolumes, VolumeFailureSummary volumeFailureSummary,  boolean requestFullBlockReportLease,  @Nonnull SlowPeerReports slowPeers,  @Nonnull SlowDiskReports slowDisks) throws IOException {  checkNNStartup();  verifyRequest(nodeReg);  return namesystem.handleHeartbeat(nodeReg, report,  dnCacheCapacity, dnCacheUsed, xceiverCount, xmitsInProgress,  failedVolumes, volumeFailureSummary, requestFullBlockReportLease,  slowPeers, slowDisks); } namesystem的类型为FSNamesystem，负责name-space state的相关管理（is a container of both transient and persisted name-space state, and does all the book-keeping work on a NameNode），是BlockManager, DatanodeManager, DelegationTokens, LeaseManager等服务的容器。在handleHeartbeat函数中，通过blockManager获取的DatanodeManager进行了处理：</description>
+@Override // DatanodeProtocol public HeartbeatResponse sendHeartbeat(DatanodeRegistration nodeReg, StorageReport[] report, long dnCacheCapacity, long dnCacheUsed, int xmitsInProgress, int xceiverCount, int failedVolumes, VolumeFailureSummary volumeFailureSummary, boolean requestFullBlockReportLease, @Nonnull SlowPeerReports slowPeers, @Nonnull SlowDiskReports slowDisks) throws IOException { checkNNStartup(); verifyRequest(nodeReg); return namesystem.handleHeartbeat(nodeReg, report, dnCacheCapacity, dnCacheUsed, xceiverCount, xmitsInProgress, failedVolumes, volumeFailureSummary, requestFullBlockReportLease, slowPeers, slowDisks); } namesystem的类型为FSNamesystem，负责name-space state的相关管理（is a container of both transient and persisted name-space state, and does all the book-keeping work on a NameNode），是BlockManager, DatanodeManager, DelegationTokens, LeaseManager等服务的容器。在handleHeartbeat函数中，通过blockManager获取的DatanodeManager进行了处理：</description>
     </item>
     
     <item>
@@ -73,14 +121,14 @@ datanode在通过rpc发送消息时，namenode首先在rpc server处理，交给
 如果在没有桌面环境的linux服务器（如VPS）上安装，需要在 ~/.config/syncthing/config.xml 配置中将127.0.0.1改为0.0.0.0，防火墙放开8384端口、22000端口。然后在本地浏览器中用服务器 ip:8384 访问。
 直连服务器配置 在局域网内或者连接有公网ip的主机时，会默认使用直连的方式。当两个主机不能直接连接，或者网络状态不好时，会通过relay中继服务器连接。
 VPS的web UI中直连的listener选项卡为：
- quic://0.0.0.0:22000
+quic://0.0.0.0:22000
 tcp://0.0.0.0:22000
- 连接VPS时，在address选项中将上面0.0.0.0替换成VPS服务器的ip，替代默认的dynamic即可。
+连接VPS时，在address选项中将上面0.0.0.0替换成VPS服务器的ip，替代默认的dynamic即可。
 文件版本保存 一个文件可能会修改多次，文件夹的设置中有File Version选项，可以按时间、修改次数、删除等方式备份多个版本，具体设置界面有说明。
 安全相关 每个节点的id不包含隐私信息，连接时以及分享文件夹时都需要在两个节点的web UI中确认，id没必要加密保存。节点之间的数据传输通过TLS加密，不用太考虑中心服务器导致的隐私问题。
 web UI 页面直接暴露给外网可能会容易被被端口扫描后攻击，可以设置密码加强安全性。或者通过反向代理隐藏web UI的端口，具体配置在 https://docs.syncthing.net/users/reverseproxy.html。关于反向代理踩的一个小坑：nginx设置中的location /syncthing/后面的斜杠不能漏。
 文件分享 Syncthing不支持文件分享，只能间接的处理，下面放个简单的nginx配置解决web服务中分享某个文件文件的下载功能。（至于上传，可以考虑sftp、samba一类的服务，这个比较弱）
- location /file_share/ { alias /home/user/Syncthing/public/; autoindex on; autoindex_exact_size off; # 文件大小显示MB，GB单位，默认为b； autoindex_localtime on; # 服务器本地时区显示文件修改日期 } 基本原理 同步设计上首先将大文件切割成block，小文件直接单独作为block（和HDFS的操作类似）。对每个block计算hash值，通过hash值判断文件的完整性和变化（可以自动识别重命名）。当发生文件变化时，操作系统会通知Syncthing程序，Syncthing程序之间传输元数据信息以及变化的数据。
+location /file_share/ { alias /home/user/Syncthing/public/; autoindex on; autoindex_exact_size off; # 文件大小显示MB，GB单位，默认为b； autoindex_localtime on; # 服务器本地时区显示文件修改日期 } 基本原理 同步设计上首先将大文件切割成block，小文件直接单独作为block（和HDFS的操作类似）。对每个block计算hash值，通过hash值判断文件的完整性和变化（可以自动识别重命名）。当发生文件变化时，操作系统会通知Syncthing程序，Syncthing程序之间传输元数据信息以及变化的数据。
 连接上每个Syncthing程序通过唯一id识别，默认打开了本地发现（local discovery）和全网发现（global discovery）。本地发现能够在添加其它节点时自动找到局域网内的其它服务，全局发现依赖了额外的官方服务器，能根据id直接找到对应的节点（不确定ip是通过id算出来的还是全局发现找到的）。
 为了使不在同一个局域网下的节点能够同步，官方提供了relay服务器作为中介，不在局域网内的同步默认可以直接通过官方relay服务器进行，也可以自己在有公网ip的机器上架服务。relay服务默认为开启状态，局域网内的节点可能由于网络状况等问题从直连转为relay连接，在配置的web GUI中的Remote Devices下的address中可以看到是直接的ip还是带relay的ip，此处配置可以修改。
 Sycnthing默认有几个地方会连接官方服务器：1. 使用数据收集（第一次打开web UI会询问是否同意）；2. 全局发现；3. relay中继服务器。为了方便无所谓，如果只是想单纯在网络可以互通的环境下使用文件同步，可以考虑在设置中把这几个都关了。</description>
@@ -93,15 +141,14 @@ Sycnthing默认有几个地方会连接官方服务器：1. 使用数据收集�
       
       <guid>https://extendswind.top/posts/technical/git_push_sign_and_send_pubkey/</guid>
       <description>git push命令之后，出现下面的错误提示：
- sign_and_send_pubkey: no mutual signature supported git@gitee.com: Permission denied (publickey). fatal: Could not read from remote repository.
+sign_and_send_pubkey: no mutual signature supported git@gitee.com: Permission denied (publickey). fatal: Could not read from remote repository.
 Please make sure you have the correct access rights and the repository exists.
- openssh的新版本（当前8.8p1-1）默认不支持ras的默认秘钥。
+openssh的新版本（当前8.8p1-1）默认不支持ras的默认秘钥。
 一开始以为是gitee码云干了什么升级，之后发现是我的manjaro openssh版本太新的问题，已经不支持我几年前生成的秘钥（但是为什么ssh-keygen还是默认用的rsa）。
 推荐做法 ssh-keygen -t ed25519 -C &amp;ldquo;your_email@example.com&amp;rdquo;
 生成一个新的秘钥，然后公钥添加到gitee账户。
 最简单处理 修改ssh的客户端的配置文件，~/.ssh/config 或全局的配置文件 /etc/ssh/ssh_config，在其中加下面的代码。
- PubkeyAcceptedKeyTypes +ssh-rsa
- </description>
+PubkeyAcceptedKeyTypes +ssh-rsa</description>
     </item>
     
     <item>
@@ -113,8 +160,8 @@ Please make sure you have the correct access rights and the repository exists.
       <description>写了一个脚本，想挂后台运行，又想避免重复运行，需要检测后台是否有已经运行的脚本。实现目标：python脚本只运行一次，第二次运行时直接退出。
 在linux上比较合适的做法是创建一个systemd控制的service，有时候就临时用一用，还有考虑跨设备运行的时候也有点麻烦。
 找了两个比较简单的方案。
-1. 使用tendo import tendo.singleton  single = tendo.singleton.SingleInstance()  # 测试代码 import time while(True):  print(&amp;#34;test&amp;#34;)  time.sleep(2) 2. 使用pidfile from pid import PidFile  # 会对with中的代码块加锁 with PidFile():  import time  while(True):  print(&amp;#34;test&amp;#34;)  time.sleep(2) 或者
-from pid.decorator import pidfile  @pidfile def main():  # 被pidfile标签装饰的函数只能运行一次  # running code 基本原理 最常见的基本操作都差不多，在运行到需要只能执行一次的代码时，在某个路径下创建一个pidfile的文件，第二次执行时如果检测到路径下有pidfile就报错跳过执行。代码执行完成后删除pidfile。
+1. 使用tendo import tendo.singleton single = tendo.singleton.SingleInstance() # 测试代码 import time while(True): print(&amp;#34;test&amp;#34;) time.sleep(2) 2. 使用pidfile from pid import PidFile # 会对with中的代码块加锁 with PidFile(): import time while(True): print(&amp;#34;test&amp;#34;) time.sleep(2) 或者
+from pid.decorator import pidfile @pidfile def main(): # 被pidfile标签装饰的函数只能运行一次 # running code 基本原理 最常见的基本操作都差不多，在运行到需要只能执行一次的代码时，在某个路径下创建一个pidfile的文件，第二次执行时如果检测到路径下有pidfile就报错跳过执行。代码执行完成后删除pidfile。
 为了避免pidfile在某些特殊情况下退出未执行，通过atexit等库处理退出时的情况。
 类似的做法还有创建一个linux的socket，退出时删除。以及基于ps等linux脚本命令查看运行的进程名。
 参考链接 https://stackoverflow.com/questions/788411/check-to-see-if-python-script-is-running/7758075#7758075
@@ -135,11 +182,11 @@ https://pypi.org/project/pid/</description>
 公网环境下建议将配置文件中的默认端口1883改为其它端口，避免被直接扫描。
 一些安全方面的设置也建议加上。
 客户端 subscriber
-#!/bin/python import paho.mqtt.subscribe as subscribe  # 当调用这个函数时，程序会堵塞在这里，直到有一条消息发送到 topics/topic1 主题 msg = subscribe.simple(&amp;#34;topics/topic1&amp;#34;, hostname=&amp;#34;your ip&amp;#34;, port=yourport,  retained=False, client_id=&amp;#34;youid&amp;#34;, clean_session=False, qos=1) print(f&amp;#34;{msg.topic}{msg.payload}&amp;#34;) hostname和port需要改为正确的参数。
+#!/bin/python import paho.mqtt.subscribe as subscribe # 当调用这个函数时，程序会堵塞在这里，直到有一条消息发送到 topics/topic1 主题 msg = subscribe.simple(&amp;#34;topics/topic1&amp;#34;, hostname=&amp;#34;your ip&amp;#34;, port=yourport, retained=False, client_id=&amp;#34;youid&amp;#34;, clean_session=False, qos=1) print(f&amp;#34;{msg.topic} {msg.payload}&amp;#34;) hostname和port需要改为正确的参数。
 其中，网络环境好并且不需要离线接收消息时，可以不设置clean_session、client_id、qos三个参数。
 publisher
 发送一条消息
-#!/bin/python  import paho.mqtt.publish as publish  publish.single(&amp;#34;topics/topic1&amp;#34;, &amp;#34;a message&amp;#34;, hostname=&amp;#34;your ip&amp;#34;, port=yourport, qos=1) 其它 MQTT 几个基本概念 通常由3部分构成：subscriber订阅客户端、publisher发布消息客户端、Server服务器。
+#!/bin/python import paho.mqtt.publish as publish publish.single(&amp;#34;topics/topic1&amp;#34;, &amp;#34;a message&amp;#34;, hostname=&amp;#34;your ip&amp;#34;, port=yourport, qos=1) 其它 MQTT 几个基本概念 通常由3部分构成：subscriber订阅客户端、publisher发布消息客户端、Server服务器。
 主题topic，类似一连串消息的标识符。
 Message，具体的消息，对应于每个topic。
 publisher向服务器指定主题发送消息。
@@ -156,11 +203,16 @@ QoS0，At most once，至多一次； QoS1，At least once，至少一次； QoS
       <pubDate>Wed, 18 Nov 2020 10:30:00 +0800</pubDate>
       
       <guid>https://extendswind.top/posts/technical/str_tree_rtree_construction/</guid>
-      <description>MathJax = { tex: { inlineMath: [[&#34;$&#34;, &#34;$&#34;]], }, displayMath: [ [&#34;$$&#34;, &#34;$$&#34;], [&#34;\[\[&#34;, &#34;\]\]&#34;], ], svg: { fontCache: &#34;global&#34;, }, };    最近需要使用R树做一下空间索引，在GeoSpark中使用了JTS库中实现的STR树，一开始以为是R-tree的一个变种，细看发现只是R树的构建（packing）方式之一。
+      <description>最近需要使用R树做一下空间索引，在GeoSpark中使用了JTS库中实现的STR树，一开始以为是R-tree的一个变种，细看发现只是R树的构建（packing）方式之一。
 STR是Sort-Tile-Recursive的缩写，本质上是一种R树的构建算法，不能单独算是R树。但在一些GIS开源库的实现中，经常直接命名为STRTree，负责STR算法的R树构建以及构建后的数据查询工作。具体的介绍可以看作者的论文 https://www.cs.odu.edu/%7Emln/ltrs-pdfs/icase-1997-14.pdf ，CSDN上有个主要内容的翻译 https://blog.csdn.net/qq_41775852/article/details/105405918。
 R树常见构建过程 通常R树是针对动态有增删的数据，因此构建过程可以将所有的数据逐个插入到R树中。这种情况可能会存在一些缺点：
- (a) high load time (b) sub-optimal spac eutilization (c) poor R-tree structure requiring the retrieval of anunduly large number of nodes in order to satisfy a query.  因此，常用packing的方式自底向上的构建R树，主要流程如下：
- 假设一共有r个矩形需要被索引，每个叶子结点中存储的矩形数量为n。首先将所有的矩形分成r/n（此处取上界）个组；（分组方式通过下面的packing算法） 将各个分组写入硬盘的pages，并计算每个分组内所有矩形的MBR以及分组对应的page-id； 对分组的MBR递归的执行上面的步骤，直到根节点。  在第1步中，将需要被索引的矩形分成r/n个组，论文中介绍了常见的Nearest-X(NX)、HilbertSort(HS)以及论文提出的Sort-Tile-Recursive(STR)。</description>
+(a) high load time (b) sub-optimal spac eutilization (c) poor R-tree structure requiring the retrieval of anunduly large number of nodes in order to satisfy a query. 因此，常用packing的方式自底向上的构建R树，主要流程如下：
+假设一共有r个矩形需要被索引，每个叶子结点中存储的矩形数量为n。首先将所有的矩形分成r/n（此处取上界）个组；（分组方式通过下面的packing算法） 将各个分组写入硬盘的pages，并计算每个分组内所有矩形的MBR以及分组对应的page-id； 对分组的MBR递归的执行上面的步骤，直到根节点。 在第1步中，将需要被索引的矩形分成r/n个组，论文中介绍了常见的Nearest-X(NX)、HilbertSort(HS)以及论文提出的Sort-Tile-Recursive(STR)。
+STR算法 STR的算法本身并不复杂，以2维空间为例。对矩形的分组只考虑每个矩形的中心点，STR的基本思想是将所有的矩形以“tile”的方式分配到r/n（取上界）个分组中，此处的tile和网格类似。
+首先，对矩形按x坐标排序，然后划分成 $\sqrt{r/n}$ 个slices。然后对每个slice内的矩形按y坐标排序，进一步划分成 $\sqrt{r/n}$ 份。
+对于更高维的空间，可以按这种方式接着划分。
+总结 这个算法主要做一个简单的划分，正如论文的标题 《STR: A Simple and Efficient Algorithm for R-Tree Packing》，有种方法对于一篇论文来讲略简单的感觉。文章内还做了些对比实验，表明针对不同的空间数据分布情况最好选择对应合适的方法，STR的packing算法并不是适合所有的场景。
+简单点来看，也就是R树的每层将空间中的矩形划分到了一个x、y方向数量相等分组中，当数据为长宽差距较大的矩形范围分布时，x、y方向的分组数量相同应该不是最好的方案。</description>
     </item>
     
     <item>
@@ -173,8 +225,8 @@ R树常见构建过程 通常R树是针对动态有增删的数据，因此构�
 相比GeoSpark的代码，没有Spark现成的算子可以复用并且要处理文件方面的问题，逻辑上的处理稍复杂一点。
 空间分析任务的提交 SpatialHadoop提供了一个脚本，用于基本的空间处理，如下面的代码生成测试数据。
 sbin/shadoop generate test.rects size:1.gb shape:rect mbr:0,0,1000000,1000000 -overwrite shadoop脚本做的操作不多，直接通过Hadoop的运行命令运行了edu.umn.cs.spatialHadoop.operations.Main类，在类中的Main函数中处理输入参数。
-bin=`dirname &amp;#34;$0&amp;#34;` bin=`cd &amp;#34;$bin&amp;#34; &amp;gt; /dev/null; pwd`  # Call Hadoop with the operations.Main as the main class . &amp;#34;$bin&amp;#34;/hadoop edu.umn.cs.spatialHadoop.operations.Main $@ 在Main函数中使用了Hadoop的ProgramDriver运行具体的类对象。首先从配置文件 spatial-operations.yaml 中读取支持的类，然后利用反射机制，读取对应类注释的shortName标签，通过shortName决定参数传递的具体的类。
-public static void main(String[] args) {  int exitCode = -1;  ProgramDriver pgd = new ProgramDriver();  try {  // 这个位置加载配置文件，配置文件spatial-operations.yaml中包含了支持的完整类名  Yaml yaml = new Yaml();  List&amp;lt;String&amp;gt; ops = yaml.</description>
+bin=`dirname &amp;#34;$0&amp;#34;` bin=`cd &amp;#34;$bin&amp;#34; &amp;gt; /dev/null; pwd` # Call Hadoop with the operations.Main as the main class . &amp;#34;$bin&amp;#34;/hadoop edu.umn.cs.spatialHadoop.operations.Main $@ 在Main函数中使用了Hadoop的ProgramDriver运行具体的类对象。首先从配置文件 spatial-operations.yaml 中读取支持的类，然后利用反射机制，读取对应类注释的shortName标签，通过shortName决定参数传递的具体的类。
+public static void main(String[] args) { int exitCode = -1; ProgramDriver pgd = new ProgramDriver(); try { // 这个位置加载配置文件，配置文件spatial-operations.yaml中包含了支持的完整类名 Yaml yaml = new Yaml(); List&amp;lt;String&amp;gt; ops = yaml.load(SpatialSite.class.getResourceAsStream(&amp;#34;/spatial-operations.yaml&amp;#34;)); // 通过反射的机制，提取类对应的源码中的annotation里的shortName，运行时会通过shortname执行对应的类 // 用在上面的生成随机数据中就是通过generate执行edu.umn.cs.spatialHadoop.operations.RandomSpatialGenerator。 for (String op : ops) { Class&amp;lt;?</description>
     </item>
     
     <item>
@@ -188,10 +240,10 @@ public static void main(String[] args) {  int exitCode = -1;  ProgramDriver pgd 
 最近通过Spark提高SpatialHadoop在设计上的效率，看了一眼GeoSpark在常见的空间处理上的逻辑，针对空间数据读取、索引、划分几个方面的逻辑记个笔记。
 主要代码逻辑 GeoSpark的代码大多直接用的java编写，调用了Spark的java API，整体的逻辑比我想象的要简单。代码注释、缩进、命名等貌似都略有非主流的地方。
 示例代码主要参考官网教程 http://sedona.apache.org/tutorial/rdd/ 与github仓库源码。
-读取csv文件并创建PointRDD  官方示例 Suppose we have a checkin.csv CSV file at Path /Download/checkin.csv as follows:
+读取csv文件并创建PointRDD 官方示例 Suppose we have a checkin.csv CSV file at Path /Download/checkin.csv as follows:
 -88.331492,32.324142,hotel -88.175933,32.360763,gas -88.388954,32.357073,bar -88.221102,32.35078,restaurant
 This file has three columns and corresponding offsets(Column IDs) are 0, 1, 2. Use the following code to create a PointRDD
-  val pointRDDInputLocation = &amp;#34;/Download/checkin.csv&amp;#34; val pointRDDOffset = 0 // The point long/lat starts from Column 0 val pointRDDSplitter = FileDataSplitter.</description>
+val pointRDDInputLocation = &amp;#34;/Download/checkin.csv&amp;#34; val pointRDDOffset = 0 // The point long/lat starts from Column 0 val pointRDDSplitter = FileDataSplitter.</description>
     </item>
     
     <item>
@@ -203,10 +255,10 @@ This file has three columns and corresponding offsets(Column IDs) are 0, 1, 2. U
       <description>系统的看一下Java支持的数据结构，记一下从数据结构到java实现的一些基础笔记。以下内容主要参考《java核心技术》与jdk11源码。
 用于保存对象的数据结构一般称作容器类，也称作泛型集合（generic collection，由于容易和Collection接口混淆，因此有些书直接叫做容器类container library）。主要分为Collection和Map两种，Collection用于存储独立的元素，而Map用于存储“键值对”对象。
 一些细节 在查找元素、查找位置、移除等操作中，判断对象是否相同的方式是调用equal函数。
-retainAll(Collectionc)求两个集合的交集。
+retainAll(Collection c)求两个集合的交集。
 实现时接口与实现分离。使用时用满足需要的接口（如队列使用Queue），针对具体的场景new合适的实现。当需要自行实现对应的功能，为了降低实现接口中过多函数的复杂程度，可以直接扩展对应的Abastract类（如AbstractQueue），这种抽象接口加抽象类的方式在集合设计中经常遇到。
 集合类只能容纳对象句柄。集合在存储基本类型时，会通过封装器（Integer等）将基本类型转换成普通类，因此在处理效率上不如数组（直接存储基本类型）。
-迭代器 Iterator public interface Iterator&amp;lt;E&amp;gt;{  E next();  boolean hasNext();  void remove(); } // 并没有一个函数直接返回迭代器指向位置的值  public interface Iterable&amp;lt;E&amp;gt;{  Iterator&amp;lt;E&amp;gt; iterator(); } for each循环可以针对任何实现了Iterable的对象（由编译器直接翻译成Iterator对应的代码）。for (String e: c){&amp;hellip;}
+迭代器 Iterator public interface Iterator&amp;lt;E&amp;gt;{ E next(); boolean hasNext(); void remove(); } // 并没有一个函数直接返回迭代器指向位置的值 public interface Iterable&amp;lt;E&amp;gt;{ Iterator&amp;lt;E&amp;gt; iterator(); } for each循环可以针对任何实现了Iterable的对象（由编译器直接翻译成Iterator对应的代码）。for (String e: c){&amp;hellip;}
 Collection接口实现了Iterable接口，可以返回遍历元素的迭代器。
 通过迭代器，能够用一套代码访问不同的容器类。
 和C++的迭代器指向具体位置的设计不同，java的迭代器指向的位置可以看作是两个元素的中间。当调用next时，迭代器会跳过下一个元素，并返回被跳过元素的引用。不能像C++那样直接取当前位置的元素。对于remove函数，删除的是上一次next函数返回的位置（由于经常需要通过此位置的值判断是否删除）。也因此，每次调用remove函数前必须调用一次next方法，因此连续调用两次remove会出错。
@@ -214,13 +266,13 @@ List ArrayList相当于dynamic array，随机访问快，随机插入慢。类�
 LinkedList，双向链表，随机访问慢，随机插入快。LinkedList比较特殊，除了List接口还是了双端队列的Deque接口。
 LinkedList无法获取到node的指针，但可以通过获取ListIterator控制前后的位置（相对于Iterator，添加了previous等向前访问的函数）。
 LikedList并没有缓存指针的位置，因此get(n)等随机访问和修改的操作效率不高。
-public class LinkedList&amp;lt;E&amp;gt;  extends AbstractSequentialList&amp;lt;E&amp;gt;  implements List&amp;lt;E&amp;gt;, Deque&amp;lt;E&amp;gt;, Cloneable, java.io.Serializable Map 《java核心技术》中将Map的介绍放在了Set之后，但是Hashset的实现直接使用了HashMap，此处先写写Map的实现。
+public class LinkedList&amp;lt;E&amp;gt; extends AbstractSequentialList&amp;lt;E&amp;gt; implements List&amp;lt;E&amp;gt;, Deque&amp;lt;E&amp;gt;, Cloneable, java.io.Serializable Map 《java核心技术》中将Map的介绍放在了Set之后，但是Hashset的实现直接使用了HashMap，此处先写写Map的实现。
 HashMap （下面的默认参数取自openjdk11源码）
 实现常量时间的数据get和put。
 HashMap用hashcode结合链表的实现。使用了桶（bucket）机制，将hashcode取余后放入一个链表，当一个桶中的数据达到8个时，会通过treeifyBin函数将链表的形式转成红黑树存储以加快检索效率。
 在构造函数中设置了两个参数。threshold（默认为16）和loadFactor（默认为0.75），初始化时桶的数量会用threshold，往后threshold会等于 桶的数量×loadFactor。添加元素时，HashMap中的元素个数达到threshold时会调用resize让桶的数量翻倍，此时会遍历先前的所有元素添加到扩容之后的数组中（rehash过程）。
 通过一个名为table的数组存储桶的节点，默认情况下的初始化桶的个数为16，每次会增加为之前的2倍，最大为Int型的最大值。
-transient Node&amp;lt;K,V&amp;gt;[] table;  static class Node&amp;lt;K,V&amp;gt; implements Entry&amp;lt;K,V&amp;gt; {  final int hash;  final K key;  V value;  Node&amp;lt;K,V&amp;gt; next;  // .</description>
+transient Node&amp;lt;K,V&amp;gt;[] table; static class Node&amp;lt;K,V&amp;gt; implements Entry&amp;lt;K,V&amp;gt; { final int hash; final K key; V value; Node&amp;lt;K,V&amp;gt; next; // .</description>
     </item>
     
     <item>
@@ -259,12 +311,12 @@ TLP 提供优秀的 Linux 高级电源管理功能（详见arch wiki），不知
       <guid>https://extendswind.top/posts/technical/manjaro_magicbook_install_and_configuration/</guid>
       <description>虽然是linux版出厂自带deepin专业版，但是随后发的一键win10装机U盘一声不坑的把deepin格式化了，售后还只在线下才提供安装包&amp;hellip;
 笔记本参数 Magicbook 14 (2019)
- AMD R5 3500U 8G + 512G  内核 不同的内核在这个笔记本的表现差距略大。当前（2020年-4月）测试过的内核里，只有linux56运行比较平稳。LTS的414/419直接开机黑屏，好像有一个是由于TLP服务的问题，systemctl disable tlp可以解决，TLP提供了电源管理功能，禁止了不知道影响有多大。LTS的linux54在睡眠时仍能听到风扇转动，无法正常睡眠。
+AMD R5 3500U 8G + 512G 内核 不同的内核在这个笔记本的表现差距略大。当前（2020年-4月）测试过的内核里，只有linux56运行比较平稳。LTS的414/419直接开机黑屏，好像有一个是由于TLP服务的问题，systemctl disable tlp可以解决，TLP提供了电源管理功能，禁止了不知道影响有多大。LTS的linux54在睡眠时仍能听到风扇转动，无法正常睡眠。
 当前的linux56的主要问题（其它内核也存在）：
- 指纹识别不能用 麦克风禁音键不能用 风扇无法控制 (好像没有现成的驱动）  Huawei-WMI 相当于华为为自己的笔记本添加的驱动程序，具体介绍可以参考下面的链接。
+指纹识别不能用 麦克风禁音键不能用 风扇无法控制 (好像没有现成的驱动） Huawei-WMI 相当于华为为自己的笔记本添加的驱动程序，具体介绍可以参考下面的链接。
 https://github.com/aymanbagabas/Huawei-WMI
 主要的Features：
-  Function hotkeys, implemented in v1.0 Micmute LED, implemented in v2.0. Updated in v3.0 to work with newer laptops. Battery protection, implemented in v3.0. Updated in v3.3 to use battery charge API. Fn-lock, implemented v3.0.   NOTE: Version v2.0 is the one in mainline kernel &amp;gt;= 5.</description>
+Function hotkeys, implemented in v1.0 Micmute LED, implemented in v2.0. Updated in v3.0 to work with newer laptops. Battery protection, implemented in v3.0. Updated in v3.3 to use battery charge API. Fn-lock, implemented v3.0. NOTE: Version v2.0 is the one in mainline kernel &amp;gt;= 5.0, this repository is used for testing and development purposes.</description>
     </item>
     
     <item>
@@ -277,7 +329,7 @@ https://github.com/aymanbagabas/Huawei-WMI
 主要参考论坛中Manjaro团队的philm的回答 https://forum.manjaro.org/t/how-to-compile-the-mainline-kernel-the-manjaro-way/51700/35
 Gitlab 仓库 philm提到了manjaro在gitlab上编译内核的仓库。https://gitlab.manjaro.org/packages/core/linux56.git 后面使用不同的linux版本号。
 仓库文件介绍 仓库中不同后缀文件的作用
-  files ending with .patch should be clear. These are adjustments we think will fit for our distro best. files starting with config are our modified settings on how we configure the kernel on our end. files starting with linux are specific files to post configure the system. They are used either by pacman or mkinitcpio, which configures the initramfs image.</description>
+files ending with .patch should be clear. These are adjustments we think will fit for our distro best. files starting with config are our modified settings on how we configure the kernel on our end. files starting with linux are specific files to post configure the system. They are used either by pacman or mkinitcpio, which configures the initramfs image. files ending with .</description>
     </item>
     
     <item>
@@ -288,11 +340,11 @@ Gitlab 仓库 philm提到了manjaro在gitlab上编译内核的仓库。https://g
       <guid>https://extendswind.top/posts/technical/java_toarray_return_and_generic_type_erase/</guid>
       <description>在将ArrayList等Collection转为数组时，函数的返回值并不是泛型类型的数组，而是Object[]。刚好最近翻了一遍《java核心技术》，以及参考《Think in Java》，写写为什么没有直接返回对应类型的数组，以及Java泛型中类型擦除的处理方式。
 主要涉及：
- ArrayList的toArray函数使用 为什么不直接定义函数 T[] toArray() 泛型数组的创建的两种常用方法 在泛型中创建具体的类实例  (部分代码没有运行过）
+ArrayList的toArray函数使用 为什么不直接定义函数 T[] toArray() 泛型数组的创建的两种常用方法 在泛型中创建具体的类实例 (部分代码没有运行过）
 ArrayList的toArray函数使用 将ArrayList转为数组，提供了两个函数
-Object[] toArray(); &amp;lt;T&amp;gt; T[] toArray(T[] a);  // 后面考虑一个Integer类型的ArrayList ArrayList&amp;lt;Integer&amp;gt; aa = new ArrayList&amp;lt;&amp;gt;(); aa.add(1); aa.add(3); Object[] toArray(); 第一个函数是直接将ArrayList转换成Object的数组，可以用Object[] bb = aa.toArray()，在具体使用时对每个对象进行强制类型转换，如System.out.println((Integer)bb[1])。（java不支持数组之间的强制类型转换）
+Object[] toArray(); &amp;lt;T&amp;gt; T[] toArray(T[] a); // 后面考虑一个Integer类型的ArrayList ArrayList&amp;lt;Integer&amp;gt; aa = new ArrayList&amp;lt;&amp;gt;(); aa.add(1); aa.add(3); Object[] toArray(); 第一个函数是直接将ArrayList转换成Object的数组，可以用Object[] bb = aa.toArray()，在具体使用时对每个对象进行强制类型转换，如System.out.println((Integer)bb[1])。（java不支持数组之间的强制类型转换）
 T[] toArray(T[] a); 第二个函数能够直接得到T类型的数组，当传入的T[] a能放下ArrayList时，会将ArrayList中的内容复制到a中（a的size较大时会a[size]=null）。否则，将构建一个新的数组并返回。具体实现如下:
-public &amp;lt;T&amp;gt; T[] toArray(T[] a) {  if (a.length &amp;lt; size)  // Make a new array of a&amp;#39;s runtime type, but my contents:  return (T[]) Arrays.copyOf(elementData, size, a.</description>
+public &amp;lt;T&amp;gt; T[] toArray(T[] a) { if (a.length &amp;lt; size) // Make a new array of a&amp;#39;s runtime type, but my contents: return (T[]) Arrays.copyOf(elementData, size, a.getClass()); System.arraycopy(elementData, 0, a, 0, size); if (a.</description>
     </item>
     
     <item>
@@ -303,21 +355,23 @@ public &amp;lt;T&amp;gt; T[] toArray(T[] a) {  if (a.length &amp;lt; size)  // M
       <guid>https://extendswind.top/posts/technical/grub_uefi_repair/</guid>
       <description>起因：EFI分区被删除导致引导问题。
 症状：
-  通过安装其它系统的方式。正好想试试其它的linux发行版，就在另一个分区装了deepin，完成后硬盘没有发现UEFI引导；然后又尝试装了openSUSE，仍没在硬盘发现UEFI引导。（失败）
-  通过live cd重新在efi分区安装grub。（wiki推荐的一般方式，仍失败）
-  通过live cd安装refind。（仍不行）
-  安装的系统可以通过manjaro live cd直接boot。
-  安装win10可以发现UEFI的引导方式（只启动win10，安装grub也只启动win10）
-  引导的问题网上的解决方案很多，对于一些新的电脑UEFI的方式应该很好修复，但一些比较老的电脑可能出现各种坑问题，用legacy的引导还是稳定一点。
+通过安装其它系统的方式。正好想试试其它的linux发行版，就在另一个分区装了deepin，完成后硬盘没有发现UEFI引导；然后又尝试装了openSUSE，仍没在硬盘发现UEFI引导。（失败）
+通过live cd重新在efi分区安装grub。（wiki推荐的一般方式，仍失败）
+通过live cd安装refind。（仍不行）
+安装的系统可以通过manjaro live cd直接boot。
+安装win10可以发现UEFI的引导方式（只启动win10，安装grub也只启动win10）
+引导的问题网上的解决方案很多，对于一些新的电脑UEFI的方式应该很好修复，但一些比较老的电脑可能出现各种坑问题，用legacy的引导还是稳定一点。
 UEFI的引导通过grub的各种安装尝试都无法被主板识别，一直检测不到硬盘UEFI的启动项。怀疑主板并不支持linux grub2写入的UEFI引导信息，只支持windows的。最后通过安装win10，用refind覆盖win10的efi启动条目解决问题。
 最常规的修复方式 通过live cd 将系统烧入U盘，启动U盘进入系统后修复。涉及两种方式：
- 通过boot-repair grub-install 命令安装  还有通过grub命令行的方式，不常用没折腾。
+通过boot-repair grub-install 命令安装 还有通过grub命令行的方式，不常用没折腾。
 建议烧入的系统为ubuntu和manjaro。deepin的live cd在我的电脑上有显示的bug，而且添加ppa有一点坑。openSUSE上的grub命令和debian系arch系不怎么一样。ubuntu的主要优点在于可以通过安装boot-repair进行一键修复，manjaro和arch的live cd提供了直接的manjaro-chroot以及arch-chroot，进入后直接安装grub就行，而且manjaro的live cd支持直接引导启动efi分区中的系统。
 在下面的两种操作之前，最好通过gparted等软件新建一个efi分区（fat32,一般几十兆，openSUSE建议不小于500M，带efi标签）。
 基于ubuntu的boot-repair 网上的资料多操作也不复杂，主要注意U盘从UEFI模式启动。
 sudo add-apt-repository ppa:yannubuntu/boot-repair -y sudo apt-get update sudo apt-get install boot-repair -y sudo boot-repair grub-install 命令安装 使用manjaro live cd，其它的系统可能需要安装grub2、efibootmgr、grub-efi-amd64、os-prober等包。
 以下需要root权限，sudo -i或命令前加sudo
-1、 查看要引导系统的分区和efi分区的编号（fdisk -l） 2、 挂载引导系统的分区（一般 mount /dev/sda4 /mnt） 3、 挂载efi分区到系统分区的/boot/efi目录（`mount /dev/sda2 /mnt/boot/efi） 4、 chroot到硬盘系统分区</description>
+1、 查看要引导系统的分区和efi分区的编号（fdisk -l） 2、 挂载引导系统的分区（一般 mount /dev/sda4 /mnt） 3、 挂载efi分区到系统分区的/boot/efi目录（`mount /dev/sda2 /mnt/boot/efi） 4、 chroot到硬盘系统分区
+对于ubuntu
+mount --bind /dev/ /mnt/dev mount --bind /proc /mnt/proc mount --bind /sys /mnt/sys chroot /mnt 对于manjaro直接</description>
     </item>
     
     <item>
@@ -378,9 +432,10 @@ anonymous_enable=YES # 允许匿名访问 write_enable=YES # 允许写文件 ano
 通过 local_enable 选项能够允许ftp通过本地用户访问，登录之后会访问用户的主目录。当使用匿名用户访问时，vsftpd会将用户名为ftp的用户作为登录用户，进入ftp用户的主目录。
 注意，考虑到安全问题，ftp匿名用户的主目录必须为只读，如果需要上传文件，需要在主目录下新建有写权限的文件夹。
 通常会选择/var/ftp文件夹存放文件而不是用户默认的/home，因此可以修改用户的主目录位置（一般放在/var/ftp），不修改也能用。再次强调，注意主目录对ftp用户的权限必须为只读。
-sudo mkdir /var/ftp # 新建用户文件夹 sudo useradd -d /var/ftp ftp # 新建用户，并指定用户home目录  # 如果ftp用户已经存在，在/etc/passwd文件里改用户目录为/var/ftp  sudo mkdir /var/ftp/pub # 新建一个用于写数据的文件夹 sudo chmod 777 /var/ftp/pub # 修改文件夹权限 4. 启动服务
+sudo mkdir /var/ftp # 新建用户文件夹 sudo useradd -d /var/ftp ftp # 新建用户，并指定用户home目录 # 如果ftp用户已经存在，在/etc/passwd文件里改用户目录为/var/ftp sudo mkdir /var/ftp/pub # 新建一个用于写数据的文件夹 sudo chmod 777 /var/ftp/pub # 修改文件夹权限 4. 启动服务
 systemctl start vsftpd
-其它 防火墙和SELinux如果使用了需要添加响应的通过规则。</description>
+其它 防火墙和SELinux如果使用了需要添加响应的通过规则。
+测试访问可以直接用浏览器 ftp://ip_address，linux下可以使用FileZilla。</description>
     </item>
     
     <item>
@@ -392,7 +447,7 @@ systemctl start vsftpd
       <description>简述 使用log4j可以根据配置文件控制输出日志的级别，记录到文件、命令行等的位置，不需要代码上的更改。
 日志在一定程度上会影响性能，特别是高并发环境。一般更建议使用log4j 2.x，在性能上有较大的提高，由于hadoop 2.7使用的log4j 1.2，下面主要写这一版本。
 本文主要介绍log4j：
- 根据日志级别记录日志 (logger上设置） 运行时决定具体的记录位置（appender上设置）和日志格式（layout上设置）  一些概念 日志级别（priority，代码里为level） 日志级别从低到高为trace, debug, info, warn, error, fatal。默认级别为info，低于设置级别的日志不会被打印。
+根据日志级别记录日志 (logger上设置） 运行时决定具体的记录位置（appender上设置）和日志格式（layout上设置） 一些概念 日志级别（priority，代码里为level） 日志级别从低到高为trace, debug, info, warn, error, fatal。默认级别为info，低于设置级别的日志不会被打印。
 常用组件 一般情况下常设置的组件有logger，appender， layout。
 用类的方式表达三个组件的关系为
 Logger{ name; level; // 控制日志级别 appenderList; // 可对应多个appender } Appender{ name; // 控制文件位置 如fileAppender layout; // 控制格式 filter; // 过滤部分日志 } logger logger以一种树状关系管理日志的类型，log4j.rootCategory为根节点，如果没有标记 log4j.additivity.MyLogger = false ，则子logger会默认继承上一级的设置。
@@ -400,7 +455,7 @@ Logger{ name; level; // 控制日志级别 appenderList; // 可对应多个appen
 通过点表示层级，如com.foo为com.foo.Bar的上级
 关于category，早期的log4j使用category较多，但在log4j 1.2之后，建议使用logger代替category。
 appender 主要用于
- 控制日志的输出位置，当前支持the console, files, GUI components, remote socket servers, NT Event Loggers, and remote UNIX Syslog daemons.</description>
+控制日志的输出位置，当前支持the console, files, GUI components, remote socket servers, NT Event Loggers, and remote UNIX Syslog daemons.</description>
     </item>
     
     <item>
@@ -435,7 +490,7 @@ appender 主要用于
       <description>首先吐槽，anki作为老牌软件，国内资料并不多。
 虽然html的卡片显示和python的插件式开发上看比较适合程序员，但从各种配置上感觉程序员用户量并不大。
 因此，想深度使用准备折腾。
-简单使用  淘制作好的卡片，导入 卡片可以套模板更美观（添加时的Cards选项，支持html） 添加单词和读音用FastWQ（只支持新版本，查词速度快） （已不支持新版本）插件里的awesome TTS很多人推荐但速度略慢 （已不支持新版本）添加单词可以用Word Query  官方文档https://apps.ankiweb.net/docs/manual.html
+简单使用 淘制作好的卡片，导入 卡片可以套模板更美观（添加时的Cards选项，支持html） 添加单词和读音用FastWQ（只支持新版本，查词速度快） （已不支持新版本）插件里的awesome TTS很多人推荐但速度略慢 （已不支持新版本）添加单词可以用Word Query 官方文档https://apps.ankiweb.net/docs/manual.html
 插件编写文档https://apps.ankiweb.net/docs/addons.html
 插件安装 官网上找插件对应的id编号，然后打开anki的插件设置，添加插件中填入插件id号即可下载。
 FastWQ插件 首先在tools菜单下的FastWQ插件设置中，选择note type，然后第一列中选择单词所在位置，第三列选择想要用的在线字典，第四列的Fields中选择行对应的需要填入的内容。
@@ -446,11 +501,11 @@ anki server 的安装 官网的速度爆表，而且有数据安全问题，因�
 百度上的大多使用 https://github.com/dsnopek/anki-sync-server ，可以基于pip2和python2直接安装，个人在基于Arch的linux下感觉坑多，在linux上的anki 2.1.9连不上上面python2的服务器（bug解决一个又出一个），更建议使用基于python3的fork项目：https://github.com/tsudoko/anki-sync-server 。
 基于python3的仓库 github上的readme已经写得比较清楚，下面的搬运点大概。
 1、clone 仓库
- git clone https://github.com/tsudoko/anki-sync-server.git
+git clone https://github.com/tsudoko/anki-sync-server.git
 2、安装anki或anki-bundled相关的库
 直接使用包管理器安装 sudo pacman -S anki
 如果包管理器里没有anki（如debian），也可以用pip安装anki-bundled相关的库
- $ git submodule update --init # anki-bundled已经加入为submodule，可以先更新  $ cd anki-bundled  $ pip install -r requirements.</description>
+$ git submodule update --init # anki-bundled已经加入为submodule，可以先更新 $ cd anki-bundled $ pip install -r requirements.txt # 安装相关的库 3、安装webob</description>
     </item>
     
     <item>
@@ -464,7 +519,7 @@ manjaro的xfce版也是如此，不知道是不是linux下xfce的通病。
 主要是搜索的时候百度的结果很奇葩&amp;hellip;
 用关键字 beep of xfce4 搜到了arch wiki下的内容，原来这玩意叫pc speaker，针对不同的情况有不同的解决方案。
 最简单粗暴的方式 内核中加载了pcspkr模块导致的主板声音，rmmod移除此模块，然后/etc/modprobe.d文件夹下加入黑名单，使开机过程不加载。
-  rmmod pcspkr echo &amp;ldquo;blacklist pcspkr&amp;rdquo; &amp;gt; /etc/modprobe.d/nobeep.conf 具体参考 https://wiki.archlinux.org/index.php/PC_speaker</description>
+rmmod pcspkr echo &amp;ldquo;blacklist pcspkr&amp;rdquo; &amp;gt; /etc/modprobe.d/nobeep.conf 具体参考 https://wiki.archlinux.org/index.php/PC_speaker</description>
     </item>
     
     <item>
@@ -506,14 +561,17 @@ fcitx 为基础安装包，fcitx-im用于GTK/QT等界面上使用的包，fcitx-
 此处有坑，默认的安装方式会编译安装qtwebkit，速度非常的慢（一个小时午觉后还没好&amp;hellip;)
 在库的官方说明中（来自 https://aur.archlinux.org/packages/fcitx-sogoupinyin/ ）依赖项为qtwebkit (qtwebkit-bin)
 其实只依赖qtwebkit-bin，因此先安装qtwebkit-bin可以解决依赖问题（不到一分钟&amp;hellip;)
- yaourt -S qtwebkit-bin
+yaourt -S qtwebkit-bin
 3. fcitx 设置中添加搜狗拼音 fcitx configuration中点加号添加sogou pinyin（默认语言为英语时需要勾选一个选项）
 4. fcitx环境变量的添加 gui应用的环境变量一般不通过profile和bashrc。
 arch wiki下的内容：
-  KDM, GDM, LightDM 等显示管理器，请使用 ~/.xprofile arch wiki 警告: 上述用户不要在~/.xinitrc中加入下述脚本，否则会造成无法登陆。(但在里头加了也没挂) 如果您用 startx 或者 Slim 启动，请使用~/.xinitrc 中加入
-  export GTK_IM_MODULE=fcitx export QT_IM_MODULE=fcitx export XMODIFIERS=@im=fcitx
-  如果你使用的是较新版本的GNOME，使用 Wayland 显示管理器，则请在/etc/environment中加入
-  GTK_IM_MODULE=fcitx QT_IM_MODULE=fcitx XMODIFIERS=@im=fcitx</description>
+KDM, GDM, LightDM 等显示管理器，请使用 ~/.xprofile arch wiki 警告: 上述用户不要在~/.xinitrc中加入下述脚本，否则会造成无法登陆。(但在里头加了也没挂) 如果您用 startx 或者 Slim 启动，请使用~/.xinitrc 中加入
+export GTK_IM_MODULE=fcitx export QT_IM_MODULE=fcitx export XMODIFIERS=@im=fcitx
+如果你使用的是较新版本的GNOME，使用 Wayland 显示管理器，则请在/etc/environment中加入
+GTK_IM_MODULE=fcitx QT_IM_MODULE=fcitx XMODIFIERS=@im=fcitx
+参考链接中有更详细的说明，我用的manjaro+xfce4以及后面改装的cinnamon和awesome都是在lightDM下该的.xinitrc，没有.xprofile文件，也能正常用。 （注意添加在最后exec $(&amp;hellip;)的前面）
+使用manjaro+kde和awesomewm混用时，加在.xinitrc下莫名奇妙的失效，不知道和为了deepin-wine运行的cinnamon-xsettings有没有关系，加在/etc/environment文件中正常运行。
+5. 注销后重新登录 汇总 yaourt -S qtwebkit-bin sudo pacman -S fcitx fcitx-im fcitx-configtool yaourt fcitx-sogoupinyin</description>
     </item>
     
     <item>
@@ -528,18 +586,20 @@ arch wiki下的内容：
 ps: 2021年12月更新，AUR里com.qq.tim.spark从Spark应用商店的移植实现的效果也差不多，deepin-wine-time 已经从wine转到了deepin-wine，各方面的问题也有比较好的解决方案，外加作者一直在积极更新。项目地址上有一些问题的解决方案：
 https://github.com/vufa/deepin-wine-tim-arch
 新版本的更新在不同的环境下出现了一些新问题，建议在各个仓库对应的github链接以及一直更新的arch wiki上找找最新的方案。
-安装步骤 安装  yaourt -S deepin.com.qq.office
+安装步骤 安装 yaourt -S deepin.com.qq.office
 ps：吐槽，安装deepin-wine的各个确认略多。 d
 qq提取消息、截图等快捷键设置 在/opt/deepinwine/tools/sendkeys.sh脚本能够传递快捷键，如直接运行./sendkeys.sh a 则会向qq或tim进程发送 ctrl+alt+a。
 不同桌面环境添加快捷键的方法差不多，主要步骤：
- setting -&amp;gt; keyboard -&amp;gt; shortcut 添加快捷键，选择上面的脚本，在脚本后面加上a 指定运行脚本的快捷键  此时按快捷键后相当于qq中按 ctrl+alt+a (截图)
+setting -&amp;gt; keyboard -&amp;gt; shortcut 添加快捷键，选择上面的脚本，在脚本后面加上a 指定运行脚本的快捷键 此时按快捷键后相当于qq中按 ctrl+alt+a (截图)
 同理可以设置qq其它快捷键
 一般问题 大多出现在基于wine的tim上，基于deepin的tim问题很少。
 deepin-wine在非gnome系的桌面上的运行问题 3wm, kde, awesome等桌面管理器或桌面环境里运行基于deepin-wine的qq和tim时，会出现下面的错误
-  X Error of failed request: BadWindow (invalid Window parameter) Major opcode of failed request: 20 (X_GetProperty)
+X Error of failed request: BadWindow (invalid Window parameter) Major opcode of failed request: 20 (X_GetProperty)
 由于deepin-wine依赖了gnome系（mate,cinnamon,gnome）的setting-daemon，需要安装后运行（一般加入开机启动）
 sudo pacman -S cinnamon-settings-daemon /usr/lib/cinnamon-settings-daemon/csd-xsettings 无法输入中文 如果其它地方可以使用输入法，一般为环境变量的问题，fcitx没有配置好。
-粗暴解决方式: 下面的文件夹中加入环境变量</description>
+粗暴解决方式: 下面的文件夹中加入环境变量
+/opt/deepinwine/apps/Deepin-TIM/run.sh
+export XMODIFIERS=&amp;quot;@im=fcitx&amp;quot; export GTK_IM_MODULE=&amp;ldquo;fcitx&amp;rdquo; export QT_IM_MODULE=&amp;ldquo;fcitx&amp;rdquo;</description>
     </item>
     
     <item>
@@ -549,7 +609,7 @@ sudo pacman -S cinnamon-settings-daemon /usr/lib/cinnamon-settings-daemon/csd-xs
       
       <guid>https://extendswind.top/posts/technical/deepin_wine_run_in_not_gnome_desktop_environment/</guid>
       <description>i3wm, kde, awesome等桌面管理器或桌面环境里运行基于deepin-wine的qq和tim时，会出现下面的错误
-  X Error of failed request: BadWindow (invalid Window parameter) Major opcode of failed request: 20 (X_GetProperty)
+X Error of failed request: BadWindow (invalid Window parameter) Major opcode of failed request: 20 (X_GetProperty)
 在gnome、mate、cinnamon三个桌面上运行较好，xfce4上运行有少许焦点上的bug，其它桌面环境和管理器下直接出上面的错误。
 最近终于在aur上看到是因为deepin-wine依赖了gnome-settings-daemon（gnome系的cinnamon和mate的对应组件也能用），启动后就能正常运行，但AwesomeWM会使用xsettings对应的主题，KDE基本正常运行，其它非gnome系的桌面环境未测试。
 解决方案 1. 安装gnome-settings-daemon (arch 系） sudo pacman -S gnome-settings-daemon ubuntu 下的包和运行的程序名略不一样，参考：
@@ -562,8 +622,10 @@ csd-xsettings 主要影响两个地方：1. 启动过程； 2. 在tim内调用�
 可以考虑启动后关闭对tim，可以避免影响系统主题一类的问题，但会导致无法调用外部程序。加上运行后5s关闭的参数即可:
 /usr/lib/cinnamon-settings-daemon/csd-xsettings --exit-time 5 &amp;amp;
 附：使用cinnamon的xsettings的设置 主题的问题在awesome这种环境下略坑，懒得去试gnome上的主题设置需要哪些包，安装整个gnome的包需要800多M，直接安装了cinnamon的基础包（90M左右）。和gnome只是些名字上的区别：
-sudo pacman -S cinnamon  # awesome的autorun里加入下面程序使开机运行 /usr/lib/cinnamon-settings-daemon/csd-xsettings 在系统设置里可以下载和更改主题
-小坑   tim和qq会在点击好友图像时卡死的情况。原因之一可能是pulseaudio进程，kill掉就行，会影响声音的调整。（千里之外的两个程序不知道为什么会卡一起）</description>
+sudo pacman -S cinnamon # awesome的autorun里加入下面程序使开机运行 /usr/lib/cinnamon-settings-daemon/csd-xsettings 在系统设置里可以下载和更改主题
+小坑 tim和qq会在点击好友图像时卡死的情况。原因之一可能是pulseaudio进程，kill掉就行，会影响声音的调整。（千里之外的两个程序不知道为什么会卡一起）
+使用csd-xsettings时可能出现无法调声音的情况，关了之后就行了，懒得再往下折腾了&amp;hellip;
+这两个问题不太记得当初什么情况，在kde版本的manjaro上已经不存在了（201907）。</description>
     </item>
     
     <item>
@@ -576,9 +638,9 @@ sudo pacman -S cinnamon  # awesome的autorun里加入下面程序使开机运行
 使用sqllite的浏览器看了一眼zotero的存储数据库(zotero.sqlite)，在表itemAttachments中存储了所有附件的类型地址等信息，发现里头的地址全都使用的绝对路径！！
 重点在于设置zotero和zotfile的附件路径和转移文件。
 使用网盘同步的不用折腾这些。
-方法一：设置为相对路径并修改文件 设置  zotero preferences -&amp;gt; Files and Folders -&amp;gt; Linked Attachment Base Directory 设置存储路径 （注意不是 data directory） 把zotfile里的路径也改到这（不知道具体什么机制，zotfile有个相对路径的pull request不知道读的是不是这个，懒得多折腾）  已有的文件移动   如果由于换硬盘换系统一类的问题，先使用软连接指向原来的目录，让zotero能够找到原来的文件。（源目录可以使用sqllite的浏览器看到）
-  在library下全选所有的items，然后右键 Manage Attachments -&amp;gt; Rename Attachments。（看起来是重命名，实质上会移动所有的文件）
-  此时此前附件中的绝对路径/mnt/data/...会变成attachments：catagory1/test1.pdf 类似的相对路径。
+方法一：设置为相对路径并修改文件 设置 zotero preferences -&amp;gt; Files and Folders -&amp;gt; Linked Attachment Base Directory 设置存储路径 （注意不是 data directory） 把zotfile里的路径也改到这（不知道具体什么机制，zotfile有个相对路径的pull request不知道读的是不是这个，懒得多折腾） 已有的文件移动 如果由于换硬盘换系统一类的问题，先使用软连接指向原来的目录，让zotero能够找到原来的文件。（源目录可以使用sqllite的浏览器看到）
+在library下全选所有的items，然后右键 Manage Attachments -&amp;gt; Rename Attachments。（看起来是重命名，实质上会移动所有的文件）
+此时此前附件中的绝对路径/mnt/data/...会变成attachments：catagory1/test1.pdf 类似的相对路径。
 方法二：直接操作sqllite数据库来改 下面的语句供参考，建议稍了解后操作，使用update导致数据丢失会很麻烦。
 把下面路径中的/home/fly/public_download/改成自己数据库里的路径即可。
 update itemAttachments set path=replace(path, &amp;#39;/home/fly/public_download/&amp;#39;, &amp;#39;attachments:&amp;#39;) where path like &amp;#39;/home/fly/public_download%&amp;#39; 最后 跨操作系统或者跨目录直接设置到相同的目录即可。</description>
@@ -593,13 +655,13 @@ update itemAttachments set path=replace(path, &amp;#39;/home/fly/public_download
       <description>Spark提供了HDFS上一般的文件文件读取接口 sc.textFile()，但在某些情况下HDFS中需要存储自定义格式的文件，需要更加灵活的读取方式。
 使用KeyValueTextInputFormat Hadoop的MapReduce框架下提供了一些InputFormat的实现，其中MapReduce2的接口(org.apache.hadoop.mapreduce下)与先前MapReduce1(org.apache.hadoop.mapred下)有区别，对应于newAPIHadoopFile函数。
 使用KeyValueTextInputFormat的文件读取如下
- import org.apache.hadoop.mapreduce.lib.input.KeyValueTextInputFormat import org.apache.hadoop.io.Text  val hFile = sc.newAPIHadoopFile(&amp;#34;hdfs://hadoopmaster:9000/user/sparkl/README.md&amp;#34;,  classOf[KeyValueTextInputFormat], classOf[Text], classOf[Text])  hFile.collect 使用自定义InputFormat InputFormat是MapReduce框架下将输入的文件解析成字符串的组件，Spark对HDFS中的文件实现自定义读写需要通过InputFormat的子类实现。下面只写简单的思路，具体的可以参考InputFormat和MapReduce相关资料。
+import org.apache.hadoop.mapreduce.lib.input.KeyValueTextInputFormat import org.apache.hadoop.io.Text val hFile = sc.newAPIHadoopFile(&amp;#34;hdfs://hadoopmaster:9000/user/sparkl/README.md&amp;#34;, classOf[KeyValueTextInputFormat], classOf[Text], classOf[Text]) hFile.collect 使用自定义InputFormat InputFormat是MapReduce框架下将输入的文件解析成字符串的组件，Spark对HDFS中的文件实现自定义读写需要通过InputFormat的子类实现。下面只写简单的思路，具体的可以参考InputFormat和MapReduce相关资料。
 InputFormat的修改可以参考TextInputFormat，继承FileInputFormat后，重载createRecordReader返回一个新的继承RecordReader的类，通过新的RecordReader读取数据返回键值对。
 打包后注意上传时将jar包一起上传：
 `./spark-shell &amp;ndash;jars newInputFormat.jar
 运行的代码和上面差不多，import相关的包后
-val hFile = sc.newAPIHadoopFile(&amp;#34;hdfs://hadoopmaster:9000/user/sparkl/README.md&amp;#34;,  classOf[NewTextInputFormat], classOf[Text], classOf[Text]) 一些坑 序列化问题 在读取文件后使用first或者collect时，出现下面的错误
-  ERROR scheduler.TaskSetManager: Task 0.0 in stage 2.0 (TID 18) had a not serializable result: org.apache.hadoop.io.IntWritable Serialization stack: - object not serializable (class: org.apache.hadoop.io.IntWritable, value: 35) - element of array (index: 0) - array (class [Lorg.</description>
+val hFile = sc.newAPIHadoopFile(&amp;#34;hdfs://hadoopmaster:9000/user/sparkl/README.md&amp;#34;, classOf[NewTextInputFormat], classOf[Text], classOf[Text]) 一些坑 序列化问题 在读取文件后使用first或者collect时，出现下面的错误
+ERROR scheduler.TaskSetManager: Task 0.0 in stage 2.0 (TID 18) had a not serializable result: org.apache.hadoop.io.IntWritable Serialization stack: - object not serializable (class: org.apache.hadoop.io.IntWritable, value: 35) - element of array (index: 0) - array (class [Lorg.apache.hadoop.io.IntWritable;, size 1); not retrying 18/12/15 10:40:10 ERROR scheduler.</description>
     </item>
     
     <item>
@@ -614,7 +676,7 @@ val hFile = sc.newAPIHadoopFile(&amp;#34;hdfs://hadoopmaster:9000/user/sparkl/RE
 其实只是Hadoop会调用脚本，将多个Datanode的ip作为输入，每次最多输入的ip数设置在net.topology.script.number.args，将输入的ip转换成/rack-num的形式(以/开头的字符串)，用标准输出流（如Python的print）输出结果。
 具体操作 编写脚本 下面的脚本在输入
 192.168.3.1 192.168.3.4 时，会输出
-/rack1 /rack4  #!/bin/python3 import sys  # 第一个参数是脚本路径，直接pop掉 sys.argv.pop(0)  # 0-3 rack0 # 4-7 rack1 # 8-11 rack2 # ...  # 其它的参数里每个参数都是一个ip，此处直接取ip的最后一位除以4作为Racknum # 实践上可以读文件确定ip的对应关系 for ip in sys.argv:  hostNum = int(ip.split(&amp;#34;.&amp;#34;)[3])  print(&amp;#34;/rack&amp;#34; + str(int(hostNum/4))) 设置配置参数 &amp;lt;property&amp;gt;  &amp;lt;name&amp;gt;net.topology.script.file.name&amp;lt;/name&amp;gt;  &amp;lt;value&amp;gt;/home/sparkl/hadoop/etc/hadoop/topology.py&amp;lt;/value&amp;gt; &amp;lt;/property&amp;gt; 重启集群即可
+/rack1 /rack4 #!/bin/python3 import sys # 第一个参数是脚本路径，直接pop掉 sys.argv.pop(0) # 0-3 rack0 # 4-7 rack1 # 8-11 rack2 # ... # 其它的参数里每个参数都是一个ip，此处直接取ip的最后一位除以4作为Racknum # 实践上可以读文件确定ip的对应关系 for ip in sys.argv: hostNum = int(ip.split(&amp;#34;.&amp;#34;)[3]) print(&amp;#34;/rack&amp;#34; + str(int(hostNum/4))) 设置配置参数 &amp;lt;property&amp;gt; &amp;lt;name&amp;gt;net.topology.script.file.name&amp;lt;/name&amp;gt; &amp;lt;value&amp;gt;/home/sparkl/hadoop/etc/hadoop/topology.py&amp;lt;/value&amp;gt; &amp;lt;/property&amp;gt; 重启集群即可
 验证结果 以下命令能够直接获取某一个文件的分布状态，以及总的rack数量：
 hdfs fsck /readme.md -files -blocks -racks
 貌似没有直接以树状的形式输出集群拓扑的命令，namenode的日志中能看到datanode在连接时的拓扑位置。</description>
@@ -629,22 +691,22 @@ hdfs fsck /readme.md -files -blocks -racks
       <description>大多数的叫法都是副本放置策略，实质上是HDFS对所有数据的位置放置策略，并非只是针对数据的副本。因此Hadoop的源码里有block replicator(configuration)、 BlockPlacementPolicy(具体逻辑源码)两种叫法。
 主要用途：上传文件时决定文件在HDFS上存储的位置（具体到datanode上的具体存储介质，如具体到存储在哪块硬盘）；rebalance、datanode退出集群、副本数量更改等导致数据移动的操作中，数据移动的具体位置。
 BlockPlacementPolicy BlockPlacementPolicy 作为虚基类提供了基本的接口，具体的子类重点实现下面 选择副本 、 验证副本放置是否满足要求 、 选择能够删除的副本 三个函数：
- /** * 核心的副本放置策略实现，返回副本放置数量的存储位置 * **如果有效节点数量不够（少于副本数），返回尽可能多的节点，而非失败** * * @param srcPath 上传文件的路径 * @param numOfReplicas 除下面chosen参数里已经选择的datanode，还需要的副本数量 * @param writer 写数据的机器, null if not in the cluster. 一般用于放置第一个副本以降低网络通信 * @param chosen 已经选择的节点 * @param returnChosenNodes 返回结果里是否包含chosen的datanode * @param excludedNodes 不选的节点 * @param blocksize 块大小 * @return 排序好的选择结果 */  public abstract DatanodeStorageInfo[] chooseTarget(String srcPath,  int numOfReplicas,  Node writer,  List&amp;lt;DatanodeStorageInfo&amp;gt; chosen,  boolean returnChosenNodes,  Set&amp;lt;Node&amp;gt; excludedNodes,  long blocksize,  BlockStoragePolicy storagePolicy);    /** * 判断传入的放置方式是否符合要求 */  abstract public BlockPlacementStatus verifyBlockPlacement(  DatanodeInfo[] locs, int numOfReplicas);    /** * 当副本数量较多时，选择需要删除的节点 */  abstract public List&amp;lt;DatanodeStorageInfo&amp;gt; chooseReplicasToDelete(  Collection&amp;lt;DatanodeStorageInfo&amp;gt; candidates, int expectedNumOfReplicas,  List&amp;lt;StorageType&amp;gt; excessTypes, DatanodeDescriptor addedNode,  DatanodeDescriptor delNodeHint); Hadoop 提供的 BlockPlacementPolicy 实现 Hadoop提供了BlockPlacementPolicyDefault、BlockPlacementPolicyWithNodeGroup、AvailableSpaceBlockPlacementPolicy三种实现（hadoop 2.</description>
+/** * 核心的副本放置策略实现，返回副本放置数量的存储位置 * **如果有效节点数量不够（少于副本数），返回尽可能多的节点，而非失败** * * @param srcPath 上传文件的路径 * @param numOfReplicas 除下面chosen参数里已经选择的datanode，还需要的副本数量 * @param writer 写数据的机器, null if not in the cluster. 一般用于放置第一个副本以降低网络通信 * @param chosen 已经选择的节点 * @param returnChosenNodes 返回结果里是否包含chosen的datanode * @param excludedNodes 不选的节点 * @param blocksize 块大小 * @return 排序好的选择结果 */ public abstract DatanodeStorageInfo[] chooseTarget(String srcPath, int numOfReplicas, Node writer, List&amp;lt;DatanodeStorageInfo&amp;gt; chosen, boolean returnChosenNodes, Set&amp;lt;Node&amp;gt; excludedNodes, long blocksize, BlockStoragePolicy storagePolicy); /** * 判断传入的放置方式是否符合要求 */ abstract public BlockPlacementStatus verifyBlockPlacement( DatanodeInfo[] locs, int numOfReplicas); /** * 当副本数量较多时，选择需要删除的节点 */ abstract public List&amp;lt;DatanodeStorageInfo&amp;gt; chooseReplicasToDelete( Collection&amp;lt;DatanodeStorageInfo&amp;gt; candidates, int expectedNumOfReplicas, List&amp;lt;StorageType&amp;gt; excessTypes, DatanodeDescriptor addedNode, DatanodeDescriptor delNodeHint); Hadoop 提供的 BlockPlacementPolicy 实现 Hadoop提供了BlockPlacementPolicyDefault、BlockPlacementPolicyWithNodeGroup、AvailableSpaceBlockPlacementPolicy三种实现（hadoop 2.</description>
     </item>
     
     <item>
       <title>HDFS写文件源码分析</title>
-      <link>https://extendswind.top/posts/technical/hadoop_hdfs_write_analysis/</link>
+      <link>https://extendswind.top/posts/technical/hadoop_hdfs_write_analysis.md/</link>
       <pubDate>Tue, 11 Dec 2018 21:30:00 +0800</pubDate>
       
-      <guid>https://extendswind.top/posts/technical/hadoop_hdfs_write_analysis/</guid>
+      <guid>https://extendswind.top/posts/technical/hadoop_hdfs_write_analysis.md/</guid>
       <description>最近参加的面试，一面问了HDFS写文件流程，完了之后把《Hadoop权威指南》上的流程配合源码简单的看了一遍。二面又问到了这个问题，一些细节还是漏了，对这部分还是专门记个笔记吧。稍微梳理了一下，发现感觉这个问题确实太适合作为面试题了，有细节还适合引申到其它的点。
 写数据流程 大体流程如图（来自《Hadoop权威指南》）
- 客户端通过DistributedFileSystem的create()创建文件，中间会对namenode创建RPC调用（namenode.create)，namenode在检查权限等问题后新建文件。 创建完文件后会返回FSDataOutputStream，在DFSOutputStream上的一层包装，用于处理写入数据所需要的namenode和datanode之间的通信。 在数据写入过程中，DFSOutputStream会将数据划分为packets，并放入data queue，由DataStreamer处理（向namenode申请分配新的block）。 被选择的datanode连起来构成pipeline，DataStreamer流式的将packets发送到第一个datanode，第一个datanode每次收到packet后存储并转发到pipeline上下一个datanode。 DFSOutputStream还维护了一个ack queue，当所有的datanode都应答后对应的packet会被移除。  源码分析 以下代码来自Hadoop 2.7.7。
+客户端通过DistributedFileSystem的create()创建文件，中间会对namenode创建RPC调用（namenode.create)，namenode在检查权限等问题后新建文件。 创建完文件后会返回FSDataOutputStream，在DFSOutputStream上的一层包装，用于处理写入数据所需要的namenode和datanode之间的通信。 在数据写入过程中，DFSOutputStream会将数据划分为packets，并放入data queue，由DataStreamer处理（向namenode申请分配新的block）。 被选择的datanode连起来构成pipeline，DataStreamer流式的将packets发送到第一个datanode，第一个datanode每次收到packet后存储并转发到pipeline上下一个datanode。 DFSOutputStream还维护了一个ack queue，当所有的datanode都应答后对应的packet会被移除。 源码分析 以下代码来自Hadoop 2.7.7。
 FileSystem.get()通过URI返回对应的DistributedFileSystem，调用create函数在namenode上创建文件，返回输出流。
 Configuration conf = new Configuration(); FileSystem hdfs = FileSystem.get(URI.create(hdfsDirectory), conf); FSDataOutputStream outputStream = hdfs.create(new Path(hdfsDirectory)); outputStream.writeInt(1); outputStream.close(); DistributedFileSystem的create()中，通过DFSClient的对象dfs，调用dfs.create()。中间使用了FileSystemLinkResolver类，当doCall函数中抛出UnresolvedLinkException时（解析Path路径失败），会重新解析路径得到合适的FileSystem和Path传入next()。总体上相当于给定的路径解析失败时，重新解析后再次调用create函数。创建完成后对返回的DFSOutputStream外套了一层FSDataOutputStream用于写结果。
-final DFSOutputStream out = dfs.create(getPathName(f), permission,  overwrite ? EnumSet.of(CreateFlag.CREATE, CreateFlag.OVERWRITE)  : EnumSet.of(CreateFlag.CREATE),  true, replication, blockSize, progress, bufferSize, null,  favoredNodes); return dfs.createWrappedOutputStream(out, statistics); dfs.create() 调用了DFSOutputStream.newStreamForCreate(&amp;hellip;)。
- public DFSOutputStream create(String src, 	//...  InetSocketAddress[] favoredNodes) throws IOException {  //.</description>
+final DFSOutputStream out = dfs.create(getPathName(f), permission, overwrite ? EnumSet.of(CreateFlag.CREATE, CreateFlag.OVERWRITE) : EnumSet.of(CreateFlag.CREATE), true, replication, blockSize, progress, bufferSize, null, favoredNodes); return dfs.createWrappedOutputStream(out, statistics); dfs.create() 调用了DFSOutputStream.newStreamForCreate(&amp;hellip;)。
+public DFSOutputStream create(String src, //... InetSocketAddress[] favoredNodes) throws IOException { //... final DFSOutputStream result = DFSOutputStream.</description>
     </item>
     
     <item>
@@ -655,11 +717,11 @@ final DFSOutputStream out = dfs.create(getPathName(f), permission,  overwrite ? 
       <guid>https://extendswind.top/posts/technical/netease_music_can_not_open/</guid>
       <description>最近打开网易云音乐没有反应，只在htop命令下能看到运行的进程（manjaro+mate+awesome）。
 命令行sudo可以正常运行
-无用尝试  安装官网给的最新1.1.3的deepin与ubuntu16两个版本 网上提到的&amp;ndash;no-sandbox参数运行 kill已经运行的netease-cloud-music相关进程  解决方案 回退到更早的1.0.0版，估计新版没有在各个linux系统下测试。
+无用尝试 安装官网给的最新1.1.3的deepin与ubuntu16两个版本 网上提到的&amp;ndash;no-sandbox参数运行 kill已经运行的netease-cloud-music相关进程 解决方案 回退到更早的1.0.0版，估计新版没有在各个linux系统下测试。
 http://s1.music.126.net/download/pc/netease-cloud-music_1.0.0-2_amd64_ubuntu16.04.deb
 debian系就直接dpkg -i吧
 arch系通过AUR安装稍麻烦:
- 卸载原版本 yaourt -S netease-cloud-music 按y Edit PKGBUILD 将1.1.3的安装包地址替换为1.1.0的安装包地址，并且将对应hash值改为skip，具体如下  改之前：
+卸载原版本 yaourt -S netease-cloud-music 按y Edit PKGBUILD 将1.1.3的安装包地址替换为1.1.0的安装包地址，并且将对应hash值改为skip，具体如下 改之前：
 source=( &amp;#34;http://packages.deepin.com/deepin/pool/main/n/netease-cloud-music/netease-cloud-music_${pkgver}-${_pkgrel}_amd64.deb&amp;#34; &amp;#34;http://music.163.com/html/web2/service.html&amp;#34; ) md5sums=(&amp;#39;53c47c1bf6797b2a0e455bc59833ab2d&amp;#39; &amp;#39;SKIP&amp;#39;) 改之后
 source=( &amp;#34;http://s1.music.126.net/download/pc/netease-cloud-music_1.0.0-2_amd64_ubuntu16.04.deb&amp;#34; &amp;#34;http://music.163.com/html/web2/service.html&amp;#34; ) md5sums=(&amp;#39;SKIP&amp;#39; &amp;#39;SKIP&amp;#39;) 然后正常安装即可</description>
     </item>
@@ -670,7 +732,7 @@ source=( &amp;#34;http://s1.music.126.net/download/pc/netease-cloud-music_1.0.0-
       <pubDate>Tue, 13 Nov 2018 10:30:00 +0800</pubDate>
       
       <guid>https://extendswind.top/posts/technical/leetcode4/</guid>
-      <description>题目   Median of Two Sorted Arrays There are two sorted arrays nums1 and nums2 of size m and n respectively. Find the median of the two sorted arrays. The overall run time complexity should be O(log (m+n)). You may assume nums1 and nums2 cannot be both empty. Example 1: nums1 = [1, 3] nums2 = [2] The median is 2.0 Example 2: nums1 = [1, 2] nums2 = [3, 4] The median is (2 + 3)/2 = 2.</description>
+      <description>题目 Median of Two Sorted Arrays There are two sorted arrays nums1 and nums2 of size m and n respectively. Find the median of the two sorted arrays. The overall run time complexity should be O(log (m+n)). You may assume nums1 and nums2 cannot be both empty. Example 1: nums1 = [1, 3] nums2 = [2] The median is 2.0 Example 2: nums1 = [1, 2] nums2 = [3, 4] The median is (2 + 3)/2 = 2.</description>
     </item>
     
     <item>
@@ -683,12 +745,12 @@ source=( &amp;#34;http://s1.music.126.net/download/pc/netease-cloud-music_1.0.0-
 最近发现有在非gnome系的DE下运行deepin-wine的解决方案，没必要专门跑一个mate。
 安装gnome-setttings-daemon，然后运行/usr/lib/gsd-xsettings。（不同系统会不一样）
 具体记录在另一篇博客
- AwesomeWM这种平铺的窗口管理器用得很爽，只是基于wine的qq最近又莫名其妙抽风，感觉还是切到deepin-wine上比较靠谱。而deepin-wine在awesome下运行qq会报错X Error of failed request: BadWindow (invalid Window parameter) Major opcode of failed request: 20 (X_GetProperty)，而在Gnome系下运行正常。看到Gnome和Mate能够运行awesomewm，就折腾了一下试试。
+AwesomeWM这种平铺的窗口管理器用得很爽，只是基于wine的qq最近又莫名其妙抽风，感觉还是切到deepin-wine上比较靠谱。而deepin-wine在awesome下运行qq会报错X Error of failed request: BadWindow (invalid Window parameter) Major opcode of failed request: 20 (X_GetProperty)，而在Gnome系下运行正常。看到Gnome和Mate能够运行awesomewm，就折腾了一下试试。
 Awesome只是Gnome等桌面管理器的组件之一，gnome系的Mate可以修改默认的窗口管理器。
-具体折腾   安装AwesomeWM、Mate桌面环境与dconf-editor（arch下使用pacman -S）。
-  进入Mate桌面环境后，修改org.mate.session.required-components windowmanager 的值为&amp;rsquo;awesome&amp;rsquo;，如果不需要桌面上的图标，可以将org.mate.session.required-components的值只留下windowmanager。
-  上面的设置无法通过命令行打开awesome，需要添加awesome的图标。在/usr/share/applications目录下新建awesome.desktop，内容如下（网上直接粘的，估计有些可以不要，懒得试了）：
-  [Desktop Entry] Type=Application Name=awesome Exec=awesome NoDisplay=true # name of loadable control center module X-MATE-WMSettingsModule=awesome # name we put on the WM spec check window X-MATE-WMName=awesome # back compat only X-MateWMSettingsLibrary=awesome X-MATE-Bugzilla-Bugzilla=MATE X-MATE-Bugzilla-Product=awesome X-MATE-Bugzilla-Component=general X-MATE-Autostart-Phase=WindowManager X-MATE-Provides=windowmanager X-MATE-Autostart-Notify=true </description>
+具体折腾 安装AwesomeWM、Mate桌面环境与dconf-editor（arch下使用pacman -S）。
+进入Mate桌面环境后，修改org.mate.session.required-components windowmanager 的值为&amp;rsquo;awesome&amp;rsquo;，如果不需要桌面上的图标，可以将org.mate.session.required-components的值只留下windowmanager。
+上面的设置无法通过命令行打开awesome，需要添加awesome的图标。在/usr/share/applications目录下新建awesome.desktop，内容如下（网上直接粘的，估计有些可以不要，懒得试了）：
+[Desktop Entry] Type=Application Name=awesome Exec=awesome NoDisplay=true # name of loadable control center module X-MATE-WMSettingsModule=awesome # name we put on the WM spec check window X-MATE-WMName=awesome # back compat only X-MateWMSettingsLibrary=awesome X-MATE-Bugzilla-Bugzilla=MATE X-MATE-Bugzilla-Product=awesome X-MATE-Bugzilla-Component=general X-MATE-Autostart-Phase=WindowManager X-MATE-Provides=windowmanager X-MATE-Autostart-Notify=true </description>
     </item>
     
     <item>
@@ -736,7 +798,7 @@ revert git revert &amp;lt;commit-id&amp;gt; 相当于取消一次commit ，会�
 使用revert不会破坏历史记录，只是提交一个新的修改使修改后代码和以前一致。
 实质上相当于用前的代码merge 后的代码，因此如果后面对代码文件做了修改需要解决冲突。
 revert一个merge commit 注意revert用在merge的commit上的情况有坑
-git revert &amp;lt;commit-id&amp;gt; -m 1  需要添加-m参数，指定是merge前的第几个分支（git log上的merge后）。
+git revert &amp;lt;commit-id&amp;gt; -m 1 需要添加-m参数，指定是merge前的第几个分支（git log上的merge后）。
 revert的主要麻烦：如果存在分支合并的情况，如下，从m1 revert到a2时会添加一个新的提交m2，当m2与b2 merge时会显示已经merge过。
 a1 -&amp;gt; a2 -&amp;gt; m1 -&amp;gt; m2 b1 -&amp;gt; b2 /</description>
     </item>
@@ -750,7 +812,7 @@ a1 -&amp;gt; a2 -&amp;gt; m1 -&amp;gt; m2 b1 -&amp;gt; b2 /</description>
       <description>SpatialHadoop相对HadoopGIS等库，在MapReduce时代的空间数据处理开源库算处理较好。SpatialHadoop在效率上相对一些新的基于Spark空间数据处理开源库明显偏低，加上本身的功能实现得差不多，最近提交的更新越来越少，感觉发展趋势不太好，主要用于学习相关的索引技术。
 编译与运行 主页上有已经编译好的包，可以直接解压到Hadoop目录下运行，但官方的版本解压有错误，因此下载github上源码编译。
 需要的环境：
- jdk8 Hadoop 2.7.7 maven  源码编译 源码地址 https://github.com/aseldawy/spatialhadoop2，直接下载或者git clone到本地。
+jdk8 Hadoop 2.7.7 maven 源码编译 源码地址 https://github.com/aseldawy/spatialhadoop2，直接下载或者git clone到本地。
 需要安装maven用于代码编译。
 编译前将pom.xml文件中hadoop相关的版本改为需要的版本。
 mvn compile 编译源码 mvn assembly:assembly 代码打包，会在target目录下生成jar和一个包含jar与相关依赖的tar.gz包
@@ -760,7 +822,8 @@ mvn compile 编译源码 mvn assembly:assembly 代码打包，会在target目录
 cp target/spatialhadoop-2.4.3-SNAPSHOT-bin.tar.gz $HADOOP_HOME/ cd $HADOOP_HOME tar -zxvf spatialhadoop-2.4.3-SNAPSHOT-bin.tar.gz Hadoop目录下运行下面的测试代码，会向HDFS中写入一个随机生成的矩形文件。
 sbin/shadoop generate test.rects size:1.gb shape:rect mbr:0,0,1000000,1000000 -overwrite
 SpatialHadoop运行机制 shadoop 脚本 SpatialHadoop 通过脚本shadoop运行命令，脚本就只有几行代码
-bin=`dirname &amp;#34;$0&amp;#34;` bin=`cd &amp;#34;$bin&amp;#34; &amp;gt; /dev/null; pwd`  # Call Hadoop with the operations.Main as the main class . &amp;#34;$bin&amp;#34;/hadoop edu.umn.cs.spatialHadoop.operations.Main $@ 其实只是将spatialhadoop的jar包与相关依赖jar包放入Hadoop的包目录中，然后通过shadoop脚本调用Hadoop脚本调用包中的一个类，向YARN提交MapReduce任务。</description>
+bin=`dirname &amp;#34;$0&amp;#34;` bin=`cd &amp;#34;$bin&amp;#34; &amp;gt; /dev/null; pwd` # Call Hadoop with the operations.Main as the main class . &amp;#34;$bin&amp;#34;/hadoop edu.umn.cs.spatialHadoop.operations.Main $@ 其实只是将spatialhadoop的jar包与相关依赖jar包放入Hadoop的包目录中，然后通过shadoop脚本调用Hadoop脚本调用包中的一个类，向YARN提交MapReduce任务。
+spatialhadoop的相关文件 spatialhadoop-2.4.3-SNAPSHOT-bin.tar.gz 中有以下的文件。</description>
     </item>
     
     <item>
@@ -775,11 +838,11 @@ CapacityScheduler首先将所有资源分配到hierarchical queue中，每个任
 Fair Scheduler 会在第一个任务运行时分配当前同级队列的所有资源，当有其它任务运行时，回收前面任务运行时的部分资源（一般为运行完成的Container）用于其它任务。
 至于FIFO，源码里都没有描述，可能就是一般的先进先出了。
 YARN默认使用CapacityScheduler，通过下面的属性配置：
-&amp;lt;property&amp;gt;  &amp;lt;name&amp;gt;yarn.resourcemanager.scheduler.class&amp;lt;/name&amp;gt;  &amp;lt;value&amp;gt;org.apache.hadoop.yarn.server.resourcemanager.scheduler.fair.FairScheduler&amp;lt;/value&amp;gt; &amp;lt;/property&amp;gt; YARN 动态资源分配 YARN 能够动态申请资源，如MapReduce中reduce的container会在map过程结束后申请。但Spark On YARN的机制为申请固定的executor，而不动态改变已申请的资源。
+&amp;lt;property&amp;gt; &amp;lt;name&amp;gt;yarn.resourcemanager.scheduler.class&amp;lt;/name&amp;gt; &amp;lt;value&amp;gt;org.apache.hadoop.yarn.server.resourcemanager.scheduler.fair.FairScheduler&amp;lt;/value&amp;gt; &amp;lt;/property&amp;gt; YARN 动态资源分配 YARN 能够动态申请资源，如MapReduce中reduce的container会在map过程结束后申请。但Spark On YARN的机制为申请固定的executor，而不动态改变已申请的资源。
 YARN上新运行的任务能够使用已运行任务回收的资源(如运行完Map task的container)，甚至还能够通过强行结束先前任务的container抢占资源。
 Capacity Scheduler CapacityScheduler重点解决多个组织共享集群资源，并保证每个组织自己的资源使用量。当自己的资源不足时能够使用其它组织的空闲资源。
 资源通过层级队列（hierarchical queues）的形式进行组织，配置在etc/hadoop/capacity-scheduler.xml.
-&amp;lt;!-- 队列结构设置 --&amp;gt; &amp;lt;property&amp;gt;  &amp;lt;name&amp;gt;yarn.scheduler.capacity.root.queues&amp;lt;/name&amp;gt;  &amp;lt;value&amp;gt;a,b&amp;lt;/value&amp;gt;  &amp;lt;description&amp;gt;The queues at the this level (root is the root queue).  &amp;lt;/description&amp;gt; &amp;lt;/property&amp;gt;  &amp;lt;property&amp;gt;  &amp;lt;name&amp;gt;yarn.scheduler.capacity.root.a.queues&amp;lt;/name&amp;gt;  &amp;lt;value&amp;gt;a1,a2&amp;lt;/value&amp;gt;  &amp;lt;description&amp;gt;The queues at the this level (root is the root queue).</description>
+&amp;lt;!-- 队列结构设置 --&amp;gt; &amp;lt;property&amp;gt; &amp;lt;name&amp;gt;yarn.scheduler.capacity.root.queues&amp;lt;/name&amp;gt; &amp;lt;value&amp;gt;a,b&amp;lt;/value&amp;gt; &amp;lt;description&amp;gt;The queues at the this level (root is the root queue). &amp;lt;/description&amp;gt; &amp;lt;/property&amp;gt; &amp;lt;property&amp;gt; &amp;lt;name&amp;gt;yarn.scheduler.capacity.root.a.queues&amp;lt;/name&amp;gt; &amp;lt;value&amp;gt;a1,a2&amp;lt;/value&amp;gt; &amp;lt;description&amp;gt;The queues at the this level (root is the root queue).</description>
     </item>
     
     <item>
@@ -790,9 +853,9 @@ Capacity Scheduler CapacityScheduler重点解决多个组织共享集群资源�
       <guid>https://extendswind.top/posts/technical/python3_publish_blog/</guid>
       <description>用个人域名搭建的博客在百度搜索上的SEO太差，百度一直只收录主页，懒得再为这些问题折腾，直接同步到博客园算了，考虑用Python。
 貌似CSDN已经关闭了metawebblog接口，只在博客园上测试。
-Python发博客的主要方案  通过xmlprc的metaweblog接口（首选） CSDN和博客园的api（定位不是用来发博客的，申请key和调接口略麻烦） 使用抓包的技术模拟浏览器登录发博客（没悬念更折腾）  代码 对于支持metaweblog的博客平台，只要提供用户名、密码和博客相关信息。
+Python发博客的主要方案 通过xmlprc的metaweblog接口（首选） CSDN和博客园的api（定位不是用来发博客的，申请key和调接口略麻烦） 使用抓包的技术模拟浏览器登录发博客（没悬念更折腾） 代码 对于支持metaweblog的博客平台，只要提供用户名、密码和博客相关信息。
 python2 需要将后面的xmlrpc.client改为xmlrpclib，并且import xmlrpclib
-#!/bin/python3  import xmlrpc.client  username = &amp;#39;&amp;#39; # TODO your username passwd = &amp;#39;&amp;#39; # TODO your passwd # url = &amp;#39;http://www.cnblogs.com/&amp;#39; + username + &amp;#39;/services/metaweblog.aspx&amp;#39; # 此链接已挂 url = &amp;#39;https://rpc.cnblogs.com/metaweblog/&amp;#39; + username  title = &amp;#34;helloWorld&amp;#34; content = &amp;#34;&amp;lt;p&amp;gt; test &amp;lt;p&amp;gt;&amp;#34; tags = &amp;#34;tag1, tag2&amp;#34;  blogProxy = xmlrpc.client.ServerProxy(url)  # 获取最近博客列表 print(blogProxy.metaWeblog.getRecentPosts(&amp;#39;&amp;#39;, username, passwd, 1))  # 发布博客 blogProxy.</description>
+#!/bin/python3 import xmlrpc.client username = &amp;#39;&amp;#39; # TODO your username passwd = &amp;#39;&amp;#39; # TODO your passwd # url = &amp;#39;http://www.cnblogs.com/&amp;#39; + username + &amp;#39;/services/metaweblog.aspx&amp;#39; # 此链接已挂 url = &amp;#39;https://rpc.cnblogs.com/metaweblog/&amp;#39; + username title = &amp;#34;helloWorld&amp;#34; content = &amp;#34;&amp;lt;p&amp;gt; test &amp;lt;p&amp;gt;&amp;#34; tags = &amp;#34;tag1, tag2&amp;#34; blogProxy = xmlrpc.client.ServerProxy(url) # 获取最近博客列表 print(blogProxy.metaWeblog.getRecentPosts(&amp;#39;&amp;#39;, username, passwd, 1)) # 发布博客 blogProxy.metaWeblog.newPost(&amp;#39;&amp;#39;, username, passwd, dict(title=title, description=content, mt_keywords=tags), True) 参考 https://rpc.</description>
     </item>
     
     <item>
@@ -815,8 +878,8 @@ CDN略麻烦，还需要其它的服务。 在各种折腾之后选择了托管�
 还有稳定更新，提高博客的质量。
 然后静静的等待&amp;hellip;.
 附：国内外的免费静态网站托管 国外代码托管系列
- netlify，最好最方便，没有之一，添加域名和github仓库的地址就能解决问题，github上的提交还会自动同步。 github page，网页放上去选择显示的分支即可，网速虽然没有飞起但在教育网下还行，主要问题在于上面提到的，百度搜索不到&amp;hellip; gitlab，同github，但使用了Docker技术提高了构建能力，能够上传源博客在服务端构建。只是折腾了一会，fork的项目构建网页一直失败，懒得再debug&amp;hellip; bitbucket，同github，一个大bug在于不能直接添加域名，域名解析过去无效，需要额外的服务（又是一堆配置）  国内代码托管
- 码云，同github，但添加域名是收费功能。 coding，之前博客提到的最多，貌似最近加入了广告，进入网页前几秒会跳入广告页（略不能忍）。  </description>
+netlify，最好最方便，没有之一，添加域名和github仓库的地址就能解决问题，github上的提交还会自动同步。 github page，网页放上去选择显示的分支即可，网速虽然没有飞起但在教育网下还行，主要问题在于上面提到的，百度搜索不到&amp;hellip; gitlab，同github，但使用了Docker技术提高了构建能力，能够上传源博客在服务端构建。只是折腾了一会，fork的项目构建网页一直失败，懒得再debug&amp;hellip; bitbucket，同github，一个大bug在于不能直接添加域名，域名解析过去无效，需要额外的服务（又是一堆配置） 国内代码托管
+码云，同github，但添加域名是收费功能。 coding，之前博客提到的最多，貌似最近加入了广告，进入网页前几秒会跳入广告页（略不能忍）。 </description>
     </item>
     
     <item>
@@ -829,21 +892,22 @@ CDN略麻烦，还需要其它的服务。 在各种折腾之后选择了托管�
 Java 远程调试 不想了解的可以直接跳到下面Hadoop
 通过JPDA（Java Platform Debugger Architecture），调试时启动服务，通过socket端口与调试服务端通信。
 下面只用最常用的服务端启动调试服务监听端口，本地IDE（idea）连接服务端。
-具体操作 1、启动被调试程序时添加参数：   jdk9: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:8000
+具体操作 1、启动被调试程序时添加参数： jdk9: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:8000
 jdk5-8: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8000
 jdk4: -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8000
 jdk3 及以前: -Xnoagent -Djava.compiler=NONE -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8000
 此处有坑，网上大部分没有提到jdk版本不同导致的区别，很多博客使用jdk4的写法，可能导致问题（idea配置远程调试时有上面的选项）。
 另外一个小坑, 下面第一个命令正常执行，第二个命令会忽略调试选项：
- java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8000 test java test -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8000  主要参数。suspend=y时，程序启动会先挂起，IDE连接后才会运行；suspend=n时，程序启动会直接运行。address后面为端口号，不与其它端口重合即可。
+java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8000 test java test -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8000 主要参数。suspend=y时，程序启动会先挂起，IDE连接后才会运行；suspend=n时，程序启动会直接运行。address后面为端口号，不与其它端口重合即可。
 2、启动Idea连接调试 使用idea打开调试项目的源码工程
 Run -&amp;gt; Edit Configurations , 点“加号” -&amp;gt; remote，然后填上被调试程序所在主机的ip以及上面的address对应端口号，并选择源码所在的module。
 添加后debug运行，剩下的和本地调试相同。
 Hadoop 远程调试 思路和上面的操作一致。下面以调试HDFS中的namenode为例。
 具体操作 1、修改Hadoop启动参数为debug模式 如果需要调试namenode服务，在etc/hadoop/hadoop-env.sh文件后添加：
-export HDFS_NAMENODE_OPTS=&amp;quot;-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8000&amp;quot; 
-HDFS启动的jvm主要为namenode和datanode，jvm启动的参数设置在etc/hadoop/hadoop-env.sh中。其中namenode启动参数环境变量为 HDFS_NAMENODE_OPTS，datanode为 HDFS_DATANODE_OPTS（针对Hadoop3，hadoop2的设置为HADOOP_NAMENODE_OPTS HADOOP_NAMENODE_OPTS）。YARN等服务对应的环境变量需要另查。
-2、启动服务 sbin/start-dfs.sh 或者 bin/hdfs --daemon start namenode仅启动namenode</description>
+export HDFS_NAMENODE_OPTS=&amp;quot;-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8000&amp;quot; HDFS启动的jvm主要为namenode和datanode，jvm启动的参数设置在etc/hadoop/hadoop-env.sh中。其中namenode启动参数环境变量为 HDFS_NAMENODE_OPTS，datanode为 HDFS_DATANODE_OPTS（针对Hadoop3，hadoop2的设置为HADOOP_NAMENODE_OPTS HADOOP_NAMENODE_OPTS）。YARN等服务对应的环境变量需要另查。
+2、启动服务 sbin/start-dfs.sh 或者 bin/hdfs --daemon start namenode仅启动namenode
+3、启动idea连接服务 下载源码并导入到工程（可以只导入需要调试的部分）
+Run -&amp;gt; Edit Configurations , 点“加号” -&amp;gt; remote，然后填上被调试程序所在主机的ip以及上面的address对应端口号，并选择需要调试的module。</description>
     </item>
     
     <item>
@@ -852,7 +916,7 @@ HDFS启动的jvm主要为namenode和datanode，jvm启动的参数设置在etc/ha
       <pubDate>Tue, 17 Jul 2018 20:59:49 +0800</pubDate>
       
       <guid>https://extendswind.top/posts/technical/manjaro_install_problem_grub/</guid>
-      <description>错误   error: invalid arch-independent ELF magic. Entering rescue mode&amp;hellip; grub rescue&amp;gt;
+      <description>错误 error: invalid arch-independent ELF magic. Entering rescue mode&amp;hellip; grub rescue&amp;gt;
 使用Rufu ISO模式烧录的U盘，lagency 模式能够启动，但点安装后出上面错误；UEFI模式直接出上面错误。
 解决方案 不多说，百度背锅，google答案的前几个就是正解。
 U盘烧录问题，使用rufu烧录U盘时，最好使用DD模式而非ISO模式。（去年安装manjaro-xfce4时用ISO模式没出过）
@@ -888,10 +952,10 @@ linux是用来折腾的，更是用来解决问题的。</description>
 感觉原型模式没什么意思，实质上就是把工厂模式中new的过程改为clone，具体的类对应于完成初始化的多个对象。
 原型模式（Prototype Pattern） 首先画重点，原型模式是一种 创建对象 的模式。通过复制已经初始化好的对象以避免对对象进行某些复杂和耗时的初始化过程。可能存在多个被复制的对象，创建自不同的类或同一个类的不同初始化过程，用户需要动态决定复制哪一个对象。
 主要实现思想：
- 对象的复制只需要在每个类中实现一个clone函数即可 使用工厂模式相关思想获取具体的clone对象  java实现的clone操作 下面的实现基于java，如c++一类的语言对于每个对象的复制需要自行处理。
+对象的复制只需要在每个类中实现一个clone函数即可 使用工厂模式相关思想获取具体的clone对象 java实现的clone操作 下面的实现基于java，如c++一类的语言对于每个对象的复制需要自行处理。
 java的所有类都继承于Object，Object类中定义了native实现的clone函数，但需要实现Cloneable接口才能调用。通过clone函数能够直接复制内存中的对象而不用调用构造函数。
 注意，java Object的clone函数为 浅拷贝，只会复制类成员对象地址而不创建新的对象。需要根据实际情况判读是否做相应的深拷贝修改。 吐槽：很多博客和书上的示例实质上就下面这一段，然后加个实例里n个成员变量和函数凑出十几到几十行，实现个Cloneable接口加个clone函数就算完了&amp;hellip;.
-class Prototype implements Cloneable{  int attr;  public Prototype clone(){  Prototype prototype = null;  try {  prototype = (Prototype)super.clone();  } catch (CloneNotSupportedException e) {  e.printStackTrace();  }  return prototype;  } } 一个不使用java特性的简单实现 class Prototype{  int attr;  public Prototype clone(){  Prototype clone = new Prototype();  clone.</description>
+class Prototype implements Cloneable{ int attr; public Prototype clone(){ Prototype prototype = null; try { prototype = (Prototype)super.clone(); } catch (CloneNotSupportedException e) { e.printStackTrace(); } return prototype; } } 一个不使用java特性的简单实现 class Prototype{ int attr; public Prototype clone(){ Prototype clone = new Prototype(); clone.attr = this.attr; return clone; } } 同上，注意深拷贝和浅拷贝问题。</description>
     </item>
     
     <item>
@@ -904,9 +968,9 @@ class Prototype implements Cloneable{  int attr;  public Prototype clone(){  Pro
 主要目标：对象只创建一次，每次都获得先前第一次创建的对象而不创建新的对象。（最好在使用时创建对象）
 实现思想：使用静态方法getInstance得到对象，为了保证对象只能通过getInstance创建，使构造函数私有。
 主要麻烦在于：
- 多线程环境下getInstance方法的调用可能产生多个对象 使用synchronized关键字可能降低高并发效率  单例模式有很多种，大多用于解决多线程环境下的效率问题，高并发场景通常使用某些固定方案（java常用内部类机制），一般情况下思想比较简单，从应用的角度感觉不必深究。
+多线程环境下getInstance方法的调用可能产生多个对象 使用synchronized关键字可能降低高并发效率 单例模式有很多种，大多用于解决多线程环境下的效率问题，高并发场景通常使用某些固定方案（java常用内部类机制），一般情况下思想比较简单，从应用的角度感觉不必深究。
 （后面懒得用实际例子命名了，Log4j中获取的logger对象就使用了单例模式）
- /** * 简单实现 * * 存在的问题： * * 当创建过程需要时间时，连续调用getInstance方法会导致创建多个对象，特别是涉及多线程时容易出问题。 */ class Singleton_problem {  private static Singleton_problem m_singletonProblem = null;  private Singleton_problem(){  // ...  }  public static Singleton_problem getInstance(){  if (m_singletonProblem == null)  m_singletonProblem = new Singleton_problem();  return m_singletonProblem;  } }   /** * 解决方案一： eager initialization * * 缺点在于没有lazy loading机制 */ class Singleton_eager{  private static final Singleton_eager m_singleton = new Singleton_eager();  private Singleton_eager(){  // .</description>
+/** * 简单实现 * * 存在的问题： * * 当创建过程需要时间时，连续调用getInstance方法会导致创建多个对象，特别是涉及多线程时容易出问题。 */ class Singleton_problem { private static Singleton_problem m_singletonProblem = null; private Singleton_problem(){ // ... } public static Singleton_problem getInstance(){ if (m_singletonProblem == null) m_singletonProblem = new Singleton_problem(); return m_singletonProblem; } } /** * 解决方案一： eager initialization * * 缺点在于没有lazy loading机制 */ class Singleton_eager{ private static final Singleton_eager m_singleton = new Singleton_eager(); private Singleton_eager(){ // .</description>
     </item>
     
     <item>
@@ -919,13 +983,17 @@ class Prototype implements Cloneable{  int attr;  public Prototype clone(){  Pro
 2017年数据，windows份额超过90%，MacOS约6%，Linux份额最高的记录在2016年7月创下，是2.33%。
 貌似用linux和MacOS的大多是程序员了。MacOS和linux系统正常使用（看书、上网、看电影等）已经比较成熟，没有太大的体验差异。
 linux系统的主要缺点：
- 某些常用软件在linux上没有或运行有问题（qq、迅雷、office等，只有deepin通过虚拟windows系统解决得稍好） 完美折腾需要掌握大量相关知识，不折腾难以体现其优点 某些设置复杂（较好的发行版已有极大的改善，某些操作需要使用命令）  linux作为桌面系统主要优点（作为服务器系统广泛使用不谈）：
- 软件管理容易 可定制性超强 免费（看版权意识）  对于开发人员，大部分的软件一键安装还解决依赖问题，想要的操作大部分可以通过修改配置和安装软件实现。在运行某些开发软件会明显感觉更快，绝大部分配置通过文本文件容易修改。
+某些常用软件在linux上没有或运行有问题（qq、迅雷、office等，只有deepin通过虚拟windows系统解决得稍好） 完美折腾需要掌握大量相关知识，不折腾难以体现其优点 某些设置复杂（较好的发行版已有极大的改善，某些操作需要使用命令） linux作为桌面系统主要优点（作为服务器系统广泛使用不谈）：
+软件管理容易 可定制性超强 免费（看版权意识） 对于开发人员，大部分的软件一键安装还解决依赖问题，想要的操作大部分可以通过修改配置和安装软件实现。在运行某些开发软件会明显感觉更快，绝大部分配置通过文本文件容易修改。
 linux发行版 一般的linux发行版包括：Linux内核，一些GNU程序库和工具，命令行shell，图形界面的X Window系统和相应的桌面环境，以及一系列其他的软件包（浏览器、阅读器、文本编辑器等）。由各种组织和个人维护。
-主要用过的几个桌面发行版：  也许桌面用户最多的Ubuntu 不折腾的Arch系Manjaro （当前主力） 和Manjaro在distrowatch上争第一的Ubuntu进化版Mint 号称最美linux的Elementary 超稳定适合服务器的版本Centos （只在服务器上用） 最强国产化linux的Deepin和一般国产化的优麒麟  下面叙述中不包含在内的主要道听途说
+主要用过的几个桌面发行版： 也许桌面用户最多的Ubuntu 不折腾的Arch系Manjaro （当前主力） 和Manjaro在distrowatch上争第一的Ubuntu进化版Mint 号称最美linux的Elementary 超稳定适合服务器的版本Centos （只在服务器上用） 最强国产化linux的Deepin和一般国产化的优麒麟 下面叙述中不包含在内的主要道听途说
 主流的发行版 debian系：Debian -&amp;gt; Ubuntu -&amp;gt; Mint | Elementary | Deepin | 优麒麟 fedora : Fedora -&amp;gt; RHEL -&amp;gt; Centos | Oracle linux SUSE : SUSE -&amp;gt; SLES -&amp;gt; openSUSE (没有用过，大多对其评价较为中立，暂不讨论) arch : Arch -&amp;gt; Manjaro gantoo
 其中箭头后的系统基于前面的系统发展，但并不影响前面系统的优势。如Ubuntu基于Debian系统成为较好的桌面系统，但Debian由于其轻量级和可定制仍有广泛使用。
-发行版之间主要区别 不同发行版的主要区别在于桌面环境、软件包管理器、软件包以及软件包版本的不同。</description>
+发行版之间主要区别 不同发行版的主要区别在于桌面环境、软件包管理器、软件包以及软件包版本的不同。
+包管理 不同的包管理器在实现功能上差距不大，只是对软件包稳定性的态度决定了能够使用的软件版本。
+Fedora系的yum管理器，对所有能够安装的软件包做严格的测试，软件包的版本一般较旧但极为稳定，因此服务器上使用较多。其中Fedora相比Centos的软件包略新也略不稳定。对于大规模服务器的管理，一般会搭建其自己的软件仓库解决部分需要使用的软件问题。吐槽：工业级软件求稳定就算了，emacs和vim这种编辑器都是老的，想要配置某些插件还需要自己下载源码编译安装&amp;hellip;如果没有相关的测试要求，一般不建议使用centos这种作为个人电脑的操作系统，很多桌面软件不是版本偏低就是没有，需要手动安装。
+Debian系使用apt管理软件包，其思路比centos稍激进，软件包版本较新但一般情况下不容易出大问题。通过apt能够下载绝大部分想要的软件，对于某些不在官方仓库的软件能够通过添加apt源安装。因此被桌面系统广泛使用。
+Arch系使用滚动更新的pacman，“一周一小更，一月一大更”。相比上述两个能够安装大多数软件的最新版本。还有AUR第三方用户包的加成，通过yaourt命令能够搜索和安装绝大部分linux上有的软件（典型示例为快速安装tensorflow）。过分激进的更新方式必然影响软件包质量，Arch系的包测试比之前成熟得多，在桌面端很少出现软件更新导致不兼容的bug。Ubuntu的软件源已经够丰富，但习惯AUR安装软件后在Ubuntu上会经常有找不到软件导致的不习惯。</description>
     </item>
     
     <item>
@@ -942,15 +1010,14 @@ linux发行版 一般的linux发行版包括：Linux内核，一些GNU程序库�
 而在今天看，更多的为孤独而孤独而忧郁而已。理解了这个社会便不再愤青，而所谓的不被理解，只是没有表达而已。中学时代的几个同学或许难有不理解，而大学里，更是庆幸有很多能交心的好友以及曾经想象的那种志同道合。
 想着想着，突然都想用工科思维给孤独下个严格的定义，但还是算了吧&amp;hellip;
 记得曾经还相信绝大多数人的青春都会陷入孤独，而之后才慢慢承认，不是所有的人都会庸人自扰。
- 曾经经常考虑这个话题，所以想写写。
+曾经经常考虑这个话题，所以想写写。
 现在，不孤独，并喜欢独处，感受一个人的宁静与轻松。
 仍就欣赏当年的洒脱：
- 追逐天边最冷的北风
+追逐天边最冷的北风
 寻找世界最高的山峰
 我把孤独当做朋友
 天地任我遨游不为谁停留
-&amp;mdash;《追风少年》
- </description>
+&amp;mdash;《追风少年》</description>
     </item>
     
     <item>
@@ -965,7 +1032,7 @@ linux发行版 一般的linux发行版包括：Linux内核，一些GNU程序库�
 静态代理模式 （static proxy） 静态代理的思想：将被代理类作为代理类的成员，通过代理类调用被代理类的函数，并添加新的控制。包装类与被包装类实现同一接口，使得使用时的代码一致。
 应用：已经有一个日志记录器LoggerSubject，需要对writeLog()函数的前后进行某些操作（如初始化、异常处理等），使用Proxy类间接调用LoggerSubject.writeLog()实现新控制操作的添加。
 实现如下
-interface Logger {  void writeLog(); }  // 被代理类 class LoggerSubject implements Logger{  @Override  public void writeLog(){  System.out.println(&amp;#34;writeLog by LoggerSubject&amp;#34;);  } }  // 代理类 class Proxy implements Logger{  Logger logger;  // 与装饰者模式的主要区别位置  // 代理模式一般要求和原来的类行为一致，因此构造函数不传入对象  Proxy(){  this.logger = new LoggerSubject();  }  @Override  public void writeLog(){  System.out.println(&amp;#34;logger write before&amp;#34;);  logger.</description>
+interface Logger { void writeLog(); } // 被代理类 class LoggerSubject implements Logger{ @Override public void writeLog(){ System.out.println(&amp;#34;writeLog by LoggerSubject&amp;#34;); } } // 代理类 class Proxy implements Logger{ Logger logger; // 与装饰者模式的主要区别位置 // 代理模式一般要求和原来的类行为一致，因此构造函数不传入对象 Proxy(){ this.logger = new LoggerSubject(); } @Override public void writeLog(){ System.out.println(&amp;#34;logger write before&amp;#34;); logger.writeLog(); System.out.println(&amp;#34;logger write after&amp;#34;); } } public class StaticProxy { private static void write(Logger logger){ logger.</description>
     </item>
     
     <item>
@@ -976,13 +1043,13 @@ interface Logger {  void writeLog(); }  // 被代理类 class LoggerSubject impl
       <guid>https://extendswind.top/posts/technical/design_patterns_factory/</guid>
       <description>TODO 某些思想感觉没写清楚和有重复
 几种工厂模式(Factory Pattern)简介 工厂模式主要分为：
- 简单工厂模式（Simple Factory Pattern） 工厂方法模式（Factory Method Pattern 经常简称为工厂模式） 抽象工厂模式（Abstract Factory Pattern）  主要思想：将类的创建逻辑转移到工厂类中，工厂类直接得到初始化后的产品类，使产品类的初始化逻辑清晰、一致，容易添加新的产品。
+简单工厂模式（Simple Factory Pattern） 工厂方法模式（Factory Method Pattern 经常简称为工厂模式） 抽象工厂模式（Abstract Factory Pattern） 主要思想：将类的创建逻辑转移到工厂类中，工厂类直接得到初始化后的产品类，使产品类的初始化逻辑清晰、一致，容易添加新的产品。
 目标：
- 将产品的创建逻辑(如读取本地文件、连接数据库）放入工厂类，简化使用逻辑。 隐藏具体创建的对象，提高代码的通用性 （网上博客很多地方没提这点，只有结合java反射机制才行）  需求示例 简单工厂模式 和 工厂方法模式  实现多个日志记录器logger(文件logger，数据库logger等) 通过配置文件确定使用的具体logger类 添加新的logger类不修改源码（添加新的java包并修改配置文件）  抽象工厂模式 抽象工厂模式应用场景略有不同。
+将产品的创建逻辑(如读取本地文件、连接数据库）放入工厂类，简化使用逻辑。 隐藏具体创建的对象，提高代码的通用性 （网上博客很多地方没提这点，只有结合java反射机制才行） 需求示例 简单工厂模式 和 工厂方法模式 实现多个日志记录器logger(文件logger，数据库logger等) 通过配置文件确定使用的具体logger类 添加新的logger类不修改源码（添加新的java包并修改配置文件） 抽象工厂模式 抽象工厂模式应用场景略有不同。
 存在多种不同的主题，每个主题都有不同的Button和Text的实现逻辑，因此每个主题都有Button和Text控件的派生类，导致类的初始化较多。
 容易添加新的主题
-不应用工厂模式的一般实现 （FactoryProblem.java）  logger 基类实现通用的日志记录功能，子类实现各自的特有功能 使用时根据配置文件中的类型，new相应的子类  类的实现：
-abstract class Logger {  public void writeLog(){  System.out.println(&amp;#34;writeLog by Logger&amp;#34;);  }  // 可添加公共实现 }  class FileLogger extends Logger {  @Override  public void writeLog(){  System.</description>
+不应用工厂模式的一般实现 （FactoryProblem.java） logger 基类实现通用的日志记录功能，子类实现各自的特有功能 使用时根据配置文件中的类型，new相应的子类 类的实现：
+abstract class Logger { public void writeLog(){ System.out.println(&amp;#34;writeLog by Logger&amp;#34;); } // 可添加公共实现 } class FileLogger extends Logger { @Override public void writeLog(){ System.out.println(&amp;#34;writeLog by the FileLogger&amp;#34;); } } class DataBaseLogger extends Logger { @Override public void writeLog(){ System.</description>
     </item>
     
     <item>
@@ -992,8 +1059,8 @@ abstract class Logger {  public void writeLog(){  System.out.println(&amp;#34;wr
       
       <guid>https://extendswind.top/posts/life/will/</guid>
       <description>本科的时候随手写写，读研之后偶尔改改，也没加过几句。或许，能力略有提高，性格却越发清淡。
- 钢铁更在烈火与骤冷中炼成
- 钢铁只在烈火与骤冷中炼成
+钢铁更在烈火与骤冷中炼成
+钢铁只在烈火与骤冷中炼成
 破坏原则和准则的自己被称作废物
 永远相信世界的美好，永远保持对自己的冷漠。
 只有最痛苦的经历才有最美好的回忆

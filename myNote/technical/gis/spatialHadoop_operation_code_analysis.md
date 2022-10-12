@@ -6,10 +6,10 @@ toc: true
 # draft: true
 
 categories:
-- "cloud computing"
+- "GIS"
 
 tags:
-- "hadoop"
+- "Hadoop"
 - "GIS"
 
 ---
