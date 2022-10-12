@@ -6,13 +6,22 @@
     <description>Recent content in Categories on A Notebook of Extendswind</description>
     <generator>Hugo -- gohugo.io</generator>
     <copyright>本站原创文章遵循CC-BY 4.0版权协议，转载注明出处即可</copyright>
-    <lastBuildDate>Fri, 17 Jun 2022 15:30:00 +0800</lastBuildDate><atom:link href="https://extendswind.top/categories/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 11 Oct 2022 20:30:00 +0800</lastBuildDate><atom:link href="https://extendswind.top/categories/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>GIS</title>
       <link>https://extendswind.top/categories/gis/</link>
-      <pubDate>Fri, 17 Jun 2022 15:30:00 +0800</pubDate>
+      <pubDate>Tue, 11 Oct 2022 20:30:00 +0800</pubDate>
       
       <guid>https://extendswind.top/categories/gis/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>linux desktop</title>
+      <link>https://extendswind.top/categories/linux-desktop/</link>
+      <pubDate>Thu, 07 Jul 2022 20:59:49 +0800</pubDate>
+      
+      <guid>https://extendswind.top/categories/linux-desktop/</guid>
       <description></description>
     </item>
     
@@ -40,15 +49,6 @@
       <pubDate>Sat, 04 Dec 2021 00:00:00 +0800</pubDate>
       
       <guid>https://extendswind.top/categories/operation/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>linux desktop</title>
-      <link>https://extendswind.top/categories/linux-desktop/</link>
-      <pubDate>Wed, 20 May 2020 22:30:00 +0800</pubDate>
-      
-      <guid>https://extendswind.top/categories/linux-desktop/</guid>
       <description></description>
     </item>
     

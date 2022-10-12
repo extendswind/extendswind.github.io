@@ -16,8 +16,10 @@
       <description>虚函数表是C++面试常考问题之一了，看了下《深度探索C++对象模型》，个人感觉了解虚函数表对理解C++对象在内存中的存储有一定帮助，但是对提高代码质量的意义貌似仅仅在于关注对象中虚函数指针的存在。
 面向对象中的多态与运行时捆绑 多态 多态是面向对象编程的基本特征之一，在C++中表现为通过虚函数和继承，实现基类指针的调用实现不同的行为，如下例。
 Logger为作为接口的基类，只有一个函数log()用于日志的记录，子类FileLogger和DataBaseLogger分别实现将日志写入到文件和数据库两种行为，代码如下。
- // 基类接口，调用log函数记录日志 class Logger{  public:  virtual void log(string str) = 0; }  class FileLogger{  public:  void log(string str){ /* 日志写入文件的实现 */ } }  class DataBaseLogger{  public:  void log(string str){ /* 日志写入数据库的实现 */}; } 通过传入不同的对象，可以实现不同的行为，如下面的代码：
-void writeLog(Logger *logger){  logger.log(); }  // 仅举例，省略内存管理 Logger *logger = new FileLogger(); writeLog(logger); Logger *logger2 = new FileLogger(); writeLog(logger2); 运行时捆绑（runtime binding） 在一个典型的工厂模式中，可以通过 Logger *logger = LoggerFactory.</description>
+// 基类接口，调用log函数记录日志 class Logger{ public: virtual void log(string str) = 0; } class FileLogger{ public: void log(string str){ /* 日志写入文件的实现 */ } } class DataBaseLogger{ public: void log(string str){ /* 日志写入数据库的实现 */}; } 通过传入不同的对象，可以实现不同的行为，如下面的代码：
+void writeLog(Logger *logger){ logger.log(); } // 仅举例，省略内存管理 Logger *logger = new FileLogger(); writeLog(logger); Logger *logger2 = new FileLogger(); writeLog(logger2); 运行时捆绑（runtime binding） 在一个典型的工厂模式中，可以通过 Logger *logger = LoggerFactory.getLogger() 的方式，在工厂类中根据具体的需要创建对象。
+比如：
+class LoggerFactory{ public: // 忽略内存管理，通过loggerId获取对应的子类对象 static Logger* getLogger(int loggerId = 0){ if(loggerId == 0) return new FileLogger(); else return new DataBaseLogger(); } } Logger *logger = LoggerFactory.</description>
     </item>
     
     <item>
@@ -27,15 +29,14 @@ void writeLog(Logger *logger){  logger.log(); }  // 仅举例，省略内存管�
       
       <guid>https://extendswind.top/posts/technical/git_push_sign_and_send_pubkey/</guid>
       <description>git push命令之后，出现下面的错误提示：
- sign_and_send_pubkey: no mutual signature supported git@gitee.com: Permission denied (publickey). fatal: Could not read from remote repository.
+sign_and_send_pubkey: no mutual signature supported git@gitee.com: Permission denied (publickey). fatal: Could not read from remote repository.
 Please make sure you have the correct access rights and the repository exists.
- openssh的新版本（当前8.8p1-1）默认不支持ras的默认秘钥。
+openssh的新版本（当前8.8p1-1）默认不支持ras的默认秘钥。
 一开始以为是gitee码云干了什么升级，之后发现是我的manjaro openssh版本太新的问题，已经不支持我几年前生成的秘钥（但是为什么ssh-keygen还是默认用的rsa）。
 推荐做法 ssh-keygen -t ed25519 -C &amp;ldquo;your_email@example.com&amp;rdquo;
 生成一个新的秘钥，然后公钥添加到gitee账户。
 最简单处理 修改ssh的客户端的配置文件，~/.ssh/config 或全局的配置文件 /etc/ssh/ssh_config，在其中加下面的代码。
- PubkeyAcceptedKeyTypes +ssh-rsa
- </description>
+PubkeyAcceptedKeyTypes +ssh-rsa</description>
     </item>
     
     <item>
@@ -47,8 +48,8 @@ Please make sure you have the correct access rights and the repository exists.
       <description>写了一个脚本，想挂后台运行，又想避免重复运行，需要检测后台是否有已经运行的脚本。实现目标：python脚本只运行一次，第二次运行时直接退出。
 在linux上比较合适的做法是创建一个systemd控制的service，有时候就临时用一用，还有考虑跨设备运行的时候也有点麻烦。
 找了两个比较简单的方案。
-1. 使用tendo import tendo.singleton  single = tendo.singleton.SingleInstance()  # 测试代码 import time while(True):  print(&amp;#34;test&amp;#34;)  time.sleep(2) 2. 使用pidfile from pid import PidFile  # 会对with中的代码块加锁 with PidFile():  import time  while(True):  print(&amp;#34;test&amp;#34;)  time.sleep(2) 或者
-from pid.decorator import pidfile  @pidfile def main():  # 被pidfile标签装饰的函数只能运行一次  # running code 基本原理 最常见的基本操作都差不多，在运行到需要只能执行一次的代码时，在某个路径下创建一个pidfile的文件，第二次执行时如果检测到路径下有pidfile就报错跳过执行。代码执行完成后删除pidfile。
+1. 使用tendo import tendo.singleton single = tendo.singleton.SingleInstance() # 测试代码 import time while(True): print(&amp;#34;test&amp;#34;) time.sleep(2) 2. 使用pidfile from pid import PidFile # 会对with中的代码块加锁 with PidFile(): import time while(True): print(&amp;#34;test&amp;#34;) time.sleep(2) 或者
+from pid.decorator import pidfile @pidfile def main(): # 被pidfile标签装饰的函数只能运行一次 # running code 基本原理 最常见的基本操作都差不多，在运行到需要只能执行一次的代码时，在某个路径下创建一个pidfile的文件，第二次执行时如果检测到路径下有pidfile就报错跳过执行。代码执行完成后删除pidfile。
 为了避免pidfile在某些特殊情况下退出未执行，通过atexit等库处理退出时的情况。
 类似的做法还有创建一个linux的socket，退出时删除。以及基于ps等linux脚本命令查看运行的进程名。
 参考链接 https://stackoverflow.com/questions/788411/check-to-see-if-python-script-is-running/7758075#7758075
@@ -65,10 +66,10 @@ https://pypi.org/project/pid/</description>
       <description>系统的看一下Java支持的数据结构，记一下从数据结构到java实现的一些基础笔记。以下内容主要参考《java核心技术》与jdk11源码。
 用于保存对象的数据结构一般称作容器类，也称作泛型集合（generic collection，由于容易和Collection接口混淆，因此有些书直接叫做容器类container library）。主要分为Collection和Map两种，Collection用于存储独立的元素，而Map用于存储“键值对”对象。
 一些细节 在查找元素、查找位置、移除等操作中，判断对象是否相同的方式是调用equal函数。
-retainAll(Collectionc)求两个集合的交集。
+retainAll(Collection c)求两个集合的交集。
 实现时接口与实现分离。使用时用满足需要的接口（如队列使用Queue），针对具体的场景new合适的实现。当需要自行实现对应的功能，为了降低实现接口中过多函数的复杂程度，可以直接扩展对应的Abastract类（如AbstractQueue），这种抽象接口加抽象类的方式在集合设计中经常遇到。
 集合类只能容纳对象句柄。集合在存储基本类型时，会通过封装器（Integer等）将基本类型转换成普通类，因此在处理效率上不如数组（直接存储基本类型）。
-迭代器 Iterator public interface Iterator&amp;lt;E&amp;gt;{  E next();  boolean hasNext();  void remove(); } // 并没有一个函数直接返回迭代器指向位置的值  public interface Iterable&amp;lt;E&amp;gt;{  Iterator&amp;lt;E&amp;gt; iterator(); } for each循环可以针对任何实现了Iterable的对象（由编译器直接翻译成Iterator对应的代码）。for (String e: c){&amp;hellip;}
+迭代器 Iterator public interface Iterator&amp;lt;E&amp;gt;{ E next(); boolean hasNext(); void remove(); } // 并没有一个函数直接返回迭代器指向位置的值 public interface Iterable&amp;lt;E&amp;gt;{ Iterator&amp;lt;E&amp;gt; iterator(); } for each循环可以针对任何实现了Iterable的对象（由编译器直接翻译成Iterator对应的代码）。for (String e: c){&amp;hellip;}
 Collection接口实现了Iterable接口，可以返回遍历元素的迭代器。
 通过迭代器，能够用一套代码访问不同的容器类。
 和C++的迭代器指向具体位置的设计不同，java的迭代器指向的位置可以看作是两个元素的中间。当调用next时，迭代器会跳过下一个元素，并返回被跳过元素的引用。不能像C++那样直接取当前位置的元素。对于remove函数，删除的是上一次next函数返回的位置（由于经常需要通过此位置的值判断是否删除）。也因此，每次调用remove函数前必须调用一次next方法，因此连续调用两次remove会出错。
@@ -76,13 +77,13 @@ List ArrayList相当于dynamic array，随机访问快，随机插入慢。类�
 LinkedList，双向链表，随机访问慢，随机插入快。LinkedList比较特殊，除了List接口还是了双端队列的Deque接口。
 LinkedList无法获取到node的指针，但可以通过获取ListIterator控制前后的位置（相对于Iterator，添加了previous等向前访问的函数）。
 LikedList并没有缓存指针的位置，因此get(n)等随机访问和修改的操作效率不高。
-public class LinkedList&amp;lt;E&amp;gt;  extends AbstractSequentialList&amp;lt;E&amp;gt;  implements List&amp;lt;E&amp;gt;, Deque&amp;lt;E&amp;gt;, Cloneable, java.io.Serializable Map 《java核心技术》中将Map的介绍放在了Set之后，但是Hashset的实现直接使用了HashMap，此处先写写Map的实现。
+public class LinkedList&amp;lt;E&amp;gt; extends AbstractSequentialList&amp;lt;E&amp;gt; implements List&amp;lt;E&amp;gt;, Deque&amp;lt;E&amp;gt;, Cloneable, java.io.Serializable Map 《java核心技术》中将Map的介绍放在了Set之后，但是Hashset的实现直接使用了HashMap，此处先写写Map的实现。
 HashMap （下面的默认参数取自openjdk11源码）
 实现常量时间的数据get和put。
 HashMap用hashcode结合链表的实现。使用了桶（bucket）机制，将hashcode取余后放入一个链表，当一个桶中的数据达到8个时，会通过treeifyBin函数将链表的形式转成红黑树存储以加快检索效率。
 在构造函数中设置了两个参数。threshold（默认为16）和loadFactor（默认为0.75），初始化时桶的数量会用threshold，往后threshold会等于 桶的数量×loadFactor。添加元素时，HashMap中的元素个数达到threshold时会调用resize让桶的数量翻倍，此时会遍历先前的所有元素添加到扩容之后的数组中（rehash过程）。
 通过一个名为table的数组存储桶的节点，默认情况下的初始化桶的个数为16，每次会增加为之前的2倍，最大为Int型的最大值。
-transient Node&amp;lt;K,V&amp;gt;[] table;  static class Node&amp;lt;K,V&amp;gt; implements Entry&amp;lt;K,V&amp;gt; {  final int hash;  final K key;  V value;  Node&amp;lt;K,V&amp;gt; next;  // .</description>
+transient Node&amp;lt;K,V&amp;gt;[] table; static class Node&amp;lt;K,V&amp;gt; implements Entry&amp;lt;K,V&amp;gt; { final int hash; final K key; V value; Node&amp;lt;K,V&amp;gt; next; // .</description>
     </item>
     
     <item>
@@ -93,11 +94,11 @@ transient Node&amp;lt;K,V&amp;gt;[] table;  static class Node&amp;lt;K,V&amp;gt;
       <guid>https://extendswind.top/posts/technical/java_toarray_return_and_generic_type_erase/</guid>
       <description>在将ArrayList等Collection转为数组时，函数的返回值并不是泛型类型的数组，而是Object[]。刚好最近翻了一遍《java核心技术》，以及参考《Think in Java》，写写为什么没有直接返回对应类型的数组，以及Java泛型中类型擦除的处理方式。
 主要涉及：
- ArrayList的toArray函数使用 为什么不直接定义函数 T[] toArray() 泛型数组的创建的两种常用方法 在泛型中创建具体的类实例  (部分代码没有运行过）
+ArrayList的toArray函数使用 为什么不直接定义函数 T[] toArray() 泛型数组的创建的两种常用方法 在泛型中创建具体的类实例 (部分代码没有运行过）
 ArrayList的toArray函数使用 将ArrayList转为数组，提供了两个函数
-Object[] toArray(); &amp;lt;T&amp;gt; T[] toArray(T[] a);  // 后面考虑一个Integer类型的ArrayList ArrayList&amp;lt;Integer&amp;gt; aa = new ArrayList&amp;lt;&amp;gt;(); aa.add(1); aa.add(3); Object[] toArray(); 第一个函数是直接将ArrayList转换成Object的数组，可以用Object[] bb = aa.toArray()，在具体使用时对每个对象进行强制类型转换，如System.out.println((Integer)bb[1])。（java不支持数组之间的强制类型转换）
+Object[] toArray(); &amp;lt;T&amp;gt; T[] toArray(T[] a); // 后面考虑一个Integer类型的ArrayList ArrayList&amp;lt;Integer&amp;gt; aa = new ArrayList&amp;lt;&amp;gt;(); aa.add(1); aa.add(3); Object[] toArray(); 第一个函数是直接将ArrayList转换成Object的数组，可以用Object[] bb = aa.toArray()，在具体使用时对每个对象进行强制类型转换，如System.out.println((Integer)bb[1])。（java不支持数组之间的强制类型转换）
 T[] toArray(T[] a); 第二个函数能够直接得到T类型的数组，当传入的T[] a能放下ArrayList时，会将ArrayList中的内容复制到a中（a的size较大时会a[size]=null）。否则，将构建一个新的数组并返回。具体实现如下:
-public &amp;lt;T&amp;gt; T[] toArray(T[] a) {  if (a.length &amp;lt; size)  // Make a new array of a&amp;#39;s runtime type, but my contents:  return (T[]) Arrays.copyOf(elementData, size, a.</description>
+public &amp;lt;T&amp;gt; T[] toArray(T[] a) { if (a.length &amp;lt; size) // Make a new array of a&amp;#39;s runtime type, but my contents: return (T[]) Arrays.copyOf(elementData, size, a.getClass()); System.arraycopy(elementData, 0, a, 0, size); if (a.</description>
     </item>
     
     <item>
@@ -109,7 +110,7 @@ public &amp;lt;T&amp;gt; T[] toArray(T[] a) {  if (a.length &amp;lt; size)  // M
       <description>简述 使用log4j可以根据配置文件控制输出日志的级别，记录到文件、命令行等的位置，不需要代码上的更改。
 日志在一定程度上会影响性能，特别是高并发环境。一般更建议使用log4j 2.x，在性能上有较大的提高，由于hadoop 2.7使用的log4j 1.2，下面主要写这一版本。
 本文主要介绍log4j：
- 根据日志级别记录日志 (logger上设置） 运行时决定具体的记录位置（appender上设置）和日志格式（layout上设置）  一些概念 日志级别（priority，代码里为level） 日志级别从低到高为trace, debug, info, warn, error, fatal。默认级别为info，低于设置级别的日志不会被打印。
+根据日志级别记录日志 (logger上设置） 运行时决定具体的记录位置（appender上设置）和日志格式（layout上设置） 一些概念 日志级别（priority，代码里为level） 日志级别从低到高为trace, debug, info, warn, error, fatal。默认级别为info，低于设置级别的日志不会被打印。
 常用组件 一般情况下常设置的组件有logger，appender， layout。
 用类的方式表达三个组件的关系为
 Logger{ name; level; // 控制日志级别 appenderList; // 可对应多个appender } Appender{ name; // 控制文件位置 如fileAppender layout; // 控制格式 filter; // 过滤部分日志 } logger logger以一种树状关系管理日志的类型，log4j.rootCategory为根节点，如果没有标记 log4j.additivity.MyLogger = false ，则子logger会默认继承上一级的设置。
@@ -117,7 +118,7 @@ Logger{ name; level; // 控制日志级别 appenderList; // 可对应多个appen
 通过点表示层级，如com.foo为com.foo.Bar的上级
 关于category，早期的log4j使用category较多，但在log4j 1.2之后，建议使用logger代替category。
 appender 主要用于
- 控制日志的输出位置，当前支持the console, files, GUI components, remote socket servers, NT Event Loggers, and remote UNIX Syslog daemons.</description>
+控制日志的输出位置，当前支持the console, files, GUI components, remote socket servers, NT Event Loggers, and remote UNIX Syslog daemons.</description>
     </item>
     
     <item>
@@ -126,7 +127,7 @@ appender 主要用于
       <pubDate>Tue, 13 Nov 2018 10:30:00 +0800</pubDate>
       
       <guid>https://extendswind.top/posts/technical/leetcode4/</guid>
-      <description>题目   Median of Two Sorted Arrays There are two sorted arrays nums1 and nums2 of size m and n respectively. Find the median of the two sorted arrays. The overall run time complexity should be O(log (m+n)). You may assume nums1 and nums2 cannot be both empty. Example 1: nums1 = [1, 3] nums2 = [2] The median is 2.0 Example 2: nums1 = [1, 2] nums2 = [3, 4] The median is (2 + 3)/2 = 2.</description>
+      <description>题目 Median of Two Sorted Arrays There are two sorted arrays nums1 and nums2 of size m and n respectively. Find the median of the two sorted arrays. The overall run time complexity should be O(log (m+n)). You may assume nums1 and nums2 cannot be both empty. Example 1: nums1 = [1, 3] nums2 = [2] The median is 2.0 Example 2: nums1 = [1, 2] nums2 = [3, 4] The median is (2 + 3)/2 = 2.</description>
     </item>
     
     <item>
@@ -150,7 +151,7 @@ revert git revert &amp;lt;commit-id&amp;gt; 相当于取消一次commit ，会�
 使用revert不会破坏历史记录，只是提交一个新的修改使修改后代码和以前一致。
 实质上相当于用前的代码merge 后的代码，因此如果后面对代码文件做了修改需要解决冲突。
 revert一个merge commit 注意revert用在merge的commit上的情况有坑
-git revert &amp;lt;commit-id&amp;gt; -m 1  需要添加-m参数，指定是merge前的第几个分支（git log上的merge后）。
+git revert &amp;lt;commit-id&amp;gt; -m 1 需要添加-m参数，指定是merge前的第几个分支（git log上的merge后）。
 revert的主要麻烦：如果存在分支合并的情况，如下，从m1 revert到a2时会添加一个新的提交m2，当m2与b2 merge时会显示已经merge过。
 a1 -&amp;gt; a2 -&amp;gt; m1 -&amp;gt; m2 b1 -&amp;gt; b2 /</description>
     </item>

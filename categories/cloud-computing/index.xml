@@ -17,8 +17,8 @@
 总体上从beeline脚本执行，调用了类Beeline.java，将终端的命令读入后通过rpc发送给driver处理。driver调用SemanticAnalyzer将SQL语句编译为可以执行的tasks，然后给每个task创建一个线程执行，在task中调用Tez等并行框架处理。
 脚本执行 以beeline脚本执行为例，跳了两个脚本后执行了etx/beeline.sh中的beeline()执行对应的java类。
 bin/beeline 脚本的执行会跳到 bin/hive 脚本，并传递service参数。
-# beeline 脚本  bin=`dirname &amp;#34;$0&amp;#34;` bin=`cd &amp;#34;$bin&amp;#34;; pwd`  . &amp;#34;$bin&amp;#34;/hive --service beeline &amp;#34;$@&amp;#34; 在 bin/hive 脚本中，首先从$bin/ext/*.sh以及$bin/ext/util/*.sh目录下执行所有脚本，脚本中定了一个和service名相同的函数，并且把service名加入到SERVICE_LIST变量。然后根据SREVICE名称运行对应脚本中的函数。
-# bin/hive 省略了大部分代码  SERVICE_LIST=&amp;#34;&amp;#34;  for i in &amp;#34;$bin&amp;#34;/ext/*.sh ; do  . $i done  for i in &amp;#34;$bin&amp;#34;/ext/util/*.sh ; do  . $i done  TORUN=&amp;#34;&amp;#34; for j in $SERVICE_LIST ; do  if [ &amp;#34;$j&amp;#34; = &amp;#34;$SERVICE&amp;#34; ] ; then  TORUN=${j}$HELP  fi done  if [ &amp;#34;$TORUN&amp;#34; = &amp;#34;&amp;#34; ] ; then  echo &amp;#34;Service $SERVICEnot found&amp;#34;  echo &amp;#34;Available Services: $SERVICE_LIST&amp;#34;  exit 7 else  set -- &amp;#34;${SERVICE_ARGS[@]}&amp;#34;  $TORUN &amp;#34;$@&amp;#34; fi 对应执行bin/ext/beeline.</description>
+# beeline 脚本 bin=`dirname &amp;#34;$0&amp;#34;` bin=`cd &amp;#34;$bin&amp;#34;; pwd` . &amp;#34;$bin&amp;#34;/hive --service beeline &amp;#34;$@&amp;#34; 在 bin/hive 脚本中，首先从$bin/ext/*.sh以及$bin/ext/util/*.sh目录下执行所有脚本，脚本中定了一个和service名相同的函数，并且把service名加入到SERVICE_LIST变量。然后根据SREVICE名称运行对应脚本中的函数。
+# bin/hive 省略了大部分代码 SERVICE_LIST=&amp;#34;&amp;#34; for i in &amp;#34;$bin&amp;#34;/ext/*.sh ; do . $i done for i in &amp;#34;$bin&amp;#34;/ext/util/*.sh ; do . $i done TORUN=&amp;#34;&amp;#34; for j in $SERVICE_LIST ; do if [ &amp;#34;$j&amp;#34; = &amp;#34;$SERVICE&amp;#34; ] ; then TORUN=${j}$HELP fi done if [ &amp;#34;$TORUN&amp;#34; = &amp;#34;&amp;#34; ] ; then echo &amp;#34;Service $SERVICE not found&amp;#34; echo &amp;#34;Available Services: $SERVICE_LIST&amp;#34; exit 7 else set -- &amp;#34;${SERVICE_ARGS[@]}&amp;#34; $TORUN &amp;#34;$@&amp;#34; fi 对应执行bin/ext/beeline.</description>
     </item>
     
     <item>
@@ -30,40 +30,9 @@ bin/beeline 脚本的执行会跳到 bin/hive 脚本，并传递service参数。
       <description>总体上涉及了心跳检测、副本移除线程、副本恢复线程。当datanode发生宕机或者datanode中的某个storage（如一块硬盘）发生的错误时，namenode会根据datanode发送的心跳进行检测。但namenode并没有在心跳检测的汇报中进行即时反应，而是先记录对应的心跳信息，由另一个定期检测线程移除DatanodeManager和BlockManager中对应的block信息，并记录需要恢复的数据。对于数据的恢复，又新建了一个线程进行定期扫描，分配恢复副本需要的源数据节点和目标数据节点，在datanode的下一轮心跳检测中转换为对应的命令返回给datanode。
 宕机的心跳检测 datanode会定时向namenode发送心跳数据包汇报当前的运行状态。namenode在一定时间内没收到数据节点的心跳时会标记为stale状态，然后转移该数据节点中的block到其它的数据节点。
 hdfs配置中的几个参数：
- dfs.heartbeat.interval，Hadoop心跳检测间隔，默认为3s。 dfs.namenode.stale.datanode.minimum.interval，datanode标记为stale状态的需要丢失的最小心跳次数，默认为3。 dfs.namenode.stale.datanode.interval，Hadoop datanode超时范围，超过此时间没收到心跳检测会被标记为stale状态，默认为30s，大小必须超过前面两个参数的乘积。  接收心跳消息 Hadoop的datanode心跳检测通过rpc的形式发送，rpc函数通过参数传递数据节点统计信息，返回namenode需要对数据节点的命令。
+dfs.heartbeat.interval，Hadoop心跳检测间隔，默认为3s。 dfs.namenode.stale.datanode.minimum.interval，datanode标记为stale状态的需要丢失的最小心跳次数，默认为3。 dfs.namenode.stale.datanode.interval，Hadoop datanode超时范围，超过此时间没收到心跳检测会被标记为stale状态，默认为30s，大小必须超过前面两个参数的乘积。 接收心跳消息 Hadoop的datanode心跳检测通过rpc的形式发送，rpc函数通过参数传递数据节点统计信息，返回namenode需要对数据节点的命令。
 datanode在通过rpc发送消息时，namenode首先在rpc server处理，交给NameSystem。NameNodeRpcServer中的处理：
-@Override // DatanodeProtocol public HeartbeatResponse sendHeartbeat(DatanodeRegistration nodeReg,  StorageReport[] report, long dnCacheCapacity, long dnCacheUsed,  int xmitsInProgress, int xceiverCount,  int failedVolumes, VolumeFailureSummary volumeFailureSummary,  boolean requestFullBlockReportLease,  @Nonnull SlowPeerReports slowPeers,  @Nonnull SlowDiskReports slowDisks) throws IOException {  checkNNStartup();  verifyRequest(nodeReg);  return namesystem.handleHeartbeat(nodeReg, report,  dnCacheCapacity, dnCacheUsed, xceiverCount, xmitsInProgress,  failedVolumes, volumeFailureSummary, requestFullBlockReportLease,  slowPeers, slowDisks); } namesystem的类型为FSNamesystem，负责name-space state的相关管理（is a container of both transient and persisted name-space state, and does all the book-keeping work on a NameNode），是BlockManager, DatanodeManager, DelegationTokens, LeaseManager等服务的容器。在handleHeartbeat函数中，通过blockManager获取的DatanodeManager进行了处理：</description>
-    </item>
-    
-    <item>
-      <title>SpatialHadoop二级空间索引机制源码分析</title>
-      <link>https://extendswind.top/posts/technical/spatialhadoop_operation_code_analysis/</link>
-      <pubDate>Sat, 07 Nov 2020 10:30:00 +0800</pubDate>
-      
-      <guid>https://extendswind.top/posts/technical/spatialhadoop_operation_code_analysis/</guid>
-      <description>SpatialHadoop已经长期没有更新，MapReduce框架的效率也略低，虽然不太适合直接用，但代码的实现机制可以参考。最近准备重新了解一下HDFS上的空间索引问题，在两年前（没想到距离上次运行SpatialHadoop都两年了..）的基本使用的基础上（一个简单使用的记录），记录一下空间索引机制的处理方式。后面重点关注在Hadoop上的任务提交、并行索引构建、索引的存储与读取这几个方面。
-相比GeoSpark的代码，没有Spark现成的算子可以复用并且要处理文件方面的问题，逻辑上的处理稍复杂一点。
-空间分析任务的提交 SpatialHadoop提供了一个脚本，用于基本的空间处理，如下面的代码生成测试数据。
-sbin/shadoop generate test.rects size:1.gb shape:rect mbr:0,0,1000000,1000000 -overwrite shadoop脚本做的操作不多，直接通过Hadoop的运行命令运行了edu.umn.cs.spatialHadoop.operations.Main类，在类中的Main函数中处理输入参数。
-bin=`dirname &amp;#34;$0&amp;#34;` bin=`cd &amp;#34;$bin&amp;#34; &amp;gt; /dev/null; pwd`  # Call Hadoop with the operations.Main as the main class . &amp;#34;$bin&amp;#34;/hadoop edu.umn.cs.spatialHadoop.operations.Main $@ 在Main函数中使用了Hadoop的ProgramDriver运行具体的类对象。首先从配置文件 spatial-operations.yaml 中读取支持的类，然后利用反射机制，读取对应类注释的shortName标签，通过shortName决定参数传递的具体的类。
-public static void main(String[] args) {  int exitCode = -1;  ProgramDriver pgd = new ProgramDriver();  try {  // 这个位置加载配置文件，配置文件spatial-operations.yaml中包含了支持的完整类名  Yaml yaml = new Yaml();  List&amp;lt;String&amp;gt; ops = yaml.</description>
-    </item>
-    
-    <item>
-      <title>GeoSpark范围查询源码分析</title>
-      <link>https://extendswind.top/posts/technical/geospark_range_query_code_analysis/</link>
-      <pubDate>Thu, 05 Nov 2020 10:30:00 +0800</pubDate>
-      
-      <guid>https://extendswind.top/posts/technical/geospark_range_query_code_analysis/</guid>
-      <description>GeoSpark GeoSpark是基于Spark的空间数据处理开源库，在RDD模型的基础上添加了空间数据操作，以底层的SpatialRDD为基础设计了空间分析、空间SQL、空间数据可视化等组件。详细信息可以参考作者博客 https://jiayuasu.github.io/ 以及项目主页 http://sedona.apache.org。GeoSpark一开始是Spark的一个第三方组件，之后改名为sedona提交到apache基金会，当前（2020.11）正处于孵化阶段。
-在空间数据的索引与并行访问上，没有像SpatialHadoop那样直接基于HDFS构建针对文件的索引，而是将数据读到RDD中在内存中后进行分区和索引构建操作，索引后的数据可以持久化到硬盘避免下一次的读取，内存的大小一定程度上限制了单次能够处理的数据总量。
-最近通过Spark提高SpatialHadoop在设计上的效率，看了一眼GeoSpark在常见的空间处理上的逻辑，针对空间数据读取、索引、划分几个方面的逻辑记个笔记。
-主要代码逻辑 GeoSpark的代码大多直接用的java编写，调用了Spark的java API，整体的逻辑比我想象的要简单。代码注释、缩进、命名等貌似都略有非主流的地方。
-示例代码主要参考官网教程 http://sedona.apache.org/tutorial/rdd/ 与github仓库源码。
-读取csv文件并创建PointRDD  官方示例 Suppose we have a checkin.csv CSV file at Path /Download/checkin.csv as follows:
--88.331492,32.324142,hotel -88.175933,32.360763,gas -88.388954,32.357073,bar -88.221102,32.35078,restaurant
-This file has three columns and corresponding offsets(Column IDs) are 0, 1, 2. Use the following code to create a PointRDD
-  val pointRDDInputLocation = &amp;#34;/Download/checkin.csv&amp;#34; val pointRDDOffset = 0 // The point long/lat starts from Column 0 val pointRDDSplitter = FileDataSplitter.</description>
+@Override // DatanodeProtocol public HeartbeatResponse sendHeartbeat(DatanodeRegistration nodeReg, StorageReport[] report, long dnCacheCapacity, long dnCacheUsed, int xmitsInProgress, int xceiverCount, int failedVolumes, VolumeFailureSummary volumeFailureSummary, boolean requestFullBlockReportLease, @Nonnull SlowPeerReports slowPeers, @Nonnull SlowDiskReports slowDisks) throws IOException { checkNNStartup(); verifyRequest(nodeReg); return namesystem.handleHeartbeat(nodeReg, report, dnCacheCapacity, dnCacheUsed, xceiverCount, xmitsInProgress, failedVolumes, volumeFailureSummary, requestFullBlockReportLease, slowPeers, slowDisks); } namesystem的类型为FSNamesystem，负责name-space state的相关管理（is a container of both transient and persisted name-space state, and does all the book-keeping work on a NameNode），是BlockManager, DatanodeManager, DelegationTokens, LeaseManager等服务的容器。在handleHeartbeat函数中，通过blockManager获取的DatanodeManager进行了处理：</description>
     </item>
     
     <item>
@@ -75,13 +44,13 @@ This file has three columns and corresponding offsets(Column IDs) are 0, 1, 2. U
       <description>Spark提供了HDFS上一般的文件文件读取接口 sc.textFile()，但在某些情况下HDFS中需要存储自定义格式的文件，需要更加灵活的读取方式。
 使用KeyValueTextInputFormat Hadoop的MapReduce框架下提供了一些InputFormat的实现，其中MapReduce2的接口(org.apache.hadoop.mapreduce下)与先前MapReduce1(org.apache.hadoop.mapred下)有区别，对应于newAPIHadoopFile函数。
 使用KeyValueTextInputFormat的文件读取如下
- import org.apache.hadoop.mapreduce.lib.input.KeyValueTextInputFormat import org.apache.hadoop.io.Text  val hFile = sc.newAPIHadoopFile(&amp;#34;hdfs://hadoopmaster:9000/user/sparkl/README.md&amp;#34;,  classOf[KeyValueTextInputFormat], classOf[Text], classOf[Text])  hFile.collect 使用自定义InputFormat InputFormat是MapReduce框架下将输入的文件解析成字符串的组件，Spark对HDFS中的文件实现自定义读写需要通过InputFormat的子类实现。下面只写简单的思路，具体的可以参考InputFormat和MapReduce相关资料。
+import org.apache.hadoop.mapreduce.lib.input.KeyValueTextInputFormat import org.apache.hadoop.io.Text val hFile = sc.newAPIHadoopFile(&amp;#34;hdfs://hadoopmaster:9000/user/sparkl/README.md&amp;#34;, classOf[KeyValueTextInputFormat], classOf[Text], classOf[Text]) hFile.collect 使用自定义InputFormat InputFormat是MapReduce框架下将输入的文件解析成字符串的组件，Spark对HDFS中的文件实现自定义读写需要通过InputFormat的子类实现。下面只写简单的思路，具体的可以参考InputFormat和MapReduce相关资料。
 InputFormat的修改可以参考TextInputFormat，继承FileInputFormat后，重载createRecordReader返回一个新的继承RecordReader的类，通过新的RecordReader读取数据返回键值对。
 打包后注意上传时将jar包一起上传：
 `./spark-shell &amp;ndash;jars newInputFormat.jar
 运行的代码和上面差不多，import相关的包后
-val hFile = sc.newAPIHadoopFile(&amp;#34;hdfs://hadoopmaster:9000/user/sparkl/README.md&amp;#34;,  classOf[NewTextInputFormat], classOf[Text], classOf[Text]) 一些坑 序列化问题 在读取文件后使用first或者collect时，出现下面的错误
-  ERROR scheduler.TaskSetManager: Task 0.0 in stage 2.0 (TID 18) had a not serializable result: org.apache.hadoop.io.IntWritable Serialization stack: - object not serializable (class: org.apache.hadoop.io.IntWritable, value: 35) - element of array (index: 0) - array (class [Lorg.</description>
+val hFile = sc.newAPIHadoopFile(&amp;#34;hdfs://hadoopmaster:9000/user/sparkl/README.md&amp;#34;, classOf[NewTextInputFormat], classOf[Text], classOf[Text]) 一些坑 序列化问题 在读取文件后使用first或者collect时，出现下面的错误
+ERROR scheduler.TaskSetManager: Task 0.0 in stage 2.0 (TID 18) had a not serializable result: org.apache.hadoop.io.IntWritable Serialization stack: - object not serializable (class: org.apache.hadoop.io.IntWritable, value: 35) - element of array (index: 0) - array (class [Lorg.apache.hadoop.io.IntWritable;, size 1); not retrying 18/12/15 10:40:10 ERROR scheduler.</description>
     </item>
     
     <item>
@@ -96,7 +65,7 @@ val hFile = sc.newAPIHadoopFile(&amp;#34;hdfs://hadoopmaster:9000/user/sparkl/RE
 其实只是Hadoop会调用脚本，将多个Datanode的ip作为输入，每次最多输入的ip数设置在net.topology.script.number.args，将输入的ip转换成/rack-num的形式(以/开头的字符串)，用标准输出流（如Python的print）输出结果。
 具体操作 编写脚本 下面的脚本在输入
 192.168.3.1 192.168.3.4 时，会输出
-/rack1 /rack4  #!/bin/python3 import sys  # 第一个参数是脚本路径，直接pop掉 sys.argv.pop(0)  # 0-3 rack0 # 4-7 rack1 # 8-11 rack2 # ...  # 其它的参数里每个参数都是一个ip，此处直接取ip的最后一位除以4作为Racknum # 实践上可以读文件确定ip的对应关系 for ip in sys.argv:  hostNum = int(ip.split(&amp;#34;.&amp;#34;)[3])  print(&amp;#34;/rack&amp;#34; + str(int(hostNum/4))) 设置配置参数 &amp;lt;property&amp;gt;  &amp;lt;name&amp;gt;net.topology.script.file.name&amp;lt;/name&amp;gt;  &amp;lt;value&amp;gt;/home/sparkl/hadoop/etc/hadoop/topology.py&amp;lt;/value&amp;gt; &amp;lt;/property&amp;gt; 重启集群即可
+/rack1 /rack4 #!/bin/python3 import sys # 第一个参数是脚本路径，直接pop掉 sys.argv.pop(0) # 0-3 rack0 # 4-7 rack1 # 8-11 rack2 # ... # 其它的参数里每个参数都是一个ip，此处直接取ip的最后一位除以4作为Racknum # 实践上可以读文件确定ip的对应关系 for ip in sys.argv: hostNum = int(ip.split(&amp;#34;.&amp;#34;)[3]) print(&amp;#34;/rack&amp;#34; + str(int(hostNum/4))) 设置配置参数 &amp;lt;property&amp;gt; &amp;lt;name&amp;gt;net.topology.script.file.name&amp;lt;/name&amp;gt; &amp;lt;value&amp;gt;/home/sparkl/hadoop/etc/hadoop/topology.py&amp;lt;/value&amp;gt; &amp;lt;/property&amp;gt; 重启集群即可
 验证结果 以下命令能够直接获取某一个文件的分布状态，以及总的rack数量：
 hdfs fsck /readme.md -files -blocks -racks
 貌似没有直接以树状的形式输出集群拓扑的命令，namenode的日志中能看到datanode在连接时的拓扑位置。</description>
@@ -111,44 +80,22 @@ hdfs fsck /readme.md -files -blocks -racks
       <description>大多数的叫法都是副本放置策略，实质上是HDFS对所有数据的位置放置策略，并非只是针对数据的副本。因此Hadoop的源码里有block replicator(configuration)、 BlockPlacementPolicy(具体逻辑源码)两种叫法。
 主要用途：上传文件时决定文件在HDFS上存储的位置（具体到datanode上的具体存储介质，如具体到存储在哪块硬盘）；rebalance、datanode退出集群、副本数量更改等导致数据移动的操作中，数据移动的具体位置。
 BlockPlacementPolicy BlockPlacementPolicy 作为虚基类提供了基本的接口，具体的子类重点实现下面 选择副本 、 验证副本放置是否满足要求 、 选择能够删除的副本 三个函数：
- /** * 核心的副本放置策略实现，返回副本放置数量的存储位置 * **如果有效节点数量不够（少于副本数），返回尽可能多的节点，而非失败** * * @param srcPath 上传文件的路径 * @param numOfReplicas 除下面chosen参数里已经选择的datanode，还需要的副本数量 * @param writer 写数据的机器, null if not in the cluster. 一般用于放置第一个副本以降低网络通信 * @param chosen 已经选择的节点 * @param returnChosenNodes 返回结果里是否包含chosen的datanode * @param excludedNodes 不选的节点 * @param blocksize 块大小 * @return 排序好的选择结果 */  public abstract DatanodeStorageInfo[] chooseTarget(String srcPath,  int numOfReplicas,  Node writer,  List&amp;lt;DatanodeStorageInfo&amp;gt; chosen,  boolean returnChosenNodes,  Set&amp;lt;Node&amp;gt; excludedNodes,  long blocksize,  BlockStoragePolicy storagePolicy);    /** * 判断传入的放置方式是否符合要求 */  abstract public BlockPlacementStatus verifyBlockPlacement(  DatanodeInfo[] locs, int numOfReplicas);    /** * 当副本数量较多时，选择需要删除的节点 */  abstract public List&amp;lt;DatanodeStorageInfo&amp;gt; chooseReplicasToDelete(  Collection&amp;lt;DatanodeStorageInfo&amp;gt; candidates, int expectedNumOfReplicas,  List&amp;lt;StorageType&amp;gt; excessTypes, DatanodeDescriptor addedNode,  DatanodeDescriptor delNodeHint); Hadoop 提供的 BlockPlacementPolicy 实现 Hadoop提供了BlockPlacementPolicyDefault、BlockPlacementPolicyWithNodeGroup、AvailableSpaceBlockPlacementPolicy三种实现（hadoop 2.</description>
+/** * 核心的副本放置策略实现，返回副本放置数量的存储位置 * **如果有效节点数量不够（少于副本数），返回尽可能多的节点，而非失败** * * @param srcPath 上传文件的路径 * @param numOfReplicas 除下面chosen参数里已经选择的datanode，还需要的副本数量 * @param writer 写数据的机器, null if not in the cluster. 一般用于放置第一个副本以降低网络通信 * @param chosen 已经选择的节点 * @param returnChosenNodes 返回结果里是否包含chosen的datanode * @param excludedNodes 不选的节点 * @param blocksize 块大小 * @return 排序好的选择结果 */ public abstract DatanodeStorageInfo[] chooseTarget(String srcPath, int numOfReplicas, Node writer, List&amp;lt;DatanodeStorageInfo&amp;gt; chosen, boolean returnChosenNodes, Set&amp;lt;Node&amp;gt; excludedNodes, long blocksize, BlockStoragePolicy storagePolicy); /** * 判断传入的放置方式是否符合要求 */ abstract public BlockPlacementStatus verifyBlockPlacement( DatanodeInfo[] locs, int numOfReplicas); /** * 当副本数量较多时，选择需要删除的节点 */ abstract public List&amp;lt;DatanodeStorageInfo&amp;gt; chooseReplicasToDelete( Collection&amp;lt;DatanodeStorageInfo&amp;gt; candidates, int expectedNumOfReplicas, List&amp;lt;StorageType&amp;gt; excessTypes, DatanodeDescriptor addedNode, DatanodeDescriptor delNodeHint); Hadoop 提供的 BlockPlacementPolicy 实现 Hadoop提供了BlockPlacementPolicyDefault、BlockPlacementPolicyWithNodeGroup、AvailableSpaceBlockPlacementPolicy三种实现（hadoop 2.</description>
     </item>
     
     <item>
       <title>HDFS写文件源码分析</title>
-      <link>https://extendswind.top/posts/technical/hadoop_hdfs_write_analysis/</link>
+      <link>https://extendswind.top/posts/technical/hadoop_hdfs_write_analysis.md/</link>
       <pubDate>Tue, 11 Dec 2018 21:30:00 +0800</pubDate>
       
-      <guid>https://extendswind.top/posts/technical/hadoop_hdfs_write_analysis/</guid>
+      <guid>https://extendswind.top/posts/technical/hadoop_hdfs_write_analysis.md/</guid>
       <description>最近参加的面试，一面问了HDFS写文件流程，完了之后把《Hadoop权威指南》上的流程配合源码简单的看了一遍。二面又问到了这个问题，一些细节还是漏了，对这部分还是专门记个笔记吧。稍微梳理了一下，发现感觉这个问题确实太适合作为面试题了，有细节还适合引申到其它的点。
 写数据流程 大体流程如图（来自《Hadoop权威指南》）
- 客户端通过DistributedFileSystem的create()创建文件，中间会对namenode创建RPC调用（namenode.create)，namenode在检查权限等问题后新建文件。 创建完文件后会返回FSDataOutputStream，在DFSOutputStream上的一层包装，用于处理写入数据所需要的namenode和datanode之间的通信。 在数据写入过程中，DFSOutputStream会将数据划分为packets，并放入data queue，由DataStreamer处理（向namenode申请分配新的block）。 被选择的datanode连起来构成pipeline，DataStreamer流式的将packets发送到第一个datanode，第一个datanode每次收到packet后存储并转发到pipeline上下一个datanode。 DFSOutputStream还维护了一个ack queue，当所有的datanode都应答后对应的packet会被移除。  源码分析 以下代码来自Hadoop 2.7.7。
+客户端通过DistributedFileSystem的create()创建文件，中间会对namenode创建RPC调用（namenode.create)，namenode在检查权限等问题后新建文件。 创建完文件后会返回FSDataOutputStream，在DFSOutputStream上的一层包装，用于处理写入数据所需要的namenode和datanode之间的通信。 在数据写入过程中，DFSOutputStream会将数据划分为packets，并放入data queue，由DataStreamer处理（向namenode申请分配新的block）。 被选择的datanode连起来构成pipeline，DataStreamer流式的将packets发送到第一个datanode，第一个datanode每次收到packet后存储并转发到pipeline上下一个datanode。 DFSOutputStream还维护了一个ack queue，当所有的datanode都应答后对应的packet会被移除。 源码分析 以下代码来自Hadoop 2.7.7。
 FileSystem.get()通过URI返回对应的DistributedFileSystem，调用create函数在namenode上创建文件，返回输出流。
 Configuration conf = new Configuration(); FileSystem hdfs = FileSystem.get(URI.create(hdfsDirectory), conf); FSDataOutputStream outputStream = hdfs.create(new Path(hdfsDirectory)); outputStream.writeInt(1); outputStream.close(); DistributedFileSystem的create()中，通过DFSClient的对象dfs，调用dfs.create()。中间使用了FileSystemLinkResolver类，当doCall函数中抛出UnresolvedLinkException时（解析Path路径失败），会重新解析路径得到合适的FileSystem和Path传入next()。总体上相当于给定的路径解析失败时，重新解析后再次调用create函数。创建完成后对返回的DFSOutputStream外套了一层FSDataOutputStream用于写结果。
-final DFSOutputStream out = dfs.create(getPathName(f), permission,  overwrite ? EnumSet.of(CreateFlag.CREATE, CreateFlag.OVERWRITE)  : EnumSet.of(CreateFlag.CREATE),  true, replication, blockSize, progress, bufferSize, null,  favoredNodes); return dfs.createWrappedOutputStream(out, statistics); dfs.create() 调用了DFSOutputStream.newStreamForCreate(&amp;hellip;)。
- public DFSOutputStream create(String src, 	//...  InetSocketAddress[] favoredNodes) throws IOException {  //.</description>
-    </item>
-    
-    <item>
-      <title>SpatialHadoop的编译与运行</title>
-      <link>https://extendswind.top/posts/technical/spatialhadoop_compile_and_run/</link>
-      <pubDate>Wed, 05 Sep 2018 10:30:00 +0800</pubDate>
-      
-      <guid>https://extendswind.top/posts/technical/spatialhadoop_compile_and_run/</guid>
-      <description>SpatialHadoop相对HadoopGIS等库，在MapReduce时代的空间数据处理开源库算处理较好。SpatialHadoop在效率上相对一些新的基于Spark空间数据处理开源库明显偏低，加上本身的功能实现得差不多，最近提交的更新越来越少，感觉发展趋势不太好，主要用于学习相关的索引技术。
-编译与运行 主页上有已经编译好的包，可以直接解压到Hadoop目录下运行，但官方的版本解压有错误，因此下载github上源码编译。
-需要的环境：
- jdk8 Hadoop 2.7.7 maven  源码编译 源码地址 https://github.com/aseldawy/spatialhadoop2，直接下载或者git clone到本地。
-需要安装maven用于代码编译。
-编译前将pom.xml文件中hadoop相关的版本改为需要的版本。
-mvn compile 编译源码 mvn assembly:assembly 代码打包，会在target目录下生成jar和一个包含jar与相关依赖的tar.gz包
-在2f1aefd32860d0279f2fc479a8bafb68d07e3761版本（Mar 13,2018）编译时会由于缺少一个测试文件测试失败，可以选择跳过测试，或者注释掉测试的代码（src/test/java/edu/umn/cs/spatialHadoop/indexing/RStarTreeTest.java中的某个函数）。
-运行 首先需要有一个Hadoop集群，能够提交yarn任务。
-将target目录下生成的tar.gz包（spatialhadoop-2.4.3-SNAPSHOT-bin.tar.gz）拷贝到Hadoop目录下并解压即可。
-cp target/spatialhadoop-2.4.3-SNAPSHOT-bin.tar.gz $HADOOP_HOME/ cd $HADOOP_HOME tar -zxvf spatialhadoop-2.4.3-SNAPSHOT-bin.tar.gz Hadoop目录下运行下面的测试代码，会向HDFS中写入一个随机生成的矩形文件。
-sbin/shadoop generate test.rects size:1.gb shape:rect mbr:0,0,1000000,1000000 -overwrite
-SpatialHadoop运行机制 shadoop 脚本 SpatialHadoop 通过脚本shadoop运行命令，脚本就只有几行代码
-bin=`dirname &amp;#34;$0&amp;#34;` bin=`cd &amp;#34;$bin&amp;#34; &amp;gt; /dev/null; pwd`  # Call Hadoop with the operations.Main as the main class . &amp;#34;$bin&amp;#34;/hadoop edu.umn.cs.spatialHadoop.operations.Main $@ 其实只是将spatialhadoop的jar包与相关依赖jar包放入Hadoop的包目录中，然后通过shadoop脚本调用Hadoop脚本调用包中的一个类，向YARN提交MapReduce任务。</description>
+final DFSOutputStream out = dfs.create(getPathName(f), permission, overwrite ? EnumSet.of(CreateFlag.CREATE, CreateFlag.OVERWRITE) : EnumSet.of(CreateFlag.CREATE), true, replication, blockSize, progress, bufferSize, null, favoredNodes); return dfs.createWrappedOutputStream(out, statistics); dfs.create() 调用了DFSOutputStream.newStreamForCreate(&amp;hellip;)。
+public DFSOutputStream create(String src, //... InetSocketAddress[] favoredNodes) throws IOException { //... final DFSOutputStream result = DFSOutputStream.</description>
     </item>
     
     <item>
@@ -163,11 +110,11 @@ CapacityScheduler首先将所有资源分配到hierarchical queue中，每个任
 Fair Scheduler 会在第一个任务运行时分配当前同级队列的所有资源，当有其它任务运行时，回收前面任务运行时的部分资源（一般为运行完成的Container）用于其它任务。
 至于FIFO，源码里都没有描述，可能就是一般的先进先出了。
 YARN默认使用CapacityScheduler，通过下面的属性配置：
-&amp;lt;property&amp;gt;  &amp;lt;name&amp;gt;yarn.resourcemanager.scheduler.class&amp;lt;/name&amp;gt;  &amp;lt;value&amp;gt;org.apache.hadoop.yarn.server.resourcemanager.scheduler.fair.FairScheduler&amp;lt;/value&amp;gt; &amp;lt;/property&amp;gt; YARN 动态资源分配 YARN 能够动态申请资源，如MapReduce中reduce的container会在map过程结束后申请。但Spark On YARN的机制为申请固定的executor，而不动态改变已申请的资源。
+&amp;lt;property&amp;gt; &amp;lt;name&amp;gt;yarn.resourcemanager.scheduler.class&amp;lt;/name&amp;gt; &amp;lt;value&amp;gt;org.apache.hadoop.yarn.server.resourcemanager.scheduler.fair.FairScheduler&amp;lt;/value&amp;gt; &amp;lt;/property&amp;gt; YARN 动态资源分配 YARN 能够动态申请资源，如MapReduce中reduce的container会在map过程结束后申请。但Spark On YARN的机制为申请固定的executor，而不动态改变已申请的资源。
 YARN上新运行的任务能够使用已运行任务回收的资源(如运行完Map task的container)，甚至还能够通过强行结束先前任务的container抢占资源。
 Capacity Scheduler CapacityScheduler重点解决多个组织共享集群资源，并保证每个组织自己的资源使用量。当自己的资源不足时能够使用其它组织的空闲资源。
 资源通过层级队列（hierarchical queues）的形式进行组织，配置在etc/hadoop/capacity-scheduler.xml.
-&amp;lt;!-- 队列结构设置 --&amp;gt; &amp;lt;property&amp;gt;  &amp;lt;name&amp;gt;yarn.scheduler.capacity.root.queues&amp;lt;/name&amp;gt;  &amp;lt;value&amp;gt;a,b&amp;lt;/value&amp;gt;  &amp;lt;description&amp;gt;The queues at the this level (root is the root queue).  &amp;lt;/description&amp;gt; &amp;lt;/property&amp;gt;  &amp;lt;property&amp;gt;  &amp;lt;name&amp;gt;yarn.scheduler.capacity.root.a.queues&amp;lt;/name&amp;gt;  &amp;lt;value&amp;gt;a1,a2&amp;lt;/value&amp;gt;  &amp;lt;description&amp;gt;The queues at the this level (root is the root queue).</description>
+&amp;lt;!-- 队列结构设置 --&amp;gt; &amp;lt;property&amp;gt; &amp;lt;name&amp;gt;yarn.scheduler.capacity.root.queues&amp;lt;/name&amp;gt; &amp;lt;value&amp;gt;a,b&amp;lt;/value&amp;gt; &amp;lt;description&amp;gt;The queues at the this level (root is the root queue). &amp;lt;/description&amp;gt; &amp;lt;/property&amp;gt; &amp;lt;property&amp;gt; &amp;lt;name&amp;gt;yarn.scheduler.capacity.root.a.queues&amp;lt;/name&amp;gt; &amp;lt;value&amp;gt;a1,a2&amp;lt;/value&amp;gt; &amp;lt;description&amp;gt;The queues at the this level (root is the root queue).</description>
     </item>
     
     <item>
@@ -180,21 +127,22 @@ Capacity Scheduler CapacityScheduler重点解决多个组织共享集群资源�
 Java 远程调试 不想了解的可以直接跳到下面Hadoop
 通过JPDA（Java Platform Debugger Architecture），调试时启动服务，通过socket端口与调试服务端通信。
 下面只用最常用的服务端启动调试服务监听端口，本地IDE（idea）连接服务端。
-具体操作 1、启动被调试程序时添加参数：   jdk9: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:8000
+具体操作 1、启动被调试程序时添加参数： jdk9: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:8000
 jdk5-8: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8000
 jdk4: -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8000
 jdk3 及以前: -Xnoagent -Djava.compiler=NONE -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8000
 此处有坑，网上大部分没有提到jdk版本不同导致的区别，很多博客使用jdk4的写法，可能导致问题（idea配置远程调试时有上面的选项）。
 另外一个小坑, 下面第一个命令正常执行，第二个命令会忽略调试选项：
- java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8000 test java test -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8000  主要参数。suspend=y时，程序启动会先挂起，IDE连接后才会运行；suspend=n时，程序启动会直接运行。address后面为端口号，不与其它端口重合即可。
+java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8000 test java test -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8000 主要参数。suspend=y时，程序启动会先挂起，IDE连接后才会运行；suspend=n时，程序启动会直接运行。address后面为端口号，不与其它端口重合即可。
 2、启动Idea连接调试 使用idea打开调试项目的源码工程
 Run -&amp;gt; Edit Configurations , 点“加号” -&amp;gt; remote，然后填上被调试程序所在主机的ip以及上面的address对应端口号，并选择源码所在的module。
 添加后debug运行，剩下的和本地调试相同。
 Hadoop 远程调试 思路和上面的操作一致。下面以调试HDFS中的namenode为例。
 具体操作 1、修改Hadoop启动参数为debug模式 如果需要调试namenode服务，在etc/hadoop/hadoop-env.sh文件后添加：
-export HDFS_NAMENODE_OPTS=&amp;quot;-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8000&amp;quot; 
-HDFS启动的jvm主要为namenode和datanode，jvm启动的参数设置在etc/hadoop/hadoop-env.sh中。其中namenode启动参数环境变量为 HDFS_NAMENODE_OPTS，datanode为 HDFS_DATANODE_OPTS（针对Hadoop3，hadoop2的设置为HADOOP_NAMENODE_OPTS HADOOP_NAMENODE_OPTS）。YARN等服务对应的环境变量需要另查。
-2、启动服务 sbin/start-dfs.sh 或者 bin/hdfs --daemon start namenode仅启动namenode</description>
+export HDFS_NAMENODE_OPTS=&amp;quot;-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8000&amp;quot; HDFS启动的jvm主要为namenode和datanode，jvm启动的参数设置在etc/hadoop/hadoop-env.sh中。其中namenode启动参数环境变量为 HDFS_NAMENODE_OPTS，datanode为 HDFS_DATANODE_OPTS（针对Hadoop3，hadoop2的设置为HADOOP_NAMENODE_OPTS HADOOP_NAMENODE_OPTS）。YARN等服务对应的环境变量需要另查。
+2、启动服务 sbin/start-dfs.sh 或者 bin/hdfs --daemon start namenode仅启动namenode
+3、启动idea连接服务 下载源码并导入到工程（可以只导入需要调试的部分）
+Run -&amp;gt; Edit Configurations , 点“加号” -&amp;gt; remote，然后填上被调试程序所在主机的ip以及上面的address对应端口号，并选择需要调试的module。</description>
     </item>
     
     <item>

@@ -16,7 +16,7 @@
       <description>简述 使用log4j可以根据配置文件控制输出日志的级别，记录到文件、命令行等的位置，不需要代码上的更改。
 日志在一定程度上会影响性能，特别是高并发环境。一般更建议使用log4j 2.x，在性能上有较大的提高，由于hadoop 2.7使用的log4j 1.2，下面主要写这一版本。
 本文主要介绍log4j：
- 根据日志级别记录日志 (logger上设置） 运行时决定具体的记录位置（appender上设置）和日志格式（layout上设置）  一些概念 日志级别（priority，代码里为level） 日志级别从低到高为trace, debug, info, warn, error, fatal。默认级别为info，低于设置级别的日志不会被打印。
+根据日志级别记录日志 (logger上设置） 运行时决定具体的记录位置（appender上设置）和日志格式（layout上设置） 一些概念 日志级别（priority，代码里为level） 日志级别从低到高为trace, debug, info, warn, error, fatal。默认级别为info，低于设置级别的日志不会被打印。
 常用组件 一般情况下常设置的组件有logger，appender， layout。
 用类的方式表达三个组件的关系为
 Logger{ name; level; // 控制日志级别 appenderList; // 可对应多个appender } Appender{ name; // 控制文件位置 如fileAppender layout; // 控制格式 filter; // 过滤部分日志 } logger logger以一种树状关系管理日志的类型，log4j.rootCategory为根节点，如果没有标记 log4j.additivity.MyLogger = false ，则子logger会默认继承上一级的设置。
@@ -24,7 +24,7 @@ Logger{ name; level; // 控制日志级别 appenderList; // 可对应多个appen
 通过点表示层级，如com.foo为com.foo.Bar的上级
 关于category，早期的log4j使用category较多，但在log4j 1.2之后，建议使用logger代替category。
 appender 主要用于
- 控制日志的输出位置，当前支持the console, files, GUI components, remote socket servers, NT Event Loggers, and remote UNIX Syslog daemons.</description>
+控制日志的输出位置，当前支持the console, files, GUI components, remote socket servers, NT Event Loggers, and remote UNIX Syslog daemons.</description>
     </item>
     
   </channel>

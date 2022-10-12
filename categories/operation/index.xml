@@ -20,14 +20,14 @@
 如果在没有桌面环境的linux服务器（如VPS）上安装，需要在 ~/.config/syncthing/config.xml 配置中将127.0.0.1改为0.0.0.0，防火墙放开8384端口、22000端口。然后在本地浏览器中用服务器 ip:8384 访问。
 直连服务器配置 在局域网内或者连接有公网ip的主机时，会默认使用直连的方式。当两个主机不能直接连接，或者网络状态不好时，会通过relay中继服务器连接。
 VPS的web UI中直连的listener选项卡为：
- quic://0.0.0.0:22000
+quic://0.0.0.0:22000
 tcp://0.0.0.0:22000
- 连接VPS时，在address选项中将上面0.0.0.0替换成VPS服务器的ip，替代默认的dynamic即可。
+连接VPS时，在address选项中将上面0.0.0.0替换成VPS服务器的ip，替代默认的dynamic即可。
 文件版本保存 一个文件可能会修改多次，文件夹的设置中有File Version选项，可以按时间、修改次数、删除等方式备份多个版本，具体设置界面有说明。
 安全相关 每个节点的id不包含隐私信息，连接时以及分享文件夹时都需要在两个节点的web UI中确认，id没必要加密保存。节点之间的数据传输通过TLS加密，不用太考虑中心服务器导致的隐私问题。
 web UI 页面直接暴露给外网可能会容易被被端口扫描后攻击，可以设置密码加强安全性。或者通过反向代理隐藏web UI的端口，具体配置在 https://docs.syncthing.net/users/reverseproxy.html。关于反向代理踩的一个小坑：nginx设置中的location /syncthing/后面的斜杠不能漏。
 文件分享 Syncthing不支持文件分享，只能间接的处理，下面放个简单的nginx配置解决web服务中分享某个文件文件的下载功能。（至于上传，可以考虑sftp、samba一类的服务，这个比较弱）
- location /file_share/ { alias /home/user/Syncthing/public/; autoindex on; autoindex_exact_size off; # 文件大小显示MB，GB单位，默认为b； autoindex_localtime on; # 服务器本地时区显示文件修改日期 } 基本原理 同步设计上首先将大文件切割成block，小文件直接单独作为block（和HDFS的操作类似）。对每个block计算hash值，通过hash值判断文件的完整性和变化（可以自动识别重命名）。当发生文件变化时，操作系统会通知Syncthing程序，Syncthing程序之间传输元数据信息以及变化的数据。
+location /file_share/ { alias /home/user/Syncthing/public/; autoindex on; autoindex_exact_size off; # 文件大小显示MB，GB单位，默认为b； autoindex_localtime on; # 服务器本地时区显示文件修改日期 } 基本原理 同步设计上首先将大文件切割成block，小文件直接单独作为block（和HDFS的操作类似）。对每个block计算hash值，通过hash值判断文件的完整性和变化（可以自动识别重命名）。当发生文件变化时，操作系统会通知Syncthing程序，Syncthing程序之间传输元数据信息以及变化的数据。
 连接上每个Syncthing程序通过唯一id识别，默认打开了本地发现（local discovery）和全网发现（global discovery）。本地发现能够在添加其它节点时自动找到局域网内的其它服务，全局发现依赖了额外的官方服务器，能根据id直接找到对应的节点（不确定ip是通过id算出来的还是全局发现找到的）。
 为了使不在同一个局域网下的节点能够同步，官方提供了relay服务器作为中介，不在局域网内的同步默认可以直接通过官方relay服务器进行，也可以自己在有公网ip的机器上架服务。relay服务默认为开启状态，局域网内的节点可能由于网络状况等问题从直连转为relay连接，在配置的web GUI中的Remote Devices下的address中可以看到是直接的ip还是带relay的ip，此处配置可以修改。
 Sycnthing默认有几个地方会连接官方服务器：1. 使用数据收集（第一次打开web UI会询问是否同意）；2. 全局发现；3. relay中继服务器。为了方便无所谓，如果只是想单纯在网络可以互通的环境下使用文件同步，可以考虑在设置中把这几个都关了。</description>
@@ -41,9 +41,9 @@ Sycnthing默认有几个地方会连接官方服务器：1. 使用数据收集�
       <guid>https://extendswind.top/posts/technical/python3_publish_blog/</guid>
       <description>用个人域名搭建的博客在百度搜索上的SEO太差，百度一直只收录主页，懒得再为这些问题折腾，直接同步到博客园算了，考虑用Python。
 貌似CSDN已经关闭了metawebblog接口，只在博客园上测试。
-Python发博客的主要方案  通过xmlprc的metaweblog接口（首选） CSDN和博客园的api（定位不是用来发博客的，申请key和调接口略麻烦） 使用抓包的技术模拟浏览器登录发博客（没悬念更折腾）  代码 对于支持metaweblog的博客平台，只要提供用户名、密码和博客相关信息。
+Python发博客的主要方案 通过xmlprc的metaweblog接口（首选） CSDN和博客园的api（定位不是用来发博客的，申请key和调接口略麻烦） 使用抓包的技术模拟浏览器登录发博客（没悬念更折腾） 代码 对于支持metaweblog的博客平台，只要提供用户名、密码和博客相关信息。
 python2 需要将后面的xmlrpc.client改为xmlrpclib，并且import xmlrpclib
-#!/bin/python3  import xmlrpc.client  username = &amp;#39;&amp;#39; # TODO your username passwd = &amp;#39;&amp;#39; # TODO your passwd # url = &amp;#39;http://www.cnblogs.com/&amp;#39; + username + &amp;#39;/services/metaweblog.aspx&amp;#39; # 此链接已挂 url = &amp;#39;https://rpc.cnblogs.com/metaweblog/&amp;#39; + username  title = &amp;#34;helloWorld&amp;#34; content = &amp;#34;&amp;lt;p&amp;gt; test &amp;lt;p&amp;gt;&amp;#34; tags = &amp;#34;tag1, tag2&amp;#34;  blogProxy = xmlrpc.client.ServerProxy(url)  # 获取最近博客列表 print(blogProxy.metaWeblog.getRecentPosts(&amp;#39;&amp;#39;, username, passwd, 1))  # 发布博客 blogProxy.</description>
+#!/bin/python3 import xmlrpc.client username = &amp;#39;&amp;#39; # TODO your username passwd = &amp;#39;&amp;#39; # TODO your passwd # url = &amp;#39;http://www.cnblogs.com/&amp;#39; + username + &amp;#39;/services/metaweblog.aspx&amp;#39; # 此链接已挂 url = &amp;#39;https://rpc.cnblogs.com/metaweblog/&amp;#39; + username title = &amp;#34;helloWorld&amp;#34; content = &amp;#34;&amp;lt;p&amp;gt; test &amp;lt;p&amp;gt;&amp;#34; tags = &amp;#34;tag1, tag2&amp;#34; blogProxy = xmlrpc.client.ServerProxy(url) # 获取最近博客列表 print(blogProxy.metaWeblog.getRecentPosts(&amp;#39;&amp;#39;, username, passwd, 1)) # 发布博客 blogProxy.metaWeblog.newPost(&amp;#39;&amp;#39;, username, passwd, dict(title=title, description=content, mt_keywords=tags), True) 参考 https://rpc.</description>
     </item>
     
     <item>
@@ -66,8 +66,8 @@ CDN略麻烦，还需要其它的服务。 在各种折腾之后选择了托管�
 还有稳定更新，提高博客的质量。
 然后静静的等待&amp;hellip;.
 附：国内外的免费静态网站托管 国外代码托管系列
- netlify，最好最方便，没有之一，添加域名和github仓库的地址就能解决问题，github上的提交还会自动同步。 github page，网页放上去选择显示的分支即可，网速虽然没有飞起但在教育网下还行，主要问题在于上面提到的，百度搜索不到&amp;hellip; gitlab，同github，但使用了Docker技术提高了构建能力，能够上传源博客在服务端构建。只是折腾了一会，fork的项目构建网页一直失败，懒得再debug&amp;hellip; bitbucket，同github，一个大bug在于不能直接添加域名，域名解析过去无效，需要额外的服务（又是一堆配置）  国内代码托管
- 码云，同github，但添加域名是收费功能。 coding，之前博客提到的最多，貌似最近加入了广告，进入网页前几秒会跳入广告页（略不能忍）。  </description>
+netlify，最好最方便，没有之一，添加域名和github仓库的地址就能解决问题，github上的提交还会自动同步。 github page，网页放上去选择显示的分支即可，网速虽然没有飞起但在教育网下还行，主要问题在于上面提到的，百度搜索不到&amp;hellip; gitlab，同github，但使用了Docker技术提高了构建能力，能够上传源博客在服务端构建。只是折腾了一会，fork的项目构建网页一直失败，懒得再debug&amp;hellip; bitbucket，同github，一个大bug在于不能直接添加域名，域名解析过去无效，需要额外的服务（又是一堆配置） 国内代码托管
+码云，同github，但添加域名是收费功能。 coding，之前博客提到的最多，貌似最近加入了广告，进入网页前几秒会跳入广告页（略不能忍）。 </description>
     </item>
     
   </channel>

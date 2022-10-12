@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang='en' dir='auto'><head>
+  <meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<meta name='description' content='Sedona (GeoSpark) 空间数据可视化过程不太复杂，主要是每个空间对象向对应栅格空间的映射，和矢量转栅格类似。直接上代码：
+// 已经通过Sedona创建了类型为LineStringRDD的slineRDD对象 import org.apache.sedona.viz.core.ImageGenerator import org.apache.sedona.viz.extension.visualizationEffect.ScatterPlot import org.apache.sedona.viz.utils.ImageType import java.awt.Color // 创建新的对象 var visualizationOperator = new ScatterPlot(10000, 10000, slineRDD.boundaryEnvelope, false) visualizationOperator.CustomizeColor(255, 255, 255, 255, Color.blue, true) // 具体的可视化过程实现 visualizationOperator.Visualize(sc, slineRDD) // 将结果保存为PNG图像 var imageGenerator = new ImageGenerator imageGenerator.SaveRasterImageAsLocalFile(visualizationOperator.rasterImage, &#34;/home/sparkl/visual&#34;, ImageType.PNG) 其中具体的可视化操作在visualizationOperator.Visualize(sc, slineRDD)函数中，分为visualize、colorize和renderImage三步，具体操作如下：
+public boolean Visualize(JavaSparkContext sparkContext, SpatialRDD spatialRDD) throws Exception { // 返回值为JavaPairRDD&lt;Pixel, Double&gt; // 栅格图中的每个像素对应一个Pixel，包含x、y信息，Double和属性值相关 this.Rasterize(sparkContext, spatialRDD, true); // 修改value的值，通过value值赋颜色 this.Colorize(); this.RenderImage(sparkContext); return true; } Rasterize Rasterize函数是最主要的矢量向栅格的转换函数，先通过flatMapToPair算子计算每个空间对象对应的像素位置和像素值，然后filter掉超出范围的像素值。Sedona的实现中value没有考虑空间实体的属性，每个像素点的value直接赋值的1.'>
+<meta name='theme-color' content='#cccccc'>
+
+<meta property='og:title' content='Sedona空间数据可视化源码分析 • A Notebook of Extendswind'>
+<meta property='og:description' content='Sedona (GeoSpark) 空间数据可视化过程不太复杂，主要是每个空间对象向对应栅格空间的映射，和矢量转栅格类似。直接上代码：
+// 已经通过Sedona创建了类型为LineStringRDD的slineRDD对象 import org.apache.sedona.viz.core.ImageGenerator import org.apache.sedona.viz.extension.visualizationEffect.ScatterPlot import org.apache.sedona.viz.utils.ImageType import java.awt.Color // 创建新的对象 var visualizationOperator = new ScatterPlot(10000, 10000, slineRDD.boundaryEnvelope, false) visualizationOperator.CustomizeColor(255, 255, 255, 255, Color.blue, true) // 具体的可视化过程实现 visualizationOperator.Visualize(sc, slineRDD) // 将结果保存为PNG图像 var imageGenerator = new ImageGenerator imageGenerator.SaveRasterImageAsLocalFile(visualizationOperator.rasterImage, &#34;/home/sparkl/visual&#34;, ImageType.PNG) 其中具体的可视化操作在visualizationOperator.Visualize(sc, slineRDD)函数中，分为visualize、colorize和renderImage三步，具体操作如下：
+public boolean Visualize(JavaSparkContext sparkContext, SpatialRDD spatialRDD) throws Exception { // 返回值为JavaPairRDD&lt;Pixel, Double&gt; // 栅格图中的每个像素对应一个Pixel，包含x、y信息，Double和属性值相关 this.Rasterize(sparkContext, spatialRDD, true); // 修改value的值，通过value值赋颜色 this.Colorize(); this.RenderImage(sparkContext); return true; } Rasterize Rasterize函数是最主要的矢量向栅格的转换函数，先通过flatMapToPair算子计算每个空间对象对应的像素位置和像素值，然后filter掉超出范围的像素值。Sedona的实现中value没有考虑空间实体的属性，每个像素点的value直接赋值的1.'>
+<meta property='og:url' content='https://extendswind.top/posts/technical/sedona_spatial_big_data_visualization/'>
+<meta property='og:site_name' content='A Notebook of Extendswind'>
+<meta property='og:type' content='article'><meta property='article:section' content='posts'><meta property='article:tag' content='Hadoop'><meta property='article:tag' content='Sedona'><meta property='article:tag' content='GIS'><meta property='article:published_time' content='2022-10-11T20:30:00&#43;08:00'/><meta property='article:modified_time' content='2022-10-11T20:30:00&#43;08:00'/><meta name='twitter:card' content='summary'>
+
+<meta name="generator" content="Hugo 0.102.3" />
+
+  <title>Sedona空间数据可视化源码分析 • A Notebook of Extendswind</title>
+  <link rel='canonical' href='https://extendswind.top/posts/technical/sedona_spatial_big_data_visualization/'>
+  
+  
+  <link rel='icon' href='/images/wind.jpeg'>
+<link rel='stylesheet' href='/assets/css/main.ab98e12b.css'><link rel='stylesheet' href='/css/custom.css'><style>
+:root{--color-accent:#cccccc;}
+</style>
+
+  
+
+</head>
+<body class='page type-posts has-sidebar'>
+
+  <div class='site'><div id='sidebar' class='sidebar'>
+  <a class='screen-reader-text' href='#main-menu'>Skip to Main Menu</a>
+
+  <div class='container'><section class='widget widget-about sep-after'>
+  <header>
+    
+    <div class='logo'>
+      <a href='/'>
+        <img src='/images/wind.jpeg'>
+      </a>
+    </div>
+    
+    <h2 class='title site-title '>
+      <a href='/'>
+      extendswind
+      </a>
+    </h2>
+    <div class='desc'>
+    
+    </div>
+  </header>
+
+</section>
+<section class='widget widget-sidebar_menu sep-after'><nav id='sidebar-menu' class='menu sidebar-menu' aria-label='Sidebar Menu'>
+    <div class='container'>
+      <ul><li class='item'>
+  <a href='/'>Home</a></li><li class='item'>
+  <a href='/posts'>Posts</a></li><li class='item'>
+  <a href='/categories'>Categories</a></li><li class='item'>
+  <a href='https://github.com/extendswind'>GitHub</a></li><li class='item'>
+  <a href='https://www.cnblogs.com/fly2wind/'>Cnblog</a></li></ul>
+    </div>
+  </nav>
+
+</section><section class='widget widget-taxonomy_cloud sep-after'>
+  <header>
+    <h4 class='title widget-title'>Tags</h4>
+  </header>
+
+  <div class='container list-container'>
+  <ul class='list taxonomy-cloud'><li>
+        <a href='/tags/blog/' style='font-size:1em'>blog</a>
+      </li><li>
+        <a href='/tags/c&#43;&#43;/' style='font-size:1em'>c&#43;&#43;</a>
+      </li><li>
+        <a href='/tags/design-patterns/' style='font-size:1em'>design patterns</a>
+      </li><li>
+        <a href='/tags/geospark/' style='font-size:1em'>GeoSpark</a>
+      </li><li>
+        <a href='/tags/gis/' style='font-size:1em'>GIS</a>
+      </li><li>
+        <a href='/tags/git/' style='font-size:1em'>git</a>
+      </li><li>
+        <a href='/tags/hadoop/' style='font-size:1em'>Hadoop</a>
+      </li><li>
+        <a href='/tags/hive/' style='font-size:1em'>hive</a>
+      </li><li>
+        <a href='/tags/iot/' style='font-size:1em'>IoT</a>
+      </li><li>
+        <a href='/tags/java/' style='font-size:1em'>java</a>
+      </li><li>
+        <a href='/tags/life/' style='font-size:1em'>life</a>
+      </li><li>
+        <a href='/tags/linux/' style='font-size:1em'>linux</a>
+      </li><li>
+        <a href='/tags/log4j/' style='font-size:1em'>log4j</a>
+      </li><li>
+        <a href='/tags/mpi/' style='font-size:1em'>MPI</a>
+      </li><li>
+        <a href='/tags/python/' style='font-size:1em'>python</a>
+      </li><li>
+        <a href='/tags/qgis/' style='font-size:1em'>QGIS</a>
+      </li><li>
+        <a href='/tags/raspberry/' style='font-size:1em'>raspberry</a>
+      </li><li>
+        <a href='/tags/reading/' style='font-size:1em'>reading</a>
+      </li><li>
+        <a href='/tags/sedona/' style='font-size:1em'>Sedona</a>
+      </li><li>
+        <a href='/tags/software/' style='font-size:1em'>software</a>
+      </li><li>
+        <a href='/tags/spark/' style='font-size:1em'>Spark</a>
+      </li><li>
+        <a href='/tags/%E9%87%8D%E5%AD%A6%E7%BC%96%E7%A8%8B%E5%9F%BA%E7%A1%80/' style='font-size:1em'>重学编程基础</a>
+      </li></ul>
+</div>
+
+
+</section>
+<section class='widget widget-search sep-after'>
+  <header>
+    <h4 class='title widget-title'>Search</h4>
+  </header>
+
+  <form action='/search' id='search-form' class='search-form'>
+    <label>
+      <span class='screen-reader-text'>Search</span>
+      <input id='search-term' class='search-term' type='search' name='q' placeholder='Search&hellip;'>
+    </label></form>
+
+</section>
+</div>
+
+  <div class='sidebar-overlay'></div>
+</div><div class='main'><a class='screen-reader-text' href='#content'>Skip to Content</a>
+
+<button id='sidebar-toggler' class='sidebar-toggler' aria-controls='sidebar'>
+  <span class='screen-reader-text'>Toggle Sidebar</span>
+  <span class='open'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="3" y1="12" x2="21" y2="12" />
+  <line x1="3" y1="6" x2="21" y2="6" />
+  <line x1="3" y1="18" x2="21" y2="18" />
+  
+</svg>
+</span>
+  <span class='close'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="18" y1="6" x2="6" y2="18" />
+  <line x1="6" y1="6" x2="18" y2="18" />
+  
+</svg>
+</span>
+</button><div class='header-widgets'>
+        <div class='container'></div>
+      </div>
+
+      <header id='header' class='header site-header'>
+        <div class='container sep-after'>
+          <div class='header-info'><p class='site-title title'>A Notebook of Extendswind</p><p class='desc site-desc'>a simple blog site</p>
+          </div>
+        </div>
+      </header>
+
+      <main id='content'>
+
+
+<article lang='en' class='entry'>
+  <header class='header entry-header'>
+  <div class='container sep-after'>
+    <div class='header-info'>
+      <h1 class='title'>Sedona空间数据可视化源码分析</h1>
+      
+
+    </div>
+    <div class='entry-meta'>
+  <span class='posted-on'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+  <line x1="16" y1="2" x2="16" y2="6"/>
+  <line x1="8" y1="2" x2="8" y2="6"/>
+  <line x1="3" y1="10" x2="21" y2="10"/>
+  
+</svg>
+<span class='screen-reader-text'>Posted on </span>
+  <time class='entry-date' datetime='2022-10-11T20:30:00&#43;08:00'>2022, Oct 11</time>
+</span>
+
+  
+  
+
+</div>
+
+
+  </div>
+</header>
+
+  
+  
+<details class='container entry-toc' open>
+  <summary class='title'>
+    <span>Table of Contents</span>
+  </summary>
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#rasterize">Rasterize</a></li>
+    <li><a href="#colorize">colorize</a></li>
+    <li><a href="#renderimage">RenderImage</a></li>
+  </ul>
+</nav>
+</details>
+
+
+  <div class='container entry-content'>
+  <p>Sedona (GeoSpark) 空间数据可视化过程不太复杂，主要是每个空间对象向对应栅格空间的映射，和矢量转栅格类似。直接上代码：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 已经通过Sedona创建了类型为LineStringRDD的slineRDD对象
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> org.apache.sedona.viz.core.ImageGenerator
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> org.apache.sedona.viz.extension.visualizationEffect.ScatterPlot
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> org.apache.sedona.viz.utils.ImageType
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> java.awt.Color
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 创建新的对象
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>var visualizationOperator <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ScatterPlot<span style="color:#f92672">(</span>10000<span style="color:#f92672">,</span> 10000<span style="color:#f92672">,</span> slineRDD<span style="color:#f92672">.</span><span style="color:#a6e22e">boundaryEnvelope</span><span style="color:#f92672">,</span> <span style="color:#66d9ef">false</span><span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>visualizationOperator<span style="color:#f92672">.</span><span style="color:#a6e22e">CustomizeColor</span><span style="color:#f92672">(</span>255<span style="color:#f92672">,</span> 255<span style="color:#f92672">,</span> 255<span style="color:#f92672">,</span> 255<span style="color:#f92672">,</span> Color<span style="color:#f92672">.</span><span style="color:#a6e22e">blue</span><span style="color:#f92672">,</span> <span style="color:#66d9ef">true</span><span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 具体的可视化过程实现
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>visualizationOperator<span style="color:#f92672">.</span><span style="color:#a6e22e">Visualize</span><span style="color:#f92672">(</span>sc<span style="color:#f92672">,</span> slineRDD<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 将结果保存为PNG图像
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>var imageGenerator <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ImageGenerator
+</span></span><span style="display:flex;"><span>imageGenerator<span style="color:#f92672">.</span><span style="color:#a6e22e">SaveRasterImageAsLocalFile</span><span style="color:#f92672">(</span>visualizationOperator<span style="color:#f92672">.</span><span style="color:#a6e22e">rasterImage</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;/home/sparkl/visual&#34;</span><span style="color:#f92672">,</span> ImageType<span style="color:#f92672">.</span><span style="color:#a6e22e">PNG</span><span style="color:#f92672">)</span>
+</span></span></code></pre></div><p>其中具体的可视化操作在visualizationOperator.Visualize(sc, slineRDD)函数中，分为visualize、colorize和renderImage三步，具体操作如下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">boolean</span> <span style="color:#a6e22e">Visualize</span><span style="color:#f92672">(</span>JavaSparkContext sparkContext<span style="color:#f92672">,</span> SpatialRDD spatialRDD<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">throws</span> Exception
+</span></span><span style="display:flex;"><span><span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// 返回值为JavaPairRDD&lt;Pixel, Double&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">// 栅格图中的每个像素对应一个Pixel，包含x、y信息，Double和属性值相关
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">Rasterize</span><span style="color:#f92672">(</span>sparkContext<span style="color:#f92672">,</span> spatialRDD<span style="color:#f92672">,</span> <span style="color:#66d9ef">true</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// 修改value的值，通过value值赋颜色
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">Colorize</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">RenderImage</span><span style="color:#f92672">(</span>sparkContext<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">true</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><h1 id="rasterize">Rasterize</h1>
+<p>Rasterize函数是最主要的矢量向栅格的转换函数，先通过flatMapToPair算子计算每个空间对象对应的像素位置和像素值，然后filter掉超出范围的像素值。Sedona的实现中value没有考虑空间实体的属性，每个像素点的value直接赋值的1.0。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#66d9ef">protected</span> JavaPairRDD<span style="color:#f92672">&lt;</span>Pixel<span style="color:#f92672">,</span> Double<span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">Rasterize</span><span style="color:#f92672">(</span>JavaSparkContext sparkContext<span style="color:#f92672">,</span>
+</span></span><span style="display:flex;"><span>        SpatialRDD spatialRDD<span style="color:#f92672">,</span> <span style="color:#66d9ef">boolean</span> useSparkDefaultPartition<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    JavaRDD<span style="color:#f92672">&lt;</span>Object<span style="color:#f92672">&gt;</span> rawSpatialRDD <span style="color:#f92672">=</span> spatialRDD<span style="color:#f92672">.</span><span style="color:#a6e22e">rawSpatialRDD</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// rawSpatialRDD中包含对应的空间对象，通过flatMapToPair算子计算每个空间对象对应的Pixel，得到&lt;Pixel, Double&gt; 类型的键值对
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    JavaPairRDD<span style="color:#f92672">&lt;</span>Pixel<span style="color:#f92672">,</span> Double<span style="color:#f92672">&gt;</span> spatialRDDwithPixelId <span style="color:#f92672">=</span> rawSpatialRDD<span style="color:#f92672">.</span><span style="color:#a6e22e">flatMapToPair</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> PairFlatMapFunction<span style="color:#f92672">&lt;</span>Object<span style="color:#f92672">,</span> Pixel<span style="color:#f92672">,</span> Double<span style="color:#f92672">&gt;(){</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">@Override</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">public</span> Iterator<span style="color:#f92672">&lt;</span>Tuple2<span style="color:#f92672">&lt;</span>Pixel<span style="color:#f92672">,</span> Double<span style="color:#f92672">&gt;&gt;</span> <span style="color:#a6e22e">call</span><span style="color:#f92672">(</span>Object spatialObject<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> Exception <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>			<span style="color:#75715e">// 分不同的数据类型进行处理
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>spatialObject <span style="color:#66d9ef">instanceof</span> Point<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">return</span> RasterizationUtils<span style="color:#f92672">.</span><span style="color:#a6e22e">FindPixelCoordinates</span><span style="color:#f92672">(</span>resolutionX<span style="color:#f92672">,</span> resolutionY<span style="color:#f92672">,</span> datasetBoundary<span style="color:#f92672">,</span> <span style="color:#f92672">(</span>Point<span style="color:#f92672">)</span> spatialObject<span style="color:#f92672">,</span> colorizeOption<span style="color:#f92672">,</span> reverseSpatialCoordinate<span style="color:#f92672">).</span><span style="color:#a6e22e">iterator</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>spatialObject <span style="color:#66d9ef">instanceof</span> Polygon<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">return</span> RasterizationUtils<span style="color:#f92672">.</span><span style="color:#a6e22e">FindPixelCoordinates</span><span style="color:#f92672">(</span>resolutionX<span style="color:#f92672">,</span> resolutionY<span style="color:#f92672">,</span> datasetBoundary<span style="color:#f92672">,</span> <span style="color:#f92672">(</span>Polygon<span style="color:#f92672">)</span> spatialObject<span style="color:#f92672">,</span> reverseSpatialCoordinate<span style="color:#f92672">).</span><span style="color:#a6e22e">iterator</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>spatialObject <span style="color:#66d9ef">instanceof</span> LineString<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>				<span style="color:#75715e">// 计算每个空间对象对应栅格图中的&lt;像素位置,像素值&gt;，会得到一个像素值列表
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                <span style="color:#66d9ef">return</span> RasterizationUtils<span style="color:#f92672">.</span><span style="color:#a6e22e">FindPixelCoordinates</span><span style="color:#f92672">(</span>resolutionX<span style="color:#f92672">,</span> resolutionY<span style="color:#f92672">,</span> datasetBoundary<span style="color:#f92672">,</span> <span style="color:#f92672">(</span>LineString<span style="color:#f92672">)</span> spatialObject<span style="color:#f92672">,</span> reverseSpatialCoordinate<span style="color:#f92672">).</span><span style="color:#a6e22e">iterator</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">else</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>				<span style="color:#75715e">// 只支持上面的三种数据类型
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                <span style="color:#66d9ef">throw</span> <span style="color:#66d9ef">new</span> Exception<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;[Sedona-VizViz][Rasterize] Unsupported spatial object types. Sedona-VizViz only supports Point, Polygon, LineString&#34;</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">});</span>
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 去除不在范围内的点（这个在上一步直接处理比较合适？）
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	spatialRDDwithPixelId <span style="color:#f92672">=</span> spatialRDDwithPixelId<span style="color:#f92672">.</span><span style="color:#a6e22e">filter</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> Function<span style="color:#f92672">&lt;</span>Tuple2<span style="color:#f92672">&lt;</span>Pixel<span style="color:#f92672">,</span> Double<span style="color:#f92672">&gt;,</span> Boolean<span style="color:#f92672">&gt;()</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">@Override</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">public</span> Boolean <span style="color:#a6e22e">call</span><span style="color:#f92672">(</span>Tuple2<span style="color:#f92672">&lt;</span>Pixel<span style="color:#f92672">,</span> Double<span style="color:#f92672">&gt;</span> pixelCount<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">throws</span> Exception
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> <span style="color:#f92672">!(</span>pixelCount<span style="color:#f92672">.</span><span style="color:#a6e22e">_1</span><span style="color:#f92672">().</span><span style="color:#a6e22e">getX</span><span style="color:#f92672">()</span> <span style="color:#f92672">&lt;</span> 0<span style="color:#f92672">)</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#f92672">!(</span>pixelCount<span style="color:#f92672">.</span><span style="color:#a6e22e">_1</span><span style="color:#f92672">().</span><span style="color:#a6e22e">getX</span><span style="color:#f92672">()</span> <span style="color:#f92672">&gt;</span> resolutionX<span style="color:#f92672">)</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#f92672">!(</span>pixelCount<span style="color:#f92672">.</span><span style="color:#a6e22e">_1</span><span style="color:#f92672">().</span><span style="color:#a6e22e">getY</span><span style="color:#f92672">()</span> <span style="color:#f92672">&lt;</span> 0<span style="color:#f92672">)</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#f92672">!(</span>pixelCount<span style="color:#f92672">.</span><span style="color:#a6e22e">_1</span><span style="color:#f92672">().</span><span style="color:#a6e22e">getY</span><span style="color:#f92672">()</span> <span style="color:#f92672">&gt;</span> resolutionY<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">});</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">distributedRasterCountMatrix</span> <span style="color:#f92672">=</span> spatialRDDwithPixelId<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">distributedRasterCountMatrix</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><p>像素值的计算将LineString拆分为两个点构成的线段进行计算，先计算每个点在栅格图中的位置，然后计算两个栅格图坐标练成线段时中间穿过的点。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> List<span style="color:#f92672">&lt;</span>Tuple2<span style="color:#f92672">&lt;</span>Pixel<span style="color:#f92672">,</span> Double<span style="color:#f92672">&gt;&gt;</span> <span style="color:#a6e22e">FindPixelCoordinates</span><span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> resolutionX<span style="color:#f92672">,</span> <span style="color:#66d9ef">int</span> resolutionY<span style="color:#f92672">,</span> Envelope datasetBoundary<span style="color:#f92672">,</span> LineString spatialObject<span style="color:#f92672">,</span> <span style="color:#66d9ef">boolean</span> reverseSpatialCoordinate<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    List<span style="color:#f92672">&lt;</span>Tuple2<span style="color:#f92672">&lt;</span>Pixel<span style="color:#f92672">,</span> Double<span style="color:#f92672">&gt;&gt;</span> result <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ArrayList<span style="color:#f92672">&lt;</span>Tuple2<span style="color:#f92672">&lt;</span>Pixel<span style="color:#f92672">,</span> Double<span style="color:#f92672">&gt;&gt;();</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> 0<span style="color:#f92672">;</span> i <span style="color:#f92672">&lt;</span> spatialObject<span style="color:#f92672">.</span><span style="color:#a6e22e">getCoordinates</span><span style="color:#f92672">().</span><span style="color:#a6e22e">length</span> <span style="color:#f92672">-</span> 1<span style="color:#f92672">;</span> i<span style="color:#f92672">++)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>        Tuple2<span style="color:#f92672">&lt;</span>Integer<span style="color:#f92672">,</span> Integer<span style="color:#f92672">&gt;</span> pixelCoordinate1 <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>        Tuple2<span style="color:#f92672">&lt;</span>Integer<span style="color:#f92672">,</span> Integer<span style="color:#f92672">&gt;</span> pixelCoordinate2 <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>			<span style="color:#75715e">// 两个点在栅格图中的位置
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            pixelCoordinate1 <span style="color:#f92672">=</span> FindOnePixelCoordinate<span style="color:#f92672">(</span>resolutionX<span style="color:#f92672">,</span> resolutionY<span style="color:#f92672">,</span> datasetBoundary<span style="color:#f92672">,</span> spatialObject<span style="color:#f92672">.</span><span style="color:#a6e22e">getCoordinates</span><span style="color:#f92672">()[</span>i<span style="color:#f92672">],</span> reverseSpatialCoordinate<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>            pixelCoordinate2 <span style="color:#f92672">=</span> FindOnePixelCoordinate<span style="color:#f92672">(</span>resolutionX<span style="color:#f92672">,</span> resolutionY<span style="color:#f92672">,</span> datasetBoundary<span style="color:#f92672">,</span> spatialObject<span style="color:#f92672">.</span><span style="color:#a6e22e">getCoordinates</span><span style="color:#f92672">()[</span>i <span style="color:#f92672">+</span> 1<span style="color:#f92672">],</span> reverseSpatialCoordinate<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>Exception e<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// This line segment is out of boundary, Should be ignored.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            <span style="color:#66d9ef">continue</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// 通过两个栅格图的坐标位置计算连成线段后经过的其它栅格点，并将结果加入到result
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        result<span style="color:#f92672">.</span><span style="color:#a6e22e">addAll</span><span style="color:#f92672">(</span>FindPixelCoordinates<span style="color:#f92672">(</span>resolutionX<span style="color:#f92672">,</span> resolutionY<span style="color:#f92672">,</span> pixelCoordinate1<span style="color:#f92672">,</span> pixelCoordinate2<span style="color:#f92672">,</span> reverseSpatialCoordinate<span style="color:#f92672">));</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> result<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 计算点在栅格图像中的位置
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> Tuple2<span style="color:#f92672">&lt;</span>Integer<span style="color:#f92672">,</span> Integer<span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">FindOnePixelCoordinate</span><span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> resolutionX<span style="color:#f92672">,</span> <span style="color:#66d9ef">int</span> resolutionY<span style="color:#f92672">,</span> Envelope datasetBoundaryOriginal<span style="color:#f92672">,</span> Coordinate spatialCoordinateOriginal<span style="color:#f92672">,</span> <span style="color:#66d9ef">boolean</span> reverseSpatialCoordinate<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    Coordinate spatialCoordinate<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>    Envelope datasetBoundary<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>reverseSpatialCoordinate<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>        spatialCoordinate <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Coordinate<span style="color:#f92672">(</span>spatialCoordinateOriginal<span style="color:#f92672">.</span><span style="color:#a6e22e">y</span><span style="color:#f92672">,</span> spatialCoordinateOriginal<span style="color:#f92672">.</span><span style="color:#a6e22e">x</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>        datasetBoundary <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Envelope<span style="color:#f92672">(</span>datasetBoundaryOriginal<span style="color:#f92672">.</span><span style="color:#a6e22e">getMinY</span><span style="color:#f92672">(),</span> datasetBoundaryOriginal<span style="color:#f92672">.</span><span style="color:#a6e22e">getMaxY</span><span style="color:#f92672">(),</span> datasetBoundaryOriginal<span style="color:#f92672">.</span><span style="color:#a6e22e">getMinX</span><span style="color:#f92672">(),</span> datasetBoundaryOriginal<span style="color:#f92672">.</span><span style="color:#a6e22e">getMaxX</span><span style="color:#f92672">());</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">else</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>        spatialCoordinate <span style="color:#f92672">=</span> spatialCoordinateOriginal<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>        datasetBoundary <span style="color:#f92672">=</span> datasetBoundaryOriginal<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>    Double pixelXDouble <span style="color:#f92672">=</span> <span style="color:#f92672">((</span>spatialCoordinate<span style="color:#f92672">.</span><span style="color:#a6e22e">x</span> <span style="color:#f92672">-</span> datasetBoundary<span style="color:#f92672">.</span><span style="color:#a6e22e">getMinX</span><span style="color:#f92672">())</span> <span style="color:#f92672">/</span> <span style="color:#f92672">(</span>datasetBoundary<span style="color:#f92672">.</span><span style="color:#a6e22e">getMaxX</span><span style="color:#f92672">()</span> <span style="color:#f92672">-</span> datasetBoundary<span style="color:#f92672">.</span><span style="color:#a6e22e">getMinX</span><span style="color:#f92672">()))</span> <span style="color:#f92672">*</span> resolutionX<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>    Double xRemainder <span style="color:#f92672">=</span> <span style="color:#f92672">(</span>spatialCoordinate<span style="color:#f92672">.</span><span style="color:#a6e22e">x</span> <span style="color:#f92672">-</span> datasetBoundary<span style="color:#f92672">.</span><span style="color:#a6e22e">getMinX</span><span style="color:#f92672">())</span> <span style="color:#f92672">%</span> <span style="color:#f92672">(</span>datasetBoundary<span style="color:#f92672">.</span><span style="color:#a6e22e">getMaxX</span><span style="color:#f92672">()</span> <span style="color:#f92672">-</span> datasetBoundary<span style="color:#f92672">.</span><span style="color:#a6e22e">getMinX</span><span style="color:#f92672">());</span>
+</span></span><span style="display:flex;"><span>    Double pixelYDouble <span style="color:#f92672">=</span> <span style="color:#f92672">((</span>spatialCoordinate<span style="color:#f92672">.</span><span style="color:#a6e22e">y</span> <span style="color:#f92672">-</span> datasetBoundary<span style="color:#f92672">.</span><span style="color:#a6e22e">getMinY</span><span style="color:#f92672">())</span> <span style="color:#f92672">/</span> <span style="color:#f92672">(</span>datasetBoundary<span style="color:#f92672">.</span><span style="color:#a6e22e">getMaxY</span><span style="color:#f92672">()</span> <span style="color:#f92672">-</span> datasetBoundary<span style="color:#f92672">.</span><span style="color:#a6e22e">getMinY</span><span style="color:#f92672">()))</span> <span style="color:#f92672">*</span> resolutionY<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>    Double yRemainder <span style="color:#f92672">=</span> <span style="color:#f92672">(</span>spatialCoordinate<span style="color:#f92672">.</span><span style="color:#a6e22e">y</span> <span style="color:#f92672">-</span> datasetBoundary<span style="color:#f92672">.</span><span style="color:#a6e22e">getMinY</span><span style="color:#f92672">())</span> <span style="color:#f92672">%</span> <span style="color:#f92672">(</span>datasetBoundary<span style="color:#f92672">.</span><span style="color:#a6e22e">getMaxY</span><span style="color:#f92672">()</span> <span style="color:#f92672">-</span> datasetBoundary<span style="color:#f92672">.</span><span style="color:#a6e22e">getMinY</span><span style="color:#f92672">());</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> pixelX <span style="color:#f92672">=</span> pixelXDouble<span style="color:#f92672">.</span><span style="color:#a6e22e">intValue</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> pixelY <span style="color:#f92672">=</span> pixelYDouble<span style="color:#f92672">.</span><span style="color:#a6e22e">intValue</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>xRemainder <span style="color:#f92672">==</span> 0<span style="color:#f92672">.</span><span style="color:#a6e22e">0</span> <span style="color:#f92672">&amp;&amp;</span> pixelXDouble <span style="color:#f92672">!=</span> 0<span style="color:#f92672">.</span><span style="color:#a6e22e">0</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>        pixelX<span style="color:#f92672">--;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>pixelX <span style="color:#f92672">&gt;=</span> resolutionX<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>        pixelX<span style="color:#f92672">--;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>yRemainder <span style="color:#f92672">==</span> 0<span style="color:#f92672">.</span><span style="color:#a6e22e">0</span> <span style="color:#f92672">&amp;&amp;</span> pixelYDouble <span style="color:#f92672">!=</span> 0<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>        pixelY<span style="color:#f92672">--;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>pixelY <span style="color:#f92672">&gt;=</span> resolutionY<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>        pixelY<span style="color:#f92672">--;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">new</span> Tuple2<span style="color:#f92672">&lt;</span>Integer<span style="color:#f92672">,</span> Integer<span style="color:#f92672">&gt;(</span>pixelX<span style="color:#f92672">,</span> pixelY<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 通过两个栅格图上的点，计算连线线段经过的点
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> List<span style="color:#f92672">&lt;</span>Tuple2<span style="color:#f92672">&lt;</span>Pixel<span style="color:#f92672">,</span> Double<span style="color:#f92672">&gt;&gt;</span> <span style="color:#a6e22e">FindPixelCoordinates</span><span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> resolutionX<span style="color:#f92672">,</span> <span style="color:#66d9ef">int</span> resolutionY<span style="color:#f92672">,</span> Tuple2<span style="color:#f92672">&lt;</span>Integer<span style="color:#f92672">,</span> Integer<span style="color:#f92672">&gt;</span> pixelCoordinate1<span style="color:#f92672">,</span> Tuple2<span style="color:#f92672">&lt;</span>Integer<span style="color:#f92672">,</span> Integer<span style="color:#f92672">&gt;</span> pixelCoordinate2<span style="color:#f92672">,</span> <span style="color:#66d9ef">boolean</span> reverseSpatialCoordinate<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// This function uses Bresenham&#39;s line algorithm to plot pixels touched by a given line segment.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">int</span> x1 <span style="color:#f92672">=</span> pixelCoordinate1<span style="color:#f92672">.</span><span style="color:#a6e22e">_1</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> y1 <span style="color:#f92672">=</span> pixelCoordinate1<span style="color:#f92672">.</span><span style="color:#a6e22e">_2</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> x2 <span style="color:#f92672">=</span> pixelCoordinate2<span style="color:#f92672">.</span><span style="color:#a6e22e">_1</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> y2 <span style="color:#f92672">=</span> pixelCoordinate2<span style="color:#f92672">.</span><span style="color:#a6e22e">_2</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> dx <span style="color:#f92672">=</span> x2 <span style="color:#f92672">-</span> x1<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> dy <span style="color:#f92672">=</span> y2 <span style="color:#f92672">-</span> y1<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> ux <span style="color:#f92672">=</span> dx <span style="color:#f92672">&gt;</span> 0 <span style="color:#f92672">?</span> 1 <span style="color:#f92672">:</span> <span style="color:#f92672">-</span>1<span style="color:#f92672">;</span> <span style="color:#75715e">// x direction
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">int</span> uy <span style="color:#f92672">=</span> dy <span style="color:#f92672">&gt;</span> 0 <span style="color:#f92672">?</span> 1 <span style="color:#f92672">:</span> <span style="color:#f92672">-</span>1<span style="color:#f92672">;</span> <span style="color:#75715e">// y direction
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">int</span> x <span style="color:#f92672">=</span> x1<span style="color:#f92672">,</span> y <span style="color:#f92672">=</span> y1<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> eps <span style="color:#f92672">=</span> 0<span style="color:#f92672">;</span> <span style="color:#75715e">//cumulative errors
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    dx <span style="color:#f92672">=</span> Math<span style="color:#f92672">.</span><span style="color:#a6e22e">abs</span><span style="color:#f92672">(</span>dx<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>    dy <span style="color:#f92672">=</span> Math<span style="color:#f92672">.</span><span style="color:#a6e22e">abs</span><span style="color:#f92672">(</span>dy<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>    List<span style="color:#f92672">&lt;</span>Tuple2<span style="color:#f92672">&lt;</span>Pixel<span style="color:#f92672">,</span> Double<span style="color:#f92672">&gt;&gt;</span> result <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ArrayList<span style="color:#f92672">&lt;</span>Tuple2<span style="color:#f92672">&lt;</span>Pixel<span style="color:#f92672">,</span> Double<span style="color:#f92672">&gt;&gt;();</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>dx <span style="color:#f92672">&gt;</span> dy<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span>x <span style="color:#f92672">=</span> x1<span style="color:#f92672">;</span> x <span style="color:#f92672">!=</span> x2<span style="color:#f92672">;</span> x <span style="color:#f92672">+=</span> ux<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>                Pixel newPixel <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Pixel<span style="color:#f92672">(</span>x<span style="color:#f92672">,</span> y<span style="color:#f92672">,</span> resolutionX<span style="color:#f92672">,</span> resolutionY<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>                result<span style="color:#f92672">.</span><span style="color:#a6e22e">add</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> Tuple2<span style="color:#f92672">&lt;</span>Pixel<span style="color:#f92672">,</span> Double<span style="color:#f92672">&gt;(</span>newPixel<span style="color:#f92672">,</span> 1<span style="color:#f92672">.</span><span style="color:#a6e22e">0</span><span style="color:#f92672">));</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>Exception e<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>                 <span style="color:#75715e">// This spatial object is out of the given dataset boudanry. It is ignored here.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>            eps <span style="color:#f92672">+=</span> dy<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> <span style="color:#f92672">((</span>eps <span style="color:#f92672">&lt;&lt;</span> 1<span style="color:#f92672">)</span> <span style="color:#f92672">&gt;=</span> dx<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>  <span style="color:#75715e">// x值每次+1，y值在eps/2 &gt; dx时+1
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                y <span style="color:#f92672">+=</span> uy<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>                eps <span style="color:#f92672">-=</span> dx<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">else</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span>y <span style="color:#f92672">=</span> y1<span style="color:#f92672">;</span> y <span style="color:#f92672">!=</span> y2<span style="color:#f92672">;</span> y <span style="color:#f92672">+=</span> uy<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>                Pixel newPixel <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Pixel<span style="color:#f92672">(</span>x<span style="color:#f92672">,</span> y<span style="color:#f92672">,</span> resolutionX<span style="color:#f92672">,</span> resolutionY<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>                result<span style="color:#f92672">.</span><span style="color:#a6e22e">add</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> Tuple2<span style="color:#f92672">&lt;</span>Pixel<span style="color:#f92672">,</span> Double<span style="color:#f92672">&gt;(</span>newPixel<span style="color:#f92672">,</span> 1<span style="color:#f92672">.</span><span style="color:#a6e22e">0</span><span style="color:#f92672">));</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>Exception e<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>                 <span style="color:#75715e">// This spatial object is out of the given dataset boudanry. It is ignored here.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>            eps <span style="color:#f92672">+=</span> dx<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> <span style="color:#f92672">((</span>eps <span style="color:#f92672">&lt;&lt;</span> 1<span style="color:#f92672">)</span> <span style="color:#f92672">&gt;=</span> dy<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>                x <span style="color:#f92672">+=</span> ux<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>                eps <span style="color:#f92672">-=</span> dy<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> result<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><h1 id="colorize">colorize</h1>
+<p>上面的Visualize函数得到了一个distributedRasterCountMatrix的RDD，key为Pixel像素位置，value为表示点数量的Double类型（感觉这个Double类型可以直接用Integer）。colorize使用了一次mapValues操作，将value值归一化后赋值为Integer类型的颜色值。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">distributedRasterColorMatrix</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">distributedRasterCountMatrix</span><span style="color:#f92672">.</span><span style="color:#a6e22e">mapValues</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> Function<span style="color:#f92672">&lt;</span>Double<span style="color:#f92672">,</span> Integer<span style="color:#f92672">&gt;()</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">@Override</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">public</span> Integer <span style="color:#a6e22e">call</span><span style="color:#f92672">(</span>Double pixelCount<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>              <span style="color:#66d9ef">throws</span> Exception
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>          Double currentPixelCount <span style="color:#f92672">=</span> pixelCount<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>          <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>currentPixelCount <span style="color:#f92672">&gt;</span> maxWeight<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>              currentPixelCount <span style="color:#f92672">=</span> maxWeight<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>          Double normalizedPixelCount <span style="color:#f92672">=</span> <span style="color:#f92672">(</span>currentPixelCount <span style="color:#f92672">-</span> minWeight<span style="color:#f92672">)</span> <span style="color:#f92672">*</span> 255 <span style="color:#f92672">/</span> <span style="color:#f92672">(</span>maxWeight <span style="color:#f92672">-</span> minWeight<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>          Integer pixelColor <span style="color:#f92672">=</span> EncodeToRGB<span style="color:#f92672">(</span>normalizedPixelCount<span style="color:#f92672">.</span><span style="color:#a6e22e">intValue</span><span style="color:#f92672">());</span>
+</span></span><span style="display:flex;"><span>          <span style="color:#66d9ef">return</span> pixelColor<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">});</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">//logger.debug(&#34;[Sedona-VizViz][Colorize]output count &#34;+this.distributedRasterColorMatrix.count());
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  logger<span style="color:#f92672">.</span><span style="color:#a6e22e">info</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;[Sedona-VizViz][Colorize][Stop]&#34;</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">true</span><span style="color:#f92672">;</span>
+</span></span></code></pre></div><h1 id="renderimage">RenderImage</h1>
+<p>RenderImage函数将上一步中得到的&lt;Pixel, Integer&gt;键值对转换成图像，以ImageSerializableWrapper的形式得到结果。函数中parallelRenderImage参数默认为false，直接对每个partition并行处理得到完整的图像，得到&lt;Integer, ImageSerializablewrapper&gt;结果，其中Integer都为0，然后ReduceByKey将所有的图像叠加得到结果。</p>
+<p>ParalleRenderImage选项为true时，首先对上一步的distributedRasterColorMatrix进行空间分区，使每个partition对应结果图像中的一部分，并行处理各自对应的区域。得到的结果存储在distributedRasterImage。</p>
+<p>parallelRenderImage参数为false的方法的shuffle过程将每个分区产生的完整结果图像传送到同一个节点后叠加计算，当结果图像较大时会造成大量shuffle IO。参数为true时，shuffle过程主要来自对原始数据的空间划分，对空间划分的效果有较高的要求。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">protected</span> <span style="color:#66d9ef">boolean</span> <span style="color:#a6e22e">RenderImage</span><span style="color:#f92672">(</span>JavaSparkContext sparkContext<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> Exception <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">parallelRenderImage</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">true</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">hasBeenSpatialPartitioned</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">false</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">spatialPartitioningWithoutDuplicates</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">hasBeenSpatialPartitioned</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">true</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">distributedRasterImage</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">distributedRasterColorMatrix</span><span style="color:#f92672">.</span><span style="color:#a6e22e">mapPartitionsToPair</span><span style="color:#f92672">(</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">new</span> PairFlatMapFunction<span style="color:#f92672">&lt;</span>Iterator<span style="color:#f92672">&lt;</span>Tuple2<span style="color:#f92672">&lt;</span>Pixel<span style="color:#f92672">,</span> Integer<span style="color:#f92672">&gt;&gt;,</span> Integer<span style="color:#f92672">,</span> ImageSerializableWrapper<span style="color:#f92672">&gt;()</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#a6e22e">@Override</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#66d9ef">public</span> Iterator<span style="color:#f92672">&lt;</span>Tuple2<span style="color:#f92672">&lt;</span>Integer<span style="color:#f92672">,</span> ImageSerializableWrapper<span style="color:#f92672">&gt;&gt;</span> <span style="color:#a6e22e">call</span><span style="color:#f92672">(</span>Iterator<span style="color:#f92672">&lt;</span>Tuple2<span style="color:#f92672">&lt;</span>Pixel<span style="color:#f92672">,</span> Integer<span style="color:#f92672">&gt;&gt;</span> currentPartition<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>                            <span style="color:#66d9ef">throws</span> Exception
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>                        BufferedImage imagePartition <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> BufferedImage<span style="color:#f92672">(</span>partitionIntervalX<span style="color:#f92672">,</span> partitionIntervalY<span style="color:#f92672">,</span> BufferedImage<span style="color:#f92672">.</span><span style="color:#a6e22e">TYPE_INT_ARGB</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>                        Tuple2<span style="color:#f92672">&lt;</span>Pixel<span style="color:#f92672">,</span> Integer<span style="color:#f92672">&gt;</span> pixelColor <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#66d9ef">while</span> <span style="color:#f92672">(</span>currentPartition<span style="color:#f92672">.</span><span style="color:#a6e22e">hasNext</span><span style="color:#f92672">())</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>                            <span style="color:#75715e">//Render color in this image partition pixel-wise.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                            pixelColor <span style="color:#f92672">=</span> currentPartition<span style="color:#f92672">.</span><span style="color:#a6e22e">next</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>                            <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>pixelColor<span style="color:#f92672">.</span><span style="color:#a6e22e">_1</span><span style="color:#f92672">().</span><span style="color:#a6e22e">getX</span><span style="color:#f92672">()</span> <span style="color:#f92672">&lt;</span> 0 <span style="color:#f92672">||</span> pixelColor<span style="color:#f92672">.</span><span style="color:#a6e22e">_1</span><span style="color:#f92672">().</span><span style="color:#a6e22e">getX</span><span style="color:#f92672">()</span> <span style="color:#f92672">&gt;=</span> resolutionX <span style="color:#f92672">||</span> pixelColor<span style="color:#f92672">.</span><span style="color:#a6e22e">_1</span><span style="color:#f92672">().</span><span style="color:#a6e22e">getY</span><span style="color:#f92672">()</span> <span style="color:#f92672">&lt;</span> 0 <span style="color:#f92672">||</span> pixelColor<span style="color:#f92672">.</span><span style="color:#a6e22e">_1</span><span style="color:#f92672">().</span><span style="color:#a6e22e">getY</span><span style="color:#f92672">()</span> <span style="color:#f92672">&gt;=</span> resolutionY<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>                                pixelColor <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>                                <span style="color:#66d9ef">continue</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>                            <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>                            imagePartition<span style="color:#f92672">.</span><span style="color:#a6e22e">setRGB</span><span style="color:#f92672">((</span><span style="color:#66d9ef">int</span><span style="color:#f92672">)</span> pixelColor<span style="color:#f92672">.</span><span style="color:#a6e22e">_1</span><span style="color:#f92672">().</span><span style="color:#a6e22e">getX</span><span style="color:#f92672">()</span> <span style="color:#f92672">%</span> partitionIntervalX<span style="color:#f92672">,</span> <span style="color:#f92672">(</span>partitionIntervalY <span style="color:#f92672">-</span> 1<span style="color:#f92672">)</span> <span style="color:#f92672">-</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">int</span><span style="color:#f92672">)</span> pixelColor<span style="color:#f92672">.</span><span style="color:#a6e22e">_1</span><span style="color:#f92672">().</span><span style="color:#a6e22e">getY</span><span style="color:#f92672">()</span> <span style="color:#f92672">%</span> partitionIntervalY<span style="color:#f92672">,</span> pixelColor<span style="color:#f92672">.</span><span style="color:#a6e22e">_2</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>                        List<span style="color:#f92672">&lt;</span>Tuple2<span style="color:#f92672">&lt;</span>Integer<span style="color:#f92672">,</span> ImageSerializableWrapper<span style="color:#f92672">&gt;&gt;</span> result <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ArrayList<span style="color:#f92672">&lt;</span>Tuple2<span style="color:#f92672">&lt;</span>Integer<span style="color:#f92672">,</span> ImageSerializableWrapper<span style="color:#f92672">&gt;&gt;();</span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>pixelColor <span style="color:#f92672">==</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>                            <span style="color:#75715e">// No pixels in this partition. Skip this subimage
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                            <span style="color:#66d9ef">return</span> result<span style="color:#f92672">.</span><span style="color:#a6e22e">iterator</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>                        logger<span style="color:#f92672">.</span><span style="color:#a6e22e">info</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;[Sedona-VizViz][Render]add a image partition into result set &#34;</span> <span style="color:#f92672">+</span> pixelColor<span style="color:#f92672">.</span><span style="color:#a6e22e">_1</span><span style="color:#f92672">().</span><span style="color:#a6e22e">getCurrentPartitionId</span><span style="color:#f92672">());</span>
+</span></span><span style="display:flex;"><span>                        result<span style="color:#f92672">.</span><span style="color:#a6e22e">add</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> Tuple2<span style="color:#f92672">&lt;</span>Integer<span style="color:#f92672">,</span> ImageSerializableWrapper<span style="color:#f92672">&gt;(</span>pixelColor<span style="color:#f92672">.</span><span style="color:#a6e22e">_1</span><span style="color:#f92672">().</span><span style="color:#a6e22e">getCurrentPartitionId</span><span style="color:#f92672">(),</span> <span style="color:#66d9ef">new</span> ImageSerializableWrapper<span style="color:#f92672">(</span>imagePartition<span style="color:#f92672">)));</span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#66d9ef">return</span> result<span style="color:#f92672">.</span><span style="color:#a6e22e">iterator</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">});</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">parallelRenderImage</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">false</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Draw full size image in parallel
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">distributedRasterImage</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">distributedRasterColorMatrix</span><span style="color:#f92672">.</span><span style="color:#a6e22e">mapPartitionsToPair</span><span style="color:#f92672">(</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">new</span> PairFlatMapFunction<span style="color:#f92672">&lt;</span>Iterator<span style="color:#f92672">&lt;</span>Tuple2<span style="color:#f92672">&lt;</span>Pixel<span style="color:#f92672">,</span> Integer<span style="color:#f92672">&gt;&gt;,</span> Integer<span style="color:#f92672">,</span> ImageSerializableWrapper<span style="color:#f92672">&gt;()</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#a6e22e">@Override</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#66d9ef">public</span> Iterator<span style="color:#f92672">&lt;</span>Tuple2<span style="color:#f92672">&lt;</span>Integer<span style="color:#f92672">,</span> ImageSerializableWrapper<span style="color:#f92672">&gt;&gt;</span> <span style="color:#a6e22e">call</span><span style="color:#f92672">(</span>Iterator<span style="color:#f92672">&lt;</span>Tuple2<span style="color:#f92672">&lt;</span>Pixel<span style="color:#f92672">,</span> Integer<span style="color:#f92672">&gt;&gt;</span> currentPartition<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>                            <span style="color:#66d9ef">throws</span> Exception
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>                        BufferedImage imagePartition <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> BufferedImage<span style="color:#f92672">(</span>resolutionX<span style="color:#f92672">,</span> resolutionY<span style="color:#f92672">,</span> BufferedImage<span style="color:#f92672">.</span><span style="color:#a6e22e">TYPE_INT_ARGB</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>                        Tuple2<span style="color:#f92672">&lt;</span>Pixel<span style="color:#f92672">,</span> Integer<span style="color:#f92672">&gt;</span> pixelColor <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#66d9ef">while</span> <span style="color:#f92672">(</span>currentPartition<span style="color:#f92672">.</span><span style="color:#a6e22e">hasNext</span><span style="color:#f92672">())</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>                            <span style="color:#75715e">//Render color in this image partition pixel-wise.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                            pixelColor <span style="color:#f92672">=</span> currentPartition<span style="color:#f92672">.</span><span style="color:#a6e22e">next</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>                            <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>pixelColor<span style="color:#f92672">.</span><span style="color:#a6e22e">_1</span><span style="color:#f92672">().</span><span style="color:#a6e22e">getX</span><span style="color:#f92672">()</span> <span style="color:#f92672">&lt;</span> 0 <span style="color:#f92672">||</span> pixelColor<span style="color:#f92672">.</span><span style="color:#a6e22e">_1</span><span style="color:#f92672">().</span><span style="color:#a6e22e">getX</span><span style="color:#f92672">()</span> <span style="color:#f92672">&gt;=</span> resolutionX <span style="color:#f92672">||</span> pixelColor<span style="color:#f92672">.</span><span style="color:#a6e22e">_1</span><span style="color:#f92672">().</span><span style="color:#a6e22e">getY</span><span style="color:#f92672">()</span> <span style="color:#f92672">&lt;</span> 0 <span style="color:#f92672">||</span> pixelColor<span style="color:#f92672">.</span><span style="color:#a6e22e">_1</span><span style="color:#f92672">().</span><span style="color:#a6e22e">getY</span><span style="color:#f92672">()</span> <span style="color:#f92672">&gt;=</span> resolutionY<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>                                pixelColor <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>                                <span style="color:#66d9ef">continue</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>                            <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>                            imagePartition<span style="color:#f92672">.</span><span style="color:#a6e22e">setRGB</span><span style="color:#f92672">((</span><span style="color:#66d9ef">int</span><span style="color:#f92672">)</span> pixelColor<span style="color:#f92672">.</span><span style="color:#a6e22e">_1</span><span style="color:#f92672">().</span><span style="color:#a6e22e">getX</span><span style="color:#f92672">(),</span> <span style="color:#f92672">(</span>resolutionY <span style="color:#f92672">-</span> 1<span style="color:#f92672">)</span> <span style="color:#f92672">-</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">int</span><span style="color:#f92672">)</span> pixelColor<span style="color:#f92672">.</span><span style="color:#a6e22e">_1</span><span style="color:#f92672">().</span><span style="color:#a6e22e">getY</span><span style="color:#f92672">(),</span> pixelColor<span style="color:#f92672">.</span><span style="color:#a6e22e">_2</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>                        List<span style="color:#f92672">&lt;</span>Tuple2<span style="color:#f92672">&lt;</span>Integer<span style="color:#f92672">,</span> ImageSerializableWrapper<span style="color:#f92672">&gt;&gt;</span> result <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ArrayList<span style="color:#f92672">&lt;</span>Tuple2<span style="color:#f92672">&lt;</span>Integer<span style="color:#f92672">,</span> ImageSerializableWrapper<span style="color:#f92672">&gt;&gt;();</span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>pixelColor <span style="color:#f92672">==</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>                            <span style="color:#75715e">// No pixels in this partition. Skip this subimage
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                            <span style="color:#66d9ef">return</span> result<span style="color:#f92672">.</span><span style="color:#a6e22e">iterator</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>                        result<span style="color:#f92672">.</span><span style="color:#a6e22e">add</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> Tuple2<span style="color:#f92672">&lt;</span>Integer<span style="color:#f92672">,</span> ImageSerializableWrapper<span style="color:#f92672">&gt;(</span>1<span style="color:#f92672">,</span> <span style="color:#66d9ef">new</span> ImageSerializableWrapper<span style="color:#f92672">(</span>imagePartition<span style="color:#f92672">)));</span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#66d9ef">return</span> result<span style="color:#f92672">.</span><span style="color:#a6e22e">iterator</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">});</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Merge images together using reduce
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">distributedRasterImage</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">distributedRasterImage</span><span style="color:#f92672">.</span><span style="color:#a6e22e">reduceByKey</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> Function2<span style="color:#f92672">&lt;</span>ImageSerializableWrapper<span style="color:#f92672">,</span> ImageSerializableWrapper<span style="color:#f92672">,</span> ImageSerializableWrapper<span style="color:#f92672">&gt;()</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">@Override</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">public</span> ImageSerializableWrapper <span style="color:#a6e22e">call</span><span style="color:#f92672">(</span>ImageSerializableWrapper image1<span style="color:#f92672">,</span> ImageSerializableWrapper image2<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#66d9ef">throws</span> Exception
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#75715e">// The combined image should be a full size image
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                BufferedImage combinedImage <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> BufferedImage<span style="color:#f92672">(</span>resolutionX<span style="color:#f92672">,</span> resolutionY<span style="color:#f92672">,</span> BufferedImage<span style="color:#f92672">.</span><span style="color:#a6e22e">TYPE_INT_ARGB</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>                Graphics graphics <span style="color:#f92672">=</span> combinedImage<span style="color:#f92672">.</span><span style="color:#a6e22e">getGraphics</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>                graphics<span style="color:#f92672">.</span><span style="color:#a6e22e">drawImage</span><span style="color:#f92672">(</span>image1<span style="color:#f92672">.</span><span style="color:#a6e22e">image</span><span style="color:#f92672">,</span> 0<span style="color:#f92672">,</span> 0<span style="color:#f92672">,</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>                graphics<span style="color:#f92672">.</span><span style="color:#a6e22e">drawImage</span><span style="color:#f92672">(</span>image2<span style="color:#f92672">.</span><span style="color:#a6e22e">image</span><span style="color:#f92672">,</span> 0<span style="color:#f92672">,</span> 0<span style="color:#f92672">,</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">new</span> ImageSerializableWrapper<span style="color:#f92672">(</span>combinedImage<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">});</span>
+</span></span><span style="display:flex;"><span>        List<span style="color:#f92672">&lt;</span>Tuple2<span style="color:#f92672">&lt;</span>Integer<span style="color:#f92672">,</span> ImageSerializableWrapper<span style="color:#f92672">&gt;&gt;</span> imageList <span style="color:#f92672">=</span> <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">distributedRasterImage</span><span style="color:#f92672">.</span><span style="color:#a6e22e">collect</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">rasterImage</span> <span style="color:#f92672">=</span> imageList<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span>0<span style="color:#f92672">).</span><span style="color:#a6e22e">_2</span><span style="color:#f92672">().</span><span style="color:#a6e22e">image</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>    logger<span style="color:#f92672">.</span><span style="color:#a6e22e">info</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;[Sedona-VizViz][RenderImage][Stop]&#34;</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">true</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span></code></pre></div>
+</div>
+
+  
+<footer class='entry-footer'>
+  <div class='container sep-before'><div class='categories'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M22,19a2,2,0,0,1-2,2H4a2,2,0,0,1-2-2V5A2,2,0,0,1,4,3H9l2,3h9a2,2,0,0,1,2,2Z"/>
+  
+</svg>
+<span class='screen-reader-text'>Categories: </span><a class='category' href='/categories/gis/'>GIS</a></div>
+<div class='tags'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M20.59,13.41l-7.17,7.17a2,2,0,0,1-2.83,0L2,12V2H12l8.59,8.59A2,2,0,0,1,20.59,13.41Z"/>
+  <line x1="7" y1="7" x2="7" y2="7"/>
+  
+</svg>
+<span class='screen-reader-text'>Tags: </span><a class='tag' href='/tags/hadoop/'>Hadoop</a>, <a class='tag' href='/tags/sedona/'>Sedona</a>, <a class='tag' href='/tags/gis/'>GIS</a></div>
+
+  </div>
+</footer>
+
+
+</article>
+
+<nav class='entry-nav'>
+  <div class='container'><div class='prev-entry sep-before'>
+      <a href='/posts/technical/geotools_simple_feature_create/'>
+        <span aria-hidden='true'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="20" y1="12" x2="4" y2="12"/>
+  <polyline points="10 18 4 12 10 6"/>
+  
+</svg>
+ Previous</span>
+        <span class='screen-reader-text'>Previous post: </span>Geotools的点类型简单要素创建以及大数据量下的效率问题</a>
+    </div></div>
+</nav>
+
+
+
+
+      </main>
+
+      <footer id='footer' class='footer'>
+        <div class='container sep-before'><section class='widget widget-social_menu sep-after'><header>
+    <h4 class='title widget-title'>Contact</h4>
+  </header><nav aria-label='Social Menu'>
+    <ul><li>
+        <a href='https://github.com/extendswind' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Open Github account in new tab</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+  
+</svg>
+</a>
+      </li><li>
+        <a href='mailto:extendswind@foxmail.com' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Contact via Email</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+  <polyline points="22,6 12,13 2,6"/>
+  
+</svg>
+</a>
+      </li></ul>
+  </nav>
+</section><div class='copyright'>
+  <p>本站原创文章遵循CC-BY 4.0版权协议，转载注明出处即可</p>
+</div>
+
+        </div>
+      </footer>
+
+    </div>
+  </div><script>window.__assets_js_src="/assets/js/"</script>
+
+<script src='/assets/js/main.c3bcf2df.js'></script><script type='text/x-mathjax-config'>
+  MathJax.Hub.Config({})
+</script>
+
+<script type='text/javascript' async src='//unpkg.com/mathjax@2.7.5/MathJax.js?config=TeX-MML-AM_CHTML'></script>
+
+</body>
+
+</html>
+

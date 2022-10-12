@@ -20,11 +20,11 @@
 公网环境下建议将配置文件中的默认端口1883改为其它端口，避免被直接扫描。
 一些安全方面的设置也建议加上。
 客户端 subscriber
-#!/bin/python import paho.mqtt.subscribe as subscribe  # 当调用这个函数时，程序会堵塞在这里，直到有一条消息发送到 topics/topic1 主题 msg = subscribe.simple(&amp;#34;topics/topic1&amp;#34;, hostname=&amp;#34;your ip&amp;#34;, port=yourport,  retained=False, client_id=&amp;#34;youid&amp;#34;, clean_session=False, qos=1) print(f&amp;#34;{msg.topic}{msg.payload}&amp;#34;) hostname和port需要改为正确的参数。
+#!/bin/python import paho.mqtt.subscribe as subscribe # 当调用这个函数时，程序会堵塞在这里，直到有一条消息发送到 topics/topic1 主题 msg = subscribe.simple(&amp;#34;topics/topic1&amp;#34;, hostname=&amp;#34;your ip&amp;#34;, port=yourport, retained=False, client_id=&amp;#34;youid&amp;#34;, clean_session=False, qos=1) print(f&amp;#34;{msg.topic} {msg.payload}&amp;#34;) hostname和port需要改为正确的参数。
 其中，网络环境好并且不需要离线接收消息时，可以不设置clean_session、client_id、qos三个参数。
 publisher
 发送一条消息
-#!/bin/python  import paho.mqtt.publish as publish  publish.single(&amp;#34;topics/topic1&amp;#34;, &amp;#34;a message&amp;#34;, hostname=&amp;#34;your ip&amp;#34;, port=yourport, qos=1) 其它 MQTT 几个基本概念 通常由3部分构成：subscriber订阅客户端、publisher发布消息客户端、Server服务器。
+#!/bin/python import paho.mqtt.publish as publish publish.single(&amp;#34;topics/topic1&amp;#34;, &amp;#34;a message&amp;#34;, hostname=&amp;#34;your ip&amp;#34;, port=yourport, qos=1) 其它 MQTT 几个基本概念 通常由3部分构成：subscriber订阅客户端、publisher发布消息客户端、Server服务器。
 主题topic，类似一连串消息的标识符。
 Message，具体的消息，对应于每个topic。
 publisher向服务器指定主题发送消息。

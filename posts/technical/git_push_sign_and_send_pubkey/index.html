@@ -3,33 +3,31 @@
   <meta charset='utf-8'>
 <meta name='viewport' content='width=device-width, initial-scale=1'>
 <meta name='description' content='git push命令之后，出现下面的错误提示：
- sign_and_send_pubkey: no mutual signature supported git@gitee.com: Permission denied (publickey). fatal: Could not read from remote repository.
+sign_and_send_pubkey: no mutual signature supported git@gitee.com: Permission denied (publickey). fatal: Could not read from remote repository.
 Please make sure you have the correct access rights and the repository exists.
- openssh的新版本（当前8.8p1-1）默认不支持ras的默认秘钥。
+openssh的新版本（当前8.8p1-1）默认不支持ras的默认秘钥。
 一开始以为是gitee码云干了什么升级，之后发现是我的manjaro openssh版本太新的问题，已经不支持我几年前生成的秘钥（但是为什么ssh-keygen还是默认用的rsa）。
 推荐做法 ssh-keygen -t ed25519 -C &ldquo;your_email@example.com&rdquo;
 生成一个新的秘钥，然后公钥添加到gitee账户。
 最简单处理 修改ssh的客户端的配置文件，~/.ssh/config 或全局的配置文件 /etc/ssh/ssh_config，在其中加下面的代码。
- PubkeyAcceptedKeyTypes &#43;ssh-rsa
- '>
+PubkeyAcceptedKeyTypes &#43;ssh-rsa'>
 <meta name='theme-color' content='#cccccc'>
 
 <meta property='og:title' content='git push时提示错误 sign_and_send_pubkey: no mutual signature supported • A Notebook of Extendswind'>
 <meta property='og:description' content='git push命令之后，出现下面的错误提示：
- sign_and_send_pubkey: no mutual signature supported git@gitee.com: Permission denied (publickey). fatal: Could not read from remote repository.
+sign_and_send_pubkey: no mutual signature supported git@gitee.com: Permission denied (publickey). fatal: Could not read from remote repository.
 Please make sure you have the correct access rights and the repository exists.
- openssh的新版本（当前8.8p1-1）默认不支持ras的默认秘钥。
+openssh的新版本（当前8.8p1-1）默认不支持ras的默认秘钥。
 一开始以为是gitee码云干了什么升级，之后发现是我的manjaro openssh版本太新的问题，已经不支持我几年前生成的秘钥（但是为什么ssh-keygen还是默认用的rsa）。
 推荐做法 ssh-keygen -t ed25519 -C &ldquo;your_email@example.com&rdquo;
 生成一个新的秘钥，然后公钥添加到gitee账户。
 最简单处理 修改ssh的客户端的配置文件，~/.ssh/config 或全局的配置文件 /etc/ssh/ssh_config，在其中加下面的代码。
- PubkeyAcceptedKeyTypes &#43;ssh-rsa
- '>
+PubkeyAcceptedKeyTypes &#43;ssh-rsa'>
 <meta property='og:url' content='https://extendswind.top/posts/technical/git_push_sign_and_send_pubkey/'>
 <meta property='og:site_name' content='A Notebook of Extendswind'>
 <meta property='og:type' content='article'><meta property='article:section' content='posts'><meta property='article:tag' content='git'><meta property='article:published_time' content='2021-12-03T16:00:48&#43;08:00'/><meta property='article:modified_time' content='2021-12-03T16:00:48&#43;08:00'/><meta name='twitter:card' content='summary'>
 
-<meta name="generator" content="Hugo 0.99.1" />
+<meta name="generator" content="Hugo 0.102.3" />
 
   <title>git push时提示错误 sign_and_send_pubkey: no mutual signature supported • A Notebook of Extendswind</title>
   <link rel='canonical' href='https://extendswind.top/posts/technical/git_push_sign_and_send_pubkey/'>
@@ -98,7 +96,7 @@ Please make sure you have the correct access rights and the repository exists.
       </li><li>
         <a href='/tags/git/' style='font-size:1em'>git</a>
       </li><li>
-        <a href='/tags/hadoop/' style='font-size:1em'>hadoop</a>
+        <a href='/tags/hadoop/' style='font-size:1em'>Hadoop</a>
       </li><li>
         <a href='/tags/hive/' style='font-size:1em'>hive</a>
       </li><li>
@@ -121,6 +119,8 @@ Please make sure you have the correct access rights and the repository exists.
         <a href='/tags/raspberry/' style='font-size:1em'>raspberry</a>
       </li><li>
         <a href='/tags/reading/' style='font-size:1em'>reading</a>
+      </li><li>
+        <a href='/tags/sedona/' style='font-size:1em'>Sedona</a>
       </li><li>
         <a href='/tags/software/' style='font-size:1em'>software</a>
       </li><li>

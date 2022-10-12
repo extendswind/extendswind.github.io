@@ -14,15 +14,14 @@
       
       <guid>https://extendswind.top/posts/technical/git_push_sign_and_send_pubkey/</guid>
       <description>git push命令之后，出现下面的错误提示：
- sign_and_send_pubkey: no mutual signature supported git@gitee.com: Permission denied (publickey). fatal: Could not read from remote repository.
+sign_and_send_pubkey: no mutual signature supported git@gitee.com: Permission denied (publickey). fatal: Could not read from remote repository.
 Please make sure you have the correct access rights and the repository exists.
- openssh的新版本（当前8.8p1-1）默认不支持ras的默认秘钥。
+openssh的新版本（当前8.8p1-1）默认不支持ras的默认秘钥。
 一开始以为是gitee码云干了什么升级，之后发现是我的manjaro openssh版本太新的问题，已经不支持我几年前生成的秘钥（但是为什么ssh-keygen还是默认用的rsa）。
 推荐做法 ssh-keygen -t ed25519 -C &amp;ldquo;your_email@example.com&amp;rdquo;
 生成一个新的秘钥，然后公钥添加到gitee账户。
 最简单处理 修改ssh的客户端的配置文件，~/.ssh/config 或全局的配置文件 /etc/ssh/ssh_config，在其中加下面的代码。
- PubkeyAcceptedKeyTypes +ssh-rsa
- </description>
+PubkeyAcceptedKeyTypes +ssh-rsa</description>
     </item>
     
     <item>
@@ -31,7 +30,7 @@ Please make sure you have the correct access rights and the repository exists.
       <pubDate>Tue, 13 Nov 2018 10:30:00 +0800</pubDate>
       
       <guid>https://extendswind.top/posts/technical/leetcode4/</guid>
-      <description>题目   Median of Two Sorted Arrays There are two sorted arrays nums1 and nums2 of size m and n respectively. Find the median of the two sorted arrays. The overall run time complexity should be O(log (m+n)). You may assume nums1 and nums2 cannot be both empty. Example 1: nums1 = [1, 3] nums2 = [2] The median is 2.0 Example 2: nums1 = [1, 2] nums2 = [3, 4] The median is (2 + 3)/2 = 2.</description>
+      <description>题目 Median of Two Sorted Arrays There are two sorted arrays nums1 and nums2 of size m and n respectively. Find the median of the two sorted arrays. The overall run time complexity should be O(log (m+n)). You may assume nums1 and nums2 cannot be both empty. Example 1: nums1 = [1, 3] nums2 = [2] The median is 2.0 Example 2: nums1 = [1, 2] nums2 = [3, 4] The median is (2 + 3)/2 = 2.</description>
     </item>
     
     <item>
@@ -55,7 +54,7 @@ revert git revert &amp;lt;commit-id&amp;gt; 相当于取消一次commit ，会�
 使用revert不会破坏历史记录，只是提交一个新的修改使修改后代码和以前一致。
 实质上相当于用前的代码merge 后的代码，因此如果后面对代码文件做了修改需要解决冲突。
 revert一个merge commit 注意revert用在merge的commit上的情况有坑
-git revert &amp;lt;commit-id&amp;gt; -m 1  需要添加-m参数，指定是merge前的第几个分支（git log上的merge后）。
+git revert &amp;lt;commit-id&amp;gt; -m 1 需要添加-m参数，指定是merge前的第几个分支（git log上的merge后）。
 revert的主要麻烦：如果存在分支合并的情况，如下，从m1 revert到a2时会添加一个新的提交m2，当m2与b2 merge时会显示已经merge过。
 a1 -&amp;gt; a2 -&amp;gt; m1 -&amp;gt; m2 b1 -&amp;gt; b2 /</description>
     </item>

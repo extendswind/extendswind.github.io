@@ -6,7 +6,43 @@
     <description>Recent content in GIS on A Notebook of Extendswind</description>
     <generator>Hugo -- gohugo.io</generator>
     <copyright>本站原创文章遵循CC-BY 4.0版权协议，转载注明出处即可</copyright>
-    <lastBuildDate>Fri, 17 Jun 2022 15:30:00 +0800</lastBuildDate><atom:link href="https://extendswind.top/categories/gis/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 11 Oct 2022 20:30:00 +0800</lastBuildDate><atom:link href="https://extendswind.top/categories/gis/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Sedona空间数据可视化源码分析</title>
+      <link>https://extendswind.top/posts/technical/sedona_spatial_big_data_visualization/</link>
+      <pubDate>Tue, 11 Oct 2022 20:30:00 +0800</pubDate>
+      
+      <guid>https://extendswind.top/posts/technical/sedona_spatial_big_data_visualization/</guid>
+      <description>Sedona (GeoSpark) 空间数据可视化过程不太复杂，主要是每个空间对象向对应栅格空间的映射，和矢量转栅格类似。直接上代码：
+// 已经通过Sedona创建了类型为LineStringRDD的slineRDD对象 import org.apache.sedona.viz.core.ImageGenerator import org.apache.sedona.viz.extension.visualizationEffect.ScatterPlot import org.apache.sedona.viz.utils.ImageType import java.awt.Color // 创建新的对象 var visualizationOperator = new ScatterPlot(10000, 10000, slineRDD.boundaryEnvelope, false) visualizationOperator.CustomizeColor(255, 255, 255, 255, Color.blue, true) // 具体的可视化过程实现 visualizationOperator.Visualize(sc, slineRDD) // 将结果保存为PNG图像 var imageGenerator = new ImageGenerator imageGenerator.SaveRasterImageAsLocalFile(visualizationOperator.rasterImage, &amp;#34;/home/sparkl/visual&amp;#34;, ImageType.PNG) 其中具体的可视化操作在visualizationOperator.Visualize(sc, slineRDD)函数中，分为visualize、colorize和renderImage三步，具体操作如下：
+public boolean Visualize(JavaSparkContext sparkContext, SpatialRDD spatialRDD) throws Exception { // 返回值为JavaPairRDD&amp;lt;Pixel, Double&amp;gt; // 栅格图中的每个像素对应一个Pixel，包含x、y信息，Double和属性值相关 this.Rasterize(sparkContext, spatialRDD, true); // 修改value的值，通过value值赋颜色 this.Colorize(); this.RenderImage(sparkContext); return true; } Rasterize Rasterize函数是最主要的矢量向栅格的转换函数，先通过flatMapToPair算子计算每个空间对象对应的像素位置和像素值，然后filter掉超出范围的像素值。Sedona的实现中value没有考虑空间实体的属性，每个像素点的value直接赋值的1.</description>
+    </item>
+    
+    <item>
+      <title>Geotools的点类型简单要素创建以及大数据量下的效率问题</title>
+      <link>https://extendswind.top/posts/technical/geotools_simple_feature_create/</link>
+      <pubDate>Wed, 28 Sep 2022 17:30:00 +0800</pubDate>
+      
+      <guid>https://extendswind.top/posts/technical/geotools_simple_feature_create/</guid>
+      <description>GeoTools使用JTS处理空间索引、查询、几何分析等操作，在此基础上增加了空间对象属性相关的处理。通过SimpleFeatureImpl类包装处理，由于每个空间要素实体对象中增加了很多其它的对象，外加java类包装的额外开销，以至于原本的空间数据在内存中的存储空间增加了很多倍，当属性字段较少时，甚至可以多出一个量级。
+创建简单要素 // -- 首先创建SimpleFeatureType 一个点和一个类型为Integer的number字段 SimpleFeatureTypeBuilder b = new SimpleFeatureTypeBuilder(); b.setName( &amp;#34;TestFields&amp;#34; ); // type name b.add( &amp;#34;location&amp;#34;, Point.class ); // 增加一个点字段 b.add( &amp;#34;number&amp;#34;, Integer.class); // 增加一个属性字段 b.setCRS( DefaultGeographicCRS.WGS84); SimpleFeatureType type = b.buildFeatureType(); // -- 使用SimpleFeatureBuilder创建SimpleFeature SimpleFeatureBuilder builder = new SimpleFeatureBuilder(type); // 用于创建JTS Point的工厂类 GeometryFactory geometryFactory = JTSFactoryFinder.getGeometryFactory(); Point point = geometryFactory.createPoint(new Coordinate(longitude, latitude)); builder.add(point); builder.add(i); SimpleFeature feature = builder.buildFeature(null); // 参数为Feature id，为null时会赋默认值 SimpleFeatureImpl实现 GeoTools的SimpleFeature是一个Java接口，没有直接使用基类具体实现，定义了对简单要素的函数操作，主要包括获取ID、Type、FeatureType，以及获取和设置Attribute、DefaultGeometry等。
+SimpleFeatureImpl实现了SimpleFeature接口，主要包括以下数据：
+public class SimpleFeatureImpl implements SimpleFeature { protected FeatureId id; protected SimpleFeatureType featureType; /** The actual values held by this feature */ protected Object[] values; /** The attribute name -&amp;gt; position index */ protected Map&amp;lt;String, Integer&amp;gt; index; /** The set of user data attached to the feature (lazily created) */ protected Map&amp;lt;Object, Object&amp;gt; userData; /** The set of user data attached to each attribute (lazily created) */ protected Map&amp;lt;Object, Object&amp;gt;[] attributeUserData; /** Whether this feature is self validating or not */ protected boolean validating; // .</description>
+    </item>
+    
+    <item>
+      <title>从QGIS源码看GIS矢量数据的组织形式</title>
+      <link>https://extendswind.top/posts/technical/qgis_vector_data_type_structure.md/</link>
+      <pubDate>Tue, 27 Sep 2022 15:30:00 +0800</pubDate>
+      
+      <guid>https://extendswind.top/posts/technical/qgis_vector_data_type_structure.md/</guid>
+      <description>矢量数据在内存中的操作需要面对不同的属性字段，想到c++没有java的Object类作为不同数据类型的基类支撑，对c++动态处理属性字段比较疑惑，看了一下QGIS的相关实现。没有像猜测中直接使用指针操作，动态属性字段使用Qt的Variant类实现，通过QVector的方式存储不同的属性数据。
+QGIS的矢量数据的组织和OGC的简单要素类（Simple Feature）的实现标准类似，每个矢量数据空间实体使用QgsFeature类的一个对象存储，每个OgsFeature对象有四个主要类成员：
+Q_PROPERTY( QgsGeometry geometry READ geometry WRITE setGeometry ) // Feature的几何字段 Q_PROPERTY( QgsFeatureId id READ id WRITE setId ) // Feature的id Q_PROPERTY( QgsAttributes attributes READ attributes WRITE setAttributes ) // Feature的属性值 Q_PROPERTY( QgsFields fields READ fields WRITE setFields ) // Feature的属性字段 其中QgsGeometry是空间信息的存储方式，负载点线面等空间对象的管理。内部的数据通过私有成员 QgsGeometryPrivate *d 存储，内部包含一个QgsAbstractGeometry智能指针 std::unique_ptr&amp;lt; QgsAbstractGeometry &amp;gt; geometry。QgsAbstractgeometry是几何对象的基类，其子类有QgsCurve、QgsPoint、QgsSurface以及存储多对象的QgsGeometryCollection，如下图：
+QgsFields负责属性字段的管理，通常包含多个QgsField，每个QgsField包括以下属性：
+Q_PROPERTY( bool isNumeric READ isNumeric ) Q_PROPERTY( bool isDateOrTime READ isDateOrTime ) Q_PROPERTY( int length READ length WRITE setLength ) Q_PROPERTY( int precision READ precision WRITE setPrecision ) Q_PROPERTY( QVariant::Type type READ type WRITE setType ) Q_PROPERTY( QString comment READ comment WRITE setComment ) Q_PROPERTY( QString name READ name WRITE setName ) Q_PROPERTY( QString alias READ alias WRITE setAlias ) Q_PROPERTY( QgsDefaultValue defaultValueDefinition READ defaultValueDefinition WRITE setDefaultValueDefinition ) Q_PROPERTY( QgsFieldConstraints constraints READ constraints WRITE setConstraints ) Q_PROPERTY( ConfigurationFlags configurationFlags READ configurationFlags WRITE setConfigurationFlags ) Q_PROPERTY( bool isReadOnly READ isReadOnly WRITE setReadOnly ) QgsAttributes负责具体的属性存储，为了支持动态数据类型（c++对属性字段的数量和类型不事先定义），直接继承了QVecter类型，如下。其中QVariant是数据类型的基类，可以存放Qt的各种数据类型，不同于Object基类，QVariant可以看作Qt提供的对不同数据类型的一种包装，提供了各种类型数据的管理和转换操作。</description>
+    </item>
+    
     <item>
       <title>Manjaro上编译QGIS时出现的/usr/bin/sip: No such file or directory错误</title>
       <link>https://extendswind.top/posts/technical/manjaro_qgis_compile_problem_sip_no_such_file/</link>
@@ -16,7 +52,7 @@
       <description>解决方案:
 sudo pacman -S sip4
 sip库的默认版本比较新，/usr/bin/sip文件在sip4库中。（估计是旧版和新版的sip使用方式不一样吧，sip4的包里是sip可执行文件和一个头文件，默认安装的sip包是python的包。）
-# sip包中的文件： sip /usr/bin/sip-build sip /usr/bin/sip-distinfo sip /usr/bin/sip-install sip /usr/bin/sip-module sip /usr/bin/sip-sdist sip /usr/bin/sip-wheel sip /usr/lib/python3.10/site-packages/... # 还有一些python包文件   # sip4包中的文件： sip4 /usr/bin/sip sip4 /usr/include/sip.h sip4 /usr/share/licenses/sip4/LICENSE </description>
+# sip包中的文件： sip /usr/bin/sip-build sip /usr/bin/sip-distinfo sip /usr/bin/sip-install sip /usr/bin/sip-module sip /usr/bin/sip-sdist sip /usr/bin/sip-wheel sip /usr/lib/python3.10/site-packages/... # 还有一些python包文件 # sip4包中的文件： sip4 /usr/bin/sip sip4 /usr/include/sip.h sip4 /usr/share/licenses/sip4/LICENSE </description>
     </item>
     
     <item>
@@ -25,11 +61,70 @@ sip库的默认版本比较新，/usr/bin/sip文件在sip4库中。（估计是�
       <pubDate>Wed, 18 Nov 2020 10:30:00 +0800</pubDate>
       
       <guid>https://extendswind.top/posts/technical/str_tree_rtree_construction/</guid>
-      <description>MathJax = { tex: { inlineMath: [[&#34;$&#34;, &#34;$&#34;]], }, displayMath: [ [&#34;$$&#34;, &#34;$$&#34;], [&#34;\[\[&#34;, &#34;\]\]&#34;], ], svg: { fontCache: &#34;global&#34;, }, };    最近需要使用R树做一下空间索引，在GeoSpark中使用了JTS库中实现的STR树，一开始以为是R-tree的一个变种，细看发现只是R树的构建（packing）方式之一。
+      <description>最近需要使用R树做一下空间索引，在GeoSpark中使用了JTS库中实现的STR树，一开始以为是R-tree的一个变种，细看发现只是R树的构建（packing）方式之一。
 STR是Sort-Tile-Recursive的缩写，本质上是一种R树的构建算法，不能单独算是R树。但在一些GIS开源库的实现中，经常直接命名为STRTree，负责STR算法的R树构建以及构建后的数据查询工作。具体的介绍可以看作者的论文 https://www.cs.odu.edu/%7Emln/ltrs-pdfs/icase-1997-14.pdf ，CSDN上有个主要内容的翻译 https://blog.csdn.net/qq_41775852/article/details/105405918。
 R树常见构建过程 通常R树是针对动态有增删的数据，因此构建过程可以将所有的数据逐个插入到R树中。这种情况可能会存在一些缺点：
- (a) high load time (b) sub-optimal spac eutilization (c) poor R-tree structure requiring the retrieval of anunduly large number of nodes in order to satisfy a query.  因此，常用packing的方式自底向上的构建R树，主要流程如下：
- 假设一共有r个矩形需要被索引，每个叶子结点中存储的矩形数量为n。首先将所有的矩形分成r/n（此处取上界）个组；（分组方式通过下面的packing算法） 将各个分组写入硬盘的pages，并计算每个分组内所有矩形的MBR以及分组对应的page-id； 对分组的MBR递归的执行上面的步骤，直到根节点。  在第1步中，将需要被索引的矩形分成r/n个组，论文中介绍了常见的Nearest-X(NX)、HilbertSort(HS)以及论文提出的Sort-Tile-Recursive(STR)。</description>
+(a) high load time (b) sub-optimal spac eutilization (c) poor R-tree structure requiring the retrieval of anunduly large number of nodes in order to satisfy a query. 因此，常用packing的方式自底向上的构建R树，主要流程如下：
+假设一共有r个矩形需要被索引，每个叶子结点中存储的矩形数量为n。首先将所有的矩形分成r/n（此处取上界）个组；（分组方式通过下面的packing算法） 将各个分组写入硬盘的pages，并计算每个分组内所有矩形的MBR以及分组对应的page-id； 对分组的MBR递归的执行上面的步骤，直到根节点。 在第1步中，将需要被索引的矩形分成r/n个组，论文中介绍了常见的Nearest-X(NX)、HilbertSort(HS)以及论文提出的Sort-Tile-Recursive(STR)。
+STR算法 STR的算法本身并不复杂，以2维空间为例。对矩形的分组只考虑每个矩形的中心点，STR的基本思想是将所有的矩形以“tile”的方式分配到r/n（取上界）个分组中，此处的tile和网格类似。
+首先，对矩形按x坐标排序，然后划分成 $\sqrt{r/n}$ 个slices。然后对每个slice内的矩形按y坐标排序，进一步划分成 $\sqrt{r/n}$ 份。
+对于更高维的空间，可以按这种方式接着划分。
+总结 这个算法主要做一个简单的划分，正如论文的标题 《STR: A Simple and Efficient Algorithm for R-Tree Packing》，有种方法对于一篇论文来讲略简单的感觉。文章内还做了些对比实验，表明针对不同的空间数据分布情况最好选择对应合适的方法，STR的packing算法并不是适合所有的场景。
+简单点来看，也就是R树的每层将空间中的矩形划分到了一个x、y方向数量相等分组中，当数据为长宽差距较大的矩形范围分布时，x、y方向的分组数量相同应该不是最好的方案。</description>
+    </item>
+    
+    <item>
+      <title>SpatialHadoop二级空间索引机制源码分析</title>
+      <link>https://extendswind.top/posts/technical/spatialhadoop_operation_code_analysis/</link>
+      <pubDate>Sat, 07 Nov 2020 10:30:00 +0800</pubDate>
+      
+      <guid>https://extendswind.top/posts/technical/spatialhadoop_operation_code_analysis/</guid>
+      <description>SpatialHadoop已经长期没有更新，MapReduce框架的效率也略低，虽然不太适合直接用，但代码的实现机制可以参考。最近准备重新了解一下HDFS上的空间索引问题，在两年前（没想到距离上次运行SpatialHadoop都两年了..）的基本使用的基础上（一个简单使用的记录），记录一下空间索引机制的处理方式。后面重点关注在Hadoop上的任务提交、并行索引构建、索引的存储与读取这几个方面。
+相比GeoSpark的代码，没有Spark现成的算子可以复用并且要处理文件方面的问题，逻辑上的处理稍复杂一点。
+空间分析任务的提交 SpatialHadoop提供了一个脚本，用于基本的空间处理，如下面的代码生成测试数据。
+sbin/shadoop generate test.rects size:1.gb shape:rect mbr:0,0,1000000,1000000 -overwrite shadoop脚本做的操作不多，直接通过Hadoop的运行命令运行了edu.umn.cs.spatialHadoop.operations.Main类，在类中的Main函数中处理输入参数。
+bin=`dirname &amp;#34;$0&amp;#34;` bin=`cd &amp;#34;$bin&amp;#34; &amp;gt; /dev/null; pwd` # Call Hadoop with the operations.Main as the main class . &amp;#34;$bin&amp;#34;/hadoop edu.umn.cs.spatialHadoop.operations.Main $@ 在Main函数中使用了Hadoop的ProgramDriver运行具体的类对象。首先从配置文件 spatial-operations.yaml 中读取支持的类，然后利用反射机制，读取对应类注释的shortName标签，通过shortName决定参数传递的具体的类。
+public static void main(String[] args) { int exitCode = -1; ProgramDriver pgd = new ProgramDriver(); try { // 这个位置加载配置文件，配置文件spatial-operations.yaml中包含了支持的完整类名 Yaml yaml = new Yaml(); List&amp;lt;String&amp;gt; ops = yaml.load(SpatialSite.class.getResourceAsStream(&amp;#34;/spatial-operations.yaml&amp;#34;)); // 通过反射的机制，提取类对应的源码中的annotation里的shortName，运行时会通过shortname执行对应的类 // 用在上面的生成随机数据中就是通过generate执行edu.umn.cs.spatialHadoop.operations.RandomSpatialGenerator。 for (String op : ops) { Class&amp;lt;?</description>
+    </item>
+    
+    <item>
+      <title>GeoSpark范围查询源码分析</title>
+      <link>https://extendswind.top/posts/technical/geospark_range_query_code_analysis/</link>
+      <pubDate>Thu, 05 Nov 2020 10:30:00 +0800</pubDate>
+      
+      <guid>https://extendswind.top/posts/technical/geospark_range_query_code_analysis/</guid>
+      <description>GeoSpark GeoSpark是基于Spark的空间数据处理开源库，在RDD模型的基础上添加了空间数据操作，以底层的SpatialRDD为基础设计了空间分析、空间SQL、空间数据可视化等组件。详细信息可以参考作者博客 https://jiayuasu.github.io/ 以及项目主页 http://sedona.apache.org。GeoSpark一开始是Spark的一个第三方组件，之后改名为sedona提交到apache基金会，当前（2020.11）正处于孵化阶段。
+在空间数据的索引与并行访问上，没有像SpatialHadoop那样直接基于HDFS构建针对文件的索引，而是将数据读到RDD中在内存中后进行分区和索引构建操作，索引后的数据可以持久化到硬盘避免下一次的读取，内存的大小一定程度上限制了单次能够处理的数据总量。
+最近通过Spark提高SpatialHadoop在设计上的效率，看了一眼GeoSpark在常见的空间处理上的逻辑，针对空间数据读取、索引、划分几个方面的逻辑记个笔记。
+主要代码逻辑 GeoSpark的代码大多直接用的java编写，调用了Spark的java API，整体的逻辑比我想象的要简单。代码注释、缩进、命名等貌似都略有非主流的地方。
+示例代码主要参考官网教程 http://sedona.apache.org/tutorial/rdd/ 与github仓库源码。
+读取csv文件并创建PointRDD 官方示例 Suppose we have a checkin.csv CSV file at Path /Download/checkin.csv as follows:
+-88.331492,32.324142,hotel -88.175933,32.360763,gas -88.388954,32.357073,bar -88.221102,32.35078,restaurant
+This file has three columns and corresponding offsets(Column IDs) are 0, 1, 2. Use the following code to create a PointRDD
+val pointRDDInputLocation = &amp;#34;/Download/checkin.csv&amp;#34; val pointRDDOffset = 0 // The point long/lat starts from Column 0 val pointRDDSplitter = FileDataSplitter.</description>
+    </item>
+    
+    <item>
+      <title>SpatialHadoop的编译与运行</title>
+      <link>https://extendswind.top/posts/technical/spatialhadoop_compile_and_run/</link>
+      <pubDate>Wed, 05 Sep 2018 10:30:00 +0800</pubDate>
+      
+      <guid>https://extendswind.top/posts/technical/spatialhadoop_compile_and_run/</guid>
+      <description>SpatialHadoop相对HadoopGIS等库，在MapReduce时代的空间数据处理开源库算处理较好。SpatialHadoop在效率上相对一些新的基于Spark空间数据处理开源库明显偏低，加上本身的功能实现得差不多，最近提交的更新越来越少，感觉发展趋势不太好，主要用于学习相关的索引技术。
+编译与运行 主页上有已经编译好的包，可以直接解压到Hadoop目录下运行，但官方的版本解压有错误，因此下载github上源码编译。
+需要的环境：
+jdk8 Hadoop 2.7.7 maven 源码编译 源码地址 https://github.com/aseldawy/spatialhadoop2，直接下载或者git clone到本地。
+需要安装maven用于代码编译。
+编译前将pom.xml文件中hadoop相关的版本改为需要的版本。
+mvn compile 编译源码 mvn assembly:assembly 代码打包，会在target目录下生成jar和一个包含jar与相关依赖的tar.gz包
+在2f1aefd32860d0279f2fc479a8bafb68d07e3761版本（Mar 13,2018）编译时会由于缺少一个测试文件测试失败，可以选择跳过测试，或者注释掉测试的代码（src/test/java/edu/umn/cs/spatialHadoop/indexing/RStarTreeTest.java中的某个函数）。
+运行 首先需要有一个Hadoop集群，能够提交yarn任务。
+将target目录下生成的tar.gz包（spatialhadoop-2.4.3-SNAPSHOT-bin.tar.gz）拷贝到Hadoop目录下并解压即可。
+cp target/spatialhadoop-2.4.3-SNAPSHOT-bin.tar.gz $HADOOP_HOME/ cd $HADOOP_HOME tar -zxvf spatialhadoop-2.4.3-SNAPSHOT-bin.tar.gz Hadoop目录下运行下面的测试代码，会向HDFS中写入一个随机生成的矩形文件。
+sbin/shadoop generate test.rects size:1.gb shape:rect mbr:0,0,1000000,1000000 -overwrite
+SpatialHadoop运行机制 shadoop 脚本 SpatialHadoop 通过脚本shadoop运行命令，脚本就只有几行代码
+bin=`dirname &amp;#34;$0&amp;#34;` bin=`cd &amp;#34;$bin&amp;#34; &amp;gt; /dev/null; pwd` # Call Hadoop with the operations.Main as the main class . &amp;#34;$bin&amp;#34;/hadoop edu.umn.cs.spatialHadoop.operations.Main $@ 其实只是将spatialhadoop的jar包与相关依赖jar包放入Hadoop的包目录中，然后通过shadoop脚本调用Hadoop脚本调用包中的一个类，向YARN提交MapReduce任务。
+spatialhadoop的相关文件 spatialhadoop-2.4.3-SNAPSHOT-bin.tar.gz 中有以下的文件。</description>
     </item>
     
   </channel>

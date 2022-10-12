@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang='en' dir='auto'><head>
+  <meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<meta name='description' content='矢量数据在内存中的操作需要面对不同的属性字段，想到c&#43;&#43;没有java的Object类作为不同数据类型的基类支撑，对c&#43;&#43;动态处理属性字段比较疑惑，看了一下QGIS的相关实现。没有像猜测中直接使用指针操作，动态属性字段使用Qt的Variant类实现，通过QVector的方式存储不同的属性数据。
+QGIS的矢量数据的组织和OGC的简单要素类（Simple Feature）的实现标准类似，每个矢量数据空间实体使用QgsFeature类的一个对象存储，每个OgsFeature对象有四个主要类成员：
+Q_PROPERTY( QgsGeometry geometry READ geometry WRITE setGeometry ) // Feature的几何字段 Q_PROPERTY( QgsFeatureId id READ id WRITE setId ) // Feature的id Q_PROPERTY( QgsAttributes attributes READ attributes WRITE setAttributes ) // Feature的属性值 Q_PROPERTY( QgsFields fields READ fields WRITE setFields ) // Feature的属性字段 其中QgsGeometry是空间信息的存储方式，负载点线面等空间对象的管理。内部的数据通过私有成员 QgsGeometryPrivate *d 存储，内部包含一个QgsAbstractGeometry智能指针 std::unique_ptr&lt; QgsAbstractGeometry &gt; geometry。QgsAbstractgeometry是几何对象的基类，其子类有QgsCurve、QgsPoint、QgsSurface以及存储多对象的QgsGeometryCollection，如下图：
+QgsFields负责属性字段的管理，通常包含多个QgsField，每个QgsField包括以下属性：
+Q_PROPERTY( bool isNumeric READ isNumeric ) Q_PROPERTY( bool isDateOrTime READ isDateOrTime ) Q_PROPERTY( int length READ length WRITE setLength ) Q_PROPERTY( int precision READ precision WRITE setPrecision ) Q_PROPERTY( QVariant::Type type READ type WRITE setType ) Q_PROPERTY( QString comment READ comment WRITE setComment ) Q_PROPERTY( QString name READ name WRITE setName ) Q_PROPERTY( QString alias READ alias WRITE setAlias ) Q_PROPERTY( QgsDefaultValue defaultValueDefinition READ defaultValueDefinition WRITE setDefaultValueDefinition ) Q_PROPERTY( QgsFieldConstraints constraints READ constraints WRITE setConstraints ) Q_PROPERTY( ConfigurationFlags configurationFlags READ configurationFlags WRITE setConfigurationFlags ) Q_PROPERTY( bool isReadOnly READ isReadOnly WRITE setReadOnly ) QgsAttributes负责具体的属性存储，为了支持动态数据类型（c&#43;&#43;对属性字段的数量和类型不事先定义），直接继承了QVecter类型，如下。其中QVariant是数据类型的基类，可以存放Qt的各种数据类型，不同于Object基类，QVariant可以看作Qt提供的对不同数据类型的一种包装，提供了各种类型数据的管理和转换操作。'>
+<meta name='theme-color' content='#cccccc'>
+
+<meta property='og:title' content='从QGIS源码看GIS矢量数据的组织形式 • A Notebook of Extendswind'>
+<meta property='og:description' content='矢量数据在内存中的操作需要面对不同的属性字段，想到c&#43;&#43;没有java的Object类作为不同数据类型的基类支撑，对c&#43;&#43;动态处理属性字段比较疑惑，看了一下QGIS的相关实现。没有像猜测中直接使用指针操作，动态属性字段使用Qt的Variant类实现，通过QVector的方式存储不同的属性数据。
+QGIS的矢量数据的组织和OGC的简单要素类（Simple Feature）的实现标准类似，每个矢量数据空间实体使用QgsFeature类的一个对象存储，每个OgsFeature对象有四个主要类成员：
+Q_PROPERTY( QgsGeometry geometry READ geometry WRITE setGeometry ) // Feature的几何字段 Q_PROPERTY( QgsFeatureId id READ id WRITE setId ) // Feature的id Q_PROPERTY( QgsAttributes attributes READ attributes WRITE setAttributes ) // Feature的属性值 Q_PROPERTY( QgsFields fields READ fields WRITE setFields ) // Feature的属性字段 其中QgsGeometry是空间信息的存储方式，负载点线面等空间对象的管理。内部的数据通过私有成员 QgsGeometryPrivate *d 存储，内部包含一个QgsAbstractGeometry智能指针 std::unique_ptr&lt; QgsAbstractGeometry &gt; geometry。QgsAbstractgeometry是几何对象的基类，其子类有QgsCurve、QgsPoint、QgsSurface以及存储多对象的QgsGeometryCollection，如下图：
+QgsFields负责属性字段的管理，通常包含多个QgsField，每个QgsField包括以下属性：
+Q_PROPERTY( bool isNumeric READ isNumeric ) Q_PROPERTY( bool isDateOrTime READ isDateOrTime ) Q_PROPERTY( int length READ length WRITE setLength ) Q_PROPERTY( int precision READ precision WRITE setPrecision ) Q_PROPERTY( QVariant::Type type READ type WRITE setType ) Q_PROPERTY( QString comment READ comment WRITE setComment ) Q_PROPERTY( QString name READ name WRITE setName ) Q_PROPERTY( QString alias READ alias WRITE setAlias ) Q_PROPERTY( QgsDefaultValue defaultValueDefinition READ defaultValueDefinition WRITE setDefaultValueDefinition ) Q_PROPERTY( QgsFieldConstraints constraints READ constraints WRITE setConstraints ) Q_PROPERTY( ConfigurationFlags configurationFlags READ configurationFlags WRITE setConfigurationFlags ) Q_PROPERTY( bool isReadOnly READ isReadOnly WRITE setReadOnly ) QgsAttributes负责具体的属性存储，为了支持动态数据类型（c&#43;&#43;对属性字段的数量和类型不事先定义），直接继承了QVecter类型，如下。其中QVariant是数据类型的基类，可以存放Qt的各种数据类型，不同于Object基类，QVariant可以看作Qt提供的对不同数据类型的一种包装，提供了各种类型数据的管理和转换操作。'>
+<meta property='og:url' content='https://extendswind.top/posts/technical/qgis_vector_data_type_structure.md/'>
+<meta property='og:site_name' content='A Notebook of Extendswind'>
+<meta property='og:type' content='article'><meta property='article:section' content='posts'><meta property='article:tag' content='GIS'><meta property='article:tag' content='QGIS'><meta property='article:published_time' content='2022-09-27T15:30:00&#43;08:00'/><meta property='article:modified_time' content='2022-09-27T15:30:00&#43;08:00'/><meta name='twitter:card' content='summary'>
+
+<meta name="generator" content="Hugo 0.102.3" />
+
+  <title>从QGIS源码看GIS矢量数据的组织形式 • A Notebook of Extendswind</title>
+  <link rel='canonical' href='https://extendswind.top/posts/technical/qgis_vector_data_type_structure.md/'>
+  
+  
+  <link rel='icon' href='/images/wind.jpeg'>
+<link rel='stylesheet' href='/assets/css/main.ab98e12b.css'><link rel='stylesheet' href='/css/custom.css'><style>
+:root{--color-accent:#cccccc;}
+</style>
+
+  
+
+</head>
+<body class='page type-posts has-sidebar'>
+
+  <div class='site'><div id='sidebar' class='sidebar'>
+  <a class='screen-reader-text' href='#main-menu'>Skip to Main Menu</a>
+
+  <div class='container'><section class='widget widget-about sep-after'>
+  <header>
+    
+    <div class='logo'>
+      <a href='/'>
+        <img src='/images/wind.jpeg'>
+      </a>
+    </div>
+    
+    <h2 class='title site-title '>
+      <a href='/'>
+      extendswind
+      </a>
+    </h2>
+    <div class='desc'>
+    
+    </div>
+  </header>
+
+</section>
+<section class='widget widget-sidebar_menu sep-after'><nav id='sidebar-menu' class='menu sidebar-menu' aria-label='Sidebar Menu'>
+    <div class='container'>
+      <ul><li class='item'>
+  <a href='/'>Home</a></li><li class='item'>
+  <a href='/posts'>Posts</a></li><li class='item'>
+  <a href='/categories'>Categories</a></li><li class='item'>
+  <a href='https://github.com/extendswind'>GitHub</a></li><li class='item'>
+  <a href='https://www.cnblogs.com/fly2wind/'>Cnblog</a></li></ul>
+    </div>
+  </nav>
+
+</section><section class='widget widget-taxonomy_cloud sep-after'>
+  <header>
+    <h4 class='title widget-title'>Tags</h4>
+  </header>
+
+  <div class='container list-container'>
+  <ul class='list taxonomy-cloud'><li>
+        <a href='/tags/blog/' style='font-size:1em'>blog</a>
+      </li><li>
+        <a href='/tags/c&#43;&#43;/' style='font-size:1em'>c&#43;&#43;</a>
+      </li><li>
+        <a href='/tags/design-patterns/' style='font-size:1em'>design patterns</a>
+      </li><li>
+        <a href='/tags/geospark/' style='font-size:1em'>GeoSpark</a>
+      </li><li>
+        <a href='/tags/gis/' style='font-size:1em'>GIS</a>
+      </li><li>
+        <a href='/tags/git/' style='font-size:1em'>git</a>
+      </li><li>
+        <a href='/tags/hadoop/' style='font-size:1em'>Hadoop</a>
+      </li><li>
+        <a href='/tags/hive/' style='font-size:1em'>hive</a>
+      </li><li>
+        <a href='/tags/iot/' style='font-size:1em'>IoT</a>
+      </li><li>
+        <a href='/tags/java/' style='font-size:1em'>java</a>
+      </li><li>
+        <a href='/tags/life/' style='font-size:1em'>life</a>
+      </li><li>
+        <a href='/tags/linux/' style='font-size:1em'>linux</a>
+      </li><li>
+        <a href='/tags/log4j/' style='font-size:1em'>log4j</a>
+      </li><li>
+        <a href='/tags/mpi/' style='font-size:1em'>MPI</a>
+      </li><li>
+        <a href='/tags/python/' style='font-size:1em'>python</a>
+      </li><li>
+        <a href='/tags/qgis/' style='font-size:1em'>QGIS</a>
+      </li><li>
+        <a href='/tags/raspberry/' style='font-size:1em'>raspberry</a>
+      </li><li>
+        <a href='/tags/reading/' style='font-size:1em'>reading</a>
+      </li><li>
+        <a href='/tags/sedona/' style='font-size:1em'>Sedona</a>
+      </li><li>
+        <a href='/tags/software/' style='font-size:1em'>software</a>
+      </li><li>
+        <a href='/tags/spark/' style='font-size:1em'>Spark</a>
+      </li><li>
+        <a href='/tags/%E9%87%8D%E5%AD%A6%E7%BC%96%E7%A8%8B%E5%9F%BA%E7%A1%80/' style='font-size:1em'>重学编程基础</a>
+      </li></ul>
+</div>
+
+
+</section>
+<section class='widget widget-search sep-after'>
+  <header>
+    <h4 class='title widget-title'>Search</h4>
+  </header>
+
+  <form action='/search' id='search-form' class='search-form'>
+    <label>
+      <span class='screen-reader-text'>Search</span>
+      <input id='search-term' class='search-term' type='search' name='q' placeholder='Search&hellip;'>
+    </label></form>
+
+</section>
+</div>
+
+  <div class='sidebar-overlay'></div>
+</div><div class='main'><a class='screen-reader-text' href='#content'>Skip to Content</a>
+
+<button id='sidebar-toggler' class='sidebar-toggler' aria-controls='sidebar'>
+  <span class='screen-reader-text'>Toggle Sidebar</span>
+  <span class='open'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="3" y1="12" x2="21" y2="12" />
+  <line x1="3" y1="6" x2="21" y2="6" />
+  <line x1="3" y1="18" x2="21" y2="18" />
+  
+</svg>
+</span>
+  <span class='close'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="18" y1="6" x2="6" y2="18" />
+  <line x1="6" y1="6" x2="18" y2="18" />
+  
+</svg>
+</span>
+</button><div class='header-widgets'>
+        <div class='container'></div>
+      </div>
+
+      <header id='header' class='header site-header'>
+        <div class='container sep-after'>
+          <div class='header-info'><p class='site-title title'>A Notebook of Extendswind</p><p class='desc site-desc'>a simple blog site</p>
+          </div>
+        </div>
+      </header>
+
+      <main id='content'>
+
+
+<article lang='en' class='entry'>
+  <header class='header entry-header'>
+  <div class='container sep-after'>
+    <div class='header-info'>
+      <h1 class='title'>从QGIS源码看GIS矢量数据的组织形式</h1>
+      
+
+    </div>
+    <div class='entry-meta'>
+  <span class='posted-on'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+  <line x1="16" y1="2" x2="16" y2="6"/>
+  <line x1="8" y1="2" x2="8" y2="6"/>
+  <line x1="3" y1="10" x2="21" y2="10"/>
+  
+</svg>
+<span class='screen-reader-text'>Posted on </span>
+  <time class='entry-date' datetime='2022-09-27T15:30:00&#43;08:00'>2022, Sep 27</time>
+</span>
+
+  
+  
+
+</div>
+
+
+  </div>
+</header>
+
+  
+  
+<details class='container entry-toc' open>
+  <summary class='title'>
+    <span>Table of Contents</span>
+  </summary>
+  <nav id="TableOfContents"></nav>
+</details>
+
+
+  <div class='container entry-content'>
+  <p>矢量数据在内存中的操作需要面对不同的属性字段，想到c++没有java的Object类作为不同数据类型的基类支撑，对c++动态处理属性字段比较疑惑，看了一下QGIS的相关实现。没有像猜测中直接使用指针操作，动态属性字段使用Qt的Variant类实现，通过QVector<!-- raw HTML omitted -->的方式存储不同的属性数据。</p>
+<p>QGIS的矢量数据的组织和OGC的简单要素类（Simple Feature）的<a href="https://www.ogc.org/standards/sfa">实现标准</a>类似，每个矢量数据空间实体使用QgsFeature类的一个对象存储，每个OgsFeature对象有四个主要类成员：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span>Q_PROPERTY( QgsGeometry geometry READ geometry WRITE setGeometry )  <span style="color:#75715e">// Feature的几何字段
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>Q_PROPERTY( QgsFeatureId id READ id WRITE setId )  <span style="color:#75715e">// Feature的id
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>Q_PROPERTY( QgsAttributes attributes READ attributes WRITE setAttributes )  <span style="color:#75715e">// Feature的属性值
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>Q_PROPERTY( QgsFields fields READ fields WRITE setFields )  <span style="color:#75715e">// Feature的属性字段
+</span></span></span></code></pre></div><p>其中QgsGeometry是空间信息的存储方式，负载点线面等空间对象的管理。内部的数据通过私有成员 <code>QgsGeometryPrivate *d</code> 存储，内部包含一个QgsAbstractGeometry智能指针 <code>std::unique_ptr&lt; QgsAbstractGeometry &gt; geometry</code>。QgsAbstractgeometry是几何对象的基类，其子类有QgsCurve、QgsPoint、QgsSurface以及存储多对象的QgsGeometryCollection，如下图：</p>
+<p><img src="img1-QgsAbstractGeometry.jpg" alt=""></p>
+<p>QgsFields负责属性字段的管理，通常包含多个QgsField，每个QgsField包括以下属性：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span>Q_PROPERTY( <span style="color:#66d9ef">bool</span> isNumeric READ isNumeric )
+</span></span><span style="display:flex;"><span>Q_PROPERTY( <span style="color:#66d9ef">bool</span> isDateOrTime READ isDateOrTime )
+</span></span><span style="display:flex;"><span>Q_PROPERTY( <span style="color:#66d9ef">int</span> length READ length WRITE setLength )
+</span></span><span style="display:flex;"><span>Q_PROPERTY( <span style="color:#66d9ef">int</span> precision READ precision WRITE setPrecision )
+</span></span><span style="display:flex;"><span>Q_PROPERTY( QVariant<span style="color:#f92672">::</span>Type type READ type WRITE setType )
+</span></span><span style="display:flex;"><span>Q_PROPERTY( QString comment READ comment WRITE setComment )
+</span></span><span style="display:flex;"><span>Q_PROPERTY( QString name READ name WRITE setName )
+</span></span><span style="display:flex;"><span>Q_PROPERTY( QString alias READ alias WRITE setAlias )
+</span></span><span style="display:flex;"><span>Q_PROPERTY( QgsDefaultValue defaultValueDefinition READ defaultValueDefinition WRITE setDefaultValueDefinition )
+</span></span><span style="display:flex;"><span>Q_PROPERTY( QgsFieldConstraints constraints READ constraints WRITE setConstraints )
+</span></span><span style="display:flex;"><span>Q_PROPERTY( ConfigurationFlags configurationFlags READ configurationFlags WRITE setConfigurationFlags )
+</span></span><span style="display:flex;"><span>Q_PROPERTY( <span style="color:#66d9ef">bool</span> isReadOnly READ isReadOnly WRITE setReadOnly )
+</span></span></code></pre></div><p>QgsAttributes负责具体的属性存储，为了支持动态数据类型（c++对属性字段的数量和类型不事先定义），直接继承了QVecter类型，如下。其中QVariant是数据类型的基类，可以存放Qt的各种数据类型，不同于Object基类，QVariant可以看作Qt提供的对不同数据类型的一种包装，提供了各种类型数据的管理和转换操作。</p>
+<p><code>QgsAttributes : public QVector&lt;QVariant&gt; {...}</code></p>
+
+</div>
+
+  
+<footer class='entry-footer'>
+  <div class='container sep-before'><div class='categories'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M22,19a2,2,0,0,1-2,2H4a2,2,0,0,1-2-2V5A2,2,0,0,1,4,3H9l2,3h9a2,2,0,0,1,2,2Z"/>
+  
+</svg>
+<span class='screen-reader-text'>Categories: </span><a class='category' href='/categories/gis/'>GIS</a></div>
+<div class='tags'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M20.59,13.41l-7.17,7.17a2,2,0,0,1-2.83,0L2,12V2H12l8.59,8.59A2,2,0,0,1,20.59,13.41Z"/>
+  <line x1="7" y1="7" x2="7" y2="7"/>
+  
+</svg>
+<span class='screen-reader-text'>Tags: </span><a class='tag' href='/tags/gis/'>GIS</a>, <a class='tag' href='/tags/qgis/'>QGIS</a></div>
+
+  </div>
+</footer>
+
+
+</article>
+
+<nav class='entry-nav'>
+  <div class='container'><div class='prev-entry sep-before'>
+      <a href='/posts/technical/qtcreator_update_make_fcitx_failed/'>
+        <span aria-hidden='true'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="20" y1="12" x2="4" y2="12"/>
+  <polyline points="10 18 4 12 10 6"/>
+  
+</svg>
+ Previous</span>
+        <span class='screen-reader-text'>Previous post: </span>qtcreator更新后搜狗输入法（fcitx）不能用</a>
+    </div><div class='next-entry sep-before'>
+      <a href='/posts/technical/geotools_simple_feature_create/'>
+        <span class='screen-reader-text'>Next post: </span>Geotools的点类型简单要素创建以及大数据量下的效率问题<span aria-hidden='true'>Next <svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="4" y1="12" x2="20" y2="12"/>
+  <polyline points="14 6 20 12 14 18"/>
+  
+</svg>
+</span>
+      </a>
+    </div></div>
+</nav>
+
+
+
+
+      </main>
+
+      <footer id='footer' class='footer'>
+        <div class='container sep-before'><section class='widget widget-social_menu sep-after'><header>
+    <h4 class='title widget-title'>Contact</h4>
+  </header><nav aria-label='Social Menu'>
+    <ul><li>
+        <a href='https://github.com/extendswind' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Open Github account in new tab</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+  
+</svg>
+</a>
+      </li><li>
+        <a href='mailto:extendswind@foxmail.com' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Contact via Email</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+  <polyline points="22,6 12,13 2,6"/>
+  
+</svg>
+</a>
+      </li></ul>
+  </nav>
+</section><div class='copyright'>
+  <p>本站原创文章遵循CC-BY 4.0版权协议，转载注明出处即可</p>
+</div>
+
+        </div>
+      </footer>
+
+    </div>
+  </div><script>window.__assets_js_src="/assets/js/"</script>
+
+<script src='/assets/js/main.c3bcf2df.js'></script>
+
+</body>
+
+</html>
+

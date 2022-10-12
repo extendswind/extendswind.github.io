@@ -6,8 +6,8 @@
 相比GeoSpark的代码，没有Spark现成的算子可以复用并且要处理文件方面的问题，逻辑上的处理稍复杂一点。
 空间分析任务的提交 SpatialHadoop提供了一个脚本，用于基本的空间处理，如下面的代码生成测试数据。
 sbin/shadoop generate test.rects size:1.gb shape:rect mbr:0,0,1000000,1000000 -overwrite shadoop脚本做的操作不多，直接通过Hadoop的运行命令运行了edu.umn.cs.spatialHadoop.operations.Main类，在类中的Main函数中处理输入参数。
-bin=`dirname &#34;$0&#34;` bin=`cd &#34;$bin&#34; &gt; /dev/null; pwd`  # Call Hadoop with the operations.Main as the main class . &#34;$bin&#34;/hadoop edu.umn.cs.spatialHadoop.operations.Main $@ 在Main函数中使用了Hadoop的ProgramDriver运行具体的类对象。首先从配置文件 spatial-operations.yaml 中读取支持的类，然后利用反射机制，读取对应类注释的shortName标签，通过shortName决定参数传递的具体的类。
-public static void main(String[] args) {  int exitCode = -1;  ProgramDriver pgd = new ProgramDriver();  try {  // 这个位置加载配置文件，配置文件spatial-operations.yaml中包含了支持的完整类名  Yaml yaml = new Yaml();  List&lt;String&gt; ops = yaml.'>
+bin=`dirname &#34;$0&#34;` bin=`cd &#34;$bin&#34; &gt; /dev/null; pwd` # Call Hadoop with the operations.Main as the main class . &#34;$bin&#34;/hadoop edu.umn.cs.spatialHadoop.operations.Main $@ 在Main函数中使用了Hadoop的ProgramDriver运行具体的类对象。首先从配置文件 spatial-operations.yaml 中读取支持的类，然后利用反射机制，读取对应类注释的shortName标签，通过shortName决定参数传递的具体的类。
+public static void main(String[] args) { int exitCode = -1; ProgramDriver pgd = new ProgramDriver(); try { // 这个位置加载配置文件，配置文件spatial-operations.yaml中包含了支持的完整类名 Yaml yaml = new Yaml(); List&lt;String&gt; ops = yaml.load(SpatialSite.class.getResourceAsStream(&#34;/spatial-operations.yaml&#34;)); // 通过反射的机制，提取类对应的源码中的annotation里的shortName，运行时会通过shortname执行对应的类 // 用在上面的生成随机数据中就是通过generate执行edu.umn.cs.spatialHadoop.operations.RandomSpatialGenerator。 for (String op : ops) { Class&lt;?'>
 <meta name='theme-color' content='#cccccc'>
 
 <meta property='og:title' content='SpatialHadoop二级空间索引机制源码分析 • A Notebook of Extendswind'>
@@ -15,13 +15,13 @@ public static void main(String[] args) {  int exitCode = -1;  ProgramDriver pgd 
 相比GeoSpark的代码，没有Spark现成的算子可以复用并且要处理文件方面的问题，逻辑上的处理稍复杂一点。
 空间分析任务的提交 SpatialHadoop提供了一个脚本，用于基本的空间处理，如下面的代码生成测试数据。
 sbin/shadoop generate test.rects size:1.gb shape:rect mbr:0,0,1000000,1000000 -overwrite shadoop脚本做的操作不多，直接通过Hadoop的运行命令运行了edu.umn.cs.spatialHadoop.operations.Main类，在类中的Main函数中处理输入参数。
-bin=`dirname &#34;$0&#34;` bin=`cd &#34;$bin&#34; &gt; /dev/null; pwd`  # Call Hadoop with the operations.Main as the main class . &#34;$bin&#34;/hadoop edu.umn.cs.spatialHadoop.operations.Main $@ 在Main函数中使用了Hadoop的ProgramDriver运行具体的类对象。首先从配置文件 spatial-operations.yaml 中读取支持的类，然后利用反射机制，读取对应类注释的shortName标签，通过shortName决定参数传递的具体的类。
-public static void main(String[] args) {  int exitCode = -1;  ProgramDriver pgd = new ProgramDriver();  try {  // 这个位置加载配置文件，配置文件spatial-operations.yaml中包含了支持的完整类名  Yaml yaml = new Yaml();  List&lt;String&gt; ops = yaml.'>
+bin=`dirname &#34;$0&#34;` bin=`cd &#34;$bin&#34; &gt; /dev/null; pwd` # Call Hadoop with the operations.Main as the main class . &#34;$bin&#34;/hadoop edu.umn.cs.spatialHadoop.operations.Main $@ 在Main函数中使用了Hadoop的ProgramDriver运行具体的类对象。首先从配置文件 spatial-operations.yaml 中读取支持的类，然后利用反射机制，读取对应类注释的shortName标签，通过shortName决定参数传递的具体的类。
+public static void main(String[] args) { int exitCode = -1; ProgramDriver pgd = new ProgramDriver(); try { // 这个位置加载配置文件，配置文件spatial-operations.yaml中包含了支持的完整类名 Yaml yaml = new Yaml(); List&lt;String&gt; ops = yaml.load(SpatialSite.class.getResourceAsStream(&#34;/spatial-operations.yaml&#34;)); // 通过反射的机制，提取类对应的源码中的annotation里的shortName，运行时会通过shortname执行对应的类 // 用在上面的生成随机数据中就是通过generate执行edu.umn.cs.spatialHadoop.operations.RandomSpatialGenerator。 for (String op : ops) { Class&lt;?'>
 <meta property='og:url' content='https://extendswind.top/posts/technical/spatialhadoop_operation_code_analysis/'>
 <meta property='og:site_name' content='A Notebook of Extendswind'>
-<meta property='og:type' content='article'><meta property='article:section' content='posts'><meta property='article:tag' content='hadoop'><meta property='article:tag' content='GIS'><meta property='article:published_time' content='2020-11-07T10:30:00&#43;08:00'/><meta property='article:modified_time' content='2020-11-07T10:30:00&#43;08:00'/><meta name='twitter:card' content='summary'>
+<meta property='og:type' content='article'><meta property='article:section' content='posts'><meta property='article:tag' content='Hadoop'><meta property='article:tag' content='GIS'><meta property='article:published_time' content='2020-11-07T10:30:00&#43;08:00'/><meta property='article:modified_time' content='2020-11-07T10:30:00&#43;08:00'/><meta name='twitter:card' content='summary'>
 
-<meta name="generator" content="Hugo 0.99.1" />
+<meta name="generator" content="Hugo 0.102.3" />
 
   <title>SpatialHadoop二级空间索引机制源码分析 • A Notebook of Extendswind</title>
   <link rel='canonical' href='https://extendswind.top/posts/technical/spatialhadoop_operation_code_analysis/'>
@@ -90,7 +90,7 @@ public static void main(String[] args) {  int exitCode = -1;  ProgramDriver pgd 
       </li><li>
         <a href='/tags/git/' style='font-size:1em'>git</a>
       </li><li>
-        <a href='/tags/hadoop/' style='font-size:1em'>hadoop</a>
+        <a href='/tags/hadoop/' style='font-size:1em'>Hadoop</a>
       </li><li>
         <a href='/tags/hive/' style='font-size:1em'>hive</a>
       </li><li>
@@ -113,6 +113,8 @@ public static void main(String[] args) {  int exitCode = -1;  ProgramDriver pgd 
         <a href='/tags/raspberry/' style='font-size:1em'>raspberry</a>
       </li><li>
         <a href='/tags/reading/' style='font-size:1em'>reading</a>
+      </li><li>
+        <a href='/tags/sedona/' style='font-size:1em'>Sedona</a>
       </li><li>
         <a href='/tags/software/' style='font-size:1em'>software</a>
       </li><li>
@@ -606,14 +608,14 @@ public static void main(String[] args) {  int exitCode = -1;  ProgramDriver pgd 
   <path d="M22,19a2,2,0,0,1-2,2H4a2,2,0,0,1-2-2V5A2,2,0,0,1,4,3H9l2,3h9a2,2,0,0,1,2,2Z"/>
   
 </svg>
-<span class='screen-reader-text'>Categories: </span><a class='category' href='/categories/cloud-computing/'>cloud computing</a></div>
+<span class='screen-reader-text'>Categories: </span><a class='category' href='/categories/gis/'>GIS</a></div>
 <div class='tags'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
   
   <path d="M20.59,13.41l-7.17,7.17a2,2,0,0,1-2.83,0L2,12V2H12l8.59,8.59A2,2,0,0,1,20.59,13.41Z"/>
   <line x1="7" y1="7" x2="7" y2="7"/>
   
 </svg>
-<span class='screen-reader-text'>Tags: </span><a class='tag' href='/tags/hadoop/'>hadoop</a>, <a class='tag' href='/tags/gis/'>GIS</a></div>
+<span class='screen-reader-text'>Tags: </span><a class='tag' href='/tags/hadoop/'>Hadoop</a>, <a class='tag' href='/tags/gis/'>GIS</a></div>
 
   </div>
 </footer>

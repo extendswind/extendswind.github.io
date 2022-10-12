@@ -5,7 +5,7 @@
 <meta name='description' content='首先吐槽，anki作为老牌软件，国内资料并不多。
 虽然html的卡片显示和python的插件式开发上看比较适合程序员，但从各种配置上感觉程序员用户量并不大。
 因此，想深度使用准备折腾。
-简单使用  淘制作好的卡片，导入 卡片可以套模板更美观（添加时的Cards选项，支持html） 添加单词和读音用FastWQ（只支持新版本，查词速度快） （已不支持新版本）插件里的awesome TTS很多人推荐但速度略慢 （已不支持新版本）添加单词可以用Word Query  官方文档https://apps.ankiweb.net/docs/manual.html
+简单使用 淘制作好的卡片，导入 卡片可以套模板更美观（添加时的Cards选项，支持html） 添加单词和读音用FastWQ（只支持新版本，查词速度快） （已不支持新版本）插件里的awesome TTS很多人推荐但速度略慢 （已不支持新版本）添加单词可以用Word Query 官方文档https://apps.ankiweb.net/docs/manual.html
 插件编写文档https://apps.ankiweb.net/docs/addons.html
 插件安装 官网上找插件对应的id编号，然后打开anki的插件设置，添加插件中填入插件id号即可下载。
 FastWQ插件 首先在tools菜单下的FastWQ插件设置中，选择note type，然后第一列中选择单词所在位置，第三列选择想要用的在线字典，第四列的Fields中选择行对应的需要填入的内容。
@@ -16,18 +16,18 @@ anki server 的安装 官网的速度爆表，而且有数据安全问题，因�
 百度上的大多使用 https://github.com/dsnopek/anki-sync-server ，可以基于pip2和python2直接安装，个人在基于Arch的linux下感觉坑多，在linux上的anki 2.1.9连不上上面python2的服务器（bug解决一个又出一个），更建议使用基于python3的fork项目：https://github.com/tsudoko/anki-sync-server 。
 基于python3的仓库 github上的readme已经写得比较清楚，下面的搬运点大概。
 1、clone 仓库
- git clone https://github.com/tsudoko/anki-sync-server.git
+git clone https://github.com/tsudoko/anki-sync-server.git
 2、安装anki或anki-bundled相关的库
 直接使用包管理器安装 sudo pacman -S anki
 如果包管理器里没有anki（如debian），也可以用pip安装anki-bundled相关的库
- $ git submodule update --init # anki-bundled已经加入为submodule，可以先更新  $ cd anki-bundled  $ pip install -r requirements.'>
+$ git submodule update --init # anki-bundled已经加入为submodule，可以先更新 $ cd anki-bundled $ pip install -r requirements.txt # 安装相关的库 3、安装webob'>
 <meta name='theme-color' content='#cccccc'>
 
 <meta property='og:title' content='anki的使用以及anki server的配置 • A Notebook of Extendswind'>
 <meta property='og:description' content='首先吐槽，anki作为老牌软件，国内资料并不多。
 虽然html的卡片显示和python的插件式开发上看比较适合程序员，但从各种配置上感觉程序员用户量并不大。
 因此，想深度使用准备折腾。
-简单使用  淘制作好的卡片，导入 卡片可以套模板更美观（添加时的Cards选项，支持html） 添加单词和读音用FastWQ（只支持新版本，查词速度快） （已不支持新版本）插件里的awesome TTS很多人推荐但速度略慢 （已不支持新版本）添加单词可以用Word Query  官方文档https://apps.ankiweb.net/docs/manual.html
+简单使用 淘制作好的卡片，导入 卡片可以套模板更美观（添加时的Cards选项，支持html） 添加单词和读音用FastWQ（只支持新版本，查词速度快） （已不支持新版本）插件里的awesome TTS很多人推荐但速度略慢 （已不支持新版本）添加单词可以用Word Query 官方文档https://apps.ankiweb.net/docs/manual.html
 插件编写文档https://apps.ankiweb.net/docs/addons.html
 插件安装 官网上找插件对应的id编号，然后打开anki的插件设置，添加插件中填入插件id号即可下载。
 FastWQ插件 首先在tools菜单下的FastWQ插件设置中，选择note type，然后第一列中选择单词所在位置，第三列选择想要用的在线字典，第四列的Fields中选择行对应的需要填入的内容。
@@ -38,16 +38,16 @@ anki server 的安装 官网的速度爆表，而且有数据安全问题，因�
 百度上的大多使用 https://github.com/dsnopek/anki-sync-server ，可以基于pip2和python2直接安装，个人在基于Arch的linux下感觉坑多，在linux上的anki 2.1.9连不上上面python2的服务器（bug解决一个又出一个），更建议使用基于python3的fork项目：https://github.com/tsudoko/anki-sync-server 。
 基于python3的仓库 github上的readme已经写得比较清楚，下面的搬运点大概。
 1、clone 仓库
- git clone https://github.com/tsudoko/anki-sync-server.git
+git clone https://github.com/tsudoko/anki-sync-server.git
 2、安装anki或anki-bundled相关的库
 直接使用包管理器安装 sudo pacman -S anki
 如果包管理器里没有anki（如debian），也可以用pip安装anki-bundled相关的库
- $ git submodule update --init # anki-bundled已经加入为submodule，可以先更新  $ cd anki-bundled  $ pip install -r requirements.'>
+$ git submodule update --init # anki-bundled已经加入为submodule，可以先更新 $ cd anki-bundled $ pip install -r requirements.txt # 安装相关的库 3、安装webob'>
 <meta property='og:url' content='https://extendswind.top/posts/technical/anki_and_anki_server/'>
 <meta property='og:site_name' content='A Notebook of Extendswind'>
 <meta property='og:type' content='article'><meta property='article:section' content='posts'><meta property='article:tag' content='software'><meta property='article:published_time' content='2019-03-04T21:59:49&#43;08:00'/><meta property='article:modified_time' content='2019-03-04T21:59:49&#43;08:00'/><meta name='twitter:card' content='summary'>
 
-<meta name="generator" content="Hugo 0.99.1" />
+<meta name="generator" content="Hugo 0.102.3" />
 
   <title>anki的使用以及anki server的配置 • A Notebook of Extendswind</title>
   <link rel='canonical' href='https://extendswind.top/posts/technical/anki_and_anki_server/'>
@@ -116,7 +116,7 @@ anki server 的安装 官网的速度爆表，而且有数据安全问题，因�
       </li><li>
         <a href='/tags/git/' style='font-size:1em'>git</a>
       </li><li>
-        <a href='/tags/hadoop/' style='font-size:1em'>hadoop</a>
+        <a href='/tags/hadoop/' style='font-size:1em'>Hadoop</a>
       </li><li>
         <a href='/tags/hive/' style='font-size:1em'>hive</a>
       </li><li>
@@ -139,6 +139,8 @@ anki server 的安装 官网的速度爆表，而且有数据安全问题，因�
         <a href='/tags/raspberry/' style='font-size:1em'>raspberry</a>
       </li><li>
         <a href='/tags/reading/' style='font-size:1em'>reading</a>
+      </li><li>
+        <a href='/tags/sedona/' style='font-size:1em'>Sedona</a>
       </li><li>
         <a href='/tags/software/' style='font-size:1em'>software</a>
       </li><li>

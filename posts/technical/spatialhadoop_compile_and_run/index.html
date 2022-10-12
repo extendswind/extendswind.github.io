@@ -5,7 +5,7 @@
 <meta name='description' content='SpatialHadoop相对HadoopGIS等库，在MapReduce时代的空间数据处理开源库算处理较好。SpatialHadoop在效率上相对一些新的基于Spark空间数据处理开源库明显偏低，加上本身的功能实现得差不多，最近提交的更新越来越少，感觉发展趋势不太好，主要用于学习相关的索引技术。
 编译与运行 主页上有已经编译好的包，可以直接解压到Hadoop目录下运行，但官方的版本解压有错误，因此下载github上源码编译。
 需要的环境：
- jdk8 Hadoop 2.7.7 maven  源码编译 源码地址 https://github.com/aseldawy/spatialhadoop2，直接下载或者git clone到本地。
+jdk8 Hadoop 2.7.7 maven 源码编译 源码地址 https://github.com/aseldawy/spatialhadoop2，直接下载或者git clone到本地。
 需要安装maven用于代码编译。
 编译前将pom.xml文件中hadoop相关的版本改为需要的版本。
 mvn compile 编译源码 mvn assembly:assembly 代码打包，会在target目录下生成jar和一个包含jar与相关依赖的tar.gz包
@@ -15,14 +15,15 @@ mvn compile 编译源码 mvn assembly:assembly 代码打包，会在target目录
 cp target/spatialhadoop-2.4.3-SNAPSHOT-bin.tar.gz $HADOOP_HOME/ cd $HADOOP_HOME tar -zxvf spatialhadoop-2.4.3-SNAPSHOT-bin.tar.gz Hadoop目录下运行下面的测试代码，会向HDFS中写入一个随机生成的矩形文件。
 sbin/shadoop generate test.rects size:1.gb shape:rect mbr:0,0,1000000,1000000 -overwrite
 SpatialHadoop运行机制 shadoop 脚本 SpatialHadoop 通过脚本shadoop运行命令，脚本就只有几行代码
-bin=`dirname &#34;$0&#34;` bin=`cd &#34;$bin&#34; &gt; /dev/null; pwd`  # Call Hadoop with the operations.Main as the main class . &#34;$bin&#34;/hadoop edu.umn.cs.spatialHadoop.operations.Main $@ 其实只是将spatialhadoop的jar包与相关依赖jar包放入Hadoop的包目录中，然后通过shadoop脚本调用Hadoop脚本调用包中的一个类，向YARN提交MapReduce任务。'>
+bin=`dirname &#34;$0&#34;` bin=`cd &#34;$bin&#34; &gt; /dev/null; pwd` # Call Hadoop with the operations.Main as the main class . &#34;$bin&#34;/hadoop edu.umn.cs.spatialHadoop.operations.Main $@ 其实只是将spatialhadoop的jar包与相关依赖jar包放入Hadoop的包目录中，然后通过shadoop脚本调用Hadoop脚本调用包中的一个类，向YARN提交MapReduce任务。
+spatialhadoop的相关文件 spatialhadoop-2.4.3-SNAPSHOT-bin.tar.gz 中有以下的文件。'>
 <meta name='theme-color' content='#cccccc'>
 
 <meta property='og:title' content='SpatialHadoop的编译与运行 • A Notebook of Extendswind'>
 <meta property='og:description' content='SpatialHadoop相对HadoopGIS等库，在MapReduce时代的空间数据处理开源库算处理较好。SpatialHadoop在效率上相对一些新的基于Spark空间数据处理开源库明显偏低，加上本身的功能实现得差不多，最近提交的更新越来越少，感觉发展趋势不太好，主要用于学习相关的索引技术。
 编译与运行 主页上有已经编译好的包，可以直接解压到Hadoop目录下运行，但官方的版本解压有错误，因此下载github上源码编译。
 需要的环境：
- jdk8 Hadoop 2.7.7 maven  源码编译 源码地址 https://github.com/aseldawy/spatialhadoop2，直接下载或者git clone到本地。
+jdk8 Hadoop 2.7.7 maven 源码编译 源码地址 https://github.com/aseldawy/spatialhadoop2，直接下载或者git clone到本地。
 需要安装maven用于代码编译。
 编译前将pom.xml文件中hadoop相关的版本改为需要的版本。
 mvn compile 编译源码 mvn assembly:assembly 代码打包，会在target目录下生成jar和一个包含jar与相关依赖的tar.gz包
@@ -32,12 +33,13 @@ mvn compile 编译源码 mvn assembly:assembly 代码打包，会在target目录
 cp target/spatialhadoop-2.4.3-SNAPSHOT-bin.tar.gz $HADOOP_HOME/ cd $HADOOP_HOME tar -zxvf spatialhadoop-2.4.3-SNAPSHOT-bin.tar.gz Hadoop目录下运行下面的测试代码，会向HDFS中写入一个随机生成的矩形文件。
 sbin/shadoop generate test.rects size:1.gb shape:rect mbr:0,0,1000000,1000000 -overwrite
 SpatialHadoop运行机制 shadoop 脚本 SpatialHadoop 通过脚本shadoop运行命令，脚本就只有几行代码
-bin=`dirname &#34;$0&#34;` bin=`cd &#34;$bin&#34; &gt; /dev/null; pwd`  # Call Hadoop with the operations.Main as the main class . &#34;$bin&#34;/hadoop edu.umn.cs.spatialHadoop.operations.Main $@ 其实只是将spatialhadoop的jar包与相关依赖jar包放入Hadoop的包目录中，然后通过shadoop脚本调用Hadoop脚本调用包中的一个类，向YARN提交MapReduce任务。'>
+bin=`dirname &#34;$0&#34;` bin=`cd &#34;$bin&#34; &gt; /dev/null; pwd` # Call Hadoop with the operations.Main as the main class . &#34;$bin&#34;/hadoop edu.umn.cs.spatialHadoop.operations.Main $@ 其实只是将spatialhadoop的jar包与相关依赖jar包放入Hadoop的包目录中，然后通过shadoop脚本调用Hadoop脚本调用包中的一个类，向YARN提交MapReduce任务。
+spatialhadoop的相关文件 spatialhadoop-2.4.3-SNAPSHOT-bin.tar.gz 中有以下的文件。'>
 <meta property='og:url' content='https://extendswind.top/posts/technical/spatialhadoop_compile_and_run/'>
 <meta property='og:site_name' content='A Notebook of Extendswind'>
-<meta property='og:type' content='article'><meta property='article:section' content='posts'><meta property='article:tag' content='hadoop'><meta property='article:tag' content='GIS'><meta property='article:published_time' content='2018-09-05T10:30:00&#43;08:00'/><meta property='article:modified_time' content='2018-09-05T10:30:00&#43;08:00'/><meta name='twitter:card' content='summary'>
+<meta property='og:type' content='article'><meta property='article:section' content='posts'><meta property='article:tag' content='Hadoop'><meta property='article:tag' content='GIS'><meta property='article:published_time' content='2018-09-05T10:30:00&#43;08:00'/><meta property='article:modified_time' content='2018-09-05T10:30:00&#43;08:00'/><meta name='twitter:card' content='summary'>
 
-<meta name="generator" content="Hugo 0.99.1" />
+<meta name="generator" content="Hugo 0.102.3" />
 
   <title>SpatialHadoop的编译与运行 • A Notebook of Extendswind</title>
   <link rel='canonical' href='https://extendswind.top/posts/technical/spatialhadoop_compile_and_run/'>
@@ -106,7 +108,7 @@ bin=`dirname &#34;$0&#34;` bin=`cd &#34;$bin&#34; &gt; /dev/null; pwd`  # Call H
       </li><li>
         <a href='/tags/git/' style='font-size:1em'>git</a>
       </li><li>
-        <a href='/tags/hadoop/' style='font-size:1em'>hadoop</a>
+        <a href='/tags/hadoop/' style='font-size:1em'>Hadoop</a>
       </li><li>
         <a href='/tags/hive/' style='font-size:1em'>hive</a>
       </li><li>
@@ -129,6 +131,8 @@ bin=`dirname &#34;$0&#34;` bin=`cd &#34;$bin&#34; &gt; /dev/null; pwd`  # Call H
         <a href='/tags/raspberry/' style='font-size:1em'>raspberry</a>
       </li><li>
         <a href='/tags/reading/' style='font-size:1em'>reading</a>
+      </li><li>
+        <a href='/tags/sedona/' style='font-size:1em'>Sedona</a>
       </li><li>
         <a href='/tags/software/' style='font-size:1em'>software</a>
       </li><li>
@@ -322,14 +326,14 @@ bin=`dirname &#34;$0&#34;` bin=`cd &#34;$bin&#34; &gt; /dev/null; pwd`  # Call H
   <path d="M22,19a2,2,0,0,1-2,2H4a2,2,0,0,1-2-2V5A2,2,0,0,1,4,3H9l2,3h9a2,2,0,0,1,2,2Z"/>
   
 </svg>
-<span class='screen-reader-text'>Categories: </span><a class='category' href='/categories/cloud-computing/'>cloud computing</a></div>
+<span class='screen-reader-text'>Categories: </span><a class='category' href='/categories/gis/'>GIS</a></div>
 <div class='tags'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
   
   <path d="M20.59,13.41l-7.17,7.17a2,2,0,0,1-2.83,0L2,12V2H12l8.59,8.59A2,2,0,0,1,20.59,13.41Z"/>
   <line x1="7" y1="7" x2="7" y2="7"/>
   
 </svg>
-<span class='screen-reader-text'>Tags: </span><a class='tag' href='/tags/hadoop/'>hadoop</a>, <a class='tag' href='/tags/gis/'>GIS</a></div>
+<span class='screen-reader-text'>Tags: </span><a class='tag' href='/tags/hadoop/'>Hadoop</a>, <a class='tag' href='/tags/gis/'>GIS</a></div>
 
   </div>
 </footer>

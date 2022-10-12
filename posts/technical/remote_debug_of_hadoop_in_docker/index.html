@@ -6,21 +6,22 @@
 Java 远程调试 不想了解的可以直接跳到下面Hadoop
 通过JPDA（Java Platform Debugger Architecture），调试时启动服务，通过socket端口与调试服务端通信。
 下面只用最常用的服务端启动调试服务监听端口，本地IDE（idea）连接服务端。
-具体操作 1、启动被调试程序时添加参数：   jdk9: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:8000
+具体操作 1、启动被调试程序时添加参数： jdk9: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:8000
 jdk5-8: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8000
 jdk4: -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8000
 jdk3 及以前: -Xnoagent -Djava.compiler=NONE -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8000
 此处有坑，网上大部分没有提到jdk版本不同导致的区别，很多博客使用jdk4的写法，可能导致问题（idea配置远程调试时有上面的选项）。
 另外一个小坑, 下面第一个命令正常执行，第二个命令会忽略调试选项：
- java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8000 test java test -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8000  主要参数。suspend=y时，程序启动会先挂起，IDE连接后才会运行；suspend=n时，程序启动会直接运行。address后面为端口号，不与其它端口重合即可。
+java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8000 test java test -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8000 主要参数。suspend=y时，程序启动会先挂起，IDE连接后才会运行；suspend=n时，程序启动会直接运行。address后面为端口号，不与其它端口重合即可。
 2、启动Idea连接调试 使用idea打开调试项目的源码工程
 Run -&gt; Edit Configurations , 点“加号” -&gt; remote，然后填上被调试程序所在主机的ip以及上面的address对应端口号，并选择源码所在的module。
 添加后debug运行，剩下的和本地调试相同。
 Hadoop 远程调试 思路和上面的操作一致。下面以调试HDFS中的namenode为例。
 具体操作 1、修改Hadoop启动参数为debug模式 如果需要调试namenode服务，在etc/hadoop/hadoop-env.sh文件后添加：
-export HDFS_NAMENODE_OPTS=&quot;-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8000&quot; 
-HDFS启动的jvm主要为namenode和datanode，jvm启动的参数设置在etc/hadoop/hadoop-env.sh中。其中namenode启动参数环境变量为 HDFS_NAMENODE_OPTS，datanode为 HDFS_DATANODE_OPTS（针对Hadoop3，hadoop2的设置为HADOOP_NAMENODE_OPTS HADOOP_NAMENODE_OPTS）。YARN等服务对应的环境变量需要另查。
-2、启动服务 sbin/start-dfs.sh 或者 bin/hdfs --daemon start namenode仅启动namenode'>
+export HDFS_NAMENODE_OPTS=&quot;-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8000&quot; HDFS启动的jvm主要为namenode和datanode，jvm启动的参数设置在etc/hadoop/hadoop-env.sh中。其中namenode启动参数环境变量为 HDFS_NAMENODE_OPTS，datanode为 HDFS_DATANODE_OPTS（针对Hadoop3，hadoop2的设置为HADOOP_NAMENODE_OPTS HADOOP_NAMENODE_OPTS）。YARN等服务对应的环境变量需要另查。
+2、启动服务 sbin/start-dfs.sh 或者 bin/hdfs --daemon start namenode仅启动namenode
+3、启动idea连接服务 下载源码并导入到工程（可以只导入需要调试的部分）
+Run -&gt; Edit Configurations , 点“加号” -&gt; remote，然后填上被调试程序所在主机的ip以及上面的address对应端口号，并选择需要调试的module。'>
 <meta name='theme-color' content='#cccccc'>
 
 <meta property='og:title' content='Hadoop HDFS 远程调试（Docker环境下的Hadoop集群） • A Notebook of Extendswind'>
@@ -28,26 +29,27 @@ HDFS启动的jvm主要为namenode和datanode，jvm启动的参数设置在etc/ha
 Java 远程调试 不想了解的可以直接跳到下面Hadoop
 通过JPDA（Java Platform Debugger Architecture），调试时启动服务，通过socket端口与调试服务端通信。
 下面只用最常用的服务端启动调试服务监听端口，本地IDE（idea）连接服务端。
-具体操作 1、启动被调试程序时添加参数：   jdk9: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:8000
+具体操作 1、启动被调试程序时添加参数： jdk9: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:8000
 jdk5-8: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8000
 jdk4: -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8000
 jdk3 及以前: -Xnoagent -Djava.compiler=NONE -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8000
 此处有坑，网上大部分没有提到jdk版本不同导致的区别，很多博客使用jdk4的写法，可能导致问题（idea配置远程调试时有上面的选项）。
 另外一个小坑, 下面第一个命令正常执行，第二个命令会忽略调试选项：
- java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8000 test java test -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8000  主要参数。suspend=y时，程序启动会先挂起，IDE连接后才会运行；suspend=n时，程序启动会直接运行。address后面为端口号，不与其它端口重合即可。
+java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8000 test java test -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8000 主要参数。suspend=y时，程序启动会先挂起，IDE连接后才会运行；suspend=n时，程序启动会直接运行。address后面为端口号，不与其它端口重合即可。
 2、启动Idea连接调试 使用idea打开调试项目的源码工程
 Run -&gt; Edit Configurations , 点“加号” -&gt; remote，然后填上被调试程序所在主机的ip以及上面的address对应端口号，并选择源码所在的module。
 添加后debug运行，剩下的和本地调试相同。
 Hadoop 远程调试 思路和上面的操作一致。下面以调试HDFS中的namenode为例。
 具体操作 1、修改Hadoop启动参数为debug模式 如果需要调试namenode服务，在etc/hadoop/hadoop-env.sh文件后添加：
-export HDFS_NAMENODE_OPTS=&quot;-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8000&quot; 
-HDFS启动的jvm主要为namenode和datanode，jvm启动的参数设置在etc/hadoop/hadoop-env.sh中。其中namenode启动参数环境变量为 HDFS_NAMENODE_OPTS，datanode为 HDFS_DATANODE_OPTS（针对Hadoop3，hadoop2的设置为HADOOP_NAMENODE_OPTS HADOOP_NAMENODE_OPTS）。YARN等服务对应的环境变量需要另查。
-2、启动服务 sbin/start-dfs.sh 或者 bin/hdfs --daemon start namenode仅启动namenode'>
+export HDFS_NAMENODE_OPTS=&quot;-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8000&quot; HDFS启动的jvm主要为namenode和datanode，jvm启动的参数设置在etc/hadoop/hadoop-env.sh中。其中namenode启动参数环境变量为 HDFS_NAMENODE_OPTS，datanode为 HDFS_DATANODE_OPTS（针对Hadoop3，hadoop2的设置为HADOOP_NAMENODE_OPTS HADOOP_NAMENODE_OPTS）。YARN等服务对应的环境变量需要另查。
+2、启动服务 sbin/start-dfs.sh 或者 bin/hdfs --daemon start namenode仅启动namenode
+3、启动idea连接服务 下载源码并导入到工程（可以只导入需要调试的部分）
+Run -&gt; Edit Configurations , 点“加号” -&gt; remote，然后填上被调试程序所在主机的ip以及上面的address对应端口号，并选择需要调试的module。'>
 <meta property='og:url' content='https://extendswind.top/posts/technical/remote_debug_of_hadoop_in_docker/'>
 <meta property='og:site_name' content='A Notebook of Extendswind'>
 <meta property='og:type' content='article'><meta property='article:section' content='posts'><meta property='article:tag' content='hadoop'><meta property='article:published_time' content='2018-07-26T21:30:00&#43;08:00'/><meta property='article:modified_time' content='2018-07-26T21:30:00&#43;08:00'/><meta name='twitter:card' content='summary'>
 
-<meta name="generator" content="Hugo 0.99.1" />
+<meta name="generator" content="Hugo 0.102.3" />
 
   <title>Hadoop HDFS 远程调试（Docker环境下的Hadoop集群） • A Notebook of Extendswind</title>
   <link rel='canonical' href='https://extendswind.top/posts/technical/remote_debug_of_hadoop_in_docker/'>
@@ -116,7 +118,7 @@ HDFS启动的jvm主要为namenode和datanode，jvm启动的参数设置在etc/ha
       </li><li>
         <a href='/tags/git/' style='font-size:1em'>git</a>
       </li><li>
-        <a href='/tags/hadoop/' style='font-size:1em'>hadoop</a>
+        <a href='/tags/hadoop/' style='font-size:1em'>Hadoop</a>
       </li><li>
         <a href='/tags/hive/' style='font-size:1em'>hive</a>
       </li><li>
@@ -139,6 +141,8 @@ HDFS启动的jvm主要为namenode和datanode，jvm启动的参数设置在etc/ha
         <a href='/tags/raspberry/' style='font-size:1em'>raspberry</a>
       </li><li>
         <a href='/tags/reading/' style='font-size:1em'>reading</a>
+      </li><li>
+        <a href='/tags/sedona/' style='font-size:1em'>Sedona</a>
       </li><li>
         <a href='/tags/software/' style='font-size:1em'>software</a>
       </li><li>
@@ -337,7 +341,7 @@ jdk3 及以前: <code>-Xnoagent -Djava.compiler=NONE -Xdebug -Xrunjdwp:transport
   <line x1="7" y1="7" x2="7" y2="7"/>
   
 </svg>
-<span class='screen-reader-text'>Tags: </span><a class='tag' href='/tags/hadoop/'>hadoop</a></div>
+<span class='screen-reader-text'>Tags: </span><a class='tag' href='/tags/hadoop/'>Hadoop</a></div>
 
   </div>
 </footer>

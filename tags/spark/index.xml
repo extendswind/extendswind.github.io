@@ -18,10 +18,10 @@
 最近通过Spark提高SpatialHadoop在设计上的效率，看了一眼GeoSpark在常见的空间处理上的逻辑，针对空间数据读取、索引、划分几个方面的逻辑记个笔记。
 主要代码逻辑 GeoSpark的代码大多直接用的java编写，调用了Spark的java API，整体的逻辑比我想象的要简单。代码注释、缩进、命名等貌似都略有非主流的地方。
 示例代码主要参考官网教程 http://sedona.apache.org/tutorial/rdd/ 与github仓库源码。
-读取csv文件并创建PointRDD  官方示例 Suppose we have a checkin.csv CSV file at Path /Download/checkin.csv as follows:
+读取csv文件并创建PointRDD 官方示例 Suppose we have a checkin.csv CSV file at Path /Download/checkin.csv as follows:
 -88.331492,32.324142,hotel -88.175933,32.360763,gas -88.388954,32.357073,bar -88.221102,32.35078,restaurant
 This file has three columns and corresponding offsets(Column IDs) are 0, 1, 2. Use the following code to create a PointRDD
-  val pointRDDInputLocation = &amp;#34;/Download/checkin.csv&amp;#34; val pointRDDOffset = 0 // The point long/lat starts from Column 0 val pointRDDSplitter = FileDataSplitter.</description>
+val pointRDDInputLocation = &amp;#34;/Download/checkin.csv&amp;#34; val pointRDDOffset = 0 // The point long/lat starts from Column 0 val pointRDDSplitter = FileDataSplitter.</description>
     </item>
     
     <item>
@@ -33,13 +33,13 @@ This file has three columns and corresponding offsets(Column IDs) are 0, 1, 2. U
       <description>Spark提供了HDFS上一般的文件文件读取接口 sc.textFile()，但在某些情况下HDFS中需要存储自定义格式的文件，需要更加灵活的读取方式。
 使用KeyValueTextInputFormat Hadoop的MapReduce框架下提供了一些InputFormat的实现，其中MapReduce2的接口(org.apache.hadoop.mapreduce下)与先前MapReduce1(org.apache.hadoop.mapred下)有区别，对应于newAPIHadoopFile函数。
 使用KeyValueTextInputFormat的文件读取如下
- import org.apache.hadoop.mapreduce.lib.input.KeyValueTextInputFormat import org.apache.hadoop.io.Text  val hFile = sc.newAPIHadoopFile(&amp;#34;hdfs://hadoopmaster:9000/user/sparkl/README.md&amp;#34;,  classOf[KeyValueTextInputFormat], classOf[Text], classOf[Text])  hFile.collect 使用自定义InputFormat InputFormat是MapReduce框架下将输入的文件解析成字符串的组件，Spark对HDFS中的文件实现自定义读写需要通过InputFormat的子类实现。下面只写简单的思路，具体的可以参考InputFormat和MapReduce相关资料。
+import org.apache.hadoop.mapreduce.lib.input.KeyValueTextInputFormat import org.apache.hadoop.io.Text val hFile = sc.newAPIHadoopFile(&amp;#34;hdfs://hadoopmaster:9000/user/sparkl/README.md&amp;#34;, classOf[KeyValueTextInputFormat], classOf[Text], classOf[Text]) hFile.collect 使用自定义InputFormat InputFormat是MapReduce框架下将输入的文件解析成字符串的组件，Spark对HDFS中的文件实现自定义读写需要通过InputFormat的子类实现。下面只写简单的思路，具体的可以参考InputFormat和MapReduce相关资料。
 InputFormat的修改可以参考TextInputFormat，继承FileInputFormat后，重载createRecordReader返回一个新的继承RecordReader的类，通过新的RecordReader读取数据返回键值对。
 打包后注意上传时将jar包一起上传：
 `./spark-shell &amp;ndash;jars newInputFormat.jar
 运行的代码和上面差不多，import相关的包后
-val hFile = sc.newAPIHadoopFile(&amp;#34;hdfs://hadoopmaster:9000/user/sparkl/README.md&amp;#34;,  classOf[NewTextInputFormat], classOf[Text], classOf[Text]) 一些坑 序列化问题 在读取文件后使用first或者collect时，出现下面的错误
-  ERROR scheduler.TaskSetManager: Task 0.0 in stage 2.0 (TID 18) had a not serializable result: org.apache.hadoop.io.IntWritable Serialization stack: - object not serializable (class: org.apache.hadoop.io.IntWritable, value: 35) - element of array (index: 0) - array (class [Lorg.</description>
+val hFile = sc.newAPIHadoopFile(&amp;#34;hdfs://hadoopmaster:9000/user/sparkl/README.md&amp;#34;, classOf[NewTextInputFormat], classOf[Text], classOf[Text]) 一些坑 序列化问题 在读取文件后使用first或者collect时，出现下面的错误
+ERROR scheduler.TaskSetManager: Task 0.0 in stage 2.0 (TID 18) had a not serializable result: org.apache.hadoop.io.IntWritable Serialization stack: - object not serializable (class: org.apache.hadoop.io.IntWritable, value: 35) - element of array (index: 0) - array (class [Lorg.apache.hadoop.io.IntWritable;, size 1); not retrying 18/12/15 10:40:10 ERROR scheduler.</description>
     </item>
     
   </channel>

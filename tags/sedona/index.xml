@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Sedona on A Notebook of Extendswind</title>
+    <link>https://extendswind.top/tags/sedona/</link>
+    <description>Recent content in Sedona on A Notebook of Extendswind</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <copyright>本站原创文章遵循CC-BY 4.0版权协议，转载注明出处即可</copyright>
+    <lastBuildDate>Tue, 11 Oct 2022 20:30:00 +0800</lastBuildDate><atom:link href="https://extendswind.top/tags/sedona/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Sedona空间数据可视化源码分析</title>
+      <link>https://extendswind.top/posts/technical/sedona_spatial_big_data_visualization/</link>
+      <pubDate>Tue, 11 Oct 2022 20:30:00 +0800</pubDate>
+      
+      <guid>https://extendswind.top/posts/technical/sedona_spatial_big_data_visualization/</guid>
+      <description>Sedona (GeoSpark) 空间数据可视化过程不太复杂，主要是每个空间对象向对应栅格空间的映射，和矢量转栅格类似。直接上代码：
+// 已经通过Sedona创建了类型为LineStringRDD的slineRDD对象 import org.apache.sedona.viz.core.ImageGenerator import org.apache.sedona.viz.extension.visualizationEffect.ScatterPlot import org.apache.sedona.viz.utils.ImageType import java.awt.Color // 创建新的对象 var visualizationOperator = new ScatterPlot(10000, 10000, slineRDD.boundaryEnvelope, false) visualizationOperator.CustomizeColor(255, 255, 255, 255, Color.blue, true) // 具体的可视化过程实现 visualizationOperator.Visualize(sc, slineRDD) // 将结果保存为PNG图像 var imageGenerator = new ImageGenerator imageGenerator.SaveRasterImageAsLocalFile(visualizationOperator.rasterImage, &amp;#34;/home/sparkl/visual&amp;#34;, ImageType.PNG) 其中具体的可视化操作在visualizationOperator.Visualize(sc, slineRDD)函数中，分为visualize、colorize和renderImage三步，具体操作如下：
+public boolean Visualize(JavaSparkContext sparkContext, SpatialRDD spatialRDD) throws Exception { // 返回值为JavaPairRDD&amp;lt;Pixel, Double&amp;gt; // 栅格图中的每个像素对应一个Pixel，包含x、y信息，Double和属性值相关 this.Rasterize(sparkContext, spatialRDD, true); // 修改value的值，通过value值赋颜色 this.Colorize(); this.RenderImage(sparkContext); return true; } Rasterize Rasterize函数是最主要的矢量向栅格的转换函数，先通过flatMapToPair算子计算每个空间对象对应的像素位置和像素值，然后filter掉超出范围的像素值。Sedona的实现中value没有考虑空间实体的属性，每个像素点的value直接赋值的1.</description>
+    </item>
+    
+  </channel>
+</rss>

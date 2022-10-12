@@ -4,22 +4,22 @@
 <meta name='viewport' content='width=device-width, initial-scale=1'>
 <meta name='description' content='用个人域名搭建的博客在百度搜索上的SEO太差，百度一直只收录主页，懒得再为这些问题折腾，直接同步到博客园算了，考虑用Python。
 貌似CSDN已经关闭了metawebblog接口，只在博客园上测试。
-Python发博客的主要方案  通过xmlprc的metaweblog接口（首选） CSDN和博客园的api（定位不是用来发博客的，申请key和调接口略麻烦） 使用抓包的技术模拟浏览器登录发博客（没悬念更折腾）  代码 对于支持metaweblog的博客平台，只要提供用户名、密码和博客相关信息。
+Python发博客的主要方案 通过xmlprc的metaweblog接口（首选） CSDN和博客园的api（定位不是用来发博客的，申请key和调接口略麻烦） 使用抓包的技术模拟浏览器登录发博客（没悬念更折腾） 代码 对于支持metaweblog的博客平台，只要提供用户名、密码和博客相关信息。
 python2 需要将后面的xmlrpc.client改为xmlrpclib，并且import xmlrpclib
-#!/bin/python3  import xmlrpc.client  username = &#39;&#39; # TODO your username passwd = &#39;&#39; # TODO your passwd # url = &#39;http://www.cnblogs.com/&#39; &#43; username &#43; &#39;/services/metaweblog.aspx&#39; # 此链接已挂 url = &#39;https://rpc.cnblogs.com/metaweblog/&#39; &#43; username  title = &#34;helloWorld&#34; content = &#34;&lt;p&gt; test &lt;p&gt;&#34; tags = &#34;tag1, tag2&#34;  blogProxy = xmlrpc.client.ServerProxy(url)  # 获取最近博客列表 print(blogProxy.metaWeblog.getRecentPosts(&#39;&#39;, username, passwd, 1))  # 发布博客 blogProxy.'>
+#!/bin/python3 import xmlrpc.client username = &#39;&#39; # TODO your username passwd = &#39;&#39; # TODO your passwd # url = &#39;http://www.cnblogs.com/&#39; &#43; username &#43; &#39;/services/metaweblog.aspx&#39; # 此链接已挂 url = &#39;https://rpc.cnblogs.com/metaweblog/&#39; &#43; username title = &#34;helloWorld&#34; content = &#34;&lt;p&gt; test &lt;p&gt;&#34; tags = &#34;tag1, tag2&#34; blogProxy = xmlrpc.client.ServerProxy(url) # 获取最近博客列表 print(blogProxy.metaWeblog.getRecentPosts(&#39;&#39;, username, passwd, 1)) # 发布博客 blogProxy.metaWeblog.newPost(&#39;&#39;, username, passwd, dict(title=title, description=content, mt_keywords=tags), True) 参考 https://rpc.'>
 <meta name='theme-color' content='#cccccc'>
 
 <meta property='og:title' content='使用Python3发布博客到支持mateweblog的平台（博客园等） • A Notebook of Extendswind'>
 <meta property='og:description' content='用个人域名搭建的博客在百度搜索上的SEO太差，百度一直只收录主页，懒得再为这些问题折腾，直接同步到博客园算了，考虑用Python。
 貌似CSDN已经关闭了metawebblog接口，只在博客园上测试。
-Python发博客的主要方案  通过xmlprc的metaweblog接口（首选） CSDN和博客园的api（定位不是用来发博客的，申请key和调接口略麻烦） 使用抓包的技术模拟浏览器登录发博客（没悬念更折腾）  代码 对于支持metaweblog的博客平台，只要提供用户名、密码和博客相关信息。
+Python发博客的主要方案 通过xmlprc的metaweblog接口（首选） CSDN和博客园的api（定位不是用来发博客的，申请key和调接口略麻烦） 使用抓包的技术模拟浏览器登录发博客（没悬念更折腾） 代码 对于支持metaweblog的博客平台，只要提供用户名、密码和博客相关信息。
 python2 需要将后面的xmlrpc.client改为xmlrpclib，并且import xmlrpclib
-#!/bin/python3  import xmlrpc.client  username = &#39;&#39; # TODO your username passwd = &#39;&#39; # TODO your passwd # url = &#39;http://www.cnblogs.com/&#39; &#43; username &#43; &#39;/services/metaweblog.aspx&#39; # 此链接已挂 url = &#39;https://rpc.cnblogs.com/metaweblog/&#39; &#43; username  title = &#34;helloWorld&#34; content = &#34;&lt;p&gt; test &lt;p&gt;&#34; tags = &#34;tag1, tag2&#34;  blogProxy = xmlrpc.client.ServerProxy(url)  # 获取最近博客列表 print(blogProxy.metaWeblog.getRecentPosts(&#39;&#39;, username, passwd, 1))  # 发布博客 blogProxy.'>
+#!/bin/python3 import xmlrpc.client username = &#39;&#39; # TODO your username passwd = &#39;&#39; # TODO your passwd # url = &#39;http://www.cnblogs.com/&#39; &#43; username &#43; &#39;/services/metaweblog.aspx&#39; # 此链接已挂 url = &#39;https://rpc.cnblogs.com/metaweblog/&#39; &#43; username title = &#34;helloWorld&#34; content = &#34;&lt;p&gt; test &lt;p&gt;&#34; tags = &#34;tag1, tag2&#34; blogProxy = xmlrpc.client.ServerProxy(url) # 获取最近博客列表 print(blogProxy.metaWeblog.getRecentPosts(&#39;&#39;, username, passwd, 1)) # 发布博客 blogProxy.metaWeblog.newPost(&#39;&#39;, username, passwd, dict(title=title, description=content, mt_keywords=tags), True) 参考 https://rpc.'>
 <meta property='og:url' content='https://extendswind.top/posts/technical/python3_publish_blog/'>
 <meta property='og:site_name' content='A Notebook of Extendswind'>
 <meta property='og:type' content='article'><meta property='article:section' content='posts'><meta property='article:tag' content='blog'><meta property='article:published_time' content='2018-09-04T10:30:00&#43;08:00'/><meta property='article:modified_time' content='2018-09-04T10:30:00&#43;08:00'/><meta name='twitter:card' content='summary'>
 
-<meta name="generator" content="Hugo 0.99.1" />
+<meta name="generator" content="Hugo 0.102.3" />
 
   <title>使用Python3发布博客到支持mateweblog的平台（博客园等） • A Notebook of Extendswind</title>
   <link rel='canonical' href='https://extendswind.top/posts/technical/python3_publish_blog/'>
@@ -88,7 +88,7 @@ python2 需要将后面的xmlrpc.client改为xmlrpclib，并且import xmlrpclib
       </li><li>
         <a href='/tags/git/' style='font-size:1em'>git</a>
       </li><li>
-        <a href='/tags/hadoop/' style='font-size:1em'>hadoop</a>
+        <a href='/tags/hadoop/' style='font-size:1em'>Hadoop</a>
       </li><li>
         <a href='/tags/hive/' style='font-size:1em'>hive</a>
       </li><li>
@@ -111,6 +111,8 @@ python2 需要将后面的xmlrpc.client改为xmlrpclib，并且import xmlrpclib
         <a href='/tags/raspberry/' style='font-size:1em'>raspberry</a>
       </li><li>
         <a href='/tags/reading/' style='font-size:1em'>reading</a>
+      </li><li>
+        <a href='/tags/sedona/' style='font-size:1em'>Sedona</a>
       </li><li>
         <a href='/tags/software/' style='font-size:1em'>software</a>
       </li><li>

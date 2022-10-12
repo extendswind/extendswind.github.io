@@ -9,9 +9,10 @@ anonymous_enable=YES # 允许匿名访问 write_enable=YES # 允许写文件 ano
 通过 local_enable 选项能够允许ftp通过本地用户访问，登录之后会访问用户的主目录。当使用匿名用户访问时，vsftpd会将用户名为ftp的用户作为登录用户，进入ftp用户的主目录。
 注意，考虑到安全问题，ftp匿名用户的主目录必须为只读，如果需要上传文件，需要在主目录下新建有写权限的文件夹。
 通常会选择/var/ftp文件夹存放文件而不是用户默认的/home，因此可以修改用户的主目录位置（一般放在/var/ftp），不修改也能用。再次强调，注意主目录对ftp用户的权限必须为只读。
-sudo mkdir /var/ftp # 新建用户文件夹 sudo useradd -d /var/ftp ftp # 新建用户，并指定用户home目录  # 如果ftp用户已经存在，在/etc/passwd文件里改用户目录为/var/ftp  sudo mkdir /var/ftp/pub # 新建一个用于写数据的文件夹 sudo chmod 777 /var/ftp/pub # 修改文件夹权限 4. 启动服务
+sudo mkdir /var/ftp # 新建用户文件夹 sudo useradd -d /var/ftp ftp # 新建用户，并指定用户home目录 # 如果ftp用户已经存在，在/etc/passwd文件里改用户目录为/var/ftp sudo mkdir /var/ftp/pub # 新建一个用于写数据的文件夹 sudo chmod 777 /var/ftp/pub # 修改文件夹权限 4. 启动服务
 systemctl start vsftpd
-其它 防火墙和SELinux如果使用了需要添加响应的通过规则。'>
+其它 防火墙和SELinux如果使用了需要添加响应的通过规则。
+测试访问可以直接用浏览器 ftp://ip_address，linux下可以使用FileZilla。'>
 <meta name='theme-color' content='#cccccc'>
 
 <meta property='og:title' content='vsftp 匿名访问设置设置 • A Notebook of Extendswind'>
@@ -22,14 +23,15 @@ anonymous_enable=YES # 允许匿名访问 write_enable=YES # 允许写文件 ano
 通过 local_enable 选项能够允许ftp通过本地用户访问，登录之后会访问用户的主目录。当使用匿名用户访问时，vsftpd会将用户名为ftp的用户作为登录用户，进入ftp用户的主目录。
 注意，考虑到安全问题，ftp匿名用户的主目录必须为只读，如果需要上传文件，需要在主目录下新建有写权限的文件夹。
 通常会选择/var/ftp文件夹存放文件而不是用户默认的/home，因此可以修改用户的主目录位置（一般放在/var/ftp），不修改也能用。再次强调，注意主目录对ftp用户的权限必须为只读。
-sudo mkdir /var/ftp # 新建用户文件夹 sudo useradd -d /var/ftp ftp # 新建用户，并指定用户home目录  # 如果ftp用户已经存在，在/etc/passwd文件里改用户目录为/var/ftp  sudo mkdir /var/ftp/pub # 新建一个用于写数据的文件夹 sudo chmod 777 /var/ftp/pub # 修改文件夹权限 4. 启动服务
+sudo mkdir /var/ftp # 新建用户文件夹 sudo useradd -d /var/ftp ftp # 新建用户，并指定用户home目录 # 如果ftp用户已经存在，在/etc/passwd文件里改用户目录为/var/ftp sudo mkdir /var/ftp/pub # 新建一个用于写数据的文件夹 sudo chmod 777 /var/ftp/pub # 修改文件夹权限 4. 启动服务
 systemctl start vsftpd
-其它 防火墙和SELinux如果使用了需要添加响应的通过规则。'>
+其它 防火墙和SELinux如果使用了需要添加响应的通过规则。
+测试访问可以直接用浏览器 ftp://ip_address，linux下可以使用FileZilla。'>
 <meta property='og:url' content='https://extendswind.top/posts/technical/vsftpd_configuration/'>
 <meta property='og:site_name' content='A Notebook of Extendswind'>
 <meta property='og:type' content='article'><meta property='article:section' content='posts'><meta property='article:tag' content='software'><meta property='article:published_time' content='2019-10-18T21:59:49&#43;08:00'/><meta property='article:modified_time' content='2019-10-18T21:59:49&#43;08:00'/><meta name='twitter:card' content='summary'>
 
-<meta name="generator" content="Hugo 0.99.1" />
+<meta name="generator" content="Hugo 0.102.3" />
 
   <title>vsftp 匿名访问设置设置 • A Notebook of Extendswind</title>
   <link rel='canonical' href='https://extendswind.top/posts/technical/vsftpd_configuration/'>
@@ -98,7 +100,7 @@ systemctl start vsftpd
       </li><li>
         <a href='/tags/git/' style='font-size:1em'>git</a>
       </li><li>
-        <a href='/tags/hadoop/' style='font-size:1em'>hadoop</a>
+        <a href='/tags/hadoop/' style='font-size:1em'>Hadoop</a>
       </li><li>
         <a href='/tags/hive/' style='font-size:1em'>hive</a>
       </li><li>
@@ -121,6 +123,8 @@ systemctl start vsftpd
         <a href='/tags/raspberry/' style='font-size:1em'>raspberry</a>
       </li><li>
         <a href='/tags/reading/' style='font-size:1em'>reading</a>
+      </li><li>
+        <a href='/tags/sedona/' style='font-size:1em'>Sedona</a>
       </li><li>
         <a href='/tags/software/' style='font-size:1em'>software</a>
       </li><li>

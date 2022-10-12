@@ -6,7 +6,32 @@
     <description>Recent content in QGIS on A Notebook of Extendswind</description>
     <generator>Hugo -- gohugo.io</generator>
     <copyright>本站原创文章遵循CC-BY 4.0版权协议，转载注明出处即可</copyright>
-    <lastBuildDate>Fri, 17 Jun 2022 15:30:00 +0800</lastBuildDate><atom:link href="https://extendswind.top/tags/qgis/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 28 Sep 2022 17:30:00 +0800</lastBuildDate><atom:link href="https://extendswind.top/tags/qgis/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Geotools的点类型简单要素创建以及大数据量下的效率问题</title>
+      <link>https://extendswind.top/posts/technical/geotools_simple_feature_create/</link>
+      <pubDate>Wed, 28 Sep 2022 17:30:00 +0800</pubDate>
+      
+      <guid>https://extendswind.top/posts/technical/geotools_simple_feature_create/</guid>
+      <description>GeoTools使用JTS处理空间索引、查询、几何分析等操作，在此基础上增加了空间对象属性相关的处理。通过SimpleFeatureImpl类包装处理，由于每个空间要素实体对象中增加了很多其它的对象，外加java类包装的额外开销，以至于原本的空间数据在内存中的存储空间增加了很多倍，当属性字段较少时，甚至可以多出一个量级。
+创建简单要素 // -- 首先创建SimpleFeatureType 一个点和一个类型为Integer的number字段 SimpleFeatureTypeBuilder b = new SimpleFeatureTypeBuilder(); b.setName( &amp;#34;TestFields&amp;#34; ); // type name b.add( &amp;#34;location&amp;#34;, Point.class ); // 增加一个点字段 b.add( &amp;#34;number&amp;#34;, Integer.class); // 增加一个属性字段 b.setCRS( DefaultGeographicCRS.WGS84); SimpleFeatureType type = b.buildFeatureType(); // -- 使用SimpleFeatureBuilder创建SimpleFeature SimpleFeatureBuilder builder = new SimpleFeatureBuilder(type); // 用于创建JTS Point的工厂类 GeometryFactory geometryFactory = JTSFactoryFinder.getGeometryFactory(); Point point = geometryFactory.createPoint(new Coordinate(longitude, latitude)); builder.add(point); builder.add(i); SimpleFeature feature = builder.buildFeature(null); // 参数为Feature id，为null时会赋默认值 SimpleFeatureImpl实现 GeoTools的SimpleFeature是一个Java接口，没有直接使用基类具体实现，定义了对简单要素的函数操作，主要包括获取ID、Type、FeatureType，以及获取和设置Attribute、DefaultGeometry等。
+SimpleFeatureImpl实现了SimpleFeature接口，主要包括以下数据：
+public class SimpleFeatureImpl implements SimpleFeature { protected FeatureId id; protected SimpleFeatureType featureType; /** The actual values held by this feature */ protected Object[] values; /** The attribute name -&amp;gt; position index */ protected Map&amp;lt;String, Integer&amp;gt; index; /** The set of user data attached to the feature (lazily created) */ protected Map&amp;lt;Object, Object&amp;gt; userData; /** The set of user data attached to each attribute (lazily created) */ protected Map&amp;lt;Object, Object&amp;gt;[] attributeUserData; /** Whether this feature is self validating or not */ protected boolean validating; // .</description>
+    </item>
+    
+    <item>
+      <title>从QGIS源码看GIS矢量数据的组织形式</title>
+      <link>https://extendswind.top/posts/technical/qgis_vector_data_type_structure.md/</link>
+      <pubDate>Tue, 27 Sep 2022 15:30:00 +0800</pubDate>
+      
+      <guid>https://extendswind.top/posts/technical/qgis_vector_data_type_structure.md/</guid>
+      <description>矢量数据在内存中的操作需要面对不同的属性字段，想到c++没有java的Object类作为不同数据类型的基类支撑，对c++动态处理属性字段比较疑惑，看了一下QGIS的相关实现。没有像猜测中直接使用指针操作，动态属性字段使用Qt的Variant类实现，通过QVector的方式存储不同的属性数据。
+QGIS的矢量数据的组织和OGC的简单要素类（Simple Feature）的实现标准类似，每个矢量数据空间实体使用QgsFeature类的一个对象存储，每个OgsFeature对象有四个主要类成员：
+Q_PROPERTY( QgsGeometry geometry READ geometry WRITE setGeometry ) // Feature的几何字段 Q_PROPERTY( QgsFeatureId id READ id WRITE setId ) // Feature的id Q_PROPERTY( QgsAttributes attributes READ attributes WRITE setAttributes ) // Feature的属性值 Q_PROPERTY( QgsFields fields READ fields WRITE setFields ) // Feature的属性字段 其中QgsGeometry是空间信息的存储方式，负载点线面等空间对象的管理。内部的数据通过私有成员 QgsGeometryPrivate *d 存储，内部包含一个QgsAbstractGeometry智能指针 std::unique_ptr&amp;lt; QgsAbstractGeometry &amp;gt; geometry。QgsAbstractgeometry是几何对象的基类，其子类有QgsCurve、QgsPoint、QgsSurface以及存储多对象的QgsGeometryCollection，如下图：
+QgsFields负责属性字段的管理，通常包含多个QgsField，每个QgsField包括以下属性：
+Q_PROPERTY( bool isNumeric READ isNumeric ) Q_PROPERTY( bool isDateOrTime READ isDateOrTime ) Q_PROPERTY( int length READ length WRITE setLength ) Q_PROPERTY( int precision READ precision WRITE setPrecision ) Q_PROPERTY( QVariant::Type type READ type WRITE setType ) Q_PROPERTY( QString comment READ comment WRITE setComment ) Q_PROPERTY( QString name READ name WRITE setName ) Q_PROPERTY( QString alias READ alias WRITE setAlias ) Q_PROPERTY( QgsDefaultValue defaultValueDefinition READ defaultValueDefinition WRITE setDefaultValueDefinition ) Q_PROPERTY( QgsFieldConstraints constraints READ constraints WRITE setConstraints ) Q_PROPERTY( ConfigurationFlags configurationFlags READ configurationFlags WRITE setConfigurationFlags ) Q_PROPERTY( bool isReadOnly READ isReadOnly WRITE setReadOnly ) QgsAttributes负责具体的属性存储，为了支持动态数据类型（c++对属性字段的数量和类型不事先定义），直接继承了QVecter类型，如下。其中QVariant是数据类型的基类，可以存放Qt的各种数据类型，不同于Object基类，QVariant可以看作Qt提供的对不同数据类型的一种包装，提供了各种类型数据的管理和转换操作。</description>
+    </item>
+    
     <item>
       <title>Manjaro上编译QGIS时出现的/usr/bin/sip: No such file or directory错误</title>
       <link>https://extendswind.top/posts/technical/manjaro_qgis_compile_problem_sip_no_such_file/</link>
@@ -16,7 +41,7 @@
       <description>解决方案:
 sudo pacman -S sip4
 sip库的默认版本比较新，/usr/bin/sip文件在sip4库中。（估计是旧版和新版的sip使用方式不一样吧，sip4的包里是sip可执行文件和一个头文件，默认安装的sip包是python的包。）
-# sip包中的文件： sip /usr/bin/sip-build sip /usr/bin/sip-distinfo sip /usr/bin/sip-install sip /usr/bin/sip-module sip /usr/bin/sip-sdist sip /usr/bin/sip-wheel sip /usr/lib/python3.10/site-packages/... # 还有一些python包文件   # sip4包中的文件： sip4 /usr/bin/sip sip4 /usr/include/sip.h sip4 /usr/share/licenses/sip4/LICENSE </description>
+# sip包中的文件： sip /usr/bin/sip-build sip /usr/bin/sip-distinfo sip /usr/bin/sip-install sip /usr/bin/sip-module sip /usr/bin/sip-sdist sip /usr/bin/sip-wheel sip /usr/lib/python3.10/site-packages/... # 还有一些python包文件 # sip4包中的文件： sip4 /usr/bin/sip sip4 /usr/include/sip.h sip4 /usr/share/licenses/sip4/LICENSE </description>
     </item>
     
   </channel>

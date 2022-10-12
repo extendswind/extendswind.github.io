@@ -8,7 +8,7 @@
 其实只是Hadoop会调用脚本，将多个Datanode的ip作为输入，每次最多输入的ip数设置在net.topology.script.number.args，将输入的ip转换成/rack-num的形式(以/开头的字符串)，用标准输出流（如Python的print）输出结果。
 具体操作 编写脚本 下面的脚本在输入
 192.168.3.1 192.168.3.4 时，会输出
-/rack1 /rack4  #!/bin/python3 import sys  # 第一个参数是脚本路径，直接pop掉 sys.argv.pop(0)  # 0-3 rack0 # 4-7 rack1 # 8-11 rack2 # ...  # 其它的参数里每个参数都是一个ip，此处直接取ip的最后一位除以4作为Racknum # 实践上可以读文件确定ip的对应关系 for ip in sys.argv:  hostNum = int(ip.split(&#34;.&#34;)[3])  print(&#34;/rack&#34; &#43; str(int(hostNum/4))) 设置配置参数 &lt;property&gt;  &lt;name&gt;net.topology.script.file.name&lt;/name&gt;  &lt;value&gt;/home/sparkl/hadoop/etc/hadoop/topology.py&lt;/value&gt; &lt;/property&gt; 重启集群即可
+/rack1 /rack4 #!/bin/python3 import sys # 第一个参数是脚本路径，直接pop掉 sys.argv.pop(0) # 0-3 rack0 # 4-7 rack1 # 8-11 rack2 # ... # 其它的参数里每个参数都是一个ip，此处直接取ip的最后一位除以4作为Racknum # 实践上可以读文件确定ip的对应关系 for ip in sys.argv: hostNum = int(ip.split(&#34;.&#34;)[3]) print(&#34;/rack&#34; &#43; str(int(hostNum/4))) 设置配置参数 &lt;property&gt; &lt;name&gt;net.topology.script.file.name&lt;/name&gt; &lt;value&gt;/home/sparkl/hadoop/etc/hadoop/topology.py&lt;/value&gt; &lt;/property&gt; 重启集群即可
 验证结果 以下命令能够直接获取某一个文件的分布状态，以及总的rack数量：
 hdfs fsck /readme.md -files -blocks -racks
 貌似没有直接以树状的形式输出集群拓扑的命令，namenode的日志中能看到datanode在连接时的拓扑位置。'>
@@ -21,7 +21,7 @@ hdfs fsck /readme.md -files -blocks -racks
 其实只是Hadoop会调用脚本，将多个Datanode的ip作为输入，每次最多输入的ip数设置在net.topology.script.number.args，将输入的ip转换成/rack-num的形式(以/开头的字符串)，用标准输出流（如Python的print）输出结果。
 具体操作 编写脚本 下面的脚本在输入
 192.168.3.1 192.168.3.4 时，会输出
-/rack1 /rack4  #!/bin/python3 import sys  # 第一个参数是脚本路径，直接pop掉 sys.argv.pop(0)  # 0-3 rack0 # 4-7 rack1 # 8-11 rack2 # ...  # 其它的参数里每个参数都是一个ip，此处直接取ip的最后一位除以4作为Racknum # 实践上可以读文件确定ip的对应关系 for ip in sys.argv:  hostNum = int(ip.split(&#34;.&#34;)[3])  print(&#34;/rack&#34; &#43; str(int(hostNum/4))) 设置配置参数 &lt;property&gt;  &lt;name&gt;net.topology.script.file.name&lt;/name&gt;  &lt;value&gt;/home/sparkl/hadoop/etc/hadoop/topology.py&lt;/value&gt; &lt;/property&gt; 重启集群即可
+/rack1 /rack4 #!/bin/python3 import sys # 第一个参数是脚本路径，直接pop掉 sys.argv.pop(0) # 0-3 rack0 # 4-7 rack1 # 8-11 rack2 # ... # 其它的参数里每个参数都是一个ip，此处直接取ip的最后一位除以4作为Racknum # 实践上可以读文件确定ip的对应关系 for ip in sys.argv: hostNum = int(ip.split(&#34;.&#34;)[3]) print(&#34;/rack&#34; &#43; str(int(hostNum/4))) 设置配置参数 &lt;property&gt; &lt;name&gt;net.topology.script.file.name&lt;/name&gt; &lt;value&gt;/home/sparkl/hadoop/etc/hadoop/topology.py&lt;/value&gt; &lt;/property&gt; 重启集群即可
 验证结果 以下命令能够直接获取某一个文件的分布状态，以及总的rack数量：
 hdfs fsck /readme.md -files -blocks -racks
 貌似没有直接以树状的形式输出集群拓扑的命令，namenode的日志中能看到datanode在连接时的拓扑位置。'>
@@ -29,7 +29,7 @@ hdfs fsck /readme.md -files -blocks -racks
 <meta property='og:site_name' content='A Notebook of Extendswind'>
 <meta property='og:type' content='article'><meta property='article:section' content='posts'><meta property='article:tag' content='hadoop'><meta property='article:published_time' content='2018-12-12T11:20:00&#43;08:00'/><meta property='article:modified_time' content='2018-12-12T11:20:00&#43;08:00'/><meta name='twitter:card' content='summary'>
 
-<meta name="generator" content="Hugo 0.99.1" />
+<meta name="generator" content="Hugo 0.102.3" />
 
   <title>Hadoop 机架（集群拓扑）设置 • A Notebook of Extendswind</title>
   <link rel='canonical' href='https://extendswind.top/posts/technical/hadoop_rack_awareness/'>
@@ -98,7 +98,7 @@ hdfs fsck /readme.md -files -blocks -racks
       </li><li>
         <a href='/tags/git/' style='font-size:1em'>git</a>
       </li><li>
-        <a href='/tags/hadoop/' style='font-size:1em'>hadoop</a>
+        <a href='/tags/hadoop/' style='font-size:1em'>Hadoop</a>
       </li><li>
         <a href='/tags/hive/' style='font-size:1em'>hive</a>
       </li><li>
@@ -121,6 +121,8 @@ hdfs fsck /readme.md -files -blocks -racks
         <a href='/tags/raspberry/' style='font-size:1em'>raspberry</a>
       </li><li>
         <a href='/tags/reading/' style='font-size:1em'>reading</a>
+      </li><li>
+        <a href='/tags/sedona/' style='font-size:1em'>Sedona</a>
       </li><li>
         <a href='/tags/software/' style='font-size:1em'>software</a>
       </li><li>
@@ -287,7 +289,7 @@ hdfs fsck /readme.md -files -blocks -racks
   <line x1="7" y1="7" x2="7" y2="7"/>
   
 </svg>
-<span class='screen-reader-text'>Tags: </span><a class='tag' href='/tags/hadoop/'>hadoop</a></div>
+<span class='screen-reader-text'>Tags: </span><a class='tag' href='/tags/hadoop/'>Hadoop</a></div>
 
   </div>
 </footer>

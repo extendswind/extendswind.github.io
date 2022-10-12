@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang='en' dir='auto'><head>
+  <meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<meta name='description' content='GeoTools使用JTS处理空间索引、查询、几何分析等操作，在此基础上增加了空间对象属性相关的处理。通过SimpleFeatureImpl类包装处理，由于每个空间要素实体对象中增加了很多其它的对象，外加java类包装的额外开销，以至于原本的空间数据在内存中的存储空间增加了很多倍，当属性字段较少时，甚至可以多出一个量级。
+创建简单要素 // -- 首先创建SimpleFeatureType 一个点和一个类型为Integer的number字段 SimpleFeatureTypeBuilder b = new SimpleFeatureTypeBuilder(); b.setName( &#34;TestFields&#34; ); // type name b.add( &#34;location&#34;, Point.class ); // 增加一个点字段 b.add( &#34;number&#34;, Integer.class); // 增加一个属性字段 b.setCRS( DefaultGeographicCRS.WGS84); SimpleFeatureType type = b.buildFeatureType(); // -- 使用SimpleFeatureBuilder创建SimpleFeature SimpleFeatureBuilder builder = new SimpleFeatureBuilder(type); // 用于创建JTS Point的工厂类 GeometryFactory geometryFactory = JTSFactoryFinder.getGeometryFactory(); Point point = geometryFactory.createPoint(new Coordinate(longitude, latitude)); builder.add(point); builder.add(i); SimpleFeature feature = builder.buildFeature(null); // 参数为Feature id，为null时会赋默认值 SimpleFeatureImpl实现 GeoTools的SimpleFeature是一个Java接口，没有直接使用基类具体实现，定义了对简单要素的函数操作，主要包括获取ID、Type、FeatureType，以及获取和设置Attribute、DefaultGeometry等。
+SimpleFeatureImpl实现了SimpleFeature接口，主要包括以下数据：
+public class SimpleFeatureImpl implements SimpleFeature { protected FeatureId id; protected SimpleFeatureType featureType; /** The actual values held by this feature */ protected Object[] values; /** The attribute name -&gt; position index */ protected Map&lt;String, Integer&gt; index; /** The set of user data attached to the feature (lazily created) */ protected Map&lt;Object, Object&gt; userData; /** The set of user data attached to each attribute (lazily created) */ protected Map&lt;Object, Object&gt;[] attributeUserData; /** Whether this feature is self validating or not */ protected boolean validating; // .'>
+<meta name='theme-color' content='#cccccc'>
+
+<meta property='og:title' content='Geotools的点类型简单要素创建以及大数据量下的效率问题 • A Notebook of Extendswind'>
+<meta property='og:description' content='GeoTools使用JTS处理空间索引、查询、几何分析等操作，在此基础上增加了空间对象属性相关的处理。通过SimpleFeatureImpl类包装处理，由于每个空间要素实体对象中增加了很多其它的对象，外加java类包装的额外开销，以至于原本的空间数据在内存中的存储空间增加了很多倍，当属性字段较少时，甚至可以多出一个量级。
+创建简单要素 // -- 首先创建SimpleFeatureType 一个点和一个类型为Integer的number字段 SimpleFeatureTypeBuilder b = new SimpleFeatureTypeBuilder(); b.setName( &#34;TestFields&#34; ); // type name b.add( &#34;location&#34;, Point.class ); // 增加一个点字段 b.add( &#34;number&#34;, Integer.class); // 增加一个属性字段 b.setCRS( DefaultGeographicCRS.WGS84); SimpleFeatureType type = b.buildFeatureType(); // -- 使用SimpleFeatureBuilder创建SimpleFeature SimpleFeatureBuilder builder = new SimpleFeatureBuilder(type); // 用于创建JTS Point的工厂类 GeometryFactory geometryFactory = JTSFactoryFinder.getGeometryFactory(); Point point = geometryFactory.createPoint(new Coordinate(longitude, latitude)); builder.add(point); builder.add(i); SimpleFeature feature = builder.buildFeature(null); // 参数为Feature id，为null时会赋默认值 SimpleFeatureImpl实现 GeoTools的SimpleFeature是一个Java接口，没有直接使用基类具体实现，定义了对简单要素的函数操作，主要包括获取ID、Type、FeatureType，以及获取和设置Attribute、DefaultGeometry等。
+SimpleFeatureImpl实现了SimpleFeature接口，主要包括以下数据：
+public class SimpleFeatureImpl implements SimpleFeature { protected FeatureId id; protected SimpleFeatureType featureType; /** The actual values held by this feature */ protected Object[] values; /** The attribute name -&gt; position index */ protected Map&lt;String, Integer&gt; index; /** The set of user data attached to the feature (lazily created) */ protected Map&lt;Object, Object&gt; userData; /** The set of user data attached to each attribute (lazily created) */ protected Map&lt;Object, Object&gt;[] attributeUserData; /** Whether this feature is self validating or not */ protected boolean validating; // .'>
+<meta property='og:url' content='https://extendswind.top/posts/technical/geotools_simple_feature_create/'>
+<meta property='og:site_name' content='A Notebook of Extendswind'>
+<meta property='og:type' content='article'><meta property='article:section' content='posts'><meta property='article:tag' content='GIS'><meta property='article:tag' content='QGIS'><meta property='article:published_time' content='2022-09-28T17:30:00&#43;08:00'/><meta property='article:modified_time' content='2022-09-28T17:30:00&#43;08:00'/><meta name='twitter:card' content='summary'>
+
+<meta name="generator" content="Hugo 0.102.3" />
+
+  <title>Geotools的点类型简单要素创建以及大数据量下的效率问题 • A Notebook of Extendswind</title>
+  <link rel='canonical' href='https://extendswind.top/posts/technical/geotools_simple_feature_create/'>
+  
+  
+  <link rel='icon' href='/images/wind.jpeg'>
+<link rel='stylesheet' href='/assets/css/main.ab98e12b.css'><link rel='stylesheet' href='/css/custom.css'><style>
+:root{--color-accent:#cccccc;}
+</style>
+
+  
+
+</head>
+<body class='page type-posts has-sidebar'>
+
+  <div class='site'><div id='sidebar' class='sidebar'>
+  <a class='screen-reader-text' href='#main-menu'>Skip to Main Menu</a>
+
+  <div class='container'><section class='widget widget-about sep-after'>
+  <header>
+    
+    <div class='logo'>
+      <a href='/'>
+        <img src='/images/wind.jpeg'>
+      </a>
+    </div>
+    
+    <h2 class='title site-title '>
+      <a href='/'>
+      extendswind
+      </a>
+    </h2>
+    <div class='desc'>
+    
+    </div>
+  </header>
+
+</section>
+<section class='widget widget-sidebar_menu sep-after'><nav id='sidebar-menu' class='menu sidebar-menu' aria-label='Sidebar Menu'>
+    <div class='container'>
+      <ul><li class='item'>
+  <a href='/'>Home</a></li><li class='item'>
+  <a href='/posts'>Posts</a></li><li class='item'>
+  <a href='/categories'>Categories</a></li><li class='item'>
+  <a href='https://github.com/extendswind'>GitHub</a></li><li class='item'>
+  <a href='https://www.cnblogs.com/fly2wind/'>Cnblog</a></li></ul>
+    </div>
+  </nav>
+
+</section><section class='widget widget-taxonomy_cloud sep-after'>
+  <header>
+    <h4 class='title widget-title'>Tags</h4>
+  </header>
+
+  <div class='container list-container'>
+  <ul class='list taxonomy-cloud'><li>
+        <a href='/tags/blog/' style='font-size:1em'>blog</a>
+      </li><li>
+        <a href='/tags/c&#43;&#43;/' style='font-size:1em'>c&#43;&#43;</a>
+      </li><li>
+        <a href='/tags/design-patterns/' style='font-size:1em'>design patterns</a>
+      </li><li>
+        <a href='/tags/geospark/' style='font-size:1em'>GeoSpark</a>
+      </li><li>
+        <a href='/tags/gis/' style='font-size:1em'>GIS</a>
+      </li><li>
+        <a href='/tags/git/' style='font-size:1em'>git</a>
+      </li><li>
+        <a href='/tags/hadoop/' style='font-size:1em'>Hadoop</a>
+      </li><li>
+        <a href='/tags/hive/' style='font-size:1em'>hive</a>
+      </li><li>
+        <a href='/tags/iot/' style='font-size:1em'>IoT</a>
+      </li><li>
+        <a href='/tags/java/' style='font-size:1em'>java</a>
+      </li><li>
+        <a href='/tags/life/' style='font-size:1em'>life</a>
+      </li><li>
+        <a href='/tags/linux/' style='font-size:1em'>linux</a>
+      </li><li>
+        <a href='/tags/log4j/' style='font-size:1em'>log4j</a>
+      </li><li>
+        <a href='/tags/mpi/' style='font-size:1em'>MPI</a>
+      </li><li>
+        <a href='/tags/python/' style='font-size:1em'>python</a>
+      </li><li>
+        <a href='/tags/qgis/' style='font-size:1em'>QGIS</a>
+      </li><li>
+        <a href='/tags/raspberry/' style='font-size:1em'>raspberry</a>
+      </li><li>
+        <a href='/tags/reading/' style='font-size:1em'>reading</a>
+      </li><li>
+        <a href='/tags/sedona/' style='font-size:1em'>Sedona</a>
+      </li><li>
+        <a href='/tags/software/' style='font-size:1em'>software</a>
+      </li><li>
+        <a href='/tags/spark/' style='font-size:1em'>Spark</a>
+      </li><li>
+        <a href='/tags/%E9%87%8D%E5%AD%A6%E7%BC%96%E7%A8%8B%E5%9F%BA%E7%A1%80/' style='font-size:1em'>重学编程基础</a>
+      </li></ul>
+</div>
+
+
+</section>
+<section class='widget widget-search sep-after'>
+  <header>
+    <h4 class='title widget-title'>Search</h4>
+  </header>
+
+  <form action='/search' id='search-form' class='search-form'>
+    <label>
+      <span class='screen-reader-text'>Search</span>
+      <input id='search-term' class='search-term' type='search' name='q' placeholder='Search&hellip;'>
+    </label></form>
+
+</section>
+</div>
+
+  <div class='sidebar-overlay'></div>
+</div><div class='main'><a class='screen-reader-text' href='#content'>Skip to Content</a>
+
+<button id='sidebar-toggler' class='sidebar-toggler' aria-controls='sidebar'>
+  <span class='screen-reader-text'>Toggle Sidebar</span>
+  <span class='open'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="3" y1="12" x2="21" y2="12" />
+  <line x1="3" y1="6" x2="21" y2="6" />
+  <line x1="3" y1="18" x2="21" y2="18" />
+  
+</svg>
+</span>
+  <span class='close'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="18" y1="6" x2="6" y2="18" />
+  <line x1="6" y1="6" x2="18" y2="18" />
+  
+</svg>
+</span>
+</button><div class='header-widgets'>
+        <div class='container'></div>
+      </div>
+
+      <header id='header' class='header site-header'>
+        <div class='container sep-after'>
+          <div class='header-info'><p class='site-title title'>A Notebook of Extendswind</p><p class='desc site-desc'>a simple blog site</p>
+          </div>
+        </div>
+      </header>
+
+      <main id='content'>
+
+
+<article lang='en' class='entry'>
+  <header class='header entry-header'>
+  <div class='container sep-after'>
+    <div class='header-info'>
+      <h1 class='title'>Geotools的点类型简单要素创建以及大数据量下的效率问题</h1>
+      
+
+    </div>
+    <div class='entry-meta'>
+  <span class='posted-on'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+  <line x1="16" y1="2" x2="16" y2="6"/>
+  <line x1="8" y1="2" x2="8" y2="6"/>
+  <line x1="3" y1="10" x2="21" y2="10"/>
+  
+</svg>
+<span class='screen-reader-text'>Posted on </span>
+  <time class='entry-date' datetime='2022-09-28T17:30:00&#43;08:00'>2022, Sep 28</time>
+</span>
+
+  
+  
+
+</div>
+
+
+  </div>
+</header>
+
+  
+  
+<details class='container entry-toc' open>
+  <summary class='title'>
+    <span>Table of Contents</span>
+  </summary>
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#创建简单要素">创建简单要素</a></li>
+    <li><a href="#simplefeatureimpl实现">SimpleFeatureImpl实现</a></li>
+    <li><a href="#大数据量下的存储效率问题">大数据量下的存储效率问题</a></li>
+    <li><a href="#内存使用测试">内存使用测试</a></li>
+    <li><a href="#总结">总结</a></li>
+    <li><a href="#附几种对比的代码示意">附——几种对比的代码示意</a></li>
+  </ul>
+</nav>
+</details>
+
+
+  <div class='container entry-content'>
+  <p>GeoTools使用JTS处理空间索引、查询、几何分析等操作，在此基础上增加了空间对象属性相关的处理。通过SimpleFeatureImpl类包装处理，由于每个空间要素实体对象中增加了很多其它的对象，外加java类包装的额外开销，以至于原本的空间数据在内存中的存储空间增加了很多倍，当属性字段较少时，甚至可以多出一个量级。</p>
+<h1 id="创建简单要素">创建简单要素</h1>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#75715e">// -- 首先创建SimpleFeatureType  一个点和一个类型为Integer的number字段
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>SimpleFeatureTypeBuilder b <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> SimpleFeatureTypeBuilder<span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>b<span style="color:#f92672">.</span><span style="color:#a6e22e">setName</span><span style="color:#f92672">(</span> <span style="color:#e6db74">&#34;TestFields&#34;</span> <span style="color:#f92672">);</span>  <span style="color:#75715e">// type name
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>b<span style="color:#f92672">.</span><span style="color:#a6e22e">add</span><span style="color:#f92672">(</span> <span style="color:#e6db74">&#34;location&#34;</span><span style="color:#f92672">,</span> Point<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span> <span style="color:#f92672">);</span> <span style="color:#75715e">// 增加一个点字段
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>b<span style="color:#f92672">.</span><span style="color:#a6e22e">add</span><span style="color:#f92672">(</span> <span style="color:#e6db74">&#34;number&#34;</span><span style="color:#f92672">,</span> Integer<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">);</span>  <span style="color:#75715e">// 增加一个属性字段 
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>b<span style="color:#f92672">.</span><span style="color:#a6e22e">setCRS</span><span style="color:#f92672">(</span> DefaultGeographicCRS<span style="color:#f92672">.</span><span style="color:#a6e22e">WGS84</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>SimpleFeatureType type <span style="color:#f92672">=</span> b<span style="color:#f92672">.</span><span style="color:#a6e22e">buildFeatureType</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// -- 使用SimpleFeatureBuilder创建SimpleFeature
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>SimpleFeatureBuilder builder <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> SimpleFeatureBuilder<span style="color:#f92672">(</span>type<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 用于创建JTS Point的工厂类
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>GeometryFactory geometryFactory <span style="color:#f92672">=</span> JTSFactoryFinder<span style="color:#f92672">.</span><span style="color:#a6e22e">getGeometryFactory</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>Point point <span style="color:#f92672">=</span> geometryFactory<span style="color:#f92672">.</span><span style="color:#a6e22e">createPoint</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> Coordinate<span style="color:#f92672">(</span>longitude<span style="color:#f92672">,</span> latitude<span style="color:#f92672">));</span>
+</span></span><span style="display:flex;"><span>builder<span style="color:#f92672">.</span><span style="color:#a6e22e">add</span><span style="color:#f92672">(</span>point<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>builder<span style="color:#f92672">.</span><span style="color:#a6e22e">add</span><span style="color:#f92672">(</span>i<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>SimpleFeature feature <span style="color:#f92672">=</span> builder<span style="color:#f92672">.</span><span style="color:#a6e22e">buildFeature</span><span style="color:#f92672">(</span><span style="color:#66d9ef">null</span><span style="color:#f92672">);</span>  <span style="color:#75715e">// 参数为Feature id，为null时会赋默认值
+</span></span></span></code></pre></div><h1 id="simplefeatureimpl实现">SimpleFeatureImpl实现</h1>
+<p>GeoTools的SimpleFeature是一个Java接口，没有直接使用基类具体实现，定义了对简单要素的函数操作，主要包括获取ID、Type、FeatureType，以及获取和设置Attribute、DefaultGeometry等。</p>
+<p>SimpleFeatureImpl实现了SimpleFeature接口，主要包括以下数据：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">SimpleFeatureImpl</span> <span style="color:#66d9ef">implements</span> SimpleFeature <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">protected</span> FeatureId id<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">protected</span> SimpleFeatureType featureType<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/** The actual values held by this feature */</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">protected</span> Object<span style="color:#f92672">[]</span> values<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/** The attribute name -&gt; position index */</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">protected</span> Map<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">,</span> Integer<span style="color:#f92672">&gt;</span> index<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/** The set of user data attached to the feature (lazily created) */</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">protected</span> Map<span style="color:#f92672">&lt;</span>Object<span style="color:#f92672">,</span> Object<span style="color:#f92672">&gt;</span> userData<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/** The set of user data attached to each attribute (lazily created) */</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">protected</span> Map<span style="color:#f92672">&lt;</span>Object<span style="color:#f92672">,</span> Object<span style="color:#f92672">&gt;[]</span> attributeUserData<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/** Whether this feature is self validating or not */</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">protected</span> <span style="color:#66d9ef">boolean</span> validating<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// ....
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><p>基于上一节的代码创建后，userData、attributeUserData都为null，validating为false，Point对象和number属性字段都被存储在values中，存储的索引号通过index标记（key为字段名，value为索引号）。除了上面Point类型的location字段和Integer类型的number字段，values中还存储了一个null的key，value为空间属性所在的索引号，getDefaultGeometry()函数会通过这一索引号获取空间属性对应的对象。</p>
+<p>SimpleFeatureImpl的空间操作如getBounds()，需要遍历values中的所有对象，考虑其中所有类型为JTS Geometry的对象范围，得到Feature的结果。</p>
+<h1 id="大数据量下的存储效率问题">大数据量下的存储效率问题</h1>
+<p>GeoTools基于OGC的Simple Feature实现标准，在小数据量下各种操作比较完备，但大数据量下以Feature为单位的数据组织形式浪费了大量的操作空间。</p>
+<p>以大规模的点数据文件为例，在理想的存储方式下，每个点只需要存储坐标以及相应的属性字段的值，由于点集中的属性字段名称相同，只需要存储一次即可。而在GeoTools的SimpleFeatureImpl中，id和values是必需存储的选项，其它的成员变量都可以通过其它的方式避免内存消耗。userData和attributeUserData虽然使用了lazily created的形式降低了内存开销，null指针仍占用了8字节的空间。</p>
+<p>除了分析过程中不一定使用的成员变量，Java类对象本身的开销也不可以忽略。每个Java对象都存在16字节（不同JVM实现可能不同，但不可忽略）的对象头存储开销，基本数据类型（如int）通过对应的类（如Integer）包装存储时，占用的内存都会提高几倍。</p>
+<h1 id="内存使用测试">内存使用测试</h1>
+<p>存储对象为10000000 (10^6) 个点，每个点通过两个double类型的（x，y）存储，然后包含一个int类型的number属性。理想情况下所有点的属性字段、坐标系等元数据只存储一次，每个点存储2个double（8字节）和1个int（4字节），共20字节，总的内存开销低于20M（20 * 10^6 / 2^100）。</p>
+<p>针对GeoTools Feature、JTS Point、ArrayList、使用Java类包装类型的数据组、基本类型的数组以及没有数据的JVM虚拟机开销，获取JVM的内存开销和创建过程中的运行时间（代码附在最后），运行结果如下：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center"></th>
+<th style="text-align:center">GeoTools</th>
+<th style="text-align:center">JTS</th>
+<th style="text-align:center">ArrayList</th>
+<th style="text-align:center">Java类 数组</th>
+<th style="text-align:center">数组</th>
+<th style="text-align:center">JVM不存储数据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">使用内存(GC后）</td>
+<td style="text-align:center">319</td>
+<td style="text-align:center">140</td>
+<td style="text-align:center">82</td>
+<td style="text-align:center">82</td>
+<td style="text-align:center">24</td>
+<td style="text-align:center">4</td>
+</tr>
+<tr>
+<td style="text-align:center">总内存</td>
+<td style="text-align:center">971</td>
+<td style="text-align:center">303</td>
+<td style="text-align:center">303</td>
+<td style="text-align:center">303</td>
+<td style="text-align:center">240</td>
+<td style="text-align:center">240</td>
+</tr>
+<tr>
+<td style="text-align:center">创建过程时间</td>
+<td style="text-align:center">1.7</td>
+<td style="text-align:center">0.348</td>
+<td style="text-align:center">0.092</td>
+<td style="text-align:center">0.095</td>
+<td style="text-align:center">0.024</td>
+<td style="text-align:center">\</td>
+</tr>
+</tbody>
+</table>
+<p>其中GeoTools代码运行有未知的随机性，每次运行时间从1.5至1.9s之间，占用的内存也有细微的变化，可能和JVM的GC过程有关。</p>
+<p>在Point属性中加入一个String类型的字段后（具体为&quot;remark&quot;+id），GeoTools的内存占用为388（GC前451），数组存储的内存占用为94M。当每个Point的属性字段占用空间较大时，使用GeoTools的差距会缩小，但额外的290M左右的存储开销不可忽略。</p>
+<p>10000000 (10^7) 个点的情况，GeoTools在4G的最大堆空间情况下长时间没出结果，ArrayList的存储占用了726M内存，数组形式只占用了197M内存。</p>
+<h1 id="总结">总结</h1>
+<p>GeoTools使用了OGC的Simple Feature标准要求的数据组织和操作形式，但使用SimpleFeatureImpl类封装时加入了很多额外的存储指针，导致大量数据存储的过程中额外指针占用的数据量较大。</p>
+<p>如点数据的存储，每个点占用的额外存储空间约为近290字节，而每个点的实际存储只有20字节左右，当属性字段占用的存储空间较小时，额外的存储消耗相对可以高出一个量级。因此，大数据量下尤其是Feature数量较多时，需要注意GeoTools的额外内存开销。属性字段占用的内存开销较大时，额外存储开销的占比会略小，使用内存开销方便使用才更有价值。</p>
+<p>在大数据场景下，使用GeoTools需要考虑额外的存储优化，此外Sedona空间大数据平台使用了JTS，当属性字段不大时额外开销也达到了几倍，也有很大的优化空间。但空间分析算法本身比较复杂，实现对应的算法带来的工作量和内存开销之间需要一定的平衡。按照现在的GIS发展情况，等开源社区优化后出现一个高性能的空间数据管理分析开源库貌似短时间。</p>
+<h1 id="附几种对比的代码示意">附——几种对比的代码示意</h1>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Java" data-lang="Java"><span style="display:flex;"><span><span style="color:#75715e">// GeoTools
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">for</span><span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> i<span style="color:#f92672">=</span>0<span style="color:#f92672">;</span> i<span style="color:#f92672">&lt;</span>pointNum<span style="color:#f92672">;</span> i<span style="color:#f92672">++){</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">double</span> latitude <span style="color:#f92672">=</span> i <span style="color:#f92672">*</span> 10<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">double</span> longitude <span style="color:#f92672">=</span> i <span style="color:#f92672">*</span> 11<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>  Point point <span style="color:#f92672">=</span> geometryFactory<span style="color:#f92672">.</span><span style="color:#a6e22e">createPoint</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> Coordinate<span style="color:#f92672">(</span>longitude<span style="color:#f92672">,</span> latitude<span style="color:#f92672">));</span>
+</span></span><span style="display:flex;"><span>  builder<span style="color:#f92672">.</span><span style="color:#a6e22e">add</span><span style="color:#f92672">(</span>point<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>  builder<span style="color:#f92672">.</span><span style="color:#a6e22e">add</span><span style="color:#f92672">(</span>i<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// builder.add(&#34;remark&#34; + i);
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  SimpleFeature feature <span style="color:#f92672">=</span> builder<span style="color:#f92672">.</span><span style="color:#a6e22e">buildFeature</span><span style="color:#f92672">(</span><span style="color:#66d9ef">null</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>  features<span style="color:#f92672">.</span><span style="color:#a6e22e">add</span><span style="color:#f92672">(</span>feature<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>  feature<span style="color:#f92672">.</span><span style="color:#a6e22e">getDefaultGeometry</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// JTS
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">for</span><span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> i<span style="color:#f92672">=</span>0<span style="color:#f92672">;</span> i<span style="color:#f92672">&lt;</span>pointNum<span style="color:#f92672">;</span> i<span style="color:#f92672">++){</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">double</span> latitude <span style="color:#f92672">=</span> i <span style="color:#f92672">*</span> 10<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">double</span> longitude <span style="color:#f92672">=</span> i <span style="color:#f92672">*</span> 11<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>  Point point <span style="color:#f92672">=</span> geometryFactory<span style="color:#f92672">.</span><span style="color:#a6e22e">createPoint</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> Coordinate<span style="color:#f92672">(</span>longitude<span style="color:#f92672">,</span> latitude<span style="color:#f92672">));</span>
+</span></span><span style="display:flex;"><span>  point<span style="color:#f92672">.</span><span style="color:#a6e22e">setUserData</span><span style="color:#f92672">(</span>i<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>  features<span style="color:#f92672">.</span><span style="color:#a6e22e">add</span><span style="color:#f92672">(</span>point<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>List<span style="color:#f92672">&lt;</span>Integer<span style="color:#f92672">&gt;</span> ids <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ArrayList<span style="color:#f92672">&lt;&gt;(</span>pointNum<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>List<span style="color:#f92672">&lt;</span>Double<span style="color:#f92672">&gt;</span> latitudes <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ArrayList<span style="color:#f92672">&lt;&gt;(</span>pointNum<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>List<span style="color:#f92672">&lt;</span>Double<span style="color:#f92672">&gt;</span> longitudes <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ArrayList<span style="color:#f92672">&lt;&gt;(</span>pointNum<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">for</span><span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> i<span style="color:#f92672">=</span>0<span style="color:#f92672">;</span> i<span style="color:#f92672">&lt;</span>pointNum<span style="color:#f92672">;</span> i<span style="color:#f92672">++){</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">double</span> latitude <span style="color:#f92672">=</span> i <span style="color:#f92672">*</span> 10<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">double</span> longitude <span style="color:#f92672">=</span> i <span style="color:#f92672">*</span> 11<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>  latitudes<span style="color:#f92672">.</span><span style="color:#a6e22e">add</span><span style="color:#f92672">(</span>latitude<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>  longitudes<span style="color:#f92672">.</span><span style="color:#a6e22e">add</span><span style="color:#f92672">(</span>longitude<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>  ids<span style="color:#f92672">.</span><span style="color:#a6e22e">add</span><span style="color:#f92672">(</span>i<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Java 类数组
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>Double<span style="color:#f92672">[]</span> latitudes <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Double<span style="color:#f92672">[</span>pointNum<span style="color:#f92672">];</span>
+</span></span><span style="display:flex;"><span>Double<span style="color:#f92672">[]</span> longitudes <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Double<span style="color:#f92672">[</span>pointNum<span style="color:#f92672">];</span>
+</span></span><span style="display:flex;"><span>Integer<span style="color:#f92672">[]</span> ids <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Integer<span style="color:#f92672">[</span>pointNum<span style="color:#f92672">];</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">for</span><span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> i<span style="color:#f92672">=</span>0<span style="color:#f92672">;</span> i<span style="color:#f92672">&lt;</span>pointNum<span style="color:#f92672">;</span> i<span style="color:#f92672">++){</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">double</span> latitude <span style="color:#f92672">=</span> i <span style="color:#f92672">*</span> 10<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">double</span> longitude <span style="color:#f92672">=</span> i <span style="color:#f92672">*</span> 11<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>  latitudes<span style="color:#f92672">[</span>i<span style="color:#f92672">]</span> <span style="color:#f92672">=</span> latitude<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>  longitudes<span style="color:#f92672">[</span>i<span style="color:#f92672">]</span> <span style="color:#f92672">=</span> longitude<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>  ids<span style="color:#f92672">[</span>i<span style="color:#f92672">]</span> <span style="color:#f92672">=</span> i<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 普通数组
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">double</span><span style="color:#f92672">[]</span> latitudes <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#66d9ef">double</span><span style="color:#f92672">[</span>pointNum<span style="color:#f92672">];</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">double</span><span style="color:#f92672">[]</span> longitudes <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#66d9ef">double</span><span style="color:#f92672">[</span>pointNum<span style="color:#f92672">];</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span><span style="color:#f92672">[]</span> ids <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#66d9ef">int</span><span style="color:#f92672">[</span>pointNum<span style="color:#f92672">];</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">//    String[] remarks = new String[pointNum];
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">for</span><span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> i<span style="color:#f92672">=</span>0<span style="color:#f92672">;</span> i<span style="color:#f92672">&lt;</span>pointNum<span style="color:#f92672">;</span> i<span style="color:#f92672">++){</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">double</span> latitude <span style="color:#f92672">=</span> i <span style="color:#f92672">*</span> 10<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">double</span> longitude <span style="color:#f92672">=</span> i <span style="color:#f92672">*</span> 11<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>  latitudes<span style="color:#f92672">[</span>i<span style="color:#f92672">]</span> <span style="color:#f92672">=</span> latitude<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>  longitudes<span style="color:#f92672">[</span>i<span style="color:#f92672">]</span> <span style="color:#f92672">=</span> longitude<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>  ids<span style="color:#f92672">[</span>i<span style="color:#f92672">]</span> <span style="color:#f92672">=</span> i<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// remarks[i] = &#34;remark&#34; + i;
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 堆内存显示
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>System<span style="color:#f92672">.</span><span style="color:#a6e22e">gc</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>Thread<span style="color:#f92672">.</span><span style="color:#a6e22e">sleep</span><span style="color:#f92672">(</span>2000<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span>Runtime<span style="color:#f92672">.</span><span style="color:#a6e22e">getRuntime</span><span style="color:#f92672">().</span><span style="color:#a6e22e">totalMemory</span><span style="color:#f92672">()</span> <span style="color:#f92672">/</span> 1024 <span style="color:#f92672">/</span> 1024<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span>Runtime<span style="color:#f92672">.</span><span style="color:#a6e22e">getRuntime</span><span style="color:#f92672">().</span><span style="color:#a6e22e">freeMemory</span><span style="color:#f92672">()</span> <span style="color:#f92672">/</span> 1024 <span style="color:#f92672">/</span> 1024<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">((</span>Runtime<span style="color:#f92672">.</span><span style="color:#a6e22e">getRuntime</span><span style="color:#f92672">().</span><span style="color:#a6e22e">totalMemory</span><span style="color:#f92672">()</span> <span style="color:#f92672">-</span> Runtime<span style="color:#f92672">.</span><span style="color:#a6e22e">getRuntime</span><span style="color:#f92672">().</span><span style="color:#a6e22e">freeMemory</span><span style="color:#f92672">())</span> <span style="color:#f92672">/</span> 1024 <span style="color:#f92672">/</span> 1024<span style="color:#f92672">);</span>
+</span></span></code></pre></div>
+</div>
+
+  
+<footer class='entry-footer'>
+  <div class='container sep-before'><div class='categories'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M22,19a2,2,0,0,1-2,2H4a2,2,0,0,1-2-2V5A2,2,0,0,1,4,3H9l2,3h9a2,2,0,0,1,2,2Z"/>
+  
+</svg>
+<span class='screen-reader-text'>Categories: </span><a class='category' href='/categories/gis/'>GIS</a></div>
+<div class='tags'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M20.59,13.41l-7.17,7.17a2,2,0,0,1-2.83,0L2,12V2H12l8.59,8.59A2,2,0,0,1,20.59,13.41Z"/>
+  <line x1="7" y1="7" x2="7" y2="7"/>
+  
+</svg>
+<span class='screen-reader-text'>Tags: </span><a class='tag' href='/tags/gis/'>GIS</a>, <a class='tag' href='/tags/qgis/'>QGIS</a></div>
+
+  </div>
+</footer>
+
+
+</article>
+
+<nav class='entry-nav'>
+  <div class='container'><div class='prev-entry sep-before'>
+      <a href='/posts/technical/qgis_vector_data_type_structure.md/'>
+        <span aria-hidden='true'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="20" y1="12" x2="4" y2="12"/>
+  <polyline points="10 18 4 12 10 6"/>
+  
+</svg>
+ Previous</span>
+        <span class='screen-reader-text'>Previous post: </span>从QGIS源码看GIS矢量数据的组织形式</a>
+    </div><div class='next-entry sep-before'>
+      <a href='/posts/technical/sedona_spatial_big_data_visualization/'>
+        <span class='screen-reader-text'>Next post: </span>Sedona空间数据可视化源码分析<span aria-hidden='true'>Next <svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="4" y1="12" x2="20" y2="12"/>
+  <polyline points="14 6 20 12 14 18"/>
+  
+</svg>
+</span>
+      </a>
+    </div></div>
+</nav>
+
+
+
+
+      </main>
+
+      <footer id='footer' class='footer'>
+        <div class='container sep-before'><section class='widget widget-social_menu sep-after'><header>
+    <h4 class='title widget-title'>Contact</h4>
+  </header><nav aria-label='Social Menu'>
+    <ul><li>
+        <a href='https://github.com/extendswind' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Open Github account in new tab</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+  
+</svg>
+</a>
+      </li><li>
+        <a href='mailto:extendswind@foxmail.com' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Contact via Email</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+  <polyline points="22,6 12,13 2,6"/>
+  
+</svg>
+</a>
+      </li></ul>
+  </nav>
+</section><div class='copyright'>
+  <p>本站原创文章遵循CC-BY 4.0版权协议，转载注明出处即可</p>
+</div>
+
+        </div>
+      </footer>
+
+    </div>
+  </div><script>window.__assets_js_src="/assets/js/"</script>
+
+<script src='/assets/js/main.c3bcf2df.js'></script>
+
+</body>
+
+</html>
+

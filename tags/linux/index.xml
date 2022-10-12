@@ -6,7 +6,17 @@
     <description>Recent content in linux on A Notebook of Extendswind</description>
     <generator>Hugo -- gohugo.io</generator>
     <copyright>本站原创文章遵循CC-BY 4.0版权协议，转载注明出处即可</copyright>
-    <lastBuildDate>Sat, 04 Dec 2021 00:00:00 +0800</lastBuildDate><atom:link href="https://extendswind.top/tags/linux/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 07 Jul 2022 20:59:49 +0800</lastBuildDate><atom:link href="https://extendswind.top/tags/linux/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>qtcreator更新后搜狗输入法（fcitx）不能用</title>
+      <link>https://extendswind.top/posts/technical/qtcreator_update_make_fcitx_failed/</link>
+      <pubDate>Thu, 07 Jul 2022 20:59:49 +0800</pubDate>
+      
+      <guid>https://extendswind.top/posts/technical/qtcreator_update_make_fcitx_failed/</guid>
+      <description>manjaro上的qtcreator更新到使用qt6了，需要安装fcitx对应的qt6的包：
+pacman -S fcitx-qt6 </description>
+    </item>
+    
     <item>
       <title>syncthing文件同步网盘配置</title>
       <link>https://extendswind.top/posts/technical/syncthing_install_for_vps/</link>
@@ -20,14 +30,14 @@
 如果在没有桌面环境的linux服务器（如VPS）上安装，需要在 ~/.config/syncthing/config.xml 配置中将127.0.0.1改为0.0.0.0，防火墙放开8384端口、22000端口。然后在本地浏览器中用服务器 ip:8384 访问。
 直连服务器配置 在局域网内或者连接有公网ip的主机时，会默认使用直连的方式。当两个主机不能直接连接，或者网络状态不好时，会通过relay中继服务器连接。
 VPS的web UI中直连的listener选项卡为：
- quic://0.0.0.0:22000
+quic://0.0.0.0:22000
 tcp://0.0.0.0:22000
- 连接VPS时，在address选项中将上面0.0.0.0替换成VPS服务器的ip，替代默认的dynamic即可。
+连接VPS时，在address选项中将上面0.0.0.0替换成VPS服务器的ip，替代默认的dynamic即可。
 文件版本保存 一个文件可能会修改多次，文件夹的设置中有File Version选项，可以按时间、修改次数、删除等方式备份多个版本，具体设置界面有说明。
 安全相关 每个节点的id不包含隐私信息，连接时以及分享文件夹时都需要在两个节点的web UI中确认，id没必要加密保存。节点之间的数据传输通过TLS加密，不用太考虑中心服务器导致的隐私问题。
 web UI 页面直接暴露给外网可能会容易被被端口扫描后攻击，可以设置密码加强安全性。或者通过反向代理隐藏web UI的端口，具体配置在 https://docs.syncthing.net/users/reverseproxy.html。关于反向代理踩的一个小坑：nginx设置中的location /syncthing/后面的斜杠不能漏。
 文件分享 Syncthing不支持文件分享，只能间接的处理，下面放个简单的nginx配置解决web服务中分享某个文件文件的下载功能。（至于上传，可以考虑sftp、samba一类的服务，这个比较弱）
- location /file_share/ { alias /home/user/Syncthing/public/; autoindex on; autoindex_exact_size off; # 文件大小显示MB，GB单位，默认为b； autoindex_localtime on; # 服务器本地时区显示文件修改日期 } 基本原理 同步设计上首先将大文件切割成block，小文件直接单独作为block（和HDFS的操作类似）。对每个block计算hash值，通过hash值判断文件的完整性和变化（可以自动识别重命名）。当发生文件变化时，操作系统会通知Syncthing程序，Syncthing程序之间传输元数据信息以及变化的数据。
+location /file_share/ { alias /home/user/Syncthing/public/; autoindex on; autoindex_exact_size off; # 文件大小显示MB，GB单位，默认为b； autoindex_localtime on; # 服务器本地时区显示文件修改日期 } 基本原理 同步设计上首先将大文件切割成block，小文件直接单独作为block（和HDFS的操作类似）。对每个block计算hash值，通过hash值判断文件的完整性和变化（可以自动识别重命名）。当发生文件变化时，操作系统会通知Syncthing程序，Syncthing程序之间传输元数据信息以及变化的数据。
 连接上每个Syncthing程序通过唯一id识别，默认打开了本地发现（local discovery）和全网发现（global discovery）。本地发现能够在添加其它节点时自动找到局域网内的其它服务，全局发现依赖了额外的官方服务器，能根据id直接找到对应的节点（不确定ip是通过id算出来的还是全局发现找到的）。
 为了使不在同一个局域网下的节点能够同步，官方提供了relay服务器作为中介，不在局域网内的同步默认可以直接通过官方relay服务器进行，也可以自己在有公网ip的机器上架服务。relay服务默认为开启状态，局域网内的节点可能由于网络状况等问题从直连转为relay连接，在配置的web GUI中的Remote Devices下的address中可以看到是直接的ip还是带relay的ip，此处配置可以修改。
 Sycnthing默认有几个地方会连接官方服务器：1. 使用数据收集（第一次打开web UI会询问是否同意）；2. 全局发现；3. relay中继服务器。为了方便无所谓，如果只是想单纯在网络可以互通的环境下使用文件同步，可以考虑在设置中把这几个都关了。</description>
@@ -69,12 +79,12 @@ TLP 提供优秀的 Linux 高级电源管理功能（详见arch wiki），不知
       <guid>https://extendswind.top/posts/technical/manjaro_magicbook_install_and_configuration/</guid>
       <description>虽然是linux版出厂自带deepin专业版，但是随后发的一键win10装机U盘一声不坑的把deepin格式化了，售后还只在线下才提供安装包&amp;hellip;
 笔记本参数 Magicbook 14 (2019)
- AMD R5 3500U 8G + 512G  内核 不同的内核在这个笔记本的表现差距略大。当前（2020年-4月）测试过的内核里，只有linux56运行比较平稳。LTS的414/419直接开机黑屏，好像有一个是由于TLP服务的问题，systemctl disable tlp可以解决，TLP提供了电源管理功能，禁止了不知道影响有多大。LTS的linux54在睡眠时仍能听到风扇转动，无法正常睡眠。
+AMD R5 3500U 8G + 512G 内核 不同的内核在这个笔记本的表现差距略大。当前（2020年-4月）测试过的内核里，只有linux56运行比较平稳。LTS的414/419直接开机黑屏，好像有一个是由于TLP服务的问题，systemctl disable tlp可以解决，TLP提供了电源管理功能，禁止了不知道影响有多大。LTS的linux54在睡眠时仍能听到风扇转动，无法正常睡眠。
 当前的linux56的主要问题（其它内核也存在）：
- 指纹识别不能用 麦克风禁音键不能用 风扇无法控制 (好像没有现成的驱动）  Huawei-WMI 相当于华为为自己的笔记本添加的驱动程序，具体介绍可以参考下面的链接。
+指纹识别不能用 麦克风禁音键不能用 风扇无法控制 (好像没有现成的驱动） Huawei-WMI 相当于华为为自己的笔记本添加的驱动程序，具体介绍可以参考下面的链接。
 https://github.com/aymanbagabas/Huawei-WMI
 主要的Features：
-  Function hotkeys, implemented in v1.0 Micmute LED, implemented in v2.0. Updated in v3.0 to work with newer laptops. Battery protection, implemented in v3.0. Updated in v3.3 to use battery charge API. Fn-lock, implemented v3.0.   NOTE: Version v2.0 is the one in mainline kernel &amp;gt;= 5.</description>
+Function hotkeys, implemented in v1.0 Micmute LED, implemented in v2.0. Updated in v3.0 to work with newer laptops. Battery protection, implemented in v3.0. Updated in v3.3 to use battery charge API. Fn-lock, implemented v3.0. NOTE: Version v2.0 is the one in mainline kernel &amp;gt;= 5.0, this repository is used for testing and development purposes.</description>
     </item>
     
     <item>
@@ -87,7 +97,7 @@ https://github.com/aymanbagabas/Huawei-WMI
 主要参考论坛中Manjaro团队的philm的回答 https://forum.manjaro.org/t/how-to-compile-the-mainline-kernel-the-manjaro-way/51700/35
 Gitlab 仓库 philm提到了manjaro在gitlab上编译内核的仓库。https://gitlab.manjaro.org/packages/core/linux56.git 后面使用不同的linux版本号。
 仓库文件介绍 仓库中不同后缀文件的作用
-  files ending with .patch should be clear. These are adjustments we think will fit for our distro best. files starting with config are our modified settings on how we configure the kernel on our end. files starting with linux are specific files to post configure the system. They are used either by pacman or mkinitcpio, which configures the initramfs image.</description>
+files ending with .patch should be clear. These are adjustments we think will fit for our distro best. files starting with config are our modified settings on how we configure the kernel on our end. files starting with linux are specific files to post configure the system. They are used either by pacman or mkinitcpio, which configures the initramfs image. files ending with .</description>
     </item>
     
     <item>
@@ -98,21 +108,23 @@ Gitlab 仓库 philm提到了manjaro在gitlab上编译内核的仓库。https://g
       <guid>https://extendswind.top/posts/technical/grub_uefi_repair/</guid>
       <description>起因：EFI分区被删除导致引导问题。
 症状：
-  通过安装其它系统的方式。正好想试试其它的linux发行版，就在另一个分区装了deepin，完成后硬盘没有发现UEFI引导；然后又尝试装了openSUSE，仍没在硬盘发现UEFI引导。（失败）
-  通过live cd重新在efi分区安装grub。（wiki推荐的一般方式，仍失败）
-  通过live cd安装refind。（仍不行）
-  安装的系统可以通过manjaro live cd直接boot。
-  安装win10可以发现UEFI的引导方式（只启动win10，安装grub也只启动win10）
-  引导的问题网上的解决方案很多，对于一些新的电脑UEFI的方式应该很好修复，但一些比较老的电脑可能出现各种坑问题，用legacy的引导还是稳定一点。
+通过安装其它系统的方式。正好想试试其它的linux发行版，就在另一个分区装了deepin，完成后硬盘没有发现UEFI引导；然后又尝试装了openSUSE，仍没在硬盘发现UEFI引导。（失败）
+通过live cd重新在efi分区安装grub。（wiki推荐的一般方式，仍失败）
+通过live cd安装refind。（仍不行）
+安装的系统可以通过manjaro live cd直接boot。
+安装win10可以发现UEFI的引导方式（只启动win10，安装grub也只启动win10）
+引导的问题网上的解决方案很多，对于一些新的电脑UEFI的方式应该很好修复，但一些比较老的电脑可能出现各种坑问题，用legacy的引导还是稳定一点。
 UEFI的引导通过grub的各种安装尝试都无法被主板识别，一直检测不到硬盘UEFI的启动项。怀疑主板并不支持linux grub2写入的UEFI引导信息，只支持windows的。最后通过安装win10，用refind覆盖win10的efi启动条目解决问题。
 最常规的修复方式 通过live cd 将系统烧入U盘，启动U盘进入系统后修复。涉及两种方式：
- 通过boot-repair grub-install 命令安装  还有通过grub命令行的方式，不常用没折腾。
+通过boot-repair grub-install 命令安装 还有通过grub命令行的方式，不常用没折腾。
 建议烧入的系统为ubuntu和manjaro。deepin的live cd在我的电脑上有显示的bug，而且添加ppa有一点坑。openSUSE上的grub命令和debian系arch系不怎么一样。ubuntu的主要优点在于可以通过安装boot-repair进行一键修复，manjaro和arch的live cd提供了直接的manjaro-chroot以及arch-chroot，进入后直接安装grub就行，而且manjaro的live cd支持直接引导启动efi分区中的系统。
 在下面的两种操作之前，最好通过gparted等软件新建一个efi分区（fat32,一般几十兆，openSUSE建议不小于500M，带efi标签）。
 基于ubuntu的boot-repair 网上的资料多操作也不复杂，主要注意U盘从UEFI模式启动。
 sudo add-apt-repository ppa:yannubuntu/boot-repair -y sudo apt-get update sudo apt-get install boot-repair -y sudo boot-repair grub-install 命令安装 使用manjaro live cd，其它的系统可能需要安装grub2、efibootmgr、grub-efi-amd64、os-prober等包。
 以下需要root权限，sudo -i或命令前加sudo
-1、 查看要引导系统的分区和efi分区的编号（fdisk -l） 2、 挂载引导系统的分区（一般 mount /dev/sda4 /mnt） 3、 挂载efi分区到系统分区的/boot/efi目录（`mount /dev/sda2 /mnt/boot/efi） 4、 chroot到硬盘系统分区</description>
+1、 查看要引导系统的分区和efi分区的编号（fdisk -l） 2、 挂载引导系统的分区（一般 mount /dev/sda4 /mnt） 3、 挂载efi分区到系统分区的/boot/efi目录（`mount /dev/sda2 /mnt/boot/efi） 4、 chroot到硬盘系统分区
+对于ubuntu
+mount --bind /dev/ /mnt/dev mount --bind /proc /mnt/proc mount --bind /sys /mnt/sys chroot /mnt 对于manjaro直接</description>
     </item>
     
     <item>
@@ -126,7 +138,7 @@ manjaro的xfce版也是如此，不知道是不是linux下xfce的通病。
 主要是搜索的时候百度的结果很奇葩&amp;hellip;
 用关键字 beep of xfce4 搜到了arch wiki下的内容，原来这玩意叫pc speaker，针对不同的情况有不同的解决方案。
 最简单粗暴的方式 内核中加载了pcspkr模块导致的主板声音，rmmod移除此模块，然后/etc/modprobe.d文件夹下加入黑名单，使开机过程不加载。
-  rmmod pcspkr echo &amp;ldquo;blacklist pcspkr&amp;rdquo; &amp;gt; /etc/modprobe.d/nobeep.conf 具体参考 https://wiki.archlinux.org/index.php/PC_speaker</description>
+rmmod pcspkr echo &amp;ldquo;blacklist pcspkr&amp;rdquo; &amp;gt; /etc/modprobe.d/nobeep.conf 具体参考 https://wiki.archlinux.org/index.php/PC_speaker</description>
     </item>
     
     <item>
@@ -168,14 +180,17 @@ fcitx 为基础安装包，fcitx-im用于GTK/QT等界面上使用的包，fcitx-
 此处有坑，默认的安装方式会编译安装qtwebkit，速度非常的慢（一个小时午觉后还没好&amp;hellip;)
 在库的官方说明中（来自 https://aur.archlinux.org/packages/fcitx-sogoupinyin/ ）依赖项为qtwebkit (qtwebkit-bin)
 其实只依赖qtwebkit-bin，因此先安装qtwebkit-bin可以解决依赖问题（不到一分钟&amp;hellip;)
- yaourt -S qtwebkit-bin
+yaourt -S qtwebkit-bin
 3. fcitx 设置中添加搜狗拼音 fcitx configuration中点加号添加sogou pinyin（默认语言为英语时需要勾选一个选项）
 4. fcitx环境变量的添加 gui应用的环境变量一般不通过profile和bashrc。
 arch wiki下的内容：
-  KDM, GDM, LightDM 等显示管理器，请使用 ~/.xprofile arch wiki 警告: 上述用户不要在~/.xinitrc中加入下述脚本，否则会造成无法登陆。(但在里头加了也没挂) 如果您用 startx 或者 Slim 启动，请使用~/.xinitrc 中加入
-  export GTK_IM_MODULE=fcitx export QT_IM_MODULE=fcitx export XMODIFIERS=@im=fcitx
-  如果你使用的是较新版本的GNOME，使用 Wayland 显示管理器，则请在/etc/environment中加入
-  GTK_IM_MODULE=fcitx QT_IM_MODULE=fcitx XMODIFIERS=@im=fcitx</description>
+KDM, GDM, LightDM 等显示管理器，请使用 ~/.xprofile arch wiki 警告: 上述用户不要在~/.xinitrc中加入下述脚本，否则会造成无法登陆。(但在里头加了也没挂) 如果您用 startx 或者 Slim 启动，请使用~/.xinitrc 中加入
+export GTK_IM_MODULE=fcitx export QT_IM_MODULE=fcitx export XMODIFIERS=@im=fcitx
+如果你使用的是较新版本的GNOME，使用 Wayland 显示管理器，则请在/etc/environment中加入
+GTK_IM_MODULE=fcitx QT_IM_MODULE=fcitx XMODIFIERS=@im=fcitx
+参考链接中有更详细的说明，我用的manjaro+xfce4以及后面改装的cinnamon和awesome都是在lightDM下该的.xinitrc，没有.xprofile文件，也能正常用。 （注意添加在最后exec $(&amp;hellip;)的前面）
+使用manjaro+kde和awesomewm混用时，加在.xinitrc下莫名奇妙的失效，不知道和为了deepin-wine运行的cinnamon-xsettings有没有关系，加在/etc/environment文件中正常运行。
+5. 注销后重新登录 汇总 yaourt -S qtwebkit-bin sudo pacman -S fcitx fcitx-im fcitx-configtool yaourt fcitx-sogoupinyin</description>
     </item>
     
     <item>
@@ -190,18 +205,20 @@ arch wiki下的内容：
 ps: 2021年12月更新，AUR里com.qq.tim.spark从Spark应用商店的移植实现的效果也差不多，deepin-wine-time 已经从wine转到了deepin-wine，各方面的问题也有比较好的解决方案，外加作者一直在积极更新。项目地址上有一些问题的解决方案：
 https://github.com/vufa/deepin-wine-tim-arch
 新版本的更新在不同的环境下出现了一些新问题，建议在各个仓库对应的github链接以及一直更新的arch wiki上找找最新的方案。
-安装步骤 安装  yaourt -S deepin.com.qq.office
+安装步骤 安装 yaourt -S deepin.com.qq.office
 ps：吐槽，安装deepin-wine的各个确认略多。 d
 qq提取消息、截图等快捷键设置 在/opt/deepinwine/tools/sendkeys.sh脚本能够传递快捷键，如直接运行./sendkeys.sh a 则会向qq或tim进程发送 ctrl+alt+a。
 不同桌面环境添加快捷键的方法差不多，主要步骤：
- setting -&amp;gt; keyboard -&amp;gt; shortcut 添加快捷键，选择上面的脚本，在脚本后面加上a 指定运行脚本的快捷键  此时按快捷键后相当于qq中按 ctrl+alt+a (截图)
+setting -&amp;gt; keyboard -&amp;gt; shortcut 添加快捷键，选择上面的脚本，在脚本后面加上a 指定运行脚本的快捷键 此时按快捷键后相当于qq中按 ctrl+alt+a (截图)
 同理可以设置qq其它快捷键
 一般问题 大多出现在基于wine的tim上，基于deepin的tim问题很少。
 deepin-wine在非gnome系的桌面上的运行问题 3wm, kde, awesome等桌面管理器或桌面环境里运行基于deepin-wine的qq和tim时，会出现下面的错误
-  X Error of failed request: BadWindow (invalid Window parameter) Major opcode of failed request: 20 (X_GetProperty)
+X Error of failed request: BadWindow (invalid Window parameter) Major opcode of failed request: 20 (X_GetProperty)
 由于deepin-wine依赖了gnome系（mate,cinnamon,gnome）的setting-daemon，需要安装后运行（一般加入开机启动）
 sudo pacman -S cinnamon-settings-daemon /usr/lib/cinnamon-settings-daemon/csd-xsettings 无法输入中文 如果其它地方可以使用输入法，一般为环境变量的问题，fcitx没有配置好。
-粗暴解决方式: 下面的文件夹中加入环境变量</description>
+粗暴解决方式: 下面的文件夹中加入环境变量
+/opt/deepinwine/apps/Deepin-TIM/run.sh
+export XMODIFIERS=&amp;quot;@im=fcitx&amp;quot; export GTK_IM_MODULE=&amp;ldquo;fcitx&amp;rdquo; export QT_IM_MODULE=&amp;ldquo;fcitx&amp;rdquo;</description>
     </item>
     
     <item>
@@ -211,7 +228,7 @@ sudo pacman -S cinnamon-settings-daemon /usr/lib/cinnamon-settings-daemon/csd-xs
       
       <guid>https://extendswind.top/posts/technical/deepin_wine_run_in_not_gnome_desktop_environment/</guid>
       <description>i3wm, kde, awesome等桌面管理器或桌面环境里运行基于deepin-wine的qq和tim时，会出现下面的错误
-  X Error of failed request: BadWindow (invalid Window parameter) Major opcode of failed request: 20 (X_GetProperty)
+X Error of failed request: BadWindow (invalid Window parameter) Major opcode of failed request: 20 (X_GetProperty)
 在gnome、mate、cinnamon三个桌面上运行较好，xfce4上运行有少许焦点上的bug，其它桌面环境和管理器下直接出上面的错误。
 最近终于在aur上看到是因为deepin-wine依赖了gnome-settings-daemon（gnome系的cinnamon和mate的对应组件也能用），启动后就能正常运行，但AwesomeWM会使用xsettings对应的主题，KDE基本正常运行，其它非gnome系的桌面环境未测试。
 解决方案 1. 安装gnome-settings-daemon (arch 系） sudo pacman -S gnome-settings-daemon ubuntu 下的包和运行的程序名略不一样，参考：
@@ -224,8 +241,10 @@ csd-xsettings 主要影响两个地方：1. 启动过程； 2. 在tim内调用�
 可以考虑启动后关闭对tim，可以避免影响系统主题一类的问题，但会导致无法调用外部程序。加上运行后5s关闭的参数即可:
 /usr/lib/cinnamon-settings-daemon/csd-xsettings --exit-time 5 &amp;amp;
 附：使用cinnamon的xsettings的设置 主题的问题在awesome这种环境下略坑，懒得去试gnome上的主题设置需要哪些包，安装整个gnome的包需要800多M，直接安装了cinnamon的基础包（90M左右）。和gnome只是些名字上的区别：
-sudo pacman -S cinnamon  # awesome的autorun里加入下面程序使开机运行 /usr/lib/cinnamon-settings-daemon/csd-xsettings 在系统设置里可以下载和更改主题
-小坑   tim和qq会在点击好友图像时卡死的情况。原因之一可能是pulseaudio进程，kill掉就行，会影响声音的调整。（千里之外的两个程序不知道为什么会卡一起）</description>
+sudo pacman -S cinnamon # awesome的autorun里加入下面程序使开机运行 /usr/lib/cinnamon-settings-daemon/csd-xsettings 在系统设置里可以下载和更改主题
+小坑 tim和qq会在点击好友图像时卡死的情况。原因之一可能是pulseaudio进程，kill掉就行，会影响声音的调整。（千里之外的两个程序不知道为什么会卡一起）
+使用csd-xsettings时可能出现无法调声音的情况，关了之后就行了，懒得再往下折腾了&amp;hellip;
+这两个问题不太记得当初什么情况，在kde版本的manjaro上已经不存在了（201907）。</description>
     </item>
     
     <item>
@@ -238,9 +257,9 @@ sudo pacman -S cinnamon  # awesome的autorun里加入下面程序使开机运行
 使用sqllite的浏览器看了一眼zotero的存储数据库(zotero.sqlite)，在表itemAttachments中存储了所有附件的类型地址等信息，发现里头的地址全都使用的绝对路径！！
 重点在于设置zotero和zotfile的附件路径和转移文件。
 使用网盘同步的不用折腾这些。
-方法一：设置为相对路径并修改文件 设置  zotero preferences -&amp;gt; Files and Folders -&amp;gt; Linked Attachment Base Directory 设置存储路径 （注意不是 data directory） 把zotfile里的路径也改到这（不知道具体什么机制，zotfile有个相对路径的pull request不知道读的是不是这个，懒得多折腾）  已有的文件移动   如果由于换硬盘换系统一类的问题，先使用软连接指向原来的目录，让zotero能够找到原来的文件。（源目录可以使用sqllite的浏览器看到）
-  在library下全选所有的items，然后右键 Manage Attachments -&amp;gt; Rename Attachments。（看起来是重命名，实质上会移动所有的文件）
-  此时此前附件中的绝对路径/mnt/data/...会变成attachments：catagory1/test1.pdf 类似的相对路径。
+方法一：设置为相对路径并修改文件 设置 zotero preferences -&amp;gt; Files and Folders -&amp;gt; Linked Attachment Base Directory 设置存储路径 （注意不是 data directory） 把zotfile里的路径也改到这（不知道具体什么机制，zotfile有个相对路径的pull request不知道读的是不是这个，懒得多折腾） 已有的文件移动 如果由于换硬盘换系统一类的问题，先使用软连接指向原来的目录，让zotero能够找到原来的文件。（源目录可以使用sqllite的浏览器看到）
+在library下全选所有的items，然后右键 Manage Attachments -&amp;gt; Rename Attachments。（看起来是重命名，实质上会移动所有的文件）
+此时此前附件中的绝对路径/mnt/data/...会变成attachments：catagory1/test1.pdf 类似的相对路径。
 方法二：直接操作sqllite数据库来改 下面的语句供参考，建议稍了解后操作，使用update导致数据丢失会很麻烦。
 把下面路径中的/home/fly/public_download/改成自己数据库里的路径即可。
 update itemAttachments set path=replace(path, &amp;#39;/home/fly/public_download/&amp;#39;, &amp;#39;attachments:&amp;#39;) where path like &amp;#39;/home/fly/public_download%&amp;#39; 最后 跨操作系统或者跨目录直接设置到相同的目录即可。</description>
@@ -254,11 +273,11 @@ update itemAttachments set path=replace(path, &amp;#39;/home/fly/public_download
       <guid>https://extendswind.top/posts/technical/netease_music_can_not_open/</guid>
       <description>最近打开网易云音乐没有反应，只在htop命令下能看到运行的进程（manjaro+mate+awesome）。
 命令行sudo可以正常运行
-无用尝试  安装官网给的最新1.1.3的deepin与ubuntu16两个版本 网上提到的&amp;ndash;no-sandbox参数运行 kill已经运行的netease-cloud-music相关进程  解决方案 回退到更早的1.0.0版，估计新版没有在各个linux系统下测试。
+无用尝试 安装官网给的最新1.1.3的deepin与ubuntu16两个版本 网上提到的&amp;ndash;no-sandbox参数运行 kill已经运行的netease-cloud-music相关进程 解决方案 回退到更早的1.0.0版，估计新版没有在各个linux系统下测试。
 http://s1.music.126.net/download/pc/netease-cloud-music_1.0.0-2_amd64_ubuntu16.04.deb
 debian系就直接dpkg -i吧
 arch系通过AUR安装稍麻烦:
- 卸载原版本 yaourt -S netease-cloud-music 按y Edit PKGBUILD 将1.1.3的安装包地址替换为1.1.0的安装包地址，并且将对应hash值改为skip，具体如下  改之前：
+卸载原版本 yaourt -S netease-cloud-music 按y Edit PKGBUILD 将1.1.3的安装包地址替换为1.1.0的安装包地址，并且将对应hash值改为skip，具体如下 改之前：
 source=( &amp;#34;http://packages.deepin.com/deepin/pool/main/n/netease-cloud-music/netease-cloud-music_${pkgver}-${_pkgrel}_amd64.deb&amp;#34; &amp;#34;http://music.163.com/html/web2/service.html&amp;#34; ) md5sums=(&amp;#39;53c47c1bf6797b2a0e455bc59833ab2d&amp;#39; &amp;#39;SKIP&amp;#39;) 改之后
 source=( &amp;#34;http://s1.music.126.net/download/pc/netease-cloud-music_1.0.0-2_amd64_ubuntu16.04.deb&amp;#34; &amp;#34;http://music.163.com/html/web2/service.html&amp;#34; ) md5sums=(&amp;#39;SKIP&amp;#39; &amp;#39;SKIP&amp;#39;) 然后正常安装即可</description>
     </item>
@@ -273,12 +292,12 @@ source=( &amp;#34;http://s1.music.126.net/download/pc/netease-cloud-music_1.0.0-
 最近发现有在非gnome系的DE下运行deepin-wine的解决方案，没必要专门跑一个mate。
 安装gnome-setttings-daemon，然后运行/usr/lib/gsd-xsettings。（不同系统会不一样）
 具体记录在另一篇博客
- AwesomeWM这种平铺的窗口管理器用得很爽，只是基于wine的qq最近又莫名其妙抽风，感觉还是切到deepin-wine上比较靠谱。而deepin-wine在awesome下运行qq会报错X Error of failed request: BadWindow (invalid Window parameter) Major opcode of failed request: 20 (X_GetProperty)，而在Gnome系下运行正常。看到Gnome和Mate能够运行awesomewm，就折腾了一下试试。
+AwesomeWM这种平铺的窗口管理器用得很爽，只是基于wine的qq最近又莫名其妙抽风，感觉还是切到deepin-wine上比较靠谱。而deepin-wine在awesome下运行qq会报错X Error of failed request: BadWindow (invalid Window parameter) Major opcode of failed request: 20 (X_GetProperty)，而在Gnome系下运行正常。看到Gnome和Mate能够运行awesomewm，就折腾了一下试试。
 Awesome只是Gnome等桌面管理器的组件之一，gnome系的Mate可以修改默认的窗口管理器。
-具体折腾   安装AwesomeWM、Mate桌面环境与dconf-editor（arch下使用pacman -S）。
-  进入Mate桌面环境后，修改org.mate.session.required-components windowmanager 的值为&amp;rsquo;awesome&amp;rsquo;，如果不需要桌面上的图标，可以将org.mate.session.required-components的值只留下windowmanager。
-  上面的设置无法通过命令行打开awesome，需要添加awesome的图标。在/usr/share/applications目录下新建awesome.desktop，内容如下（网上直接粘的，估计有些可以不要，懒得试了）：
-  [Desktop Entry] Type=Application Name=awesome Exec=awesome NoDisplay=true # name of loadable control center module X-MATE-WMSettingsModule=awesome # name we put on the WM spec check window X-MATE-WMName=awesome # back compat only X-MateWMSettingsLibrary=awesome X-MATE-Bugzilla-Bugzilla=MATE X-MATE-Bugzilla-Product=awesome X-MATE-Bugzilla-Component=general X-MATE-Autostart-Phase=WindowManager X-MATE-Provides=windowmanager X-MATE-Autostart-Notify=true </description>
+具体折腾 安装AwesomeWM、Mate桌面环境与dconf-editor（arch下使用pacman -S）。
+进入Mate桌面环境后，修改org.mate.session.required-components windowmanager 的值为&amp;rsquo;awesome&amp;rsquo;，如果不需要桌面上的图标，可以将org.mate.session.required-components的值只留下windowmanager。
+上面的设置无法通过命令行打开awesome，需要添加awesome的图标。在/usr/share/applications目录下新建awesome.desktop，内容如下（网上直接粘的，估计有些可以不要，懒得试了）：
+[Desktop Entry] Type=Application Name=awesome Exec=awesome NoDisplay=true # name of loadable control center module X-MATE-WMSettingsModule=awesome # name we put on the WM spec check window X-MATE-WMName=awesome # back compat only X-MateWMSettingsLibrary=awesome X-MATE-Bugzilla-Bugzilla=MATE X-MATE-Bugzilla-Product=awesome X-MATE-Bugzilla-Component=general X-MATE-Autostart-Phase=WindowManager X-MATE-Provides=windowmanager X-MATE-Autostart-Notify=true </description>
     </item>
     
     <item>
@@ -287,7 +306,7 @@ Awesome只是Gnome等桌面管理器的组件之一，gnome系的Mate可以修�
       <pubDate>Tue, 17 Jul 2018 20:59:49 +0800</pubDate>
       
       <guid>https://extendswind.top/posts/technical/manjaro_install_problem_grub/</guid>
-      <description>错误   error: invalid arch-independent ELF magic. Entering rescue mode&amp;hellip; grub rescue&amp;gt;
+      <description>错误 error: invalid arch-independent ELF magic. Entering rescue mode&amp;hellip; grub rescue&amp;gt;
 使用Rufu ISO模式烧录的U盘，lagency 模式能够启动，但点安装后出上面错误；UEFI模式直接出上面错误。
 解决方案 不多说，百度背锅，google答案的前几个就是正解。
 U盘烧录问题，使用rufu烧录U盘时，最好使用DD模式而非ISO模式。（去年安装manjaro-xfce4时用ISO模式没出过）
@@ -321,13 +340,17 @@ linux是用来折腾的，更是用来解决问题的。</description>
 2017年数据，windows份额超过90%，MacOS约6%，Linux份额最高的记录在2016年7月创下，是2.33%。
 貌似用linux和MacOS的大多是程序员了。MacOS和linux系统正常使用（看书、上网、看电影等）已经比较成熟，没有太大的体验差异。
 linux系统的主要缺点：
- 某些常用软件在linux上没有或运行有问题（qq、迅雷、office等，只有deepin通过虚拟windows系统解决得稍好） 完美折腾需要掌握大量相关知识，不折腾难以体现其优点 某些设置复杂（较好的发行版已有极大的改善，某些操作需要使用命令）  linux作为桌面系统主要优点（作为服务器系统广泛使用不谈）：
- 软件管理容易 可定制性超强 免费（看版权意识）  对于开发人员，大部分的软件一键安装还解决依赖问题，想要的操作大部分可以通过修改配置和安装软件实现。在运行某些开发软件会明显感觉更快，绝大部分配置通过文本文件容易修改。
+某些常用软件在linux上没有或运行有问题（qq、迅雷、office等，只有deepin通过虚拟windows系统解决得稍好） 完美折腾需要掌握大量相关知识，不折腾难以体现其优点 某些设置复杂（较好的发行版已有极大的改善，某些操作需要使用命令） linux作为桌面系统主要优点（作为服务器系统广泛使用不谈）：
+软件管理容易 可定制性超强 免费（看版权意识） 对于开发人员，大部分的软件一键安装还解决依赖问题，想要的操作大部分可以通过修改配置和安装软件实现。在运行某些开发软件会明显感觉更快，绝大部分配置通过文本文件容易修改。
 linux发行版 一般的linux发行版包括：Linux内核，一些GNU程序库和工具，命令行shell，图形界面的X Window系统和相应的桌面环境，以及一系列其他的软件包（浏览器、阅读器、文本编辑器等）。由各种组织和个人维护。
-主要用过的几个桌面发行版：  也许桌面用户最多的Ubuntu 不折腾的Arch系Manjaro （当前主力） 和Manjaro在distrowatch上争第一的Ubuntu进化版Mint 号称最美linux的Elementary 超稳定适合服务器的版本Centos （只在服务器上用） 最强国产化linux的Deepin和一般国产化的优麒麟  下面叙述中不包含在内的主要道听途说
+主要用过的几个桌面发行版： 也许桌面用户最多的Ubuntu 不折腾的Arch系Manjaro （当前主力） 和Manjaro在distrowatch上争第一的Ubuntu进化版Mint 号称最美linux的Elementary 超稳定适合服务器的版本Centos （只在服务器上用） 最强国产化linux的Deepin和一般国产化的优麒麟 下面叙述中不包含在内的主要道听途说
 主流的发行版 debian系：Debian -&amp;gt; Ubuntu -&amp;gt; Mint | Elementary | Deepin | 优麒麟 fedora : Fedora -&amp;gt; RHEL -&amp;gt; Centos | Oracle linux SUSE : SUSE -&amp;gt; SLES -&amp;gt; openSUSE (没有用过，大多对其评价较为中立，暂不讨论) arch : Arch -&amp;gt; Manjaro gantoo
 其中箭头后的系统基于前面的系统发展，但并不影响前面系统的优势。如Ubuntu基于Debian系统成为较好的桌面系统，但Debian由于其轻量级和可定制仍有广泛使用。
-发行版之间主要区别 不同发行版的主要区别在于桌面环境、软件包管理器、软件包以及软件包版本的不同。</description>
+发行版之间主要区别 不同发行版的主要区别在于桌面环境、软件包管理器、软件包以及软件包版本的不同。
+包管理 不同的包管理器在实现功能上差距不大，只是对软件包稳定性的态度决定了能够使用的软件版本。
+Fedora系的yum管理器，对所有能够安装的软件包做严格的测试，软件包的版本一般较旧但极为稳定，因此服务器上使用较多。其中Fedora相比Centos的软件包略新也略不稳定。对于大规模服务器的管理，一般会搭建其自己的软件仓库解决部分需要使用的软件问题。吐槽：工业级软件求稳定就算了，emacs和vim这种编辑器都是老的，想要配置某些插件还需要自己下载源码编译安装&amp;hellip;如果没有相关的测试要求，一般不建议使用centos这种作为个人电脑的操作系统，很多桌面软件不是版本偏低就是没有，需要手动安装。
+Debian系使用apt管理软件包，其思路比centos稍激进，软件包版本较新但一般情况下不容易出大问题。通过apt能够下载绝大部分想要的软件，对于某些不在官方仓库的软件能够通过添加apt源安装。因此被桌面系统广泛使用。
+Arch系使用滚动更新的pacman，“一周一小更，一月一大更”。相比上述两个能够安装大多数软件的最新版本。还有AUR第三方用户包的加成，通过yaourt命令能够搜索和安装绝大部分linux上有的软件（典型示例为快速安装tensorflow）。过分激进的更新方式必然影响软件包质量，Arch系的包测试比之前成熟得多，在桌面端很少出现软件更新导致不兼容的bug。Ubuntu的软件源已经够丰富，但习惯AUR安装软件后在Ubuntu上会经常有找不到软件导致的不习惯。</description>
     </item>
     
   </channel>

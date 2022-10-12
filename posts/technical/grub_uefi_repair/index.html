@@ -4,46 +4,50 @@
 <meta name='viewport' content='width=device-width, initial-scale=1'>
 <meta name='description' content='起因：EFI分区被删除导致引导问题。
 症状：
-  通过安装其它系统的方式。正好想试试其它的linux发行版，就在另一个分区装了deepin，完成后硬盘没有发现UEFI引导；然后又尝试装了openSUSE，仍没在硬盘发现UEFI引导。（失败）
-  通过live cd重新在efi分区安装grub。（wiki推荐的一般方式，仍失败）
-  通过live cd安装refind。（仍不行）
-  安装的系统可以通过manjaro live cd直接boot。
-  安装win10可以发现UEFI的引导方式（只启动win10，安装grub也只启动win10）
-  引导的问题网上的解决方案很多，对于一些新的电脑UEFI的方式应该很好修复，但一些比较老的电脑可能出现各种坑问题，用legacy的引导还是稳定一点。
+通过安装其它系统的方式。正好想试试其它的linux发行版，就在另一个分区装了deepin，完成后硬盘没有发现UEFI引导；然后又尝试装了openSUSE，仍没在硬盘发现UEFI引导。（失败）
+通过live cd重新在efi分区安装grub。（wiki推荐的一般方式，仍失败）
+通过live cd安装refind。（仍不行）
+安装的系统可以通过manjaro live cd直接boot。
+安装win10可以发现UEFI的引导方式（只启动win10，安装grub也只启动win10）
+引导的问题网上的解决方案很多，对于一些新的电脑UEFI的方式应该很好修复，但一些比较老的电脑可能出现各种坑问题，用legacy的引导还是稳定一点。
 UEFI的引导通过grub的各种安装尝试都无法被主板识别，一直检测不到硬盘UEFI的启动项。怀疑主板并不支持linux grub2写入的UEFI引导信息，只支持windows的。最后通过安装win10，用refind覆盖win10的efi启动条目解决问题。
 最常规的修复方式 通过live cd 将系统烧入U盘，启动U盘进入系统后修复。涉及两种方式：
- 通过boot-repair grub-install 命令安装  还有通过grub命令行的方式，不常用没折腾。
+通过boot-repair grub-install 命令安装 还有通过grub命令行的方式，不常用没折腾。
 建议烧入的系统为ubuntu和manjaro。deepin的live cd在我的电脑上有显示的bug，而且添加ppa有一点坑。openSUSE上的grub命令和debian系arch系不怎么一样。ubuntu的主要优点在于可以通过安装boot-repair进行一键修复，manjaro和arch的live cd提供了直接的manjaro-chroot以及arch-chroot，进入后直接安装grub就行，而且manjaro的live cd支持直接引导启动efi分区中的系统。
 在下面的两种操作之前，最好通过gparted等软件新建一个efi分区（fat32,一般几十兆，openSUSE建议不小于500M，带efi标签）。
 基于ubuntu的boot-repair 网上的资料多操作也不复杂，主要注意U盘从UEFI模式启动。
 sudo add-apt-repository ppa:yannubuntu/boot-repair -y sudo apt-get update sudo apt-get install boot-repair -y sudo boot-repair grub-install 命令安装 使用manjaro live cd，其它的系统可能需要安装grub2、efibootmgr、grub-efi-amd64、os-prober等包。
 以下需要root权限，sudo -i或命令前加sudo
-1、 查看要引导系统的分区和efi分区的编号（fdisk -l） 2、 挂载引导系统的分区（一般 mount /dev/sda4 /mnt） 3、 挂载efi分区到系统分区的/boot/efi目录（`mount /dev/sda2 /mnt/boot/efi） 4、 chroot到硬盘系统分区'>
+1、 查看要引导系统的分区和efi分区的编号（fdisk -l） 2、 挂载引导系统的分区（一般 mount /dev/sda4 /mnt） 3、 挂载efi分区到系统分区的/boot/efi目录（`mount /dev/sda2 /mnt/boot/efi） 4、 chroot到硬盘系统分区
+对于ubuntu
+mount --bind /dev/ /mnt/dev mount --bind /proc /mnt/proc mount --bind /sys /mnt/sys chroot /mnt 对于manjaro直接'>
 <meta name='theme-color' content='#cccccc'>
 
 <meta property='og:title' content='一次修复linux的efi引导的集中方法总结记录 • A Notebook of Extendswind'>
 <meta property='og:description' content='起因：EFI分区被删除导致引导问题。
 症状：
-  通过安装其它系统的方式。正好想试试其它的linux发行版，就在另一个分区装了deepin，完成后硬盘没有发现UEFI引导；然后又尝试装了openSUSE，仍没在硬盘发现UEFI引导。（失败）
-  通过live cd重新在efi分区安装grub。（wiki推荐的一般方式，仍失败）
-  通过live cd安装refind。（仍不行）
-  安装的系统可以通过manjaro live cd直接boot。
-  安装win10可以发现UEFI的引导方式（只启动win10，安装grub也只启动win10）
-  引导的问题网上的解决方案很多，对于一些新的电脑UEFI的方式应该很好修复，但一些比较老的电脑可能出现各种坑问题，用legacy的引导还是稳定一点。
+通过安装其它系统的方式。正好想试试其它的linux发行版，就在另一个分区装了deepin，完成后硬盘没有发现UEFI引导；然后又尝试装了openSUSE，仍没在硬盘发现UEFI引导。（失败）
+通过live cd重新在efi分区安装grub。（wiki推荐的一般方式，仍失败）
+通过live cd安装refind。（仍不行）
+安装的系统可以通过manjaro live cd直接boot。
+安装win10可以发现UEFI的引导方式（只启动win10，安装grub也只启动win10）
+引导的问题网上的解决方案很多，对于一些新的电脑UEFI的方式应该很好修复，但一些比较老的电脑可能出现各种坑问题，用legacy的引导还是稳定一点。
 UEFI的引导通过grub的各种安装尝试都无法被主板识别，一直检测不到硬盘UEFI的启动项。怀疑主板并不支持linux grub2写入的UEFI引导信息，只支持windows的。最后通过安装win10，用refind覆盖win10的efi启动条目解决问题。
 最常规的修复方式 通过live cd 将系统烧入U盘，启动U盘进入系统后修复。涉及两种方式：
- 通过boot-repair grub-install 命令安装  还有通过grub命令行的方式，不常用没折腾。
+通过boot-repair grub-install 命令安装 还有通过grub命令行的方式，不常用没折腾。
 建议烧入的系统为ubuntu和manjaro。deepin的live cd在我的电脑上有显示的bug，而且添加ppa有一点坑。openSUSE上的grub命令和debian系arch系不怎么一样。ubuntu的主要优点在于可以通过安装boot-repair进行一键修复，manjaro和arch的live cd提供了直接的manjaro-chroot以及arch-chroot，进入后直接安装grub就行，而且manjaro的live cd支持直接引导启动efi分区中的系统。
 在下面的两种操作之前，最好通过gparted等软件新建一个efi分区（fat32,一般几十兆，openSUSE建议不小于500M，带efi标签）。
 基于ubuntu的boot-repair 网上的资料多操作也不复杂，主要注意U盘从UEFI模式启动。
 sudo add-apt-repository ppa:yannubuntu/boot-repair -y sudo apt-get update sudo apt-get install boot-repair -y sudo boot-repair grub-install 命令安装 使用manjaro live cd，其它的系统可能需要安装grub2、efibootmgr、grub-efi-amd64、os-prober等包。
 以下需要root权限，sudo -i或命令前加sudo
-1、 查看要引导系统的分区和efi分区的编号（fdisk -l） 2、 挂载引导系统的分区（一般 mount /dev/sda4 /mnt） 3、 挂载efi分区到系统分区的/boot/efi目录（`mount /dev/sda2 /mnt/boot/efi） 4、 chroot到硬盘系统分区'>
+1、 查看要引导系统的分区和efi分区的编号（fdisk -l） 2、 挂载引导系统的分区（一般 mount /dev/sda4 /mnt） 3、 挂载efi分区到系统分区的/boot/efi目录（`mount /dev/sda2 /mnt/boot/efi） 4、 chroot到硬盘系统分区
+对于ubuntu
+mount --bind /dev/ /mnt/dev mount --bind /proc /mnt/proc mount --bind /sys /mnt/sys chroot /mnt 对于manjaro直接'>
 <meta property='og:url' content='https://extendswind.top/posts/technical/grub_uefi_repair/'>
 <meta property='og:site_name' content='A Notebook of Extendswind'>
 <meta property='og:type' content='article'><meta property='article:section' content='posts'><meta property='article:tag' content='linux'><meta property='article:published_time' content='2019-11-26T20:59:49&#43;08:00'/><meta property='article:modified_time' content='2019-11-26T20:59:49&#43;08:00'/><meta name='twitter:card' content='summary'>
 
-<meta name="generator" content="Hugo 0.99.1" />
+<meta name="generator" content="Hugo 0.102.3" />
 
   <title>一次修复linux的efi引导的集中方法总结记录 • A Notebook of Extendswind</title>
   <link rel='canonical' href='https://extendswind.top/posts/technical/grub_uefi_repair/'>
@@ -112,7 +116,7 @@ sudo add-apt-repository ppa:yannubuntu/boot-repair -y sudo apt-get update sudo a
       </li><li>
         <a href='/tags/git/' style='font-size:1em'>git</a>
       </li><li>
-        <a href='/tags/hadoop/' style='font-size:1em'>hadoop</a>
+        <a href='/tags/hadoop/' style='font-size:1em'>Hadoop</a>
       </li><li>
         <a href='/tags/hive/' style='font-size:1em'>hive</a>
       </li><li>
@@ -135,6 +139,8 @@ sudo add-apt-repository ppa:yannubuntu/boot-repair -y sudo apt-get update sudo a
         <a href='/tags/raspberry/' style='font-size:1em'>raspberry</a>
       </li><li>
         <a href='/tags/reading/' style='font-size:1em'>reading</a>
+      </li><li>
+        <a href='/tags/sedona/' style='font-size:1em'>Sedona</a>
       </li><li>
         <a href='/tags/software/' style='font-size:1em'>software</a>
       </li><li>

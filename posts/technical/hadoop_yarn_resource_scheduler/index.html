@@ -8,11 +8,11 @@ CapacityScheduler首先将所有资源分配到hierarchical queue中，每个任
 Fair Scheduler 会在第一个任务运行时分配当前同级队列的所有资源，当有其它任务运行时，回收前面任务运行时的部分资源（一般为运行完成的Container）用于其它任务。
 至于FIFO，源码里都没有描述，可能就是一般的先进先出了。
 YARN默认使用CapacityScheduler，通过下面的属性配置：
-&lt;property&gt;  &lt;name&gt;yarn.resourcemanager.scheduler.class&lt;/name&gt;  &lt;value&gt;org.apache.hadoop.yarn.server.resourcemanager.scheduler.fair.FairScheduler&lt;/value&gt; &lt;/property&gt; YARN 动态资源分配 YARN 能够动态申请资源，如MapReduce中reduce的container会在map过程结束后申请。但Spark On YARN的机制为申请固定的executor，而不动态改变已申请的资源。
+&lt;property&gt; &lt;name&gt;yarn.resourcemanager.scheduler.class&lt;/name&gt; &lt;value&gt;org.apache.hadoop.yarn.server.resourcemanager.scheduler.fair.FairScheduler&lt;/value&gt; &lt;/property&gt; YARN 动态资源分配 YARN 能够动态申请资源，如MapReduce中reduce的container会在map过程结束后申请。但Spark On YARN的机制为申请固定的executor，而不动态改变已申请的资源。
 YARN上新运行的任务能够使用已运行任务回收的资源(如运行完Map task的container)，甚至还能够通过强行结束先前任务的container抢占资源。
 Capacity Scheduler CapacityScheduler重点解决多个组织共享集群资源，并保证每个组织自己的资源使用量。当自己的资源不足时能够使用其它组织的空闲资源。
 资源通过层级队列（hierarchical queues）的形式进行组织，配置在etc/hadoop/capacity-scheduler.xml.
-&lt;!-- 队列结构设置 --&gt; &lt;property&gt;  &lt;name&gt;yarn.scheduler.capacity.root.queues&lt;/name&gt;  &lt;value&gt;a,b&lt;/value&gt;  &lt;description&gt;The queues at the this level (root is the root queue).  &lt;/description&gt; &lt;/property&gt;  &lt;property&gt;  &lt;name&gt;yarn.scheduler.capacity.root.a.queues&lt;/name&gt;  &lt;value&gt;a1,a2&lt;/value&gt;  &lt;description&gt;The queues at the this level (root is the root queue).'>
+&lt;!-- 队列结构设置 --&gt; &lt;property&gt; &lt;name&gt;yarn.scheduler.capacity.root.queues&lt;/name&gt; &lt;value&gt;a,b&lt;/value&gt; &lt;description&gt;The queues at the this level (root is the root queue). &lt;/description&gt; &lt;/property&gt; &lt;property&gt; &lt;name&gt;yarn.scheduler.capacity.root.a.queues&lt;/name&gt; &lt;value&gt;a1,a2&lt;/value&gt; &lt;description&gt;The queues at the this level (root is the root queue).'>
 <meta name='theme-color' content='#cccccc'>
 
 <meta property='og:title' content='Hadoop YARN 调度器（scheduler） —— 资源调度策略 • A Notebook of Extendswind'>
@@ -22,16 +22,16 @@ CapacityScheduler首先将所有资源分配到hierarchical queue中，每个任
 Fair Scheduler 会在第一个任务运行时分配当前同级队列的所有资源，当有其它任务运行时，回收前面任务运行时的部分资源（一般为运行完成的Container）用于其它任务。
 至于FIFO，源码里都没有描述，可能就是一般的先进先出了。
 YARN默认使用CapacityScheduler，通过下面的属性配置：
-&lt;property&gt;  &lt;name&gt;yarn.resourcemanager.scheduler.class&lt;/name&gt;  &lt;value&gt;org.apache.hadoop.yarn.server.resourcemanager.scheduler.fair.FairScheduler&lt;/value&gt; &lt;/property&gt; YARN 动态资源分配 YARN 能够动态申请资源，如MapReduce中reduce的container会在map过程结束后申请。但Spark On YARN的机制为申请固定的executor，而不动态改变已申请的资源。
+&lt;property&gt; &lt;name&gt;yarn.resourcemanager.scheduler.class&lt;/name&gt; &lt;value&gt;org.apache.hadoop.yarn.server.resourcemanager.scheduler.fair.FairScheduler&lt;/value&gt; &lt;/property&gt; YARN 动态资源分配 YARN 能够动态申请资源，如MapReduce中reduce的container会在map过程结束后申请。但Spark On YARN的机制为申请固定的executor，而不动态改变已申请的资源。
 YARN上新运行的任务能够使用已运行任务回收的资源(如运行完Map task的container)，甚至还能够通过强行结束先前任务的container抢占资源。
 Capacity Scheduler CapacityScheduler重点解决多个组织共享集群资源，并保证每个组织自己的资源使用量。当自己的资源不足时能够使用其它组织的空闲资源。
 资源通过层级队列（hierarchical queues）的形式进行组织，配置在etc/hadoop/capacity-scheduler.xml.
-&lt;!-- 队列结构设置 --&gt; &lt;property&gt;  &lt;name&gt;yarn.scheduler.capacity.root.queues&lt;/name&gt;  &lt;value&gt;a,b&lt;/value&gt;  &lt;description&gt;The queues at the this level (root is the root queue).  &lt;/description&gt; &lt;/property&gt;  &lt;property&gt;  &lt;name&gt;yarn.scheduler.capacity.root.a.queues&lt;/name&gt;  &lt;value&gt;a1,a2&lt;/value&gt;  &lt;description&gt;The queues at the this level (root is the root queue).'>
+&lt;!-- 队列结构设置 --&gt; &lt;property&gt; &lt;name&gt;yarn.scheduler.capacity.root.queues&lt;/name&gt; &lt;value&gt;a,b&lt;/value&gt; &lt;description&gt;The queues at the this level (root is the root queue). &lt;/description&gt; &lt;/property&gt; &lt;property&gt; &lt;name&gt;yarn.scheduler.capacity.root.a.queues&lt;/name&gt; &lt;value&gt;a1,a2&lt;/value&gt; &lt;description&gt;The queues at the this level (root is the root queue).'>
 <meta property='og:url' content='https://extendswind.top/posts/technical/hadoop_yarn_resource_scheduler/'>
 <meta property='og:site_name' content='A Notebook of Extendswind'>
 <meta property='og:type' content='article'><meta property='article:section' content='posts'><meta property='article:tag' content='hadoop'><meta property='article:published_time' content='2018-09-04T10:30:00&#43;08:00'/><meta property='article:modified_time' content='2018-09-04T10:30:00&#43;08:00'/><meta name='twitter:card' content='summary'>
 
-<meta name="generator" content="Hugo 0.99.1" />
+<meta name="generator" content="Hugo 0.102.3" />
 
   <title>Hadoop YARN 调度器（scheduler） —— 资源调度策略 • A Notebook of Extendswind</title>
   <link rel='canonical' href='https://extendswind.top/posts/technical/hadoop_yarn_resource_scheduler/'>
@@ -100,7 +100,7 @@ Capacity Scheduler CapacityScheduler重点解决多个组织共享集群资源�
       </li><li>
         <a href='/tags/git/' style='font-size:1em'>git</a>
       </li><li>
-        <a href='/tags/hadoop/' style='font-size:1em'>hadoop</a>
+        <a href='/tags/hadoop/' style='font-size:1em'>Hadoop</a>
       </li><li>
         <a href='/tags/hive/' style='font-size:1em'>hive</a>
       </li><li>
@@ -123,6 +123,8 @@ Capacity Scheduler CapacityScheduler重点解决多个组织共享集群资源�
         <a href='/tags/raspberry/' style='font-size:1em'>raspberry</a>
       </li><li>
         <a href='/tags/reading/' style='font-size:1em'>reading</a>
+      </li><li>
+        <a href='/tags/sedona/' style='font-size:1em'>Sedona</a>
       </li><li>
         <a href='/tags/software/' style='font-size:1em'>software</a>
       </li><li>
@@ -365,7 +367,7 @@ Capacity Scheduler CapacityScheduler重点解决多个组织共享集群资源�
   <line x1="7" y1="7" x2="7" y2="7"/>
   
 </svg>
-<span class='screen-reader-text'>Tags: </span><a class='tag' href='/tags/hadoop/'>hadoop</a></div>
+<span class='screen-reader-text'>Tags: </span><a class='tag' href='/tags/hadoop/'>Hadoop</a></div>
 
   </div>
 </footer>
