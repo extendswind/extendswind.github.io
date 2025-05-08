@@ -1,1 +1,0 @@
-../../../myNote/./technical/programming_basic/cpp_why_use_virtual_function_table.md

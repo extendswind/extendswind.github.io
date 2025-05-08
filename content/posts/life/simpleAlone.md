@@ -1,1 +1,0 @@
-../../../myNote/./life/self/simpleAlone.md

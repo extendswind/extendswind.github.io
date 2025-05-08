@@ -1,1 +1,0 @@
-../../../myNote/./technical/linux_desktop/grub_uefi_repair.md

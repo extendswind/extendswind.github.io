@@ -1,1 +1,0 @@
-../../../myNote/./technical/linux_desktop/using_awesomewm_as_wm_of_mate_desktop.md

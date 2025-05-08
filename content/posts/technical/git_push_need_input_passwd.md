@@ -1,1 +1,0 @@
-../../../myNote/./technical/programming_basic/git_push_need_input_passwd.md

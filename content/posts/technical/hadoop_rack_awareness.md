@@ -1,1 +1,0 @@
-../../../myNote/./technical/cloud_computing/hadoop_rack_awareness.md

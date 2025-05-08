@@ -1,1 +1,0 @@
-../../../myNote/./technical/linux_desktop/anki_and_anki_server.md

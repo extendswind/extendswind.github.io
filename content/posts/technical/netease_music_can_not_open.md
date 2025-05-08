@@ -1,1 +1,0 @@
-../../../myNote/./technical/linux_desktop/netease_music_can_not_open.md

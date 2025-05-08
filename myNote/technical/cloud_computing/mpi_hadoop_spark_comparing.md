@@ -1,6 +1,6 @@
 ---
 title: "MPI、Hadoop、Spark的设计对比"
-date: 2021-12-21 T10:30:00+08:00
+date: 2021-12-21T10:30:00+08:00
 toc: true
 
 # draft: true

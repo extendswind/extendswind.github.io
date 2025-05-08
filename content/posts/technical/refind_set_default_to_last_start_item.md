@@ -1,1 +1,0 @@
-../../../myNote/./technical/linux_desktop/refind_set_default_to_last_start_item.md

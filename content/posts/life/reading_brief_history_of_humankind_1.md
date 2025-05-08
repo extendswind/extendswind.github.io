@@ -1,1 +1,0 @@
-../../../myNote/./life/reading_brief_history_of_humankind_1.md

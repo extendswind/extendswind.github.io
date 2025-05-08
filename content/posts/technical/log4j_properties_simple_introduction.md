@@ -1,1 +1,0 @@
-../../../myNote/./technical/programming_basic/log4j_properties_simple_introduction.md

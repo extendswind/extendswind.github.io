@@ -1,1 +1,0 @@
-../../../myNote/./technical/server_and_iot/syncthing_install_for_vps.md

@@ -1,1 +1,0 @@
-../../../myNote/./technical/gis/geospark_range_query_code_analysis.md

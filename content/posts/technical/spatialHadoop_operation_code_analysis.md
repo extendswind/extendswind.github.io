@@ -1,1 +1,0 @@
-../../../myNote/./technical/gis/spatialHadoop_operation_code_analysis.md

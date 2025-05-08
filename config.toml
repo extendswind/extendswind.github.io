@@ -3,12 +3,12 @@ baseURL = "https://extendswind.top"
 title = "A Notebook of Extendswind"
 
 # for smart copyright line, leave this blank and check [params.copyright]
-copyright = "本站原创文章遵循CC-BY 4.0版权协议，转载注明出处即可"
+copyright = "本站原创文章遵循CC-BY 4.0版权协议，转载注明出处即可     （鄂ICP备2025111429号）"
 
 theme = "minimo"
 #theme = "hugo-icarus-theme"
 # 某些设置在data/config 目录下
-#
+
 
 # TOC (tableOfContents)
 [markup]

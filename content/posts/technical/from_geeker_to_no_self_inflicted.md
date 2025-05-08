@@ -1,1 +1,0 @@
-../../../myNote/./technical/linux_desktop/from_geeker_to_no_self_inflicted.md

@@ -1,1 +1,0 @@
-../../../myNote/./technical/server_and_iot/mqtt_simple_use.md

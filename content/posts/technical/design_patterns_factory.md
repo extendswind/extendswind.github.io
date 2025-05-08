@@ -1,1 +1,0 @@
-../../../myNote/./technical/design_patterns/design_patterns_factory.md

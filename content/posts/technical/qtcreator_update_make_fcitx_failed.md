@@ -1,1 +1,0 @@
-../../../myNote/./technical/linux_desktop/qtcreator_update_make_fcitx_failed.md

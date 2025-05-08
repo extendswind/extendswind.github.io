@@ -1,1 +1,0 @@
-../../../myNote/./life/blog_first.md

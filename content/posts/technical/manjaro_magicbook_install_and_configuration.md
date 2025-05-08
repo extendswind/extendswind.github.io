@@ -1,1 +1,0 @@
-../../../myNote/./technical/linux_desktop/manjaro_magicbook_install_and_configuration.md

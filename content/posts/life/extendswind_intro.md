@@ -1,1 +1,0 @@
-../../../myNote/./life/self/extendswind_intro.md

@@ -1,1 +1,0 @@
-../../../myNote/./technical/network_operate/python3_publish_blog.md

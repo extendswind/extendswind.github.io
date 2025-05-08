@@ -212,7 +212,7 @@ section.widget.widget-recent_posts.sep-after ul{
 /*  引用长单词和长句切分换行 */
 code {
     word-break: break-all;
-    line-height:1;
+    line-height:1.5;
     font-size:0.8em;
 }
 

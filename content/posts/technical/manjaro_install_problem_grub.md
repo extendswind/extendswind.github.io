@@ -1,1 +1,0 @@
-../../../myNote/./technical/linux_desktop/manjaro_install_problem_grub.md

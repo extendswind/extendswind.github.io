@@ -1,1 +1,0 @@
-../../../myNote/./technical/linux_desktop/dual_monitor_manjaro_awesome.md
